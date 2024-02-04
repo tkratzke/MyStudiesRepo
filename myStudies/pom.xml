@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.skagit</groupId>
+    <artifactId>parent</artifactId>
+    <version>3.0</version>
+    <relativePath>../../ParentAndUtilRepo/parent/parent.pom</relativePath>
+  </parent>
+  <artifactId>myStudies</artifactId>
+
+  <properties>
+    <jaudioTagger.version>2.0.3</jaudioTagger.version>
+	<pdfbox.version>2.0.25</pdfbox.version>
+	<jTransforms.version>2.4.0</jTransforms.version>
+	<packing2d-core.version>0.1.0</packing2d-core.version>
+	<jsc.version>1.0</jsc.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+    	<groupId>com.skagit</groupId>
+    	<artifactId>util</artifactId>
+    	<version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org</groupId>
+        <artifactId>jaudiotagger</artifactId>
+        <version>${jaudioTagger.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>${pdfbox.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>jsc</groupId>
+      <artifactId>jsc</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.jtransforms</groupId>
+      <artifactId>jtransforms</artifactId>
+      <version>${jTransforms.version}</version>
+    </dependency>
+    
+	<dependency>
+	  <groupId>de.sciss</groupId>
+	  <artifactId>packing2d-core</artifactId>
+	  <version>${packing2d-core.version}</version>
+	</dependency>    
+  </dependencies>
+
+</project>

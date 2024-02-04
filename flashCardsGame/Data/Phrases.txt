@@ -1,0 +1,98 @@
+
+Conversation between Hạnh and Yuki: Screenshot.
+
+0007.	Anh làm nghế gì (ạ)?: What do you do? or
+		what is your job?
+0008.	Tôi là giáo viên: I am a teacher.
+0009.	Anh làm việc ở đâu:	Where do you work?
+0010.	Tôi làm việc ở Hà Nội.
+
+0011.	Anh học ở đâu? Where do you study?
+0012.	Anh học ở nhà. I study at home.
+0013.	Chị sống ở đâu? Where do you live?
+		
+0014.	xin chào:		Hello
+0015.	chào bạn:		Hello to friend
+0016.	chào em:		Hello to younger person
+0019.	tạm biệt:		Good bye
+0020.	chào chị ạ:		Hello to older female
+						ạ is "extra respect"
+0021.	chào anh ạ:		Hello to older brother
+0022.	chào ông ạ:		Hello to grandfatherly
+0023.	chào cháu:		Hello to child
+0024.	chào bà ạ:		Hello to grandmotherly
+				
+0025.	chào cô Hạnh ạ:	Hello to teacher Hạnh (female)				
+0026.	chào <Name>:	Less polite
+0027.	chào <2nd:		Also, "good bye"
+		person
+		pronoun>
+
+0028.	ạ				Word at end of
+						sentence to show
+						respect
+0029.	Anh làm nghề:	làm nghề is "do job"
+		gì?				or work.  So "what
+						do you do?"
+0030.	Anh làm việc:	làm việc is "work."
+		ở đâu
+
+0031.	Questions:		Subject verb interrogation
+		in general		word
+0032.	có phải là:		Are you <something>?
+		<something>
+		không
+0033.	làm sao nói:	How do you say?
+0034.	nói chậm lại:	Speak slowly!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+aa
