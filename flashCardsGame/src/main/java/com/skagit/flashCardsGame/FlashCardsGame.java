@@ -5,13 +5,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Properties;
@@ -39,24 +36,39 @@ public class FlashCardsGame {
 				_ReturnSymbol, _EditPropertiesSymbol);
 	}
 
-	private static final String _DefaultPropertiesPath = "Data/FlashCards";
-	private static final String _EchoFileIndicator = "-echo";
 	private static final String _DelimiterRegEx = "[\n\r\t]+";
 
+	private final File _propertiesFile;
 	private final Properties _properties;
-	private final File _propertiesFileForStoringEcho;
 
 	boolean _quizIsA_B;
 
-	File _cardsFile;
 	final TreeMap<Card, Card> _cardMap;
 	Card[] _cards;
 
 	final QuizGenerator _quizGenerator;
 	QuizPlus _quizPlus;
 
-	FlashCardsGame(final Scanner sc, final String propertiesPath,
-			final boolean cleanCardsOnly) {
+	FlashCardsGame(final Scanner sc, final String propertiesPath) {
+		/** Load the properties. */
+		_propertiesFile = new File(propertiesPath);
+		_properties = new Properties();
+		try (
+				InputStreamReader in = new InputStreamReader(new FileInputStream(_propertiesFile),
+						"UTF-8")) {
+			_properties.load(in);
+		} catch (final IOException e) {
+		}
+
+		/** Get _quizType. */
+		final String quizTypeProperty = keyToString(_properties, "Quiz.Type");
+		_quizIsA_B = quizTypeProperty.length() == 0
+				|| Character.toUpperCase(quizTypeProperty.charAt(0)) == 'A';
+
+		/** Write out _propertiesFile. */
+		reWritePropertiesFile();
+
+		/** Get the Cards. */
 		_cardMap = new TreeMap<Card, Card>(new Comparator<>() {
 
 			@Override
@@ -68,97 +80,20 @@ public class FlashCardsGame {
 				return card0._bSide.compareToIgnoreCase(card1._bSide);
 			}
 		});
-		GetPropertiesReturn propertiesReturn = getPropertiesReturn(propertiesPath);
-		if (propertiesReturn == null) {
-			propertiesReturn = getPropertiesReturn(_DefaultPropertiesPath);
-			if (propertiesReturn == null) {
-				_properties = null;
-				_propertiesFileForStoringEcho = null;
-				_quizIsA_B = true;
-				_quizGenerator = null;
-				_quizPlus = null;
-				return;
-			}
-		}
-		_properties = propertiesReturn._properties;
-
-		/** Get _quizType. */
-		final String quizTypeProperty = keyToString(_properties, "Quiz.Type");
-		_quizIsA_B = quizTypeProperty.length() == 0
-				|| Character.toUpperCase(quizTypeProperty.charAt(0)) == 'A';
-		_properties.put("Quiz.Type", _quizIsA_B ? "A_B" : "B_A");
-
-		/** Clean out the directories. */
-		final File propertiesFile = propertiesReturn._propertiesFile;
-		if (getBooleanFromScanner(sc, "Clear \"Echo\" files", /* lastResort= */true,
-				/* automaticYes= */cleanCardsOnly, /* automaticNo= */false)) {
-			final Path parentPath = FileSystems.getDefault()
-					.getPath(propertiesFile.getParentFile().getAbsolutePath());
-			final File parentFile = parentPath.toFile();
-			String[] fileNames = null;
-			fileNames = parentFile.list(new FilenameFilter() {
-				@Override
-				public boolean accept(final File dirFile, final String fileName) {
-					final File f = new File(dirFile, fileName);
-					return f.isFile() && fileName.toLowerCase().contains(_EchoFileIndicator);
-				}
-			});
-			final int nI = fileNames.length;
-			for (int i = 0; i < nI; ++i) {
-				final File fileToDie = new File(parentFile, fileNames[i]);
-				fileToDie.delete();
-			}
-		}
-
-		/** Write out _propertiesFile. */
-		if (getBooleanFromScanner(sc, "Overwrite Properties File", /* lastResort= */true,
-				/* automaticYes= */cleanCardsOnly, /* automaticNo= */false)) {
-			_propertiesFileForStoringEcho = propertiesFile;
-		} else {
-			_propertiesFileForStoringEcho = getEchoFile(propertiesFile, ".properties");
-		}
-		writePropertiesEchoFile();
-
-		/** Get the Cards. */
-		String cardsFileString = keyToString(_properties, "Cards.File");
-		if (cardsFileString.length() == 0) {
-			cardsFileString = "Cards.txt";
-		}
-		_cardsFile = getCardsFile(cardsFileString);
-		loadCards(cleanCardsOnly);
+		loadCards();
 		_quizGenerator = new QuizGenerator(_properties, /* nCards= */_cards.length, _Seed);
 		_quizPlus = null;
 	}
 
-	static private boolean getBooleanFromScanner(final Scanner sc, final String corePrompt,
-			final boolean lastResort, final boolean automaticYes, final boolean automaticNo) {
-		if (automaticYes) {
-			return true;
-		}
-		if (automaticNo) {
-			return false;
-		}
-		System.out.printf("%s (Y/N) (No Response = %c)", corePrompt, lastResort ? 'Y' : 'N');
-		final String myLine = sc.nextLine().trim();
-		final String[] fields = myLine.trim().split("\\s+");
-		return fieldsToBoolean(fields, lastResort);
-	}
-
-	void myPrintln(final PrintWriter pw, final boolean cleanCardsOnly, final String s) {
+	void myPrintln(final PrintWriter pw, final String s) {
 		pw.println(s);
-		if (cleanCardsOnly) {
-			pw.println(s);
-		}
 	}
 
-	void myPrint(final PrintWriter pw, final boolean cleanCardsOnly, final String s) {
+	void myPrint(final PrintWriter pw, final String s) {
 		pw.print(s);
-		if (cleanCardsOnly) {
-			pw.print(s);
-		}
 	}
 
-	private void writeCardsToDisk(final boolean cleanCardsOnly) {
+	private void writeCardsToDisk() {
 		final int nCards = _cards.length;
 		final int nDigits = (int) (Math.log10(nCards) + 1d);
 		final String cardIndexFormat = String.format("%%%dd.", nDigits);
@@ -167,7 +102,8 @@ public class FlashCardsGame {
 			maxASideLen = Math.max(maxASideLen, card._aSide.trim().length());
 		}
 		final String aSideFormat = String.format("%%-%ds", maxASideLen + 1);
-		try (PrintWriter pw = new PrintWriter(_cardsFile)) {
+		final File cardsFile = getCardsFile();
+		try (PrintWriter pw = new PrintWriter(cardsFile)) {
 			for (int k = 0; k < nCards; ++k) {
 				final Card card = _cards[k];
 				final String cardIndexString = String.format(cardIndexFormat, card._cardIndex);
@@ -176,99 +112,34 @@ public class FlashCardsGame {
 				boolean printedBlankLine = false;
 				if (k > 0) {
 					if (k % 5 == 0) {
-						myPrintln(pw, cleanCardsOnly, "");
+						myPrintln(pw, "");
 						printedBlankLine = true;
 					}
-					myPrintln(pw, cleanCardsOnly, "");
+					myPrintln(pw, "");
 				}
 				if (comment != null) {
 					comment = comment.trim();
 					if (comment.length() > 0) {
 						if (k > 0 && !printedBlankLine) {
-							myPrintln(pw, cleanCardsOnly, "");
+							myPrintln(pw, "");
 						}
-						myPrintln(pw, cleanCardsOnly, comment);
+						myPrintln(pw, comment);
 					}
 				}
 				final String s = String.format("%s\t%s\t%s", cardIndexString, aSideString,
 						card._bSide);
-				myPrint(pw, cleanCardsOnly, s);
+				myPrint(pw, s);
 			}
 		} catch (final FileNotFoundException e) {
 		}
 	}
 
-	private static class GetPropertiesReturn {
-		Properties _properties;
-		File _propertiesFile;
-		GetPropertiesReturn(final Properties properties, final File propertiesFile) {
-			_properties = properties;
-			_propertiesFile = propertiesFile;
-		}
-	}
-
-	private final static GetPropertiesReturn getPropertiesReturn(String path) {
-		if (path == null) {
-			return null;
-		}
-		if (!path.toLowerCase().endsWith(".properties")) {
-			final int lastDotIndex = path.lastIndexOf('.');
-			if (lastDotIndex < 0) {
-				path += ".properties";
-			} else {
-				path = path.substring(0, lastDotIndex) + ".properties";
-			}
-		}
-		final File propertiesFile = new File(path);
-		final Properties properties = new Properties();
-
-		try (BufferedReader in = new BufferedReader(
-				new InputStreamReader(new FileInputStream(propertiesFile), "UTF-8"))) {
-			in.mark(1);
-			if (in.read() != 0xFEFF) {
-				in.reset();
-			}
-			properties.load(in);
-			return new GetPropertiesReturn(properties, propertiesFile);
-		} catch (final IOException e) {
-		}
-		return null;
-	}
-
-	private final static File getEchoFile(final File f, final String suffix) {
-		final File dir = f.getParentFile();
-		final String name = f.getName();
-		final int lastDotIndex = name.lastIndexOf('.');
-		final String core = name.substring(0, lastDotIndex);
-		for (int k = -1;; ++k) {
-			final String numberPart = k == -1 ? "" : String.format("%02d", k);
-			final String name2 = String.format("%s%s%s%s", core, _EchoFileIndicator, numberPart,
-					suffix);
-			final File echoFile = new File(dir, name2);
-			if (!echoFile.exists()) {
-				return echoFile;
-			}
-		}
-	}
-
-	private final File getCardsFile(String cardsFilePath) {
-		if (!cardsFilePath.toUpperCase().endsWith(".TXT")) {
-			final int lastDotIndex = cardsFilePath.lastIndexOf('.');
-			if (lastDotIndex < 0) {
-				cardsFilePath += ".txt";
-			} else {
-				cardsFilePath = cardsFilePath.substring(0, lastDotIndex) + ".txt";
-			}
-		}
-		final File cardsFile1 = new File(cardsFilePath);
-		if (cardsFile1.isFile()) {
-			return new File(cardsFilePath);
-		}
-		final Path dirPath = FileSystems.getDefault()
-				.getPath(_propertiesFileForStoringEcho.getParentFile().getAbsolutePath());
-		final Path relativeToPropertiesDir = dirPath.resolve(cardsFilePath);
-		final File cardsFile2 = relativeToPropertiesDir.toFile();
-		return cardsFile2.isFile() ? cardsFile2 : null;
+	private File getCardsFile() {
+		final String name = _propertiesFile.getName();
+		final File parentFile = _propertiesFile.getParentFile();
+		final String cardsFilePath = name.substring(0, name.length() - ".properties".length())
+				+ ".txt";
+		return new File(parentFile, cardsFilePath);
 	}
 
 	/**
@@ -277,10 +148,11 @@ public class FlashCardsGame {
 	 * https://stackoverflow.com/questions/17405165/first-character-of-the-reading-from-the-text-file-%C3%AF
 	 * </pre>
 	 */
-	private void loadCards(final boolean cleanCardsOnly) {
+	private void loadCards() {
 		_cardMap.clear();
+		final File cardsFile = getCardsFile();
 		try (BufferedReader in = new BufferedReader(
-				new InputStreamReader(new FileInputStream(_cardsFile), "UTF-8"))) {
+				new InputStreamReader(new FileInputStream(cardsFile), "UTF-8"))) {
 			/** Mark the stream at the beginning of the file. */
 			if (in.markSupported()) {
 				/**
@@ -351,7 +223,7 @@ public class FlashCardsGame {
 			}
 		});
 		if (nCards > 0) {
-			writeCardsToDisk(cleanCardsOnly);
+			writeCardsToDisk();
 			announceDuplicates();
 		}
 	}
@@ -377,8 +249,8 @@ public class FlashCardsGame {
 		_quizGenerator.updateProperties(_properties);
 	}
 
-	void writePropertiesEchoFile() {
-		try (FileOutputStream fos = new FileOutputStream(_propertiesFileForStoringEcho)) {
+	void reWritePropertiesFile() {
+		try (FileOutputStream fos = new FileOutputStream(_propertiesFile)) {
 			_properties.store(fos, /* comments= */null);
 		} catch (final IOException e) {
 		}
@@ -419,8 +291,8 @@ public class FlashCardsGame {
 			System.out.printf("%s: ", prompt);
 			final String myLine = sc.nextLine().toUpperCase().trim();
 			final String[] fields = myLine.trim().split("\\s+");
-			final String field0 = fields == null || fields.length == 0
-					|| fields[0].length() == 0 ? "" : fields[0];
+			final String field0 = (fields == null || fields.length == 0
+					|| fields[0].length() == 0) ? "" : fields[0];
 			final int field0Len = field0.length();
 			if (field0Len == 0) {
 				/** Done and keep going. */
@@ -609,7 +481,7 @@ public class FlashCardsGame {
 			}
 			if (madeChangesFrom(oldValues)) {
 				updateProperties();
-				writePropertiesEchoFile();
+				reWritePropertiesFile();
 				oldValues = storeValues();
 			}
 			_quizPlus = quizPlusTransition._newQuizPlus;
@@ -661,7 +533,7 @@ public class FlashCardsGame {
 				if (madeChangesFrom(oldValues)) {
 					updateProperties();
 					System.out.printf("\nProperties were manually adjusted to:\n%s\n", getString());
-					writePropertiesEchoFile();
+					reWritePropertiesFile();
 					oldValues = storeValues();
 				}
 			}
@@ -673,14 +545,20 @@ public class FlashCardsGame {
 
 	public static void main(final String[] args) {
 		try (Scanner sc = new Scanner(System.in)) {
-			final String propertiesPath = args.length > 0 ? args[0] : null;
-			final boolean cleanCardsOnly = args.length > 1
-					&& args[1].toUpperCase().contains("CLEAN");
-			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, propertiesPath,
-					cleanCardsOnly);
-			if (!cleanCardsOnly) {
-				flashCardsGame.mainLoop(sc);
+			final String arg0 = args[0];
+			final String propertiesPath;
+			if (arg0.toLowerCase().endsWith(".properties")) {
+				propertiesPath = arg0;
+			} else {
+				final int lastDotIndex = arg0.lastIndexOf('.');
+				if (lastDotIndex == -1) {
+					propertiesPath = arg0 + ".properties";
+				} else {
+					propertiesPath = arg0.substring(0, lastDotIndex) + ".properties";
+				}
 			}
+			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, propertiesPath);
+			flashCardsGame.mainLoop(sc);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

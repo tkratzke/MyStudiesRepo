@@ -19,76 +19,76 @@ Today, I will work with G in the afternoon (on the garage).
 Probably, I will not go to the gym or swim.
 I will study VN with Thal from 12:15 to 12:30
 Maybe, I will also study math with Lan.
-  0.	sữa:                                   	milk
-  1.	uống:                                  	drink
-  2.	nước:                                  	water
-  3.	chạy bộ:                               	to run
-  4.	bơi:                                   	to swim
+  0.	một:                                   	one
+  1.	hai:                                   	two
+  2.	ba:                                    	three
+  3.	bốn:                                   	four
+  4.	năm:                                   	five
 
-  5.	hát:                                   	to sing
-  6.	nhảy:                                  	to dance
-  7.	làm gì:                                	doing (part of a question)
-  8.	tiền:                                  	money
-  9.	bạn:                                   	you (a friend)
+  5.	sáu:                                   	six
+  6.	bảy:                                   	seven
+  7.	tám:                                   	eight
+  8.	chín:                                  	nine
+  9.	mười:                                  	ten
 
- 10.	ti vi:                                 	TV
- 11.	cảnh sát:                              	police officer
- 12.	xe:                                    	car
- 13.	đang xem:                              	watch
- 14.	anh trai:                              	older brother
+ 10.	mười sáu:                              	sixteen
+ 11.	một trăm năm mươi lăm:                 	one hundred fifty five
+ 12.	dấu:                                   	generic accent
+ 13.	huyền:                                 	grave accent
+ 14.	sắc:                                   	acute accent
 
- 15.	chị gái:                               	older sister
- 16.	và:                                    	and
- 17.	chó:                                   	dog
- 18.	cừ:                                    	sheep
- 19.	ngựa:                                  	horse
+ 15.	hỏi:                                   	hook accent
+ 16.	ngã:                                   	tilde accent
+ 17.	nặng:                                  	underdot accent
+ 18.	không dấu:                             	no accent
+ 19.	cảm ơn:                                	thank you
 
- 20.	của tôi:                               	of mine (way of showing possessive)
- 21.	dấu:                                   	generic accent
- 22.	huyền:                                 	grave (accent)
- 23.	sắc:                                   	acute (accent)
- 24.	hỏi:                                   	hook above (accent)
+ 20.	tôi xin lỗi:                           	I am sorry
+ 21.	xin:                                   	please (x...)
+ 22.	làm ơn:                                	please (l...)
+ 23.	không có chi:                          	you're welcome
+ 24.	sữa:                                   	milk
 
- 25.	ngã:                                   	tilde (accent)
- 26.	nặng:                                  	underdot (accent)
- 27.	không dấu:                             	no accent
- 28.	cảm ơn:                                	thank you
- 29.	tôi xin lỗi:                           	I am sorry
+ 25.	uống:                                  	drink
+ 26.	nước:                                  	water
+ 27.	chạy bộ:                               	to run
+ 28.	bơi:                                   	to swim
+ 29.	hát:                                   	to sing
 
- 30.	xin:                                   	please (x...)
- 31.	làm ơn:                                	please (l...)
- 32.	không có chi:                          	you're welcome
- 33.	không bao giờ:                         	never
- 34.	chào buổi chiều:                       	good evening
+ 30.	nhảy:                                  	to dance
+ 31.	làm gì:                                	doing (part of a question)
+ 32.	tiền:                                  	money
+ 33.	bạn:                                   	you (a friend)
+ 34.	ti vi:                                 	a TV
 
- 35.	chào buổi tồi:                         	good night
- 36.	chào buổi sáng:                        	good morning
- 37.	tạm biệt:                              	good bye
- 38.	sáng:                                  	morning
- 39.	làm sao nói:                           	how do you say
+ 35.	cảnh sát:                              	a police officer
+ 36.	xe:                                    	a car
+ 37.	đang xem:                              	to watch
+ 38.	anh trai:                              	older brother
+ 39.	chị gái:                               	older sister
 
- 40.	nói chậm lại:                          	speak slowly
- 41.	buổi:                                  	time designator
- 42.	trưa:                                  	noon
- 43.	buổi trưa:                             	afternoon
- 44.	anh khỏe không:                        	how are you (to male)
+ 40.	và:                                    	and
+ 41.	chó:                                   	a dog
+ 42.	cừ:                                    	a sheep
+ 43.	ngựa:                                  	a horse
+ 44.	của tôi:                               	of mine (way of showing possessive)
 
- 45.	anh khỏe:                              	I'm fine (for a male)
- 46.	ăn sáng:                               	to have breakfast
- 47.	một:                                   	one
- 48.	hai:                                   	two
- 49.	ba:                                    	three
+ 45.	không bao giờ:                         	never
+ 46.	chào buổi chiều:                       	good evening
+ 47.	chào buổi tồi:                         	good night
+ 48.	chào buổi sáng:                        	good morning
+ 49.	tạm biệt:                              	good bye
 
- 50.	bốn:                                   	four
- 51.	năm:                                   	five
- 52.	sáu:                                   	six
- 53.	bảy:                                   	seven
- 54.	tám:                                   	eight
+ 50.	sáng:                                  	morning
+ 51.	làm sao nói:                           	how do you say
+ 52.	nói chậm lại:                          	speak slowly
+ 53.	buổi:                                  	time designator
+ 54.	trưa:                                  	noon
 
- 55.	chín:                                  	nine
- 56.	mười:                                  	ten
- 57.	mười sáu:                              	sixteen
- 58.	một trăm năm mươi lăm:                 	one hundred fifty five
+ 55.	buổi trưa:                             	afternoon
+ 56.	anh khỏe không:                        	how are you (to male)
+ 57.	anh khỏe:                              	I'm fine (for a male)
+ 58.	ăn sáng:                               	to have breakfast
  59.	đói:                                   	hungry
 
  60.	từ:                                    	from
@@ -196,93 +196,255 @@ Maybe, I will also study math with Lan.
 145.	đi vô:                                 	to go inside
 146.	đi ra:                                 	to go outside
 147.	về:                                    	to return
-148.	chó:                                   	a dog
-149.	chợ:                                   	a market
+148.	chợ:                                   	a market
+149.	chị:                                   	a big sister
 
-150.	chị:                                   	a big sister
-151.	ghế:                                   	a chair
-152.	ghé:                                   	to stop by
-153.	ghẻ:                                   	a skin infection producing pus
-154.	ghê:                                   	icky
+150.	ghế:                                   	a chair
+151.	ghé:                                   	to stop by
+152.	ghẻ:                                   	a skin infection producing pus
+153.	ghê:                                   	icky
+154.	đã:                                    	past tense indicator
 
-155.	đã:                                    	past tense indicator
-156.	chú nó:                                	his/her uncle
-157.	xa:                                    	far away
-158.	lu:                                    	a vat
-159.	lư:                                    	an incense burner
+155.	chú nó:                                	his/her uncle
+156.	xa:                                    	far away
+157.	lu:                                    	a vat
+158.	lư:                                    	an incense burner
+159.	cộng:                                  	plus/to add
 
-160.	cộng:                                  	plus/to add
-161.	nai:                                   	a deer
-162.	mèo:                                   	a cat
-163.	mơ:                                    	an apricot/to dream
-164.	tô:                                    	a big bowl
+160.	nai:                                   	a deer
+161.	mèo:                                   	a cat
+162.	mơ:                                    	an apricot/to dream
+163.	tô:                                    	a big bowl
+164.	nơ:                                    	a bow
 
-165.	nơ:                                    	a bow
-166.	dù:                                    	an umbrella
-167.	nơ to:                                 	a big bow
-168.	đu:                                    	to swing or a swing
-169.	đi:                                    	go/walk
+165.	dù:                                    	an umbrella
+166.	nơ to:                                 	a big bow
+167.	đu:                                    	to swing or a swing
+168.	đi:                                    	to go/walk
+169.	mô tô:                                 	a car
 
-170.	mô tô:                                 	car
-171.	na:                                    	soursop
-172.	me:                                    	tamarind
-173.	tô me:                                 	a big bowl of tamarind
-174.	la:                                    	a donkey or to shout or to scold
+170.	na:                                    	soursop
+171.	me:                                    	tamarind
+172.	tô me:                                 	a big bowl of tamarind
+173.	la:                                    	a donkey or to shout or to scold
+174.	lê la:                                 	to wander
 
-175.	lê la:                                 	to wander
-176.	lá:                                    	a leaf
-177.	dế:                                    	a cricket
-178.	bé:                                    	a little child
-179.	đá dế:                                 	to make crickets fight
+175.	lá:                                    	a leaf
+176.	dế:                                    	a cricket
+177.	bé:                                    	a little child
+178.	đá dế:                                 	to make crickets fight
+179.	bí:                                    	a squash
 
-180.	bí:                                    	a squash
-181.	đò:                                    	a ferry
-182.	mù:                                    	blind
-183.	bờ:                                    	a shore
-184.	hổ:                                    	a tiger
+180.	đò:                                    	a ferry
+181.	mù:                                    	blind
+182.	bờ:                                    	a shore
+183.	hổ:                                    	a tiger
+184.	hi:                                    	laughter, as in ha ha
 
-185.	hi:                                    	laughter, as in ha ha
-186.	hù:                                    	to scare
-187.	bê:                                    	a calf or to carry
-188.	té:                                    	to fall
-189.	cò:                                    	an egret
+185.	hù:                                    	to scare
+186.	bê:                                    	a calf or to carry
+187.	té:                                    	to fall
+188.	cò:                                    	an egret
+189.	cà:                                    	a pickle
 
-190.	cà:                                    	a pickle
-191.	cờ:                                    	a flag
-192.	cổ:                                    	a neck
-193.	mổ:                                    	to peck or to operate
-194.	dê:                                    	a goat
+190.	cờ:                                    	a flag
+191.	cổ:                                    	a neck
+192.	mổ:                                    	to peck or to operate
+193.	dê:                                    	a goat
+194.	se sẻ:                                 	a sparrow
 
-195.	se sẻ:                                 	a sparrow
-196.	bờ cỏ:                                 	grass field
-197.	cỏ:                                    	grass
-198.	rủ:                                    	to invite (to do something)
-199.	ve:                                    	a cicada
+195.	bờ cỏ:                                 	a grass field
+196.	cỏ:                                    	grass
+197.	rủ:                                    	to invite (to do something)
+198.	ve:                                    	a cicada
+199.	vá:                                    	to mend
 
-200.	vá:                                    	to mend
-201.	kể lể:                                 	to tell stories
-202.	cá:                                    	a fish
-203.	tổ:                                    	a nest
-204.	chú:                                   	uncle
+200.	kể lể:                                 	to tell stories
+201.	cá:                                    	a fish
+202.	tổ:                                    	a nest
+203.	chú:                                   	uncle
+204.	chị Tư:                                	lady named Tư
 
-205.	chị Tư:                                	lady named Tư
-206.	da dẻ:                                 	skin with padding
-207.	sù sì:                                 	rough
-208.	mủ:                                    	pus
-209.	sợ:                                    	scary/be scared
+205.	da dẻ:                                 	skin with padding
+206.	sù sì:                                 	rough
+207.	mủ:                                    	pus
+208.	sợ:                                    	scary/be scared
+209.	năm một ngàn chín trăm năm mươi bảy:   	year 1957
 
-210.	năm một ngàn chín trăm năm mươi bảy:   	year 1957
-211.	năm hai ngàn hai mươi bốn:             	year 2024
-212.	a:                                     	vowel in father
-213.	â:                                     	vowel in bun
-214.	ă:                                     	vowel in at
+210.	năm hai ngàn hai mươi bốn:             	year 2024
+211.	è:                                     	e-grave
+212.	é:                                     	e-acute
+213.	ẹ:                                     	e-underdot
+214.	ẽ:                                     	e-tilde
 
-215.	e:                                     	vowel in let
-216.	ê:                                     	vowel in obey
-217.	i:                                     	vowel in bee
-218.	ô:                                     	vowel in oh
-219.	o:                                     	vowel in aww
+215.	ẻ:                                     	e-hook
+216.	ă:                                     	a-breve
+217.	ê:                                     	e-circumflex
+218.	ơ:                                     	o-horn
+219.	đ:                                     	d-bar
 
-220.	ơ:                                     	vowel in uhh
-221.	u:                                     	vowel in boo
-222.	ư:                                     	vowel in uhoo
+220.	a:                                     	vowel in father
+221.	â:                                     	vowel in bun
+222.	ă:                                     	vowel in at
+223.	e:                                     	vowel in let
+224.	ê:                                     	vowel in obey
+
+225.	i:                                     	vowel in bee
+226.	ô:                                     	vowel in oh
+227.	o:                                     	vowel in aww
+228.	ơ:                                     	vowel in uhh
+229.	u:                                     	vowel in boo
+
+230.	ư:                                     	vowel in uhoo
+231.	đi:                                    	to walk
+232.	nâu:                                   	brown
+233.	xe:                                    	car or motorcycle
+234.	số:                                    	a number
+
+235.	da:                                    	skin
+236.	gia đình:                              	a family
+237.	trò chơi:                              	a game
+238.	nhà:                                   	a house
+239.	kem:                                   	ice cream
+
+240.	quả:                                   	fruit (eg ___ táo is apple)
+241.	ngon:                                  	delicious
+242.	nghe:                                  	to listen
+243.	gà:                                    	a chicken
+244.	ma:                                    	a ghost
+
+245.	bàn:                                   	a table
+246.	ăn:                                    	to eat
+247.	chăn:                                  	a blanket
+248.	ấm:                                    	be warm
+249.	cân:                                   	a scale
+
+250.	lên:                                   	up
+251.	mì Ý:                                  	spaghetti
+252.	ô tô:                                  	a car
+253.	xôi:                                   	sticky rice
+254.	bơ:                                    	butter
+
+255.	mũ:                                    	a hat
+256.	vui:                                   	to be happy
+257.	ừ:                                     	yes
+258.	sư tử:                                 	a lion
+259.	tôi/bạn:                               	I/You (same age)
+
+260.	anh/chị:                               	I/You (same gen, older)
+261.	ông/bà cháu:                           	I/You (2 gen up)
+262.	cháu bác:                              	I/You (1 gen up)
+263.	chú/cô cháu:                           	I/You (Uncle/Aunt)
+264.	gì:                                    	what (question)
+
+265.	người:                                 	a person
+266.	nườc:                                  	a country
+267.	nào:                                   	which (question)
+268.	làm:                                   	to do
+269.	nghề:                                  	a job
+
+270.	giáo viên:                             	a teacher
+271.	nhân viên:                             	staff
+272.	văn phòng:                             	an office
+273.	học sinh:                              	a student
+274.	sinh viên:                             	a university student
+
+275.	bác sĩ:                                	a physician
+276.	đầu bếp:                               	a chef
+277.	họa sĩ:                                	an artist
+278.	làm việc:                              	to work
+279.	ở đâu:                                 	where (question)
+
+280.	ở:                                     	at or in
+281.	sống:                                  	to live
+282.	chào:                                  	hello
+283.	tên:                                   	a name
+284.	là:                                    	to be
+
+285.	uống:                                  	to drink
+286.	cà phê:                                	coffee
+287.	quán cà phê:                           	a coffee shop
+288.	quán phở:                              	a phở house
+289.	ăn trưa:                               	to have lunch
+
+290.	ăn cơm:                                	to eat lunch
+291.	quán cơm:                              	a diner
+292.	ăn tối:                                	to have dinner
+293.	nhà hàng:                              	a big restaurant
+294.	dạy:                                   	to teach
+
+295.	vợ:                                    	a wife
+296.	thư:                                   	a letter
+297.	pin:                                   	a battery
+298.	lu:                                    	an urn
+299.	tủ:                                    	an armoire
+
+300.	làm sao nói:                           	How do you say?
+301.	cộng:                                  	plus
+302.	dỏ:                                    	dirty
+303.	đu:                                    	a swing or to swing
+304.	na to:                                 	a soursop
+
+305.	ga:                                    	a train station
+306.	đa:                                    	a banyon tree
+307.	me:                                    	a tamarind
+308.	la:                                    	a donkey
+309.	tí:                                    	a name
+
+310.	nó:                                    	he or she
+311.	la:                                    	to shout
+312.	mù:                                    	to glide
+313.	hủ:                                    	bad
+314.	hi:                                    	to laugh
+
+315.	dạ:                                    	to greet politely
+316.	mẹ:                                    	a mother
+317.	bê:                                    	a calf
+318.	đá:                                    	a rock
+319.	mổ:                                    	to peck
+
+320.	gõ:                                    	to tap, hit, or drum
+321.	mõ:                                    	a tocsin (wooden bell or bamboo tocsin)
+322.	hũ:                                    	vat
+323.	gỗ:                                    	wood
+324.	lễ:                                    	holiday
+
+325.	xu:                                    	cent
+326.	0138:                                  	có
+327.	đi xe:                                 	go by car
+328.	so:                                    	to compare
+329.	xổ số:                                 	a lottery
+
+330.	mổ:                                    	big
+331.	dế:                                    	cricket
+332.	bờ cỏ:                                 	grass field
+333.	ru:                                    	to put baby to sleep (lull)
+334.	ra:                                    	to go outside
+
+335.	cá rô:                                 	perch
+336.	rổ:                                    	basket
+337.	rủ:                                    	to invite
+338.	0007:                                  	Anh làm nghế gì (ạ): what do you do? or what is your job?
+339.	0008:                                  	Tôi là giáo viên: I am a teacher
+
+340.	Anh làm việc ở đâu:                    	where do you work?
+341.	Tôi làm việc ở Hà Nội:                 	I work in Hanoi
+342.	anh làm nghề:                          	what is your job, or what do you do?
+343.	Anh làm việc:                          	he works
+344.	ở đâu:                                 	Ask Tran
+
+345.	có phải là xxx không:                  	Are you xxx?
+346.	0011:                                  	Anh học ở đâu? where do you study?
+347.	0012:                                  	Anh học ở nhà. I study at home
+348.	0013:                                  	Chị sống ở đâu? where do you live?
+349.	xin chào:                              	hello
+
+350.	chào bạn:                              	hello to friend
+351.	chào em:                               	hello to younger person
+352.	chào chị ạ:                            	hello to older female, with extra respect
+353.	chào anh ạ:                            	hello to older brother
+354.	chào ông ạ:                            	hello to grandfatherly
+
+355.	chào cháu:                             	hello to child
+356.	chào bà ạ:                             	hello to grandmotherly person
+357.	chào cô Hạnh ạ:                        	hello to teacher Hạnh (female)

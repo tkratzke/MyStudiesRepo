@@ -136,31 +136,39 @@ public class QuizGenerator {
 		final double[] vectorOfProbs = new double[nChoices];
 		final int nDregs = nChoices - nFavoredWords;
 		final double pForDregs;
-		if (_typeOfDecay == TypeOfDecay.EXP) {
-			pForDregs = computePForExp(nDregs, _ProportionForDregs);
+		if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
+			pForDregs = computePForExponential(nDregs, _ProportionForDregs);
+		} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
+			pForDregs = computePForLinear(nDregs, _ProportionForDregs);
 		} else {
-			pForDregs = computePForLin(nDregs, _ProportionForDregs);
+			return null;
 		}
 		for (int k = 0; k < nDregs; ++k) {
 			final int kk = nDregs - 1 - k;
-			if (_typeOfDecay == TypeOfDecay.EXP) {
+			if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
 				vectorOfProbs[kk] = Math.pow(pForDregs, 1d + k);
-			} else {
+			} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
 				vectorOfProbs[k] = (k + 1d) * pForDregs;
+			} else {
+				return null;
 			}
 		}
 		final double pForFavoredWords;
-		if (_typeOfDecay == TypeOfDecay.EXP) {
-			pForFavoredWords = computePForExp(nFavoredWords, _ProportionForRecentWords);
+		if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
+			pForFavoredWords = computePForExponential(nFavoredWords, _ProportionForRecentWords);
+		} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
+			pForFavoredWords = computePForLinear(nFavoredWords, _ProportionForRecentWords);
 		} else {
-			pForFavoredWords = computePForLin(nFavoredWords, _ProportionForRecentWords);
+			return null;
 		}
 		for (int k = 0; k < nFavoredWords; ++k) {
 			final int kk = nChoices - 1 - k;
-			if (_typeOfDecay == TypeOfDecay.EXP) {
+			if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
 				vectorOfProbs[kk] = Math.pow(pForFavoredWords, 1d + k);
-			} else {
+			} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
 				vectorOfProbs[kk] = (k + 1d) * pForFavoredWords;
+			} else {
+				vectorOfProbs[kk] = 1d / 0d;
 			}
 		}
 		/**
@@ -180,7 +188,7 @@ public class QuizGenerator {
 		return vectorOfCums;
 	}
 
-	private static double computePForExp(final int n, final double target) {
+	private static double computePForExponential(final int n, final double target) {
 		if (target < 0d) {
 			return Double.NaN;
 		}
@@ -212,7 +220,7 @@ public class QuizGenerator {
 		return (tooLow + tooHigh) / 2d;
 	}
 
-	private static double computePForLin(final int n, final double target) {
+	private static double computePForLinear(final int n, final double target) {
 		if (n <= 0) {
 			return target == 0d ? 0d : Double.NaN;
 		}
