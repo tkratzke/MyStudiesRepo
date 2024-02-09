@@ -128,13 +128,13 @@ public class QuizGenerator {
 		return -cardIndex - 1;
 	}
 
-	static final double _ProportionForRecentWords = 0.5;
-	static final double _ProportionForDregs = 1d - _ProportionForRecentWords;
+	static final double _ProportionForDregs = 0.5;
 
 	/** Fills in a vector of cums, using exponential or linear decay. */
-	private double[] computeVectorOfCums(final int nFavoredWords, final int nChoices) {
-		final double[] vectorOfProbs = new double[nChoices];
-		final int nDregs = nChoices - nFavoredWords;
+	private double[] computeVectorOfCums(final int nRecentWords,
+			final int nChoicesForSlots) {
+		final double[] vectorOfProbs = new double[nChoicesForSlots];
+		final int nDregs = nChoicesForSlots - nRecentWords;
 		final double pForDregs;
 		if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
 			pForDregs = computePForExponential(nDregs, _ProportionForDregs);
@@ -143,48 +143,55 @@ public class QuizGenerator {
 		} else {
 			return null;
 		}
+
+		double sumOfProbs = 0d;
 		for (int k = 0; k < nDregs; ++k) {
-			final int kk = nDregs - 1 - k;
+			final double p;
 			if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
-				vectorOfProbs[kk] = Math.pow(pForDregs, 1d + k);
+				p = Math.pow(pForDregs, nDregs - k);
 			} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
-				vectorOfProbs[k] = (k + 1d) * pForDregs;
+				p = (k + 1d) * pForDregs;
 			} else {
 				return null;
 			}
+			vectorOfProbs[k] = p;
+			sumOfProbs += p;
 		}
-		final double pForFavoredWords;
+		final double targetForRecentWords = 1d - sumOfProbs;
+		final double pForRecentWords;
 		if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
-			pForFavoredWords = computePForExponential(nFavoredWords, _ProportionForRecentWords);
+			pForRecentWords = computePForExponential(nRecentWords, targetForRecentWords);
 		} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
-			pForFavoredWords = computePForLinear(nFavoredWords, _ProportionForRecentWords);
+			pForRecentWords = computePForLinear(nRecentWords, targetForRecentWords);
 		} else {
 			return null;
 		}
-		for (int k = 0; k < nFavoredWords; ++k) {
-			final int kk = nChoices - 1 - k;
+		for (int k = 0; k < nRecentWords; ++k) {
+			final double p;
 			if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
-				vectorOfProbs[kk] = Math.pow(pForFavoredWords, 1d + k);
+				p = Math.pow(pForRecentWords, nRecentWords - k);
 			} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
-				vectorOfProbs[kk] = (k + 1d) * pForFavoredWords;
+				p = (k + 1d) * pForRecentWords;
 			} else {
-				vectorOfProbs[kk] = 1d / 0d;
+				return null;
 			}
+			vectorOfProbs[nDregs + k] = p;
+			sumOfProbs += p;
 		}
 		/**
 		 * Make vectorOfCums from vectorOfProbs. Since we can do this in place, we'll just
 		 * rename it.
 		 */
 		final double[] vectorOfCums = vectorOfProbs;
-		for (int k = 1; k < nChoices; ++k) {
+		for (int k = 1; k < nChoicesForSlots; ++k) {
 			vectorOfCums[k] += vectorOfCums[k - 1];
 		}
 		/** Normalize the cums. */
-		final double f = vectorOfCums[nChoices - 1];
-		for (int k = 0; k < nChoices; ++k) {
+		final double f = vectorOfCums[nChoicesForSlots - 1];
+		for (int k = 0; k < nChoicesForSlots; ++k) {
 			vectorOfCums[k] /= f;
 		}
-		vectorOfCums[nChoices - 1] = 1d;
+		vectorOfCums[nChoicesForSlots - 1] = 1d;
 		return vectorOfCums;
 	}
 
