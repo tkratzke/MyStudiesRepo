@@ -33,7 +33,7 @@ public class FlashCardsGame {
 		final BigInteger bigInteger = new BigInteger(
 				"1953102919570208198208131985030219910105201301192015102720231229");
 		_Seed = bigInteger.mod(new BigInteger(Long.toString(Long.MAX_VALUE))).longValue();
-		_IntroString = String.format("(%c=\"Check Mode,\" %c=\"Edit Properties\")",
+		_IntroString = String.format("%c=\"Check Mode,\" %c=\"Edit Properties\"",
 				_ReturnSymbol, _EditPropertiesSymbol);
 	}
 
@@ -49,6 +49,8 @@ public class FlashCardsGame {
 	final QuizGenerator _quizGenerator;
 	QuizPlus _quizPlus;
 
+	boolean _printedSomething;
+
 	FlashCardsGame(final Scanner sc, final String propertiesPath) {
 		/** Load the properties. */
 		_propertiesFile = new File(propertiesPath);
@@ -63,11 +65,12 @@ public class FlashCardsGame {
 		/** Get _quizType. */
 		final String quizTypeProperty = keyToString(_properties, "Quiz.Type");
 		_quizIsA_B = quizTypeProperty.length() == 0
-				|| Character.toUpperCase(quizTypeProperty.charAt(0)) == 'A';
+				|| Character.toUpperCase(quizTypeProperty.charAt(0)) != 'B';
 
 		/** Write out _propertiesFile. */
 		reWritePropertiesFile();
 
+		_printedSomething = false;
 		loadCards();
 		_quizGenerator = new QuizGenerator(_properties, /* nCards= */_cards.length, _Seed);
 		_quizPlus = null;
@@ -137,18 +140,7 @@ public class FlashCardsGame {
 	 * </pre>
 	 */
 	private void loadCards() {
-		/** Get the Cards. */
-		final TreeMap<Card, Card> cardMap = new TreeMap<Card, Card>(new Comparator<>() {
-
-			@Override
-			public int compare(final Card card0, final Card card1) {
-				final int compareValue = card0._aSide.compareToIgnoreCase(card1._aSide);
-				if (compareValue != 0) {
-					return compareValue;
-				}
-				return card0._bSide.compareToIgnoreCase(card1._bSide);
-			}
-		});
+		final TreeMap<Card, Card> cardMap = new TreeMap<Card, Card>(Card._ByAThenB);
 		final File cardsFile = getCardsFile();
 		try (BufferedReader in = new BufferedReader(
 				new InputStreamReader(new FileInputStream(cardsFile), "UTF-8"))) {
@@ -197,7 +189,11 @@ public class FlashCardsGame {
 					newCard._comment = comment;
 					final Card oldCard = cardMap.get(newCard);
 					if (oldCard != null) {
-						System.out.printf("\n\nMerging\n%s into\n%s", newCard.getString(),
+						if (_printedSomething) {
+							System.out.printf("\n\n");
+						}
+						_printedSomething = true;
+						System.out.printf("Merging\n%s into\n%s", newCard.getString(),
 								oldCard.getString());
 						oldCard._comment = (oldCard._comment + "\n" + comment).trim();
 					} else {
@@ -211,81 +207,54 @@ public class FlashCardsGame {
 		}
 		final int nCards = cardMap.size();
 		_cards = cardMap.keySet().toArray(new Card[nCards]);
-		Arrays.sort(_cards, new Comparator<>() {
-
-			@Override
-			public int compare(final Card card0, final Card card1) {
-				if (card0._cardIndex < card1._cardIndex) {
-					return -1;
-				}
-				return card0._cardIndex > card1._cardIndex ? 1 : 0;
-			}
-		});
-		if (nCards > 0) {
-			announceAndClumpDuplicates();
-			writeCardsToDisk();
-		}
+		Arrays.sort(_cards, Card._ByIndexOnly);
+		announceAndClumpDuplicates();
+		writeCardsToDisk();
 	}
-
-	static final Comparator<Card> _CheckForADups = new Comparator<>() {
-
-		@Override
-		public int compare(final Card card0, final Card card) {
-			return card0._aSide.compareTo(card._aSide);
-		}
-	};
-
-	static final Comparator<Card> _CheckForBDups = new Comparator<>() {
-
-		@Override
-		public int compare(final Card card0, final Card card) {
-			return card0._bSide.compareTo(card._bSide);
-		}
-	};
 
 	private void announceAndClumpDuplicates() {
 		final int nCards = _cards.length;
-		for (int iPass = 0; iPass < 2; ++iPass) {
-			final Comparator<Card> comparator = iPass == 0 ? _CheckForADups : _CheckForBDups;
-			final TreeMap<Card, Card> map = new TreeMap<>(comparator);
-			final TreeMap<Card, ArrayList<Card>> kings = new TreeMap<>(comparator);
-			for (int k = 0; k < nCards; ++k) {
-				final Card card = _cards[k];
-				final Card oldCard = map.ceilingKey(card);
-				if (oldCard != null && comparator.compare(oldCard, card) == 0) {
-					System.out.printf("\n\nDuplicate %s:\n%s and \n%s",
-							iPass == 0 ? "A-Side" : "B-Side", card.getString(), oldCard.getString());
-					ArrayList<Card> slaves = kings.get(oldCard);
-					if (slaves == null) {
-						slaves = new ArrayList<>();
-						kings.put(oldCard, slaves);
-					}
-					slaves.add(card);
-					_cards[k] = null;
+		final Comparator<Card> comparator = _quizIsA_B
+				? Card._ByASideOnly
+				: Card._ByBSideOnly;
+		final TreeMap<Card, ArrayList<Card>> kingToSlaves = new TreeMap<>(comparator);
+		for (int k = 0; k < nCards; ++k) {
+			final Card card = _cards[k];
+			final ArrayList<Card> slaves = kingToSlaves.get(card);
+			if (slaves != null) {
+				final Card oldCard = kingToSlaves.ceilingKey(card);
+				if (_printedSomething) {
+					System.out.printf("\n\n");
 				}
+				_printedSomething = true;
+				System.out.printf("Duplicate %s:\n%s\n%s", _quizIsA_B ? "A-Side" : "B-Side",
+						oldCard.getString(), card.getString());
+				slaves.add(card);
+				_cards[k] = null;
+			} else {
+				kingToSlaves.put(card, new ArrayList<>());
 			}
-			final Card[] newCards = new Card[nCards];
-			for (int k0 = 0, k1 = 0; k0 < nCards; ++k0) {
-				final Card card = _cards[k0];
-				if (card == null) {
-					continue;
-				}
-				card._cardIndex = k1;
-				newCards[k1] = card;
-				++k1;
-				final ArrayList<Card> slaves = kings.get(card);
-				if (slaves != null) {
-					final int nSlaves = slaves.size();
-					for (int k2 = 0; k2 < nSlaves; ++k2) {
-						final Card slave = slaves.get(k2);
-						slave._cardIndex = k1;
-						newCards[k1] = slave;
-						++k1;
-					}
-				}
-			}
-			System.arraycopy(newCards, 0, _cards, 0, nCards);
 		}
+		final Card[] newCards = new Card[nCards];
+		for (int k0 = 0, k1 = 0; k0 < nCards; ++k0) {
+			final Card card = _cards[k0];
+			if (card == null) {
+				/** The card formerly at k0 is now somebody's slave. */
+				continue;
+			}
+			card._cardIndex = k1;
+			newCards[k1] = card;
+			++k1;
+			final ArrayList<Card> slaves = kingToSlaves.get(card);
+			final int nSlaves = slaves.size();
+			for (int k2 = 0; k2 < nSlaves; ++k2) {
+				final Card slave = slaves.get(k2);
+				slave._cardIndex = k1;
+				newCards[k1] = slave;
+				++k1;
+			}
+		}
+		System.arraycopy(newCards, 0, _cards, 0, nCards);
 	}
 
 	void updateProperties() {
@@ -490,8 +459,12 @@ public class FlashCardsGame {
 		int nCards = _cards.length;
 		_quizPlus = _quizGenerator.createNewQuizPlus(nCards);
 		final String quizString = _quizPlus.getString();
-		System.out.printf("\n%s\nInitial Quiz Summary: %s %s\n\n", getString(), quizString,
-				_IntroString);
+		if (_printedSomething) {
+			System.out.printf("\n\n");
+		}
+		_printedSomething = true;
+		System.out.printf("%s\n%s\n\nInitial Quiz Summary: %s\n\n", getString(), _IntroString,
+				quizString);
 		long[] oldValues = storeValues();
 		/** Main loop: */
 		for (boolean keepGoing = true; keepGoing;) {
@@ -576,7 +549,11 @@ public class FlashCardsGame {
 			if (editProperties && madeChangesFrom(oldValues)) {
 				if (madeChangesFrom(oldValues)) {
 					updateProperties();
-					System.out.printf("\nProperties were manually adjusted to:\n%s\n", getString());
+					if (_printedSomething) {
+						System.out.print("\n\n");
+					}
+					_printedSomething = true;
+					System.out.printf("Properties were manually adjusted to:\n%s\n", getString());
 					reWritePropertiesFile();
 					oldValues = storeValues();
 				}
