@@ -38,7 +38,7 @@ Maybe, I will also study math with Lan.
  14.	mô tô:                                 	a car (m...)
 
  15.	ô tô:                                  	a car (o...)
- 16.	đang xem:                              	watch
+ 16.	đang xem:                              	to watch
  17.	anh trai:                              	older brother
  18.	chị gái:                               	older sister
  19.	và:                                    	and

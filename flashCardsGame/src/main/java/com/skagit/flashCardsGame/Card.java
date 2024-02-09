@@ -11,8 +11,8 @@ class Card {
 
 	Card(final int cardIndex, final String aSide, final String bSide) {
 		_cardIndex = cardIndex;
-		_aSide = aSide;
-		_bSide = bSide;
+		_aSide = FlashCardsGame.cleanUpString(aSide);
+		_bSide = FlashCardsGame.cleanUpString(bSide);
 		_comment = "";
 	}
 

@@ -37,7 +37,8 @@ public class FlashCardsGame {
 				_ReturnSymbol, _EditPropertiesSymbol);
 	}
 
-	private static final String _DelimiterRegEx = "[\n\r\t]+";
+	private final static String _WhiteSpace = "\s+";
+	private static final String _DelimiterRegEx = "(\s*\t\s*)+";
 
 	private final File _propertiesFile;
 	private final Properties _properties;
@@ -518,13 +519,13 @@ public class FlashCardsGame {
 					keepGoing = false;
 					break;
 				}
-				final String response = myLine.split(_DelimiterRegEx)[0].trim();
-				if (response.length() > 0 && response.charAt(0) == _EditPropertiesSymbol) {
+				final String response0 = myLine.split(_DelimiterRegEx)[0].trim();
+				if (response0.length() > 0 && response0.charAt(0) == _EditPropertiesSymbol) {
 					editProperties = true;
 					keepGoing = modifyProperties(sc);
 					break;
 				}
-				if (response.length() == 0) {
+				if (response0.length() == 0) {
 					System.out.printf("::%s:: Did you get it right (%c or Y/N)?\n", answer,
 							_ReturnSymbol);
 					final String myLine2 = sc.nextLine();
@@ -538,6 +539,8 @@ public class FlashCardsGame {
 						System.out.println("Try again.");
 					}
 				} else {
+					final String response = response0.replaceAll(FlashCardsGame._WhiteSpace, " ")
+							.trim();
 					if (response.equalsIgnoreCase(answer)) {
 						gotRightResponse = true;
 						break;
@@ -562,6 +565,10 @@ public class FlashCardsGame {
 				_quizPlus.reactToRightResponse(/* wasWrongAtLeastOnce= */nWrongResponses > 0);
 			}
 		}
+	}
+
+	static String cleanUpString(final String s) {
+		return s.replaceAll(_WhiteSpace, " ").trim();
 	}
 
 	public static void main(final String[] args) {
