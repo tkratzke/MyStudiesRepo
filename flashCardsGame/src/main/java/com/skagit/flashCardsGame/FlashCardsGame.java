@@ -18,6 +18,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 public class FlashCardsGame {
+
 	static final char _RtArrow = '\u2192';
 	static final char _LtArrow = '\u2190';
 	static final char _RtLtArrow = '\u2194';
@@ -215,47 +216,56 @@ public class FlashCardsGame {
 
 	private void announceAndClumpDuplicates() {
 		final int nCards = _cards.length;
-		final Comparator<Card> comparator = _quizIsA_B
-				? Card._ByASideOnly
-				: Card._ByBSideOnly;
-		final TreeMap<Card, ArrayList<Card>> kingToSlaves = new TreeMap<>(comparator);
-		for (int k = 0; k < nCards; ++k) {
-			final Card card = _cards[k];
-			final ArrayList<Card> slaves = kingToSlaves.get(card);
-			if (slaves != null) {
-				final Card oldCard = kingToSlaves.ceilingKey(card);
-				if (_printedSomething) {
-					System.out.printf("\n\n");
-				}
-				_printedSomething = true;
-				System.out.printf("Duplicate %s:\n%s\n%s", _quizIsA_B ? "A-Side" : "B-Side",
-						oldCard.getString(), card.getString());
-				slaves.add(card);
-				_cards[k] = null;
+		for (int iPass = 0; iPass < 2; ++iPass) {
+			/** If _quizIsA_B, we want to do the A-side second. */
+			final Comparator<Card> comparator;
+			final String sideBeingChecked;
+			if (iPass == 1) {
+				comparator = _quizIsA_B ? Card._ByASideOnly : Card._ByBSideOnly;
+				sideBeingChecked = _quizIsA_B ? "A-Side" : "B-Side";
 			} else {
-				kingToSlaves.put(card, new ArrayList<>());
+				comparator = _quizIsA_B ? Card._ByBSideOnly : Card._ByASideOnly;
+				sideBeingChecked = _quizIsA_B ? "B-Side" : "A-Side";
 			}
-		}
-		final Card[] newCards = new Card[nCards];
-		for (int k0 = 0, k1 = 0; k0 < nCards; ++k0) {
-			final Card card = _cards[k0];
-			if (card == null) {
-				/** The card formerly at k0 is now somebody's slave. */
-				continue;
+			final TreeMap<Card, ArrayList<Card>> kingToSlaves = new TreeMap<>(comparator);
+			for (int k = 0; k < nCards; ++k) {
+				final Card card = _cards[k];
+				final ArrayList<Card> slaves = kingToSlaves.get(card);
+				if (slaves != null) {
+					final Card oldCard = kingToSlaves.ceilingKey(card);
+					if (_printedSomething) {
+						System.out.printf("\n\n");
+					}
+					_printedSomething = true;
+					System.out.printf("Duplicate %s:\n%s\n%s", sideBeingChecked,
+							oldCard.getString(), card.getString());
+					slaves.add(card);
+					_cards[k] = null;
+				} else {
+					kingToSlaves.put(card, new ArrayList<>());
+				}
 			}
-			card._cardIndex = k1;
-			newCards[k1] = card;
-			++k1;
-			final ArrayList<Card> slaves = kingToSlaves.get(card);
-			final int nSlaves = slaves.size();
-			for (int k2 = 0; k2 < nSlaves; ++k2) {
-				final Card slave = slaves.get(k2);
-				slave._cardIndex = k1;
-				newCards[k1] = slave;
+			final Card[] newCards = new Card[nCards];
+			for (int k0 = 0, k1 = 0; k0 < nCards; ++k0) {
+				final Card card = _cards[k0];
+				if (card == null) {
+					/** The card formerly at k0 is now somebody's slave. */
+					continue;
+				}
+				card._cardIndex = k1;
+				newCards[k1] = card;
 				++k1;
+				final ArrayList<Card> slaves = kingToSlaves.get(card);
+				final int nSlaves = slaves.size();
+				for (int k2 = 0; k2 < nSlaves; ++k2) {
+					final Card slave = slaves.get(k2);
+					slave._cardIndex = k1;
+					newCards[k1] = slave;
+					++k1;
+				}
 			}
+			System.arraycopy(newCards, 0, _cards, 0, nCards);
 		}
-		System.arraycopy(newCards, 0, _cards, 0, nCards);
 	}
 
 	void updateProperties() {
@@ -373,8 +383,8 @@ public class FlashCardsGame {
 		return fieldsToBoolean(fields, lastResort);
 	}
 
-	static TypeOfDecay keyToTypeOfDecay(final Properties properties, final String key,
-			final TypeOfDecay lastResort) {
+	static QuizGenerator.TypeOfDecay keyToTypeOfDecay(final Properties properties,
+			final String key, final QuizGenerator.TypeOfDecay lastResort) {
 		final String s = keyToString(properties, key);
 		final String[] fields = s.split("\s");
 		return fieldsToTypeOfDecay(fields, lastResort);
@@ -417,10 +427,11 @@ public class FlashCardsGame {
 		return lastResort;
 	}
 
-	static TypeOfDecay fieldsToTypeOfDecay(final String[] fields,
-			final TypeOfDecay lastResort) {
+	static QuizGenerator.TypeOfDecay fieldsToTypeOfDecay(final String[] fields,
+			final QuizGenerator.TypeOfDecay lastResort) {
 		for (final String field : fields) {
-			for (final TypeOfDecay typeOfDecay : TypeOfDecay.values()) {
+			for (final QuizGenerator.TypeOfDecay typeOfDecay : QuizGenerator.TypeOfDecay
+					.values()) {
 				if (field.equalsIgnoreCase(typeOfDecay.name())) {
 					return typeOfDecay;
 				}
@@ -470,13 +481,13 @@ public class FlashCardsGame {
 		/** Main loop: */
 		for (boolean keepGoing = true; keepGoing;) {
 			nCards = _cards.length;
-			final QuizPlusTransition quizPlusTransition = _quizGenerator.reactToQuizPlus(nCards,
-					_quizPlus);
+			final QuizGenerator.QuizPlusTransition quizPlusTransition = _quizGenerator
+					.reactToQuizPlus(nCards, _quizPlus);
 			switch (quizPlusTransition._typeOfChange) {
 				case LOSS :
 				case WIN :
 					final String winLossString;
-					if (quizPlusTransition._typeOfChange == TypeOfChange.LOSS) {
+					if (quizPlusTransition._typeOfChange == QuizGenerator.TypeOfChange.LOSS) {
 						winLossString = "Critical Only:";
 					} else {
 						if (quizPlusTransition._oldQuizPlus._criticalQuizIndicesOnly) {

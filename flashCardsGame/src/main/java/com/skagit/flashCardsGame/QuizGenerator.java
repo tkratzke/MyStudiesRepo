@@ -5,6 +5,26 @@ import java.util.Properties;
 import java.util.Random;
 
 public class QuizGenerator {
+	static enum TypeOfDecay {
+		EXPONENTIAL, LINEAR, NONE
+	}
+
+	static enum TypeOfChange {
+		WIN, LOSS, ADJUST, NULL
+	}
+
+	static class QuizPlusTransition {
+		public final QuizPlus _oldQuizPlus;
+		public final QuizPlus _newQuizPlus;
+		public final QuizGenerator.TypeOfChange _typeOfChange;
+		public QuizPlusTransition(final QuizPlus oldQuizPlus, final QuizPlus newQuizPlus,
+				final QuizGenerator.TypeOfChange typeOfChange) {
+			_oldQuizPlus = oldQuizPlus;
+			_newQuizPlus = newQuizPlus;
+			_typeOfChange = typeOfChange;
+		}
+	}
+
 	/**
 	 * The following fields are "properties." Only _topCardIndex changes. _r is final and
 	 * its seed is never reset.
@@ -82,7 +102,7 @@ public class QuizGenerator {
 		for (int k = 0; k < nDifferentWordsInQuiz; ++k) {
 			criticalQuizIndices[k] = array1Len + k;
 		}
-		return new QuizPlus(quiz, criticalQuizIndices, _failureRateI);
+		return new QuizPlus(quiz, criticalQuizIndices);
 	}
 
 	private int[] createArray2(final int nNewWords, final int nRecentWords) {
@@ -94,7 +114,7 @@ public class QuizGenerator {
 		}
 		/**
 		 * If there are more to fill in than we have number of choices for, or we are not
-		 * using exponential draws, then cycle through the choices.
+		 * using exponential or linear draws, then cycle through the choices.
 		 */
 		final int topChoiceForSlots = _topCardIndex - nNewWords;
 		final int nChoicesForSlots = topChoiceForSlots + 1;
@@ -103,35 +123,52 @@ public class QuizGenerator {
 				array[nNewWords + k] = topChoiceForSlots - (k % nChoicesForSlots);
 			}
 		} else {
-			final double[] vectorOfCums = computeVectorOfCums(nRecentWords, nChoicesForSlots);
+			final double[] cums = computeCums(nRecentWords, nChoicesForSlots);
 			for (int k = 0; k < nRecentWords; ++k) {
 				final double cum = _r.nextDouble();
-				final int cardIndex = selectCardIndex(vectorOfCums, cum);
-				/** Zero out the probability of picking cardIndex again. */
-				vectorOfCums[cardIndex] = cardIndex == 0 ? 0d : vectorOfCums[cardIndex - 1];
+				final int cardIndex = selectCardIndex(cums, cum);
 				array[nNewWords + k] = cardIndex;
+				killCardIndex(cums, cardIndex);
 			}
 		}
 		return array;
 	}
 
-	private static int selectCardIndex(final double[] vectorOfCums, final double cum) {
-		if (cum <= vectorOfCums[0]) {
+	private static int selectCardIndex(final double[] cums, final double cum) {
+		if (cum <= cums[0]) {
 			return 0;
-		} else if (cum >= vectorOfCums[vectorOfCums.length - 1]) {
-			return vectorOfCums.length - 1;
+		} else if (cum >= cums[cums.length - 1]) {
+			return cums.length - 1;
 		}
-		final int cardIndex = Arrays.binarySearch(vectorOfCums, cum);
+		final int cardIndex = Arrays.binarySearch(cums, cum);
 		if (cardIndex >= 0) {
 			return cardIndex;
 		}
 		return -cardIndex - 1;
 	}
 
-	/** Fills in a vector of cums, using exponential or linear decay. */
-	private double[] computeVectorOfCums(final int nRecentWords,
-			final int nChoicesForSlots) {
-		final double[] vectorOfProbs = new double[nChoicesForSlots];
+	private static void killCardIndex(final double[] cums, final int cardIndex) {
+		final int nCums = cums.length;
+		final double probToDistribute = cums[cardIndex]
+				- (cardIndex == 0 ? 0d : cums[cardIndex - 1]);
+		final double scale = 1d / (1d - probToDistribute);
+		/** Convert cums to probs. */
+		for (int k = nCums - 1; k >= 0; --k) {
+			if (k == cardIndex) {
+				cums[k] = 0d;
+			} else {
+				cums[k] = scale * (cums[k] - (k == 0 ? 0d : cums[k - 1]));
+			}
+		}
+		/** Convert cums from probs back to cums. */
+		for (int k = 1; k < nCums; ++k) {
+			cums[k] += cums[k - 1];
+		}
+	}
+
+	/** Creates cums, using exponential or linear decay. */
+	private double[] computeCums(final int nRecentWords, final int nChoicesForSlots) {
+		final double[] vector = new double[nChoicesForSlots];
 		final double proportionForDregs = 1d - _percentageForRecentsI / 100d;
 		final int nDregs = nChoicesForSlots - nRecentWords;
 		final double pForDregs;
@@ -143,7 +180,6 @@ public class QuizGenerator {
 			return null;
 		}
 
-		double sumOfProbs = 0d;
 		for (int k = 0; k < nDregs; ++k) {
 			final double p;
 			if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
@@ -153,10 +189,9 @@ public class QuizGenerator {
 			} else {
 				return null;
 			}
-			vectorOfProbs[k] = p;
-			sumOfProbs += p;
+			vector[k] = p;
 		}
-		final double proportionForRecentWords = 1d - sumOfProbs;
+		final double proportionForRecentWords = 1d - proportionForDregs;
 		final double pForRecentWords;
 		if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
 			pForRecentWords = computePForExponential(nRecentWords, proportionForRecentWords);
@@ -174,24 +209,19 @@ public class QuizGenerator {
 			} else {
 				return null;
 			}
-			vectorOfProbs[nDregs + k] = p;
-			sumOfProbs += p;
+			vector[nDregs + k] = p;
 		}
-		/**
-		 * Make vectorOfCums from vectorOfProbs. Since we can do this in place, we'll just
-		 * rename it.
-		 */
-		final double[] vectorOfCums = vectorOfProbs;
+		/** Convert vector from probs to cums. */
 		for (int k = 1; k < nChoicesForSlots; ++k) {
-			vectorOfCums[k] += vectorOfCums[k - 1];
+			vector[k] += vector[k - 1];
 		}
-		/** Normalize the cums. */
-		final double f = vectorOfCums[nChoicesForSlots - 1];
+		/** Normalize; should be unnecessary. */
+		final double f = vector[nChoicesForSlots - 1];
 		for (int k = 0; k < nChoicesForSlots; ++k) {
-			vectorOfCums[k] /= f;
+			vector[k] /= f;
 		}
-		vectorOfCums[nChoicesForSlots - 1] = 1d;
-		return vectorOfCums;
+		vector[nChoicesForSlots - 1] = 1d;
+		return vector;
 	}
 
 	private static double computePForExponential(final int n,
@@ -227,22 +257,17 @@ public class QuizGenerator {
 		return (tooLow + tooHigh) / 2d;
 	}
 
-	private static double computePForLinear(final int n, final double target) {
+	private static double computePForLinear(final int n, final double targetProportion) {
 		if (n <= 0) {
-			return target == 0d ? 0d : Double.NaN;
+			return targetProportion == 0d ? 0d : Double.NaN;
 		}
 		/**
 		 * <pre>
 		 * n(n + 1)/2 * p = target
 		 * p = target * 2/(n(n + 1))
-		 * p = target * 2/(n*n + n))
 		 * </pre>
 		 */
-		return target * (2d / (n * n + n));
-	}
-
-	int getFailureRateI() {
-		return _failureRateI;
+		return targetProportion * 2d / (n * (n + 1));
 	}
 
 	String getTypeIIPrompt() {
@@ -263,7 +288,7 @@ public class QuizGenerator {
 			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.ADJUST);
 		}
 		_adjustCurrentQuiz = false;
-		if (quizPlus.haveWon()) {
+		if (quizPlus.haveWon(_failureRateI)) {
 			final QuizPlus newQuizPlus;
 			if (!quizPlus._criticalQuizIndicesOnly) {
 				_topCardIndex += _maxNNewWords;
@@ -275,7 +300,7 @@ public class QuizGenerator {
 			}
 			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.WIN);
 		}
-		if (quizPlus.haveLost()) {
+		if (quizPlus.haveLost(_failureRateI)) {
 			final QuizPlus newQuizPlus = new QuizPlus(quizPlus);
 			newQuizPlus.adjustQuizForLoss(_r);
 			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.LOSS);

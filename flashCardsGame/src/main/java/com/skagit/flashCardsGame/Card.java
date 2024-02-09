@@ -80,8 +80,7 @@ class Card {
 		if (o == null || !(o instanceof Card)) {
 			return false;
 		}
-		final Card card = (Card) o;
-		return card._aSide.equalsIgnoreCase(_aSide) && card._bSide.equalsIgnoreCase(_bSide);
+		return _ByAThenB.compare(this, (Card) o) == 0;
 	}
 
 	String getString() {

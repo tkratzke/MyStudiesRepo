@@ -14,7 +14,6 @@ class QuizPlus implements Serializable {
 	final int[] _fullQuiz;
 	final int[] _origFullQuiz;
 	private final int[] _criticalQuizIndices;
-	private final int _failureRateI;
 	private int _currentQuizIndex;
 	private int _nWrongs, _nRights;
 	boolean _criticalQuizIndicesOnly;
@@ -36,13 +35,11 @@ class QuizPlus implements Serializable {
 		}
 	}
 
-	QuizPlus(final int[] fullQuiz, final int[] criticalQuizIndices,
-			final int failureRateI) {
+	QuizPlus(final int[] fullQuiz, final int[] criticalQuizIndices) {
 		_fullQuiz = fullQuiz;
 		_origFullQuiz = _fullQuiz.clone();
 		_criticalQuizIndices = criticalQuizIndices;
 		Arrays.sort(_criticalQuizIndices);
-		_failureRateI = Math.max(0, failureRateI);
 		_cardIndexToNWrongsAndHits = new HashMap<>();
 		resetForFullMode();
 	}
@@ -51,7 +48,6 @@ class QuizPlus implements Serializable {
 		_fullQuiz = quizPlus._fullQuiz.clone();
 		_origFullQuiz = quizPlus._origFullQuiz.clone();
 		_criticalQuizIndices = quizPlus._criticalQuizIndices.clone();
-		_failureRateI = quizPlus._failureRateI;
 		_currentQuizIndex = quizPlus._currentQuizIndex;
 		_nWrongs = quizPlus._nWrongs;
 		_nRights = quizPlus._nRights;
@@ -127,23 +123,23 @@ class QuizPlus implements Serializable {
 		_firstWrongCardIndex = -1;
 	}
 
-	boolean haveWon() {
+	boolean haveWon(final int failureRateI) {
 		/**
 		 * We need a wrong rate that is <= failureRateI / 2 even assuming that we'll get the
 		 * rest of the critical quiz indices wrong.
 		 */
 		final int nCriticalQuizIndices = _criticalQuizIndices.length;
 		final int nWrongs = nCriticalQuizIndices - _nRights;
-		return 200 * nWrongs <= _failureRateI * nCriticalQuizIndices;
+		return 200 * nWrongs <= failureRateI * nCriticalQuizIndices;
 	}
 
-	boolean haveLost() {
+	boolean haveLost(final int failureRateI) {
 		/**
 		 * We need a wrong rate that is >= failureRateI even assuming that we'll get the rest
 		 * of the critical quiz indices right.
 		 */
 		final int nCriticalQuizIndices = _criticalQuizIndices.length;
-		return 100 * _nWrongs >= _failureRateI * nCriticalQuizIndices;
+		return 100 * _nWrongs >= failureRateI * nCriticalQuizIndices;
 	}
 
 	void adjustQuizForLoss(final Random r) {
