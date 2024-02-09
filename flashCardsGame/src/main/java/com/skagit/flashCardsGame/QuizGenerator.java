@@ -1,7 +1,6 @@
 package com.skagit.flashCardsGame;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Random;
 
@@ -16,6 +15,7 @@ public class QuizGenerator {
 	private final int _nRepeatsOfNew;
 	private final TypeOfDecay _typeOfDecay;
 	private final int _failureRateI;
+	private final int _percentageForRecentsI;
 
 	private final Random _r;
 
@@ -29,7 +29,9 @@ public class QuizGenerator {
 		_maxNRecentWords = FlashCardsGame.keyToInt(properties, "Number.Of.Recent.Words", 3);
 		_typeOfDecay = FlashCardsGame.keyToTypeOfDecay(properties, "Type.Of.Decay",
 				TypeOfDecay.NONE);
-		_failureRateI = FlashCardsGame.keyToPercentI(properties, "Failure.Rate", 25);
+		_failureRateI = FlashCardsGame.keyToPercentI(properties, "Failure.Rate", 50);
+		_percentageForRecentsI = FlashCardsGame.keyToPercentI(properties,
+				"Percentage.For.Recents", 50);
 		_r = new Random();
 		_r.setSeed(seed);
 		_adjustCurrentQuiz = false;
@@ -43,6 +45,8 @@ public class QuizGenerator {
 		properties.put("Number.Of.Recent.Words", Integer.toString(_maxNRecentWords));
 		properties.put("Type.Of.Decay", _typeOfDecay.name());
 		properties.put("Failure.Rate", Integer.toString(_failureRateI) + '%');
+		properties.put("Percentage.For.Recents",
+				Integer.toString(_percentageForRecentsI) + '%');
 	}
 
 	long[] getPropertyValues() {
@@ -99,17 +103,13 @@ public class QuizGenerator {
 				array[nNewWords + k] = topChoiceForSlots - (k % nChoicesForSlots);
 			}
 		} else {
-			final HashSet<Integer> alreadyUsed = new HashSet<>();
 			final double[] vectorOfCums = computeVectorOfCums(nRecentWords, nChoicesForSlots);
 			for (int k = 0; k < nRecentWords; ++k) {
-				for (int kk = 0; kk <= 5; ++kk) {
-					final double cum = _r.nextDouble();
-					final int cardIndex = selectCardIndex(vectorOfCums, cum);
-					if (kk == 5 || alreadyUsed.add(cardIndex)) {
-						array[nNewWords + k] = cardIndex;
-						break;
-					}
-				}
+				final double cum = _r.nextDouble();
+				final int cardIndex = selectCardIndex(vectorOfCums, cum);
+				/** Zero out the probability of picking cardIndex again. */
+				vectorOfCums[cardIndex] = cardIndex == 0 ? 0d : vectorOfCums[cardIndex - 1];
+				array[nNewWords + k] = cardIndex;
 			}
 		}
 		return array;
@@ -128,18 +128,17 @@ public class QuizGenerator {
 		return -cardIndex - 1;
 	}
 
-	static final double _ProportionForDregs = 0.5;
-
 	/** Fills in a vector of cums, using exponential or linear decay. */
 	private double[] computeVectorOfCums(final int nRecentWords,
 			final int nChoicesForSlots) {
 		final double[] vectorOfProbs = new double[nChoicesForSlots];
+		final double proportionForDregs = 1d - _percentageForRecentsI / 100d;
 		final int nDregs = nChoicesForSlots - nRecentWords;
 		final double pForDregs;
 		if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
-			pForDregs = computePForExponential(nDregs, _ProportionForDregs);
+			pForDregs = computePForExponential(nDregs, proportionForDregs);
 		} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
-			pForDregs = computePForLinear(nDregs, _ProportionForDregs);
+			pForDregs = computePForLinear(nDregs, proportionForDregs);
 		} else {
 			return null;
 		}
@@ -157,12 +156,12 @@ public class QuizGenerator {
 			vectorOfProbs[k] = p;
 			sumOfProbs += p;
 		}
-		final double targetForRecentWords = 1d - sumOfProbs;
+		final double proportionForRecentWords = 1d - sumOfProbs;
 		final double pForRecentWords;
 		if (_typeOfDecay == TypeOfDecay.EXPONENTIAL) {
-			pForRecentWords = computePForExponential(nRecentWords, targetForRecentWords);
+			pForRecentWords = computePForExponential(nRecentWords, proportionForRecentWords);
 		} else if (_typeOfDecay == TypeOfDecay.LINEAR) {
-			pForRecentWords = computePForLinear(nRecentWords, targetForRecentWords);
+			pForRecentWords = computePForLinear(nRecentWords, proportionForRecentWords);
 		} else {
 			return null;
 		}
@@ -195,22 +194,23 @@ public class QuizGenerator {
 		return vectorOfCums;
 	}
 
-	private static double computePForExponential(final int n, final double target) {
-		if (target < 0d) {
+	private static double computePForExponential(final int n,
+			final double targetProportion) {
+		if (targetProportion < 0d) {
 			return Double.NaN;
 		}
 		if (n <= 0) {
-			return target == 0d ? 0d : Double.NaN;
+			return targetProportion == 0d ? 0d : Double.NaN;
 		}
 		if (n == 1) {
-			return target;
+			return targetProportion;
 		}
-		if (target == 0d) {
+		if (targetProportion == 0d) {
 			return 0d;
 		}
 		double tooLow = 0d;
 		/** Since n >=2, target is certainly too high. */
-		double tooHigh = target;
+		double tooHigh = targetProportion;
 		while (tooHigh > tooLow * (1d + 1.e-10)) {
 			final double thisP = (tooLow + tooHigh) / 2d;
 			double v = (Math.pow(thisP, n + 1) - thisP) / (thisP - 1d);
@@ -218,7 +218,7 @@ public class QuizGenerator {
 				/** thisP is too close to 1. So the computation of v is simple. */
 				v = n;
 			}
-			if (v > target) {
+			if (v > targetProportion) {
 				tooHigh = thisP;
 			} else {
 				tooLow = thisP;
