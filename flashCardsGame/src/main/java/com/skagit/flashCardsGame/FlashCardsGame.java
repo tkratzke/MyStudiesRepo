@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Properties;
@@ -43,7 +44,6 @@ public class FlashCardsGame {
 
 	boolean _quizIsA_B;
 
-	final TreeMap<Card, Card> _cardMap;
 	Card[] _cards;
 
 	final QuizGenerator _quizGenerator;
@@ -68,18 +68,6 @@ public class FlashCardsGame {
 		/** Write out _propertiesFile. */
 		reWritePropertiesFile();
 
-		/** Get the Cards. */
-		_cardMap = new TreeMap<Card, Card>(new Comparator<>() {
-
-			@Override
-			public int compare(final Card card0, final Card card1) {
-				final int compareValue = card0._aSide.compareToIgnoreCase(card1._aSide);
-				if (compareValue != 0) {
-					return compareValue;
-				}
-				return card0._bSide.compareToIgnoreCase(card1._bSide);
-			}
-		});
 		loadCards();
 		_quizGenerator = new QuizGenerator(_properties, /* nCards= */_cards.length, _Seed);
 		_quizPlus = null;
@@ -149,7 +137,18 @@ public class FlashCardsGame {
 	 * </pre>
 	 */
 	private void loadCards() {
-		_cardMap.clear();
+		/** Get the Cards. */
+		final TreeMap<Card, Card> cardMap = new TreeMap<Card, Card>(new Comparator<>() {
+
+			@Override
+			public int compare(final Card card0, final Card card1) {
+				final int compareValue = card0._aSide.compareToIgnoreCase(card1._aSide);
+				if (compareValue != 0) {
+					return compareValue;
+				}
+				return card0._bSide.compareToIgnoreCase(card1._bSide);
+			}
+		});
 		final File cardsFile = getCardsFile();
 		try (BufferedReader in = new BufferedReader(
 				new InputStreamReader(new FileInputStream(cardsFile), "UTF-8"))) {
@@ -174,7 +173,7 @@ public class FlashCardsGame {
 					final String line = fileSc.nextLine().trim();
 					final String[] fields = line.split("\\s*\\t\\s*");
 					final int nFields = fields.length;
-					final int cardIndex = _cardMap.size();
+					final int cardIndex = cardMap.size();
 					if (nFields < 2) {
 						if (comment.length() == 0) {
 							comment = line;
@@ -196,13 +195,13 @@ public class FlashCardsGame {
 					final Card newCard = new Card(cardIndex, aSide, bSide);
 					comment = comment.trim();
 					newCard._comment = comment;
-					final Card oldCard = _cardMap.get(newCard);
+					final Card oldCard = cardMap.get(newCard);
 					if (oldCard != null) {
 						System.out.printf("\n\nMerging\n%s into\n%s", newCard.getString(),
 								oldCard.getString());
 						oldCard._comment = (oldCard._comment + "\n" + comment).trim();
 					} else {
-						_cardMap.put(newCard, newCard);
+						cardMap.put(newCard, newCard);
 					}
 					comment = "";
 				}
@@ -210,8 +209,8 @@ public class FlashCardsGame {
 			}
 		} catch (final IOException e) {
 		}
-		final int nCards = _cardMap.size();
-		_cards = _cardMap.keySet().toArray(new Card[nCards]);
+		final int nCards = cardMap.size();
+		_cards = cardMap.keySet().toArray(new Card[nCards]);
 		Arrays.sort(_cards, new Comparator<>() {
 
 			@Override
@@ -223,24 +222,69 @@ public class FlashCardsGame {
 			}
 		});
 		if (nCards > 0) {
+			announceAndClumpDuplicates();
 			writeCardsToDisk();
-			announceDuplicates();
 		}
 	}
 
-	private void announceDuplicates() {
+	static final Comparator<Card> _CheckForADups = new Comparator<>() {
+
+		@Override
+		public int compare(final Card card0, final Card card) {
+			return card0._aSide.compareTo(card._aSide);
+		}
+	};
+
+	static final Comparator<Card> _CheckForBDups = new Comparator<>() {
+
+		@Override
+		public int compare(final Card card0, final Card card) {
+			return card0._bSide.compareTo(card._bSide);
+		}
+	};
+
+	private void announceAndClumpDuplicates() {
 		final int nCards = _cards.length;
 		for (int iPass = 0; iPass < 2; ++iPass) {
-			final Comparator<Card> comparator = iPass == 0 ? Card._ForAtoB : Card._ForBtoA;
+			final Comparator<Card> comparator = iPass == 0 ? _CheckForADups : _CheckForBDups;
 			final TreeMap<Card, Card> map = new TreeMap<>(comparator);
+			final TreeMap<Card, ArrayList<Card>> kings = new TreeMap<>(comparator);
 			for (int k = 0; k < nCards; ++k) {
 				final Card card = _cards[k];
-				final Card oldCard = map.put(card, card);
-				if (oldCard != null) {
+				final Card oldCard = map.ceilingKey(card);
+				if (oldCard != null && comparator.compare(oldCard, card) == 0) {
 					System.out.printf("\n\nDuplicate %s:\n%s and \n%s",
 							iPass == 0 ? "A-Side" : "B-Side", card.getString(), oldCard.getString());
+					ArrayList<Card> slaves = kings.get(oldCard);
+					if (slaves == null) {
+						slaves = new ArrayList<>();
+						kings.put(oldCard, slaves);
+					}
+					slaves.add(card);
+					_cards[k] = null;
 				}
 			}
+			final Card[] newCards = new Card[nCards];
+			for (int k0 = 0, k1 = 0; k0 < nCards; ++k0) {
+				final Card card = _cards[k0];
+				if (card == null) {
+					continue;
+				}
+				card._cardIndex = k1;
+				newCards[k1] = card;
+				++k1;
+				final ArrayList<Card> slaves = kings.get(card);
+				if (slaves != null) {
+					final int nSlaves = slaves.size();
+					for (int k2 = 0; k2 < nSlaves; ++k2) {
+						final Card slave = slaves.get(k2);
+						slave._cardIndex = k1;
+						newCards[k1] = slave;
+						++k1;
+					}
+				}
+			}
+			System.arraycopy(newCards, 0, _cards, 0, nCards);
 		}
 	}
 

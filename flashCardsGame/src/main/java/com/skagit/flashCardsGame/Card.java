@@ -1,26 +1,8 @@
 package com.skagit.flashCardsGame;
 
-import java.util.Comparator;
-
 class Card {
 
-	static final Comparator<Card> _ForAtoB = new Comparator<>() {
-
-		@Override
-		public int compare(final Card card0, final Card card) {
-			return card0._aSide.compareTo(card._aSide);
-		}
-	};
-
-	static final Comparator<Card> _ForBtoA = new Comparator<>() {
-
-		@Override
-		public int compare(final Card card0, final Card card) {
-			return card0._bSide.compareTo(card._bSide);
-		}
-	};
-
-	final int _cardIndex;
+	int _cardIndex;
 	final String _aSide;
 	final String _bSide;
 	String _comment;
