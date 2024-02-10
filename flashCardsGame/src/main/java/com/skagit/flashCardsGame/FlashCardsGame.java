@@ -53,9 +53,9 @@ public class FlashCardsGame {
 
 	boolean _printedSomething;
 
-	FlashCardsGame(final Scanner sc, final String propertiesPath) {
+	FlashCardsGame(final Scanner sc, final File propertiesFile) {
 		/** Load the properties. */
-		_propertiesFile = new File(propertiesPath);
+		_propertiesFile = propertiesFile;
 		_properties = new Properties();
 		try (
 				InputStreamReader in = new InputStreamReader(new FileInputStream(_propertiesFile),
@@ -75,6 +75,7 @@ public class FlashCardsGame {
 		_printedSomething = false;
 		loadCards();
 		_quizGenerator = new QuizGenerator(_properties, /* nCards= */_cards.length, _Seed);
+		_quizGenerator.shuffleCards(_cards);
 		_quizPlus = null;
 	}
 
@@ -89,7 +90,7 @@ public class FlashCardsGame {
 	private void writeCardsToDisk() {
 		final int nCards = _cards.length;
 		final int nDigits = (int) (Math.log10(nCards) + 1d);
-		final String cardIndexFormat = String.format("%%%dd.", nDigits);
+		final String cardNumberFormat = String.format("%%%dd.", nDigits);
 		int maxASideLen = 0;
 		for (final Card card : _cards) {
 			maxASideLen = Math.max(maxASideLen, card._aSide.trim().length());
@@ -99,7 +100,7 @@ public class FlashCardsGame {
 		try (PrintWriter pw = new PrintWriter(cardsFile)) {
 			for (int k = 0; k < nCards; ++k) {
 				final Card card = _cards[k];
-				final String cardIndexString = String.format(cardIndexFormat, card._cardIndex);
+				final String cardNumberString = String.format(cardNumberFormat, card._cardNumber);
 				final String aSideString = String.format(aSideFormat, card._aSide + ":");
 				String comment = card._comment;
 				boolean printedBlankLine = false;
@@ -119,7 +120,7 @@ public class FlashCardsGame {
 						myPrintln(pw, comment);
 					}
 				}
-				final String s = String.format("%s\t%s\t%s", cardIndexString, aSideString,
+				final String s = String.format("%s\t%s\t%s", cardNumberString, aSideString,
 						card._bSide);
 				myPrint(pw, s);
 			}
@@ -167,7 +168,7 @@ public class FlashCardsGame {
 					final String line = fileSc.nextLine().trim();
 					final String[] fields = line.split("\\s*\\t\\s*");
 					final int nFields = fields.length;
-					final int cardIndex = cardMap.size();
+					final int cardNumber = cardMap.size();
 					if (nFields < 2) {
 						if (comment.length() == 0) {
 							comment = line;
@@ -186,7 +187,7 @@ public class FlashCardsGame {
 					}
 					final String aSide = fieldA.trim();
 					final String bSide = fieldB.trim();
-					final Card newCard = new Card(cardIndex, aSide, bSide);
+					final Card newCard = new Card(cardNumber, aSide, bSide);
 					comment = comment.trim();
 					newCard._comment = comment;
 					final Card oldCard = cardMap.get(newCard);
@@ -252,14 +253,14 @@ public class FlashCardsGame {
 					/** The card formerly at k0 is now somebody's slave. */
 					continue;
 				}
-				card._cardIndex = k1;
+				card._cardNumber = k1;
 				newCards[k1] = card;
 				++k1;
 				final ArrayList<Card> slaves = kingToSlaves.get(card);
 				final int nSlaves = slaves.size();
 				for (int k2 = 0; k2 < nSlaves; ++k2) {
 					final Card slave = slaves.get(k2);
-					slave._cardIndex = k1;
+					slave._cardNumber = k1;
 					newCards[k1] = slave;
 					++k1;
 				}
@@ -298,8 +299,24 @@ public class FlashCardsGame {
 		}
 	}
 
-	final String getTypeIPrompt(final int cardIndex, final String clue) {
-		return String.format("%s (Q=Quit): ", _quizPlus.getTypeIPrompt(cardIndex, clue));
+	final String getTypeIPrompt(final int indexInCards, final String clue) {
+		String s = "";
+		final int currentIndexInQuiz = _quizPlus.getCurrentIndexInQuiz();
+		if (_quizPlus.isCriticalQuizIndex(currentIndexInQuiz)) {
+			s += "*";
+		}
+		final int cardNumber = _cards[indexInCards]._cardNumber;
+		final int quizLen = _quizPlus.getCurrentQuizLen();
+		s += String.format("%d of %d(IIC=%d,#%d)", currentIndexInQuiz + 1, quizLen,
+				indexInCards, cardNumber);
+		final int nRights = _quizPlus.getNRights();
+		final int nWrongs = _quizPlus.getNWrongs();
+		final int nTrials = nRights + nWrongs;
+		if (nTrials > 0) {
+			final long successRateI = Math.round((100d * nRights) / nTrials);
+			s += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%)", nRights, nWrongs, successRateI);
+		}
+		return s + String.format(" (Q=Quit): %s ", clue);
 	}
 
 	final String getTypeIIPrompt() {
@@ -376,6 +393,13 @@ public class FlashCardsGame {
 		return fieldsToInt(fields, lastResort);
 	}
 
+	static long keyToLong(final Properties properties, final String key,
+			final long lastResort) {
+		final String s = keyToString(properties, key);
+		final String[] fields = s.split("\s");
+		return fieldsToLong(fields, lastResort);
+	}
+
 	static boolean keyToBoolean(final Properties properties, final String key,
 			final boolean lastResort) {
 		final String s = keyToString(properties, key);
@@ -401,6 +425,16 @@ public class FlashCardsGame {
 		for (final String field : fields) {
 			try {
 				return Integer.parseInt(field);
+			} catch (final NumberFormatException e) {
+			}
+		}
+		return lastResort;
+	}
+
+	static long fieldsToLong(final String[] fields, final long lastResort) {
+		for (final String field : fields) {
+			try {
+				return Long.parseLong(field);
 			} catch (final NumberFormatException e) {
 			}
 		}
@@ -514,11 +548,11 @@ public class FlashCardsGame {
 				oldValues = storeValues();
 			}
 			_quizPlus = quizPlusTransition._newQuizPlus;
-			final int cardIndex = _quizPlus.getCurrentQuizCardIndex();
-			final Card card = _cards[cardIndex];
+			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
+			final Card card = _cards[indexInCards];
 			final String clue = _quizIsA_B ? card._aSide : card._bSide;
 			final String answer = _quizIsA_B ? card._bSide : card._aSide;
-			final String typeIPrompt = getTypeIPrompt(cardIndex, clue);
+			final String typeIPrompt = getTypeIPrompt(indexInCards, clue);
 			boolean gotRightResponse = false;
 			int nWrongResponses = 0;
 			boolean editProperties = false;
@@ -582,21 +616,30 @@ public class FlashCardsGame {
 		return s.replaceAll(_WhiteSpace, " ").trim();
 	}
 
+	final static private String _DefaultPropertiesFilePath = "Data/Tran";
+
 	public static void main(final String[] args) {
-		try (Scanner sc = new Scanner(System.in)) {
-			final String arg0 = args[0];
-			final String propertiesPath;
-			if (arg0.toLowerCase().endsWith(".properties")) {
-				propertiesPath = arg0;
+		final int nArgs = args.length;
+		final String propertiesFilePath;
+		if (nArgs > 0 && args[0].length() > 0) {
+			propertiesFilePath = args[0];
+		} else {
+			propertiesFilePath = _DefaultPropertiesFilePath;
+		}
+		final File propertiesFile;
+		if (propertiesFilePath.toLowerCase().endsWith(".properties")) {
+			propertiesFile = new File(propertiesFilePath);
+		} else {
+			final int lastDotIndex = propertiesFilePath.lastIndexOf('.');
+			if (lastDotIndex == -1) {
+				propertiesFile = new File(propertiesFilePath + ".properties");
 			} else {
-				final int lastDotIndex = arg0.lastIndexOf('.');
-				if (lastDotIndex == -1) {
-					propertiesPath = arg0 + ".properties";
-				} else {
-					propertiesPath = arg0.substring(0, lastDotIndex) + ".properties";
-				}
+				propertiesFile = new File(
+						propertiesFilePath.substring(0, lastDotIndex) + ".properties");
 			}
-			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, propertiesPath);
+		}
+		try (Scanner sc = new Scanner(System.in)) {
+			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, propertiesFile);
 			flashCardsGame.mainLoop(sc);
 		} catch (final Exception e) {
 			e.printStackTrace();

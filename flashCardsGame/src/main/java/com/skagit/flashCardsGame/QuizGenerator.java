@@ -26,23 +26,24 @@ public class QuizGenerator {
 	}
 
 	/**
-	 * The following fields are "properties." Only _topCardIndex changes. _r is final and
+	 * The following fields are "properties." Only _topIndexInCards changes. _r is final and
 	 * its seed is never reset.
 	 */
-	private int _topCardIndex;
+	private int _topIndexInCards;
 	private final int _maxNNewWords;
 	private final int _maxNRecentWords;
 	private final int _nRepeatsOfNew;
 	private final TypeOfDecay _typeOfDecay;
 	private final int _failureRateI;
 	private final int _percentageForRecentsI;
+	private final long _shuffleCardsSeed;
 
 	private final Random _r;
 
 	private boolean _adjustCurrentQuiz;
 
 	QuizGenerator(final Properties properties, final int nCards, final long seed) {
-		_topCardIndex = FlashCardsGame.keyToInt(properties, "Top.Card.Index", 1);
+		_topIndexInCards = FlashCardsGame.keyToInt(properties, "Top.Card.Index", 1);
 		_maxNNewWords = FlashCardsGame.keyToInt(properties, "Number.Of.New.Words", 1);
 		_nRepeatsOfNew = FlashCardsGame.keyToInt(properties,
 				"Number.Of.Times.To.Show.New.Words", 1);
@@ -50,6 +51,7 @@ public class QuizGenerator {
 		_typeOfDecay = FlashCardsGame.keyToTypeOfDecay(properties, "Type.Of.Decay",
 				TypeOfDecay.NONE);
 		_failureRateI = FlashCardsGame.keyToPercentI(properties, "Failure.Rate", 50);
+		_shuffleCardsSeed = FlashCardsGame.keyToLong(properties, "Shuffle.Cards.Seed", 0);
 		_percentageForRecentsI = FlashCardsGame.keyToPercentI(properties,
 				"Percentage.For.Recents", 50);
 		_r = new Random();
@@ -59,27 +61,47 @@ public class QuizGenerator {
 	}
 
 	void updateProperties(final Properties properties) {
-		properties.put("Top.Card.Index", Integer.toString(_topCardIndex));
+		properties.put("Top.Card.Index", Integer.toString(_topIndexInCards));
 		properties.put("Number.Of.New.Words", Integer.toString(_maxNNewWords));
 		properties.put("Number.Of.Times.To.Show.New.Words", Integer.toString(_nRepeatsOfNew));
 		properties.put("Number.Of.Recent.Words", Integer.toString(_maxNRecentWords));
 		properties.put("Type.Of.Decay", _typeOfDecay.name());
 		properties.put("Failure.Rate", Integer.toString(_failureRateI) + '%');
+		properties.put("Shuffle.Cards.Seed", Long.toString(_shuffleCardsSeed));
 		properties.put("Percentage.For.Recents",
 				Integer.toString(_percentageForRecentsI) + '%');
 	}
 
 	long[] getPropertyValues() {
-		return new long[]{_topCardIndex};
+		return new long[]{_topIndexInCards};
 	}
 
 	void correctQuizGeneratorProperties(final int nCards) {
-		_topCardIndex = Math.max(0, Math.min(_topCardIndex, nCards - 1));
+		_topIndexInCards = Math.max(0, Math.min(_topIndexInCards, nCards - 1));
+	}
+
+	public void shuffleCards(final Card[] cards) {
+		if (_shuffleCardsSeed == 0) {
+			return;
+		}
+		final Random r = new Random();
+		if (_shuffleCardsSeed > 0) {
+			r.setSeed(_shuffleCardsSeed);
+			while (Math.abs(r.nextLong()) < Long.MAX_VALUE / 10) {
+			}
+		}
+		final int nCards = cards.length;
+		for (int k = 0; k < nCards; ++k) {
+			final int kk = k + r.nextInt(nCards - k);
+			final Card card = cards[k];
+			cards[k] = cards[kk];
+			cards[kk] = card;
+		}
 	}
 
 	QuizPlus createNewQuizPlus(final int nCards) {
 		correctQuizGeneratorProperties(nCards);
-		final int nAvail = _topCardIndex + 1;
+		final int nAvail = _topIndexInCards + 1;
 		final int nNewWordsInQuiz = Math.min(nAvail - 1, _maxNNewWords);
 		final int nRecentWordsInQuiz = Math.min(_maxNRecentWords, nAvail - nNewWordsInQuiz);
 		final int nDifferentWordsInQuiz = nNewWordsInQuiz + nRecentWordsInQuiz;
@@ -87,7 +109,7 @@ public class QuizGenerator {
 		final int[] array1 = new int[array1Len];
 		final int[] temp = new int[_nRepeatsOfNew];
 		for (int k0 = 0; k0 < nNewWordsInQuiz; ++k0) {
-			Arrays.fill(temp, _topCardIndex - k0);
+			Arrays.fill(temp, _topIndexInCards - k0);
 			System.arraycopy(temp, 0, array1, k0 * _nRepeatsOfNew, _nRepeatsOfNew);
 		}
 		FlashCardsGame.shuffleArray(array1, _r, /* lastValue= */-1);
@@ -110,13 +132,13 @@ public class QuizGenerator {
 		final int[] array = new int[arrayLen];
 		/** Fill in one copy of each of the new words. */
 		for (int k = 0; k < nNewWords; ++k) {
-			array[k] = _topCardIndex - k;
+			array[k] = _topIndexInCards - k;
 		}
 		/**
 		 * If there are more to fill in than we have number of choices for, or we are not
 		 * using exponential or linear draws, then cycle through the choices.
 		 */
-		final int topChoiceForSlots = _topCardIndex - nNewWords;
+		final int topChoiceForSlots = _topIndexInCards - nNewWords;
 		final int nChoicesForSlots = topChoiceForSlots + 1;
 		if (nRecentWords >= nChoicesForSlots || _typeOfDecay == TypeOfDecay.NONE) {
 			for (int k = 0; k < nRecentWords; ++k) {
@@ -126,35 +148,36 @@ public class QuizGenerator {
 			final double[] cums = computeCums(nRecentWords, nChoicesForSlots);
 			for (int k = 0; k < nRecentWords; ++k) {
 				final double cum = _r.nextDouble();
-				final int cardIndex = selectCardIndex(cums, cum);
-				array[nNewWords + k] = cardIndex;
-				killCardIndex(cums, cardIndex);
+				final int indexInCards = selectIndexInCards(cums, cum);
+				array[nNewWords + k] = indexInCards;
+				annihilateIndexInCards(cums, indexInCards);
 			}
 		}
 		return array;
 	}
 
-	private static int selectCardIndex(final double[] cums, final double cum) {
+	private static int selectIndexInCards(final double[] cums, final double cum) {
 		if (cum <= cums[0]) {
 			return 0;
 		} else if (cum >= cums[cums.length - 1]) {
 			return cums.length - 1;
 		}
-		final int cardIndex = Arrays.binarySearch(cums, cum);
-		if (cardIndex >= 0) {
-			return cardIndex;
+		final int indexInCards = Arrays.binarySearch(cums, cum);
+		if (indexInCards >= 0) {
+			return indexInCards;
 		}
-		return -cardIndex - 1;
+		return -indexInCards - 1;
 	}
 
-	private static void killCardIndex(final double[] cums, final int cardIndex) {
+	private static void annihilateIndexInCards(final double[] cums,
+			final int indexInCards) {
 		final int nCums = cums.length;
-		final double probToDistribute = cums[cardIndex]
-				- (cardIndex == 0 ? 0d : cums[cardIndex - 1]);
+		final double probToDistribute = cums[indexInCards]
+				- (indexInCards == 0 ? 0d : cums[indexInCards - 1]);
 		final double scale = 1d / (1d - probToDistribute);
 		/** Convert cums to probs. */
 		for (int k = nCums - 1; k >= 0; --k) {
-			if (k == cardIndex) {
+			if (k == indexInCards) {
 				cums[k] = 0d;
 			} else {
 				cums[k] = scale * (cums[k] - (k == 0 ? 0d : cums[k - 1]));
@@ -271,13 +294,13 @@ public class QuizGenerator {
 	}
 
 	String getTypeIIPrompt() {
-		return String.format("\n\tTCI(Top Card Index<%d>)", _topCardIndex);
+		return String.format("\n\tTCI(Top Card Index<%d>)", _topIndexInCards);
 	}
 
 	void modifyFromFields(final String[] fields) {
 		final String field0 = fields[0].toUpperCase();
 		if (field0.equalsIgnoreCase("TCI")) {
-			_topCardIndex = FlashCardsGame.fieldsToInt(fields, _topCardIndex);
+			_topIndexInCards = FlashCardsGame.fieldsToInt(fields, _topIndexInCards);
 			_adjustCurrentQuiz = true;
 		}
 	}
@@ -291,7 +314,7 @@ public class QuizGenerator {
 		if (quizPlus.haveWon(_failureRateI)) {
 			final QuizPlus newQuizPlus;
 			if (!quizPlus._criticalQuizIndicesOnly) {
-				_topCardIndex += _maxNNewWords;
+				_topIndexInCards += _maxNNewWords;
 				correctQuizGeneratorProperties(nCards);
 				newQuizPlus = createNewQuizPlus(nCards);
 			} else {
@@ -309,10 +332,17 @@ public class QuizGenerator {
 	}
 
 	String getString() {
-		final String s = String.format(//
-				"TopCardIndex=%d, #New Words=%d, #Recent Words=%d, Failure Rate=%d%%, Type of Decay=%s", //
-				_topCardIndex, _maxNNewWords, _maxNRecentWords, _failureRateI,
+		String s = String.format(//
+				"TopIIC=%d, #New/Recent Words=%d/%d, Failure=%d%%, Decay=%s", //
+				_topIndexInCards, _maxNNewWords, _maxNRecentWords, _failureRateI,
 				_typeOfDecay.name());
+		if (_shuffleCardsSeed < 0) {
+			s += ", Random.Shuffle.";
+		} else if (_shuffleCardsSeed > 0) {
+			s += String.format(", Card.Shuffle.Seed=%d.", _shuffleCardsSeed);
+		} else {
+			s += '.';
+		}
 		return s;
 	}
 

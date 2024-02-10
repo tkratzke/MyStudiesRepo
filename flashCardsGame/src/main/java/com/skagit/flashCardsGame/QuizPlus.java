@@ -13,12 +13,12 @@ class QuizPlus implements Serializable {
 	private static final long serialVersionUID = 1L;
 	final int[] _fullQuiz;
 	final int[] _origFullQuiz;
-	private final int[] _criticalQuizIndices;
-	private int _currentQuizIndex;
+	private final int[] _criticalIndicesInQuiz;
+	private int _currentIndexInQuiz;
 	private int _nWrongs, _nRights;
 	boolean _criticalQuizIndicesOnly;
-	private final HashMap<Integer, NWrongsAndHits> _cardIndexToNWrongsAndHits;
-	private int _firstWrongCardIndex;
+	private final HashMap<Integer, NWrongsAndHits> _indexInCardsToNWrongsAndHits;
+	private int _firstWrongIndexInCards;
 
 	static class NWrongsAndHits implements Cloneable {
 		int _nWrongs = 0;
@@ -38,89 +38,98 @@ class QuizPlus implements Serializable {
 	QuizPlus(final int[] fullQuiz, final int[] criticalQuizIndices) {
 		_fullQuiz = fullQuiz;
 		_origFullQuiz = _fullQuiz.clone();
-		_criticalQuizIndices = criticalQuizIndices;
-		Arrays.sort(_criticalQuizIndices);
-		_cardIndexToNWrongsAndHits = new HashMap<>();
+		_criticalIndicesInQuiz = criticalQuizIndices;
+		Arrays.sort(_criticalIndicesInQuiz);
+		_indexInCardsToNWrongsAndHits = new HashMap<>();
 		resetForFullMode();
 	}
 
 	QuizPlus(final QuizPlus quizPlus) {
 		_fullQuiz = quizPlus._fullQuiz.clone();
 		_origFullQuiz = quizPlus._origFullQuiz.clone();
-		_criticalQuizIndices = quizPlus._criticalQuizIndices.clone();
-		_currentQuizIndex = quizPlus._currentQuizIndex;
+		_criticalIndicesInQuiz = quizPlus._criticalIndicesInQuiz.clone();
+		_currentIndexInQuiz = quizPlus._currentIndexInQuiz;
 		_nWrongs = quizPlus._nWrongs;
 		_nRights = quizPlus._nRights;
-		_firstWrongCardIndex = quizPlus._firstWrongCardIndex;
-		_cardIndexToNWrongsAndHits = new HashMap<>();
-		final Map<Integer, NWrongsAndHits> from = quizPlus._cardIndexToNWrongsAndHits;
-		final Map<Integer, NWrongsAndHits> to = _cardIndexToNWrongsAndHits;
+		_firstWrongIndexInCards = quizPlus._firstWrongIndexInCards;
+		_indexInCardsToNWrongsAndHits = new HashMap<>();
+		final Map<Integer, NWrongsAndHits> from = quizPlus._indexInCardsToNWrongsAndHits;
+		final Map<Integer, NWrongsAndHits> to = _indexInCardsToNWrongsAndHits;
 		final Iterator<Map.Entry<Integer, NWrongsAndHits>> it = from.entrySet().iterator();
 		while (it.hasNext()) {
 			final Map.Entry<Integer, NWrongsAndHits> entry = it.next();
-			final int cardIndex = entry.getKey();
-			to.put(cardIndex, entry.getValue().clone());
+			final int indexInCards = entry.getKey();
+			to.put(indexInCards, entry.getValue().clone());
 		}
 		_criticalQuizIndicesOnly = quizPlus._criticalQuizIndicesOnly;
 	}
 
-	int getCurrentQuizCardIndex(final int k) {
-		return _fullQuiz[_criticalQuizIndicesOnly ? _criticalQuizIndices[k] : k];
+	int getCurrentQuiz_IndexInCards(final int k) {
+		return _fullQuiz[_criticalQuizIndicesOnly ? _criticalIndicesInQuiz[k] : k];
 	}
 
 	int getCurrentQuizLen() {
-		return _criticalQuizIndicesOnly ? _criticalQuizIndices.length : _fullQuiz.length;
+		return _criticalQuizIndicesOnly ? _criticalIndicesInQuiz.length : _fullQuiz.length;
 	}
 
-	int getCurrentQuizIndex() {
-		return _currentQuizIndex;
-	}
-
-	public int getCurrentQuizCardIndex() {
-		return getCurrentQuizCardIndex(_currentQuizIndex);
+	int getCurrentQuiz_IndexInCards() {
+		return getCurrentQuiz_IndexInCards(_currentIndexInQuiz);
 	}
 
 	boolean isCriticalQuizIndex(final int currentQuizIndex) {
 		if (_criticalQuizIndicesOnly) {
 			return true;
 		}
-		return Arrays.binarySearch(_criticalQuizIndices, currentQuizIndex) >= 0;
+		return Arrays.binarySearch(_criticalIndicesInQuiz, currentQuizIndex) >= 0;
+	}
+
+	int getCurrentIndexInQuiz() {
+		return _currentIndexInQuiz;
+	}
+
+	int getNRights() {
+		return _nRights;
+	}
+
+	int getNWrongs() {
+		return _nWrongs;
 	}
 
 	void reactToRightResponse(final boolean wasWrongAtLeastOnce) {
-		if (isCriticalQuizIndex(_currentQuizIndex)) {
-			final int cardIndex = getCurrentQuizCardIndex(_currentQuizIndex);
-			final NWrongsAndHits nWrongsAndHits = _cardIndexToNWrongsAndHits.get(cardIndex);
+		if (isCriticalQuizIndex(_currentIndexInQuiz)) {
+			final int indexInCards = getCurrentQuiz_IndexInCards(_currentIndexInQuiz);
+			final NWrongsAndHits nWrongsAndHits = _indexInCardsToNWrongsAndHits
+					.get(indexInCards);
 			++nWrongsAndHits._nHits;
 			if (wasWrongAtLeastOnce) {
 				++nWrongsAndHits._nWrongs;
 				if (_nWrongs == 0) {
-					_firstWrongCardIndex = cardIndex;
+					_firstWrongIndexInCards = indexInCards;
 				}
 				++_nWrongs;
 			} else {
 				++_nRights;
 			}
 		}
-		++_currentQuizIndex;
+		++_currentIndexInQuiz;
 	}
 
 	void resetForFullMode() {
 		/** Restore the full quiz. */
 		System.arraycopy(_origFullQuiz, 0, _fullQuiz, 0, _origFullQuiz.length);
-		_cardIndexToNWrongsAndHits.clear();
+		_indexInCardsToNWrongsAndHits.clear();
 		/** Temporarily set _criticalQuizIndicesOnly to true, to re-set nW_And_O. */
 		_criticalQuizIndicesOnly = true;
 		final int nCriticalQuizIndices = getCurrentQuizLen();
 		for (int k = 0; k < nCriticalQuizIndices; ++k) {
-			final int cardIndex = getCurrentQuizCardIndex(k);
-			_cardIndexToNWrongsAndHits.put(cardIndex, new NWrongsAndHits(0, 0));
+			final int indexInCards = getCurrentQuiz_IndexInCards(k);
+			_indexInCardsToNWrongsAndHits.put(indexInCards, new NWrongsAndHits(0, 0));
 		}
 		/** Put it in FullMode. */
 		_criticalQuizIndicesOnly = false;
-		_currentQuizIndex = 0;
+		_currentIndexInQuiz = 0;
 		_nWrongs = _nRights = 0;
-		_firstWrongCardIndex = -1;
+		_firstWrongIndexInCards = -1;
 	}
 
 	boolean haveWon(final int failureRateI) {
@@ -128,7 +137,7 @@ class QuizPlus implements Serializable {
 		 * We need a wrong rate that is <= failureRateI / 2 even assuming that we'll get the
 		 * rest of the critical quiz indices wrong.
 		 */
-		final int nCriticalQuizIndices = _criticalQuizIndices.length;
+		final int nCriticalQuizIndices = _criticalIndicesInQuiz.length;
 		final int nWrongs = nCriticalQuizIndices - _nRights;
 		return 200 * nWrongs <= failureRateI * nCriticalQuizIndices;
 	}
@@ -138,19 +147,19 @@ class QuizPlus implements Serializable {
 		 * We need a wrong rate that is >= failureRateI even assuming that we'll get the rest
 		 * of the critical quiz indices right.
 		 */
-		final int nCriticalQuizIndices = _criticalQuizIndices.length;
+		final int nCriticalQuizIndices = _criticalIndicesInQuiz.length;
 		return 100 * _nWrongs >= failureRateI * nCriticalQuizIndices;
 	}
 
 	void adjustQuizForLoss(final Random r) {
-		int cardIndexToReplace = -1;
+		int indexInCardsToReplace = -1;
 		double smallestRatio = Double.POSITIVE_INFINITY;
 		int mostHitsWithSmallestRatio = 0;
-		final Iterator<Map.Entry<Integer, NWrongsAndHits>> it = _cardIndexToNWrongsAndHits
+		final Iterator<Map.Entry<Integer, NWrongsAndHits>> it = _indexInCardsToNWrongsAndHits
 				.entrySet().iterator();
 		for (; it.hasNext();) {
 			final Map.Entry<Integer, NWrongsAndHits> entry = it.next();
-			final int cardIndex = entry.getKey();
+			final int indexInCards = entry.getKey();
 			final NWrongsAndHits thisNWrongsAndHits = entry.getValue();
 			final double thisRatio = ((double) thisNWrongsAndHits._nWrongs)
 					/ thisNWrongsAndHits._nHits;
@@ -159,45 +168,45 @@ class QuizPlus implements Serializable {
 				newLoser = thisNWrongsAndHits._nHits > mostHitsWithSmallestRatio;
 			}
 			if (newLoser) {
-				cardIndexToReplace = cardIndex;
+				indexInCardsToReplace = indexInCards;
 				smallestRatio = thisRatio;
 				mostHitsWithSmallestRatio = thisNWrongsAndHits._nHits;
 				continue;
 			}
 		}
 		/**
-		 * Extract one occurrence of the first cardIndex that was wrong, with the cardIndex
-		 * that has the lowest ratio of nWrongs to nHits and, among those that have the same
-		 * ratio, the one that has the most hits.
+		 * Extract one occurrence of the first indexInCards that was wrong, with the
+		 * indexInCards that has the lowest ratio of nWrongs to nHits and, among those that
+		 * have the same ratio, the one that has the most hits.
 		 */
-		final int nCriticalQuizIndices = _criticalQuizIndices.length;
-		final int[] newCardIndices = new int[nCriticalQuizIndices];
+		final int nCriticalQuizIndices = _criticalIndicesInQuiz.length;
+		final int[] newIndicesInCards = new int[nCriticalQuizIndices];
 		for (int k = 0; k < nCriticalQuizIndices; ++k) {
-			final int cardIndex = _fullQuiz[_criticalQuizIndices[k]];
-			if (_firstWrongCardIndex >= 0 && cardIndex == cardIndexToReplace) {
-				newCardIndices[k] = _firstWrongCardIndex;
-				_firstWrongCardIndex = -1;
+			final int indexInCards = _fullQuiz[_criticalIndicesInQuiz[k]];
+			if (_firstWrongIndexInCards >= 0 && indexInCards == indexInCardsToReplace) {
+				newIndicesInCards[k] = _firstWrongIndexInCards;
+				_firstWrongIndexInCards = -1;
 			} else {
-				newCardIndices[k] = cardIndex;
+				newIndicesInCards[k] = indexInCards;
 			}
 		}
-		/** Shuffle newCardIndices and put them back into the criticalQuizIndices. */
-		FlashCardsGame.shuffleArray(newCardIndices, r, /* lastValue= */-1);
+		/** Shuffle newIndicesInCards and put them back into the criticalQuizIndices. */
+		FlashCardsGame.shuffleArray(newIndicesInCards, r, /* lastValue= */-1);
 		for (int k = 0; k < nCriticalQuizIndices; ++k) {
-			_fullQuiz[_criticalQuizIndices[k]] = newCardIndices[k];
+			_fullQuiz[_criticalIndicesInQuiz[k]] = newIndicesInCards[k];
 		}
-		_currentQuizIndex = 0;
+		_currentIndexInQuiz = 0;
 		_nWrongs = _nRights = 0;
 		_criticalQuizIndicesOnly = true;
 	}
 
-	final int getTopCardIndexInCurrentQuiz() {
+	final int getTopIndexInCardsInCurrentQuiz() {
 		final int nInQuiz = getCurrentQuizLen();
-		int topCardIndex = -1;
+		int topIndexInCards = -1;
 		for (int k = 0; k < nInQuiz; ++k) {
-			topCardIndex = Math.max(topCardIndex, getCurrentQuizCardIndex(k));
+			topIndexInCards = Math.max(topIndexInCards, getCurrentQuiz_IndexInCards(k));
 		}
-		return topCardIndex;
+		return topIndexInCards;
 	}
 
 	String getSummaryString() {
@@ -206,9 +215,9 @@ class QuizPlus implements Serializable {
 		final TreeMap<Integer, int[]> mapOfCriticals = new TreeMap<>();
 		final int quizLen = getCurrentQuizLen();
 		for (int k = 0; k < quizLen; ++k) {
-			final int cardIndex = getCurrentQuizCardIndex(k);
-			lo = Math.min(lo, cardIndex);
-			hi = Math.max(hi, cardIndex);
+			final int indexInCards = getCurrentQuiz_IndexInCards(k);
+			lo = Math.min(lo, indexInCards);
+			hi = Math.max(hi, indexInCards);
 		}
 		for (int k = 0; k < quizLen; ++k) {
 			final TreeMap<Integer, int[]> map;
@@ -217,10 +226,10 @@ class QuizPlus implements Serializable {
 			} else {
 				map = mapofNonCriticals;
 			}
-			final int cardIndex = getCurrentQuizCardIndex(k);
-			final int[] count = map.get(cardIndex);
+			final int indexInCards = getCurrentQuiz_IndexInCards(k);
+			final int[] count = map.get(indexInCards);
 			if (count == null) {
-				map.put(cardIndex, new int[]{1});
+				map.put(indexInCards, new int[]{1});
 			} else {
 				++count[0];
 			}
@@ -247,32 +256,34 @@ class QuizPlus implements Serializable {
 		if (nEntries == 0) {
 			return "" + FlashCardsGame._EmptySet;
 		}
-		final int[][] cardIndexAndCount = new int[nEntries][];
+		final int[][] indexInCardsAndCount = new int[nEntries][];
 		final Iterator<Map.Entry<Integer, int[]>> it = map.entrySet().iterator();
 		for (int k = 0; k < nEntries; ++k) {
 			final Map.Entry<Integer, int[]> entry = it.next();
-			cardIndexAndCount[k] = new int[]{entry.getKey(), entry.getValue()[0]};
+			indexInCardsAndCount[k] = new int[]{entry.getKey(), entry.getValue()[0]};
 		}
-		Arrays.sort(cardIndexAndCount, new Comparator<int[]>() {
+		Arrays.sort(indexInCardsAndCount, new Comparator<int[]>() {
 
 			@Override
 			public int compare(final int[] entry0, final int[] entry1) {
-				final int cardIndex0 = entry0[0];
-				final int cardIndex1 = entry1[1];
-				return cardIndex0 < cardIndex1 ? -1 : (cardIndex0 > cardIndex1 ? 1 : 0);
+				final int indexInCards0 = entry0[0];
+				final int indexInCards1 = entry1[1];
+				return indexInCards0 < indexInCards1
+						? -1
+						: (indexInCards0 > indexInCards1 ? 1 : 0);
 			}
 		});
 		/** Initialize the first streak. */
-		final int[] entry0 = cardIndexAndCount[0];
+		final int[] entry0 = indexInCardsAndCount[0];
 		int firstMemberOfStreak, lastMemberOfStreak;
 		firstMemberOfStreak = lastMemberOfStreak = entry0[0];
 		int countOfStreak = entry0[1];
 		String s = "";
 		for (int k = 1; k < nEntries; ++k) {
-			final int[] entry = cardIndexAndCount[k];
-			final int cardIndex = entry[0];
+			final int[] entry = indexInCardsAndCount[k];
+			final int indexInCards = entry[0];
 			final int count = entry[1];
-			final boolean wrapUpOldStreak = cardIndex != (lastMemberOfStreak + 1)
+			final boolean wrapUpOldStreak = indexInCards != (lastMemberOfStreak + 1)
 					|| count != countOfStreak;
 			if (wrapUpOldStreak) {
 				if (s.length() > 0) {
@@ -280,10 +291,10 @@ class QuizPlus implements Serializable {
 				}
 				s += getStreakString(countOfStreak, firstMemberOfStreak, lastMemberOfStreak);
 				/** Start a new streak. */
-				firstMemberOfStreak = cardIndex;
+				firstMemberOfStreak = indexInCards;
 				countOfStreak = count;
 			}
-			lastMemberOfStreak = cardIndex;
+			lastMemberOfStreak = indexInCards;
 		}
 		/** Must wrap up the old streak. */
 		if (s.length() > 0) {
@@ -307,24 +318,6 @@ class QuizPlus implements Serializable {
 		}
 		return String.format("%d%c%d%s", firstMemberOfStreak, FlashCardsGame._RtArrow,
 				lastMemberOfStreak, countString);
-	}
-
-	public String getTypeIPrompt(final int cardIndex, final String clue) {
-		String s = "";
-		if (isCriticalQuizIndex(_currentQuizIndex)) {
-			s += "*";
-		}
-		final int quizLen = getCurrentQuizLen();
-		s += String.format("%d(Card #%d) of %d", _currentQuizIndex + 1, cardIndex, quizLen);
-		final int nTrialsSoFar = _nRights + _nWrongs;
-		if (nTrialsSoFar > 0) {
-			final long successRateI = Math.round((100d * _nRights) / nTrialsSoFar);
-			s += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%). ", _nRights, _nWrongs,
-					successRateI);
-		} else {
-			s += ". ";
-		}
-		return s + clue;
 	}
 
 	public String getString() {

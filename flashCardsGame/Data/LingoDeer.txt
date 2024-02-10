@@ -12,7 +12,7 @@
 
  10.	con trai:        	a son
  11.	con gái:         	a daughter
- 12.	nhà:             	home
+ 12.	nhà:             	a home or a house
  13.	anh trai:        	a older brother
  14.	chị gái:         	a older sister
 

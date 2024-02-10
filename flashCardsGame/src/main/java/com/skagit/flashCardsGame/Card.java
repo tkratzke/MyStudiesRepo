@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 class Card {
 
-	int _cardIndex;
+	int _cardNumber;
 	final String _aSide;
 	final String _bSide;
 	String _comment;
 
-	Card(final int cardIndex, final String aSide, final String bSide) {
-		_cardIndex = cardIndex;
+	Card(final int cardNumber, final String aSide, final String bSide) {
+		_cardNumber = cardNumber;
 		_aSide = FlashCardsGame.cleanUpString(aSide);
 		_bSide = FlashCardsGame.cleanUpString(bSide);
 		_comment = "";
@@ -34,7 +34,7 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			final int idx0 = card0._cardIndex, idx1 = card1._cardIndex;
+			final int idx0 = card0._cardNumber, idx1 = card1._cardNumber;
 			return idx0 < idx1 ? -1 : (idx0 > idx1 ? 1 : 0);
 		}
 	};
@@ -85,9 +85,9 @@ class Card {
 
 	String getString() {
 		if (_comment == null || _comment.length() == 0) {
-			return String.format("%04d.\t%s:\t%s", _cardIndex, _aSide, _bSide);
+			return String.format("%04d.\t%s:\t%s", _cardNumber, _aSide, _bSide);
 		}
-		return String.format("%s\n%04d.\t%s:\t%s", _comment, _cardIndex, _aSide, _bSide);
+		return String.format("%s\n%04d.\t%s:\t%s", _comment, _cardNumber, _aSide, _bSide);
 	}
 
 	@Override
