@@ -61,6 +61,7 @@
  50.	trà:             	tea
  51.	cà phê:          	coffee
  52.	sandwich:        	sandwich
+ chả giò	egg roll
  53.	nem:             	spring roll
  54.	kem:             	ice cream
 

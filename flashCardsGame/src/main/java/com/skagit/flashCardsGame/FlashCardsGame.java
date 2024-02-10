@@ -19,17 +19,17 @@ import java.util.TreeMap;
 
 public class FlashCardsGame {
 
-	static final char _RtArrow = '\u2192';
-	static final char _LtArrow = '\u2190';
-	static final char _RtLtArrow = '\u2194';
-	static final char _UpArrow = '\u2191';
-	static final char _DnArrow = '\u2193';
-	static final char _EmptySet = '\u2205';
-	static final char _ReturnSymbol = '\u23CE';
-	static final char _EditPropertiesSymbol = '#';
-	static final String _IntroString;
+	final static char _RtArrow = '\u2192';
+	final static char _LtArrow = '\u2190';
+	final static char _RtLtArrow = '\u2194';
+	final static char _UpArrow = '\u2191';
+	final static char _DnArrow = '\u2193';
+	final static char _EmptySet = '\u2205';
+	final static char _ReturnSymbol = '\u23CE';
+	final static char _EditPropertiesSymbol = '#';
+	final static String _IntroString;
 
-	private static final long _Seed;
+	final private static long _Seed;
 	static {
 		final BigInteger bigInteger = new BigInteger(
 				"1953102919570208198208131985030219910105201301192015102720231229");
@@ -37,24 +37,23 @@ public class FlashCardsGame {
 		_IntroString = String.format("%c=\"Check Mode,\" %c=\"Edit Properties\"",
 				_ReturnSymbol, _EditPropertiesSymbol);
 	}
+	/** Either of the following two FieldSeparators seems to work. */
+	@SuppressWarnings("unused")
+	final private static String _FieldSeparator0 = "\\s*\\t\\s*";
+	final private static String _FieldSeparator = "(\s*\t\s*)+";
+	final private static String _WhiteSpace = "\s+";
+	final private static String _DefaultPropertiesFilePath = "Data/Tran";
+	final private static String _PropertiesEnding = ".properties";
 
-	private final static String _WhiteSpace = "\s+";
-	private static final String _DelimiterRegEx = "(\s*\t\s*)+";
-
-	private final File _propertiesFile;
-	private final Properties _properties;
-
+	final private File _propertiesFile;
+	final private Properties _properties;
 	boolean _quizIsA_B;
-
 	Card[] _cards;
-
 	final QuizGenerator _quizGenerator;
 	QuizPlus _quizPlus;
-
 	boolean _printedSomething;
 
 	FlashCardsGame(final Scanner sc, final File propertiesFile) {
-		/** Load the properties. */
 		_propertiesFile = propertiesFile;
 		_properties = new Properties();
 		try (
@@ -63,28 +62,15 @@ public class FlashCardsGame {
 			_properties.load(in);
 		} catch (final IOException e) {
 		}
-
-		/** Get _quizType. */
 		final String quizTypeProperty = keyToString(_properties, "Quiz.Type");
 		_quizIsA_B = quizTypeProperty.length() == 0
 				|| Character.toUpperCase(quizTypeProperty.charAt(0)) != 'B';
-
-		/** Write out _propertiesFile. */
 		reWritePropertiesFile();
-
 		_printedSomething = false;
 		loadCards();
-		_quizGenerator = new QuizGenerator(_properties, /* nCards= */_cards.length, _Seed);
+		_quizGenerator = new QuizGenerator(_properties, _cards.length, _Seed);
 		_quizGenerator.shuffleCards(_cards);
 		_quizPlus = null;
-	}
-
-	void myPrintln(final PrintWriter pw, final String s) {
-		pw.println(s);
-	}
-
-	void myPrint(final PrintWriter pw, final String s) {
-		pw.print(s);
 	}
 
 	private void writeCardsToDisk() {
@@ -93,7 +79,7 @@ public class FlashCardsGame {
 		final String cardNumberFormat = String.format("%%%dd.", nDigits);
 		int maxASideLen = 0;
 		for (final Card card : _cards) {
-			maxASideLen = Math.max(maxASideLen, card._aSide.trim().length());
+			maxASideLen = Math.max(maxASideLen, card._aSide.length());
 		}
 		final String aSideFormat = String.format("%%-%ds", maxASideLen + 1);
 		final File cardsFile = getCardsFile();
@@ -105,35 +91,35 @@ public class FlashCardsGame {
 				String comment = card._comment;
 				boolean printedBlankLine = false;
 				if (k > 0) {
-					if (k % 5 == 0) {
-						myPrintln(pw, "");
+					if (k % 10 == 0) {
+						pw.println();
 						printedBlankLine = true;
 					}
-					myPrintln(pw, "");
+					pw.println();
 				}
 				if (comment != null) {
 					comment = comment.trim();
 					if (comment.length() > 0) {
 						if (k > 0 && !printedBlankLine) {
-							myPrintln(pw, "");
+							pw.println();
 						}
-						myPrintln(pw, comment);
+						pw.println(comment);
 					}
 				}
 				final String s = String.format("%s\t%s\t%s", cardNumberString, aSideString,
 						card._bSide);
-				myPrint(pw, s);
+				pw.print(s);
 			}
 		} catch (final FileNotFoundException e) {
 		}
 	}
 
 	private File getCardsFile() {
-		final String name = _propertiesFile.getName();
+		final String propertiesFileName = _propertiesFile.getName();
 		final File parentFile = _propertiesFile.getParentFile();
-		final String cardsFilePath = name.substring(0, name.length() - ".properties".length())
-				+ ".txt";
-		return new File(parentFile, cardsFilePath);
+		final String cardsFileName = propertiesFileName.substring(0,
+				propertiesFileName.length() - _PropertiesEnding.length()) + ".txt";
+		return new File(parentFile, cardsFileName);
 	}
 
 	/**
@@ -142,6 +128,7 @@ public class FlashCardsGame {
 	 * https://stackoverflow.com/questions/17405165/first-character-of-the-reading-from-the-text-file-%C3%AF
 	 * </pre>
 	 */
+
 	private void loadCards() {
 		final TreeMap<Card, Card> cardMap = new TreeMap<Card, Card>(Card._ByAThenB);
 		final File cardsFile = getCardsFile();
@@ -166,7 +153,7 @@ public class FlashCardsGame {
 				String comment = "";
 				while (fileSc.hasNext()) {
 					final String line = fileSc.nextLine().trim();
-					final String[] fields = line.split("\\s*\\t\\s*");
+					final String[] fields = line.split(_FieldSeparator);
 					final int nFields = fields.length;
 					final int cardNumber = cardMap.size();
 					if (nFields < 2) {
@@ -177,16 +164,14 @@ public class FlashCardsGame {
 						}
 						continue;
 					}
-					String fieldA = fields[nFields > 2 ? 1 : 0];
-					String fieldB = fields[nFields > 2 ? 2 : 1];
-					if (fieldA.endsWith(".") || fieldA.endsWith(":")) {
-						fieldA = fieldA.substring(0, fieldA.length() - 1);
+					String aSide = CleanString(fields[nFields > 2 ? 1 : 0]);
+					String bSide = CleanString(fields[nFields > 2 ? 2 : 1]);
+					if (aSide.endsWith(".") || aSide.endsWith(":")) {
+						aSide = aSide.substring(0, aSide.length() - 1);
 					}
-					if (fieldB.endsWith(".") || fieldB.endsWith(":")) {
-						fieldB = fieldB.substring(0, fieldB.length() - 1);
+					if (bSide.endsWith(".") || bSide.endsWith(":")) {
+						bSide = bSide.substring(0, bSide.length() - 1);
 					}
-					final String aSide = fieldA.trim();
-					final String bSide = fieldB.trim();
 					final Card newCard = new Card(cardNumber, aSide, bSide);
 					comment = comment.trim();
 					newCard._comment = comment;
@@ -282,7 +267,7 @@ public class FlashCardsGame {
 	}
 
 	/** Avoids having the same value consecutively. */
-	private final static int _MaxNFailsPerElement = 5;
+	final private static int _MaxNFailsPerElement = 5;
 	static void shuffleArray(final int[] ints, final Random r, int lastValue) {
 		final int n = ints.length;
 		for (int k = 0; k < n; ++k) {
@@ -375,11 +360,11 @@ public class FlashCardsGame {
 		return array;
 	}
 
-	static private String keyToString(final Properties properties, final String key) {
+	private static String keyToString(final Properties properties, final String key) {
 		return CleanString((String) properties.get(key));
 	}
 
-	static private String CleanString(final String s) {
+	private static String CleanString(final String s) {
 		if (s == null) {
 			return "";
 		}
@@ -558,24 +543,25 @@ public class FlashCardsGame {
 			boolean editProperties = false;
 			for (;; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
-				final String myLine = sc.nextLine();
-				if (myLine.length() == 1 && myLine.charAt(0) == 'Q') {
-					editProperties = true;
-					keepGoing = false;
-					break;
-				}
-				final String response0 = myLine.split(_DelimiterRegEx)[0].trim();
-				if (response0.length() > 0 && response0.charAt(0) == _EditPropertiesSymbol) {
-					editProperties = true;
-					keepGoing = modifyProperties(sc);
-					break;
+				final String response0 = CleanString(sc.nextLine());
+				if (response0.length() == 1) {
+					final char char0 = response0.charAt(0);
+					if (char0 == 'Q') {
+						editProperties = true;
+						keepGoing = false;
+						break;
+					} else if (char0 == _EditPropertiesSymbol) {
+						editProperties = true;
+						keepGoing = modifyProperties(sc);
+						break;
+					}
 				}
 				if (response0.length() == 0) {
 					System.out.printf("::%s:: Did you get it right (%c or Y/N)?\n", answer,
 							_ReturnSymbol);
-					final String myLine2 = sc.nextLine();
-					final boolean gotItRight = myLine2.length() == 0
-							|| Character.toUpperCase(myLine2.charAt(0)) == 'Y';
+					final String response1 = CleanString(sc.nextLine());
+					final boolean gotItRight = response1.length() == 0
+							|| Character.toUpperCase(response1.charAt(0)) == 'Y';
 					if (gotItRight) {
 						gotRightResponse = true;
 						break;
@@ -583,16 +569,12 @@ public class FlashCardsGame {
 						++nWrongResponses;
 						System.out.println("Try again.");
 					}
-				} else {
-					final String response = response0.replaceAll(FlashCardsGame._WhiteSpace, " ")
-							.trim();
-					if (response.equalsIgnoreCase(answer)) {
-						gotRightResponse = true;
-						break;
-					}
-					++nWrongResponses;
-					System.out.printf("::%s::\n\n", answer);
+				} else if (response0.equalsIgnoreCase(answer)) {
+					gotRightResponse = true;
+					break;
 				}
+				++nWrongResponses;
+				System.out.printf("::%s::\n\n", answer);
 			}
 			if (editProperties && madeChangesFrom(oldValues)) {
 				if (madeChangesFrom(oldValues)) {
@@ -613,10 +595,8 @@ public class FlashCardsGame {
 	}
 
 	static String cleanUpString(final String s) {
-		return s.replaceAll(_WhiteSpace, " ").trim();
+		return s.trim().replaceAll(_WhiteSpace, " ");
 	}
-
-	final static private String _DefaultPropertiesFilePath = "Data/Tran";
 
 	public static void main(final String[] args) {
 		final int nArgs = args.length;
@@ -627,15 +607,15 @@ public class FlashCardsGame {
 			propertiesFilePath = _DefaultPropertiesFilePath;
 		}
 		final File propertiesFile;
-		if (propertiesFilePath.toLowerCase().endsWith(".properties")) {
+		if (propertiesFilePath.toLowerCase().endsWith(_PropertiesEnding)) {
 			propertiesFile = new File(propertiesFilePath);
 		} else {
 			final int lastDotIndex = propertiesFilePath.lastIndexOf('.');
 			if (lastDotIndex == -1) {
-				propertiesFile = new File(propertiesFilePath + ".properties");
+				propertiesFile = new File(propertiesFilePath + _PropertiesEnding);
 			} else {
 				propertiesFile = new File(
-						propertiesFilePath.substring(0, lastDotIndex) + ".properties");
+						propertiesFilePath.substring(0, lastDotIndex) + _PropertiesEnding);
 			}
 		}
 		try (Scanner sc = new Scanner(System.in)) {

@@ -25,10 +25,6 @@ public class QuizGenerator {
 		}
 	}
 
-	/**
-	 * The following fields are "properties." Only _topIndexInCards changes. _r is final and
-	 * its seed is never reset.
-	 */
 	private int _topIndexInCards;
 	private final int _maxNNewWords;
 	private final int _maxNRecentWords;
@@ -52,6 +48,13 @@ public class QuizGenerator {
 				TypeOfDecay.NONE);
 		_failureRateI = FlashCardsGame.keyToPercentI(properties, "Failure.Rate", 50);
 		_shuffleCardsSeed = FlashCardsGame.keyToLong(properties, "Shuffle.Cards.Seed", 0);
+		if (_shuffleCardsSeed < 0) {
+			/**
+			 * For super-random, we don't allow the user to start anywhere except at the
+			 * beginning.
+			 */
+			_topIndexInCards = Math.min(_topIndexInCards, _maxNNewWords + _maxNRecentWords - 1);
+		}
 		_percentageForRecentsI = FlashCardsGame.keyToPercentI(properties,
 				"Percentage.For.Recents", 50);
 		_r = new Random();
@@ -176,11 +179,11 @@ public class QuizGenerator {
 				- (indexInCards == 0 ? 0d : cums[indexInCards - 1]);
 		final double scale = 1d / (1d - probToDistribute);
 		/** Convert cums to probs. */
-		for (int k = nCums - 1; k >= 0; --k) {
+		for (int k = nCums - 1; k > 0; --k) {
 			if (k == indexInCards) {
 				cums[k] = 0d;
 			} else {
-				cums[k] = scale * (cums[k] - (k == 0 ? 0d : cums[k - 1]));
+				cums[k] = scale * (cums[k] - cums[k - 1]);
 			}
 		}
 		/** Convert cums from probs back to cums. */
@@ -247,23 +250,22 @@ public class QuizGenerator {
 		return vector;
 	}
 
-	private static double computePForExponential(final int n,
-			final double targetProportion) {
-		if (targetProportion < 0d) {
+	private static double computePForExponential(final int n, final double targetSum) {
+		if (targetSum < 0d) {
 			return Double.NaN;
 		}
 		if (n <= 0) {
-			return targetProportion == 0d ? 0d : Double.NaN;
+			return targetSum == 0d ? 0d : Double.NaN;
 		}
 		if (n == 1) {
-			return targetProportion;
+			return targetSum;
 		}
-		if (targetProportion == 0d) {
+		if (targetSum == 0d) {
 			return 0d;
 		}
 		double tooLow = 0d;
-		/** Since n >=2, target is certainly too high. */
-		double tooHigh = targetProportion;
+		/** Since n >= 2, target is certainly too high. */
+		double tooHigh = targetSum;
 		while (tooHigh > tooLow * (1d + 1.e-10)) {
 			final double thisP = (tooLow + tooHigh) / 2d;
 			double v = (Math.pow(thisP, n + 1) - thisP) / (thisP - 1d);
@@ -271,7 +273,7 @@ public class QuizGenerator {
 				/** thisP is too close to 1. So the computation of v is simple. */
 				v = n;
 			}
-			if (v > targetProportion) {
+			if (v > targetSum) {
 				tooHigh = thisP;
 			} else {
 				tooLow = thisP;
@@ -290,7 +292,7 @@ public class QuizGenerator {
 		 * p = target * 2/(n(n + 1))
 		 * </pre>
 		 */
-		return targetProportion * 2d / (n * (n + 1));
+		return targetProportion * 2d / (n * (n + 1d));
 	}
 
 	String getTypeIIPrompt() {
