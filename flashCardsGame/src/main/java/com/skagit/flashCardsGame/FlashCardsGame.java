@@ -122,6 +122,11 @@ public class FlashCardsGame {
 		return new File(parentFile, cardsFileName);
 	}
 
+	private String getCoreFilePath() {
+		final String inputPath = _propertiesFile.toString();
+		return inputPath.substring(0, inputPath.length() - _PropertiesEnding.length());
+	}
+
 	/**
 	 * <pre>
 	 * Interesting note on text files and the "right" way to do things:
@@ -315,8 +320,8 @@ public class FlashCardsGame {
 		for (;;) {
 			final String prompt = getTypeIIPrompt();
 			System.out.printf("%s: ", prompt);
-			final String myLine = sc.nextLine().toUpperCase().trim();
-			final String[] fields = myLine.trim().split("\\s+");
+			final String myLine = readLine(sc).toUpperCase().trim();
+			final String[] fields = myLine.trim().split(_WhiteSpace);
 			final String field0 = (fields == null || fields.length == 0
 					|| fields[0].length() == 0) ? "" : fields[0];
 			final int field0Len = field0.length();
@@ -362,13 +367,6 @@ public class FlashCardsGame {
 
 	private static String keyToString(final Properties properties, final String key) {
 		return CleanString((String) properties.get(key));
-	}
-
-	private static String CleanString(final String s) {
-		if (s == null) {
-			return "";
-		}
-		return s.trim().replaceAll("\\s+", " ");
 	}
 
 	static int keyToInt(final Properties properties, final String key,
@@ -486,6 +484,11 @@ public class FlashCardsGame {
 		return getString();
 	}
 
+	String readLine(final Scanner sc) {
+		final String line = sc != null ? sc.nextLine() : System.console().readLine();
+		return CleanString(line);
+	}
+
 	void mainLoop(final Scanner sc) {
 		int nCards = _cards.length;
 		_quizPlus = _quizGenerator.createNewQuizPlus(nCards);
@@ -494,8 +497,8 @@ public class FlashCardsGame {
 			System.out.printf("\n\n");
 		}
 		_printedSomething = true;
-		System.out.printf("%s\n%s\n\nInitial Quiz Summary: %s\n\n", getString(), _IntroString,
-				quizString);
+		System.out.printf("%s\n%s\n\nInitial Quiz Summary (%s): %s\n\n", getString(),
+				_IntroString, getCoreFilePath(), quizString);
 		long[] oldValues = storeValues();
 		/** Main loop: */
 		for (boolean keepGoing = true; keepGoing;) {
@@ -512,7 +515,7 @@ public class FlashCardsGame {
 						if (quizPlusTransition._oldQuizPlus._criticalQuizIndicesOnly) {
 							winLossString = "Re-do Original Quiz:";
 						} else {
-							winLossString = "Move on:";
+							winLossString = String.format("Moving on within %s:", getCoreFilePath());
 						}
 					}
 					final String oldSummary = quizPlusTransition._oldQuizPlus.getSummaryString();
@@ -543,7 +546,7 @@ public class FlashCardsGame {
 			boolean editProperties = false;
 			for (;; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
-				final String response0 = CleanString(sc.nextLine());
+				final String response0 = readLine(sc);
 				if (response0.length() == 1) {
 					final char char0 = response0.charAt(0);
 					if (char0 == 'Q') {
@@ -557,9 +560,9 @@ public class FlashCardsGame {
 					}
 				}
 				if (response0.length() == 0) {
-					System.out.printf("::%s:: Did you get it right (%c or Y/N)?\n", answer,
+					System.out.printf("%s Did you get it right (%c or Y/N)?\n", answer,
 							_ReturnSymbol);
-					final String response1 = CleanString(sc.nextLine());
+					final String response1 = readLine(sc);
 					final boolean gotItRight = response1.length() == 0
 							|| Character.toUpperCase(response1.charAt(0)) == 'Y';
 					if (gotItRight) {
@@ -574,7 +577,7 @@ public class FlashCardsGame {
 					break;
 				}
 				++nWrongResponses;
-				System.out.printf("::%s::\n\n", answer);
+				System.out.printf("%s\n\n", answer);
 			}
 			if (editProperties && madeChangesFrom(oldValues)) {
 				if (madeChangesFrom(oldValues)) {
@@ -594,7 +597,10 @@ public class FlashCardsGame {
 		}
 	}
 
-	static String cleanUpString(final String s) {
+	static String CleanString(final String s) {
+		if (s == null) {
+			return "";
+		}
 		return s.trim().replaceAll(_WhiteSpace, " ");
 	}
 
@@ -618,11 +624,10 @@ public class FlashCardsGame {
 						propertiesFilePath.substring(0, lastDotIndex) + _PropertiesEnding);
 			}
 		}
+
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, propertiesFile);
 			flashCardsGame.mainLoop(sc);
-		} catch (final Exception e) {
-			e.printStackTrace();
 		}
 	}
 

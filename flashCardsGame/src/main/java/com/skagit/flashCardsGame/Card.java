@@ -11,8 +11,8 @@ class Card {
 
 	Card(final int cardNumber, final String aSide, final String bSide) {
 		_cardNumber = cardNumber;
-		_aSide = FlashCardsGame.cleanUpString(aSide);
-		_bSide = FlashCardsGame.cleanUpString(bSide);
+		_aSide = FlashCardsGame.CleanString(aSide);
+		_bSide = FlashCardsGame.CleanString(bSide);
 		_comment = "";
 	}
 
