@@ -10,16 +10,16 @@ Must do classifier-4
   8.	cô ấy:                            	she or her
   9.	hai quyển:                        	these two
 
- 10.	Hai quyển vở này đều là của tôi:  	these two notebooks are both mine
- 11.	Tôi thích cốc bia Việt Nam này:   	I like this cup of VN beer
- 12.	Cốc cà phê đó là của bố:          	that cup of coffee is dad's
- 13.	Tôi thích bát canh này:           	I like this bowl of soup
- 14.	Những tờ giấy đó là của ai:       	whose pieces of paper are those
- 15.	Những tờ giấy đó là của chúng tôi:	those pieces of paper are ours
- 16.	Bức tranh này là của anh trai:    	this picture is the older brother's
- 17.	Bức tranh này là của ai:          	whose picture is this
- 18.	Chị gái thích bức ảnh này:        	the older sister likes this photo
- 19.	Anh trai không thích bức ảnh kia: 	the older brother doesn't like that photo over there
+ 10.	hai quyển vở này đều là của tôi:  	these two notebooks are both mine
+ 11.	tôi thích cốc bia Việt Nam này:   	I like this cup of VN beer
+ 12.	cốc cà phê đó là của bố:          	that cup of coffee is dad's
+ 13.	tôi thích bát canh này:           	I like this bowl of soup
+ 14.	những tờ giấy đó là của ai:       	whose pieces of paper are those
+ 15.	những tờ giấy đó là của chúng tôi:	those pieces of paper are ours
+ 16.	bức tranh này là của anh trai:    	this picture is the older brother's
+ 17.	bức tranh này là của ai:          	whose picture is this
+ 18.	chị gái thích bức ảnh này:        	the older sister likes this photo
+ 19.	anh trai không thích bức ảnh kia: 	the older brother doesn't like that photo over there
 
  20.	Việt Nam:                         	Vietnam
  21.	nước Mỹ:                          	United States
@@ -57,7 +57,7 @@ Must do classifier-4
  50.	dao:                              	a knife
  51.	cảnh sát:                         	a police officer
  52.	súng:                             	a gun
- 53.	táo:                              	a apple
+ 53.	táo:                              	an apple
  54.	chuối:                            	a banana
  55.	dâu tây:                          	a strawberry
  56.	dưa hấu:                          	a watermelon

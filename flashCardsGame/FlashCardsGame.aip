@@ -49,7 +49,7 @@
     <ROW File="LingoDeer.txt" Component_="Basics.txt" FileName="LINGOD~1.TXT|LingoDeer.txt" Attributes="0" SourcePath="Data\LingoDeer.txt" SelfReg="false"/>
     <ROW File="Tran.properties" Component_="Basics.txt" FileName="TRAN~1.PRO|Tran.properties" Attributes="0" SourcePath="Data\Tran.properties" SelfReg="false"/>
     <ROW File="Tran.txt" Component_="Basics.txt" FileName="Tran.txt" Attributes="0" SourcePath="Data\Tran.txt" SelfReg="false"/>
-    <ROW File="FlashCardsGame.bat" Component_="FlashCardsGame.jar" FileName="FLASHC~1.BAT|FlashCardsGame.bat" Attributes="0" SourcePath="FlashCardsGame.bat" SelfReg="false"/>
+    <ROW File="FlashCardsGame.bat" Component_="FlashCardsGame.jar" FileName="FLASHC~1.BAT|FlashCardsGame.bat" Attributes="0" SourcePath="FlashCardsSandbox\FlashCardsGame.bat" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>

@@ -30,6 +30,7 @@ public class FlashCardsGame {
 	final static char _QuitSymbol = 'Q';
 	final static char _EditPropertiesSymbol = 'E';
 	final static char _RestartSymbol = 'R';
+	final static char _B_ASymbol = 'B';
 	final static String _IntroString;
 
 	final static File _UserDirFile = new File(System.getProperty("user.dir"));
@@ -48,7 +49,7 @@ public class FlashCardsGame {
 	final private static String _FieldSeparator0 = "\\s*\\t\\s*";
 	final private static String _FieldSeparator = "(\s*\t\s*)+";
 	final private static String _WhiteSpace = "\s+";
-	final private static String _DefaultPropertiesFilePath = "Data/Tran";
+	final private static String _DefaultPropertiesFilePath = "Data/LingoDeer";
 	final private static String _PropertiesEnding = ".properties";
 
 	final private File _propertiesFile;
@@ -88,7 +89,7 @@ public class FlashCardsGame {
 
 		final String quizTypeProperty = keyToString(_properties, "Quiz.Type");
 		_quizIsA_B = quizTypeProperty.length() == 0
-				|| Character.toUpperCase(quizTypeProperty.charAt(0)) != 'B';
+				|| Character.toUpperCase(quizTypeProperty.charAt(0)) != _B_ASymbol;
 		reWritePropertiesFile();
 		_printedSomething = false;
 		loadCards();
