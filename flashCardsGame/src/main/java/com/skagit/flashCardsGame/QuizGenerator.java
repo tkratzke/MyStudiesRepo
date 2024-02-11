@@ -10,19 +10,7 @@ public class QuizGenerator {
 	}
 
 	static enum TypeOfChange {
-		WIN, LOSS, PARAMETERS_CHANGED, NO_STATUS_CHANGE
-	}
-
-	static class QuizPlusStatusChange {
-		public final QuizPlus _oldQuizPlus;
-		public final QuizPlus _newQuizPlus;
-		public final QuizGenerator.TypeOfChange _typeOfChange;
-		public QuizPlusStatusChange(final QuizPlus oldQuizPlus, final QuizPlus newQuizPlus,
-				final QuizGenerator.TypeOfChange typeOfChange) {
-			_oldQuizPlus = oldQuizPlus;
-			_newQuizPlus = newQuizPlus;
-			_typeOfChange = typeOfChange;
-		}
+		NOTHING_TO_SOMETHING, RESTART, WIN, LOSS, PARAMETERS_CHANGED, NO_STATUS_CHANGE
 	}
 
 	private int _topIndexInCards;
@@ -299,15 +287,27 @@ public class QuizGenerator {
 		return String.format("\n\tTCI(Top Card Index<%d>)", _topIndexInCards);
 	}
 
-	void modifyFromFields(final String[] fields) {
+	void modifySingleProperty(final String[] fields) {
 		final String field0 = fields[0].toUpperCase();
 		if (field0.equalsIgnoreCase("TCI")) {
+			final int oldTopIndexInCards = _topIndexInCards;
 			_topIndexInCards = FlashCardsGame.fieldsToInt(fields, _topIndexInCards);
-			_changedQuizGeneratorParameters = true;
+			_changedQuizGeneratorParameters = oldTopIndexInCards != _topIndexInCards;
 		}
 	}
 
-	QuizPlusStatusChange getStatusChange(final int nCards, final QuizPlus quizPlus) {
+	QuizPlusStatusChange getStatusChange(final int nCards, final boolean restarted,
+			final QuizPlus quizPlus) {
+		if (restarted) {
+			final QuizPlus newQuizPlus = quizPlus;
+			newQuizPlus.resetForFullMode();
+			return new QuizPlusStatusChange(quizPlus, newQuizPlus, TypeOfChange.RESTART);
+		}
+		if (quizPlus == null) {
+			final QuizPlus newQuizPlus = createNewQuizPlus(nCards);
+			return new QuizPlusStatusChange(quizPlus, newQuizPlus,
+					TypeOfChange.NOTHING_TO_SOMETHING);
+		}
 		if (_changedQuizGeneratorParameters) {
 			final QuizPlus newQuizPlus = createNewQuizPlus(nCards);
 			_changedQuizGeneratorParameters = false;

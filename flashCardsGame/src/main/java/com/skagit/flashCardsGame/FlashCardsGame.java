@@ -26,17 +26,22 @@ public class FlashCardsGame {
 	final static char _DnArrow = '\u2193';
 	final static char _EmptySet = '\u2205';
 	final static char _ReturnSymbol = '\u23CE';
-	final static char _QuitSymbol = '$';
-	final static char _EditPropertiesSymbol = '#';
+	final static char _CheckSymbol = _ReturnSymbol;
+	final static char _QuitSymbol = 'Q';
+	final static char _EditPropertiesSymbol = 'E';
+	final static char _RestartSymbol = 'R';
 	final static String _IntroString;
+
+	final static File _UserDirFile = new File(System.getProperty("user.dir"));
 
 	final private static long _Seed;
 	static {
 		final BigInteger bigInteger = new BigInteger(
 				"1953102919570208198208131985030219910105201301192015102720231229");
 		_Seed = bigInteger.mod(new BigInteger(Long.toString(Long.MAX_VALUE))).longValue();
-		_IntroString = String.format("%c=\"Check Mode,\" %c=\"Edit Properties\"",
-				_ReturnSymbol, _EditPropertiesSymbol);
+		_IntroString = String.format(
+				"%c=Check Mode, %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
+				_CheckSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
 	}
 	/** Either of the following two FieldSeparators seems to work. */
 	@SuppressWarnings("unused")
@@ -54,8 +59,25 @@ public class FlashCardsGame {
 	QuizPlus _quizPlus;
 	boolean _printedSomething;
 
-	FlashCardsGame(final Scanner sc, final File propertiesFile) {
-		_propertiesFile = propertiesFile;
+	FlashCardsGame(final Scanner sc, final String[] args) {
+		final int nArgs = args.length;
+		final String propertiesFilePath;
+		if (nArgs > 0 && args[0].length() > 0) {
+			propertiesFilePath = args[0];
+		} else {
+			propertiesFilePath = _DefaultPropertiesFilePath;
+		}
+		if (propertiesFilePath.toLowerCase().endsWith(_PropertiesEnding)) {
+			_propertiesFile = new File(propertiesFilePath);
+		} else {
+			final int lastDotIndex = propertiesFilePath.lastIndexOf('.');
+			if (lastDotIndex == -1) {
+				_propertiesFile = new File(propertiesFilePath + _PropertiesEnding);
+			} else {
+				_propertiesFile = new File(
+						propertiesFilePath.substring(0, lastDotIndex) + _PropertiesEnding);
+			}
+		}
 		_properties = new Properties();
 		try (
 				InputStreamReader in = new InputStreamReader(new FileInputStream(_propertiesFile),
@@ -63,6 +85,7 @@ public class FlashCardsGame {
 			_properties.load(in);
 		} catch (final IOException e) {
 		}
+
 		final String quizTypeProperty = keyToString(_properties, "Quiz.Type");
 		_quizIsA_B = quizTypeProperty.length() == 0
 				|| Character.toUpperCase(quizTypeProperty.charAt(0)) != 'B';
@@ -320,7 +343,7 @@ public class FlashCardsGame {
 			final long successRateI = Math.round((100d * nRights) / nTrials);
 			s += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%)", nRights, nWrongs, successRateI);
 		}
-		return s + String.format(" (%c=Quit): %s ", _QuitSymbol, clue);
+		return s + String.format(": %s ", clue);
 	}
 
 	final String getTypeIIPrompt() {
@@ -341,15 +364,8 @@ public class FlashCardsGame {
 			if (field0Len == 0) {
 				/** Done editing. */
 				return;
-			} else if (field0Len == 1) {
-				final char field00 = field0.charAt(0);
-				if (field00 == 'R') {
-					/** Simply restart the current quiz. */
-					_quizPlus.resetForFullMode();
-					continue;
-				}
 			} else {
-				_quizGenerator.modifyFromFields(fields);
+				_quizGenerator.modifySingleProperty(fields);
 			}
 		}
 	}
@@ -501,54 +517,27 @@ public class FlashCardsGame {
 
 	void mainLoop(final Scanner sc) {
 		final int nCards = _cards.length;
-		_quizPlus = _quizGenerator.createNewQuizPlus(nCards);
-		final String summaryString = _quizPlus.getSummaryString();
-		if (_printedSomething) {
-			System.out.printf("\n\n");
-		}
-		_printedSomething = true;
-		System.out.printf("%s\n%s\nInitial Quiz Summary %s\n\n", //
-				getString(), _IntroString, summaryString);
 		long[] oldValues = storeValues();
-		/** Main loop: */
-		Outside_Loop : for (boolean keepGoing = true; keepGoing;) {
-			/** Check for a win, a loss, or a parameters-changed during the last pass. */
-			final QuizGenerator.QuizPlusStatusChange quizPlusStatusChange = _quizGenerator
-					.getStatusChange(nCards, _quizPlus);
+		_quizPlus = null;
+		boolean restarted = false;
+		OUTSIDE_LOOP : for (boolean keepGoing = true; keepGoing;) {
+			/** Check for a status change from _quizPlus. */
+			final QuizPlusStatusChange quizPlusStatusChange = _quizGenerator
+					.getStatusChange(nCards, restarted, _quizPlus);
+			_quizPlus = quizPlusStatusChange._newQuizPlus;
+			restarted = false;
 			final QuizGenerator.TypeOfChange typeOfChange = quizPlusStatusChange._typeOfChange;
-			switch (typeOfChange) {
-				case LOSS :
-				case WIN :
-				case PARAMETERS_CHANGED :
-					final String reasonForChangeString;
-					if (typeOfChange == QuizGenerator.TypeOfChange.LOSS) {
-						reasonForChangeString = "Critical Only:";
-					} else if (typeOfChange == QuizGenerator.TypeOfChange.WIN) {
-						if (quizPlusStatusChange._oldQuizPlus._criticalQuizIndicesOnly) {
-							reasonForChangeString = "Re-do Original Quiz:";
-						} else {
-							reasonForChangeString = "Moving on!:";
-						}
-					} else {
-						/** We have a PARAMETERS_CHANGED. */
-						reasonForChangeString = "User Changed Properties:";
-					}
-					final String oldSummaryString = quizPlusStatusChange._oldQuizPlus
-							.getSummaryString();
-					final String newSummaryString = quizPlusStatusChange._newQuizPlus
-							.getSummaryString();
-					if (_printedSomething) {
-						System.out.println();
-						System.out.println();
-					}
-					_printedSomething = true;
-					System.out.printf("%s\n%s\n%s %s%c%s\n\n", //
-							getString(), _IntroString, reasonForChangeString, oldSummaryString,
-							_RtArrow, newSummaryString);
-					break;
-				case NO_STATUS_CHANGE :
-					/** No win or loss, and no adjustments from the user. Do nothing. */
-					break;
+			if (typeOfChange != QuizGenerator.TypeOfChange.NO_STATUS_CHANGE) {
+				if (_printedSomething) {
+					System.out.println();
+					System.out.println();
+				}
+				_printedSomething = true;
+				System.out.printf("%s\n%s %s\n\n%s\n\n", //
+						getString(), //
+						quizPlusStatusChange._reasonForChangeString,
+						quizPlusStatusChange._transitionString, //
+						_IntroString);
 			}
 			if (madeChangesFrom(oldValues)) {
 				updateProperties();
@@ -556,8 +545,7 @@ public class FlashCardsGame {
 				oldValues = storeValues();
 			}
 
-			/** The following "inner loop" is to get an answer to a clue. */
-			_quizPlus = quizPlusStatusChange._newQuizPlus;
+			/** INSIDE_LOOP is to get an answer to a clue. */
 			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
 			final Card card = _cards[indexInCards];
 			final String clue = _quizIsA_B ? card._aSide : card._bSide;
@@ -565,25 +553,25 @@ public class FlashCardsGame {
 			final String typeIPrompt = getTypeIPrompt(indexInCards, clue);
 			boolean gotItRight = false;
 			int nWrongResponses = 0;
-			for (; !gotItRight; ++nWrongResponses) {
+			INSIDE_LOOP : for (; !gotItRight; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
 				final String response0 = readLine(sc);
 				if (response0.length() == 1) {
-					/** Either quit or edit the properties. */
+					/** Either quit, restart, or edit the properties. */
 					final char char0 = response0.charAt(0);
 					if (char0 == _QuitSymbol) {
 						keepGoing = false;
-						break;
+						break INSIDE_LOOP;
 					} else if (char0 == _EditPropertiesSymbol) {
 						modifyProperties(sc);
 						if (madeChangesFrom(oldValues)) {
-							updateProperties();
-							reWritePropertiesFile();
-							oldValues = storeValues();
-							continue Outside_Loop;
+							continue OUTSIDE_LOOP;
 						}
-						/** Since we didn't change anything, we keep going with this question. */
-						continue;
+						continue INSIDE_LOOP;
+					} else if (char0 == _RestartSymbol) {
+						_quizPlus.resetForFullMode();
+						restarted = true;
+						continue OUTSIDE_LOOP;
 					}
 				}
 				if (response0.length() == 0) {
@@ -619,28 +607,8 @@ public class FlashCardsGame {
 	}
 
 	public static void main(final String[] args) {
-		final int nArgs = args.length;
-		final String propertiesFilePath;
-		if (nArgs > 0 && args[0].length() > 0) {
-			propertiesFilePath = args[0];
-		} else {
-			propertiesFilePath = _DefaultPropertiesFilePath;
-		}
-		final File propertiesFile;
-		if (propertiesFilePath.toLowerCase().endsWith(_PropertiesEnding)) {
-			propertiesFile = new File(propertiesFilePath);
-		} else {
-			final int lastDotIndex = propertiesFilePath.lastIndexOf('.');
-			if (lastDotIndex == -1) {
-				propertiesFile = new File(propertiesFilePath + _PropertiesEnding);
-			} else {
-				propertiesFile = new File(
-						propertiesFilePath.substring(0, lastDotIndex) + _PropertiesEnding);
-			}
-		}
-
 		try (Scanner sc = new Scanner(System.in)) {
-			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, propertiesFile);
+			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
 			flashCardsGame.mainLoop(sc);
 		}
 	}
