@@ -26,6 +26,7 @@ public class FlashCardsGame {
 	final static char _DnArrow = '\u2193';
 	final static char _EmptySet = '\u2205';
 	final static char _ReturnSymbol = '\u23CE';
+	final static char _QuitSymbol = '$';
 	final static char _EditPropertiesSymbol = '#';
 	final static String _IntroString;
 
@@ -265,8 +266,21 @@ public class FlashCardsGame {
 	}
 
 	void reWritePropertiesFile() {
+		final Properties properties;
+		final long shuffleCardsSeed = keyToLong(_properties, "Shuffle.Cards.Seed", 0); //
+		if (shuffleCardsSeed < 0) {
+			properties = (Properties) _properties.clone();
+			final int topIndexInCards0 = keyToInt(properties, "Top.Card.Index", 1);
+			final int maxNNewWords = keyToInt(properties, "Number.Of.New.Words", 1);
+			final int maxNRecentWords = keyToInt(properties, "Number.Of.Recent.Words", 3);
+			final int topIndexInCards1 = Math.min(topIndexInCards0,
+					maxNNewWords + maxNRecentWords - 1);
+			properties.put("Top.Card.Index", Long.toString(topIndexInCards1));
+		} else {
+			properties = _properties;
+		}
 		try (FileOutputStream fos = new FileOutputStream(_propertiesFile)) {
-			_properties.store(fos, /* comments= */null);
+			properties.store(fos, /* comments= */null);
 		} catch (final IOException e) {
 		}
 	}
@@ -306,17 +320,16 @@ public class FlashCardsGame {
 			final long successRateI = Math.round((100d * nRights) / nTrials);
 			s += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%)", nRights, nWrongs, successRateI);
 		}
-		return s + String.format(" (Q=Quit): %s ", clue);
+		return s + String.format(" (%c=Quit): %s ", _QuitSymbol, clue);
 	}
 
 	final String getTypeIIPrompt() {
-		final String prompt = String.format("\nEnter: %c=Done, Q=Quit, R=Restart same quiz ",
+		final String prompt = String.format("Enter: %c=Done, R=Restart same quiz ",
 				_ReturnSymbol);
 		return prompt + _quizGenerator.getTypeIIPrompt();
 	}
 
-	/** Returns true if we're asked to keep going (not quit). */
-	boolean modifyProperties(final Scanner sc) {
+	void modifyProperties(final Scanner sc) {
 		for (;;) {
 			final String prompt = getTypeIIPrompt();
 			System.out.printf("%s: ", prompt);
@@ -326,14 +339,11 @@ public class FlashCardsGame {
 					|| fields[0].length() == 0) ? "" : fields[0];
 			final int field0Len = field0.length();
 			if (field0Len == 0) {
-				/** Done and keep going. */
-				return true;
+				/** Done editing. */
+				return;
 			} else if (field0Len == 1) {
 				final char field00 = field0.charAt(0);
-				if (field00 == 'Q') {
-					/** Done and quit. */
-					return false;
-				} else if (field00 == 'R') {
+				if (field00 == 'R') {
 					/** Simply restart the current quiz. */
 					_quizPlus.resetForFullMode();
 					continue;
@@ -490,43 +500,49 @@ public class FlashCardsGame {
 	}
 
 	void mainLoop(final Scanner sc) {
-		int nCards = _cards.length;
+		final int nCards = _cards.length;
 		_quizPlus = _quizGenerator.createNewQuizPlus(nCards);
-		final String quizString = _quizPlus.getString();
+		final String summaryString = _quizPlus.getSummaryString();
 		if (_printedSomething) {
 			System.out.printf("\n\n");
 		}
 		_printedSomething = true;
-		System.out.printf("%s\n%s\n\nInitial Quiz Summary (%s): %s\n\n", getString(),
-				_IntroString, getCoreFilePath(), quizString);
+		System.out.printf("%s\n%s\n%s Initial Quiz Summary %s\n\n", //
+				getString(), _IntroString, getCoreFilePath(), summaryString);
 		long[] oldValues = storeValues();
 		/** Main loop: */
-		for (boolean keepGoing = true; keepGoing;) {
-			nCards = _cards.length;
-			final QuizGenerator.QuizPlusTransition quizPlusTransition = _quizGenerator
-					.reactToQuizPlus(nCards, _quizPlus);
-			switch (quizPlusTransition._typeOfChange) {
+		Outside_Loop : for (boolean keepGoing = true; keepGoing;) {
+			/** Check for a win, a loss, or a parameters-changed during the last pass. */
+			final QuizGenerator.QuizPlusStatusChange quizPlusStatusChange = _quizGenerator
+					.getStatusChange(nCards, _quizPlus);
+			final QuizGenerator.TypeOfChange typeOfChange = quizPlusStatusChange._typeOfChange;
+			switch (typeOfChange) {
 				case LOSS :
 				case WIN :
-					final String winLossString;
-					if (quizPlusTransition._typeOfChange == QuizGenerator.TypeOfChange.LOSS) {
-						winLossString = "Critical Only:";
-					} else {
-						if (quizPlusTransition._oldQuizPlus._criticalQuizIndicesOnly) {
-							winLossString = "Re-do Original Quiz:";
+				case PARAMETERS_CHANGED :
+					final String reasonForChangeString;
+					if (typeOfChange == QuizGenerator.TypeOfChange.LOSS) {
+						reasonForChangeString = "Critical Only:";
+					} else if (typeOfChange == QuizGenerator.TypeOfChange.WIN) {
+						if (quizPlusStatusChange._oldQuizPlus._criticalQuizIndicesOnly) {
+							reasonForChangeString = "Re-do Original Quiz:";
 						} else {
-							winLossString = String.format("Moving on within %s:", getCoreFilePath());
+							reasonForChangeString = String.format("Moving on within %s:",
+									getCoreFilePath());
 						}
+					} else {
+						/** We have a PARAMETERS_CHANGED. */
+						reasonForChangeString = "New Quiz as per User Input";
 					}
-					final String oldSummary = quizPlusTransition._oldQuizPlus.getSummaryString();
-					final String newSummary = quizPlusTransition._newQuizPlus.getSummaryString();
-					System.out.printf("\n%s %s %c %s %s\n", winLossString, oldSummary, _RtArrow,
-							newSummary, _IntroString);
+					final String oldSummaryString = quizPlusStatusChange._oldQuizPlus
+							.getSummaryString();
+					final String newSummaryString = quizPlusStatusChange._newQuizPlus
+							.getSummaryString();
+					System.out.printf("%s\n%s\n%s %s %s%c%s\n\n", //
+							getString(), _IntroString, getCoreFilePath(), reasonForChangeString,
+							oldSummaryString, _RtArrow, newSummaryString);
 					break;
-				case ADJUST :
-					System.out.print("\nNew Quiz as per User Input.\n");
-					break;
-				case NULL :
+				case NO_STATUS_CHANGE :
 					/** No win or loss, and no adjustments from the user. Do nothing. */
 					break;
 			}
@@ -535,64 +551,59 @@ public class FlashCardsGame {
 				reWritePropertiesFile();
 				oldValues = storeValues();
 			}
-			_quizPlus = quizPlusTransition._newQuizPlus;
+
+			/** The following "inner loop" is to get an answer to a clue. */
+			_quizPlus = quizPlusStatusChange._newQuizPlus;
 			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
 			final Card card = _cards[indexInCards];
 			final String clue = _quizIsA_B ? card._aSide : card._bSide;
 			final String answer = _quizIsA_B ? card._bSide : card._aSide;
 			final String typeIPrompt = getTypeIPrompt(indexInCards, clue);
-			boolean gotRightResponse = false;
+			boolean gotItRight = false;
 			int nWrongResponses = 0;
-			boolean editProperties = false;
 			for (;; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
 				final String response0 = readLine(sc);
 				if (response0.length() == 1) {
+					/** Either quit or edit the properties. */
 					final char char0 = response0.charAt(0);
-					if (char0 == 'Q') {
-						editProperties = true;
+					if (char0 == _QuitSymbol) {
 						keepGoing = false;
 						break;
 					} else if (char0 == _EditPropertiesSymbol) {
-						editProperties = true;
-						keepGoing = modifyProperties(sc);
-						break;
+						modifyProperties(sc);
+						if (madeChangesFrom(oldValues)) {
+							updateProperties();
+							reWritePropertiesFile();
+							oldValues = storeValues();
+							continue Outside_Loop;
+						}
+						/** Since we didn't change anything, we keep going with this question. */
+						continue;
 					}
 				}
 				if (response0.length() == 0) {
 					System.out.printf("%s Did you get it right (%c or Y/N)?\n", answer,
 							_ReturnSymbol);
 					final String response1 = readLine(sc);
-					final boolean gotItRight = response1.length() == 0
+					gotItRight = response1.length() == 0
 							|| Character.toUpperCase(response1.charAt(0)) == 'Y';
-					if (gotItRight) {
-						gotRightResponse = true;
-						break;
-					} else {
-						++nWrongResponses;
+					if (!gotItRight) {
 						System.out.println("Try again.");
 					}
-				} else if (response0.equalsIgnoreCase(answer)) {
-					gotRightResponse = true;
-					break;
-				}
-				++nWrongResponses;
-				System.out.printf("%s\n\n", answer);
-			}
-			if (editProperties && madeChangesFrom(oldValues)) {
-				if (madeChangesFrom(oldValues)) {
-					updateProperties();
-					if (_printedSomething) {
-						System.out.print("\n\n");
+				} else {
+					gotItRight = response0.equalsIgnoreCase(answer);
+					if (!gotItRight) {
+						System.out.printf("%s\n\n", answer);
 					}
-					_printedSomething = true;
-					System.out.printf("Properties were manually adjusted to:\n%s\n", getString());
-					reWritePropertiesFile();
-					oldValues = storeValues();
+				}
+				if (!gotItRight) {
+					++nWrongResponses;
 				}
 			}
-			if (gotRightResponse) {
+			if (gotItRight) {
 				_quizPlus.reactToRightResponse(/* wasWrongAtLeastOnce= */nWrongResponses > 0);
+				break;
 			}
 		}
 	}

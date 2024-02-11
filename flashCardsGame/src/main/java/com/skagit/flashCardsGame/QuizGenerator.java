@@ -6,18 +6,18 @@ import java.util.Random;
 
 public class QuizGenerator {
 	static enum TypeOfDecay {
-		EXPONENTIAL, LINEAR, NONE
+		EXPONENTIAL, LINEAR, NO_DECAY
 	}
 
 	static enum TypeOfChange {
-		WIN, LOSS, ADJUST, NULL
+		WIN, LOSS, PARAMETERS_CHANGED, NO_STATUS_CHANGE
 	}
 
-	static class QuizPlusTransition {
+	static class QuizPlusStatusChange {
 		public final QuizPlus _oldQuizPlus;
 		public final QuizPlus _newQuizPlus;
 		public final QuizGenerator.TypeOfChange _typeOfChange;
-		public QuizPlusTransition(final QuizPlus oldQuizPlus, final QuizPlus newQuizPlus,
+		public QuizPlusStatusChange(final QuizPlus oldQuizPlus, final QuizPlus newQuizPlus,
 				final QuizGenerator.TypeOfChange typeOfChange) {
 			_oldQuizPlus = oldQuizPlus;
 			_newQuizPlus = newQuizPlus;
@@ -36,7 +36,7 @@ public class QuizGenerator {
 
 	private final Random _r;
 
-	private boolean _adjustCurrentQuiz;
+	private boolean _changedQuizGeneratorParameters;
 
 	QuizGenerator(final Properties properties, final int nCards, final long seed) {
 		_topIndexInCards = FlashCardsGame.keyToInt(properties, "Top.Card.Index", 1);
@@ -45,7 +45,7 @@ public class QuizGenerator {
 				"Number.Of.Times.To.Show.New.Words", 1);
 		_maxNRecentWords = FlashCardsGame.keyToInt(properties, "Number.Of.Recent.Words", 3);
 		_typeOfDecay = FlashCardsGame.keyToTypeOfDecay(properties, "Type.Of.Decay",
-				TypeOfDecay.NONE);
+				TypeOfDecay.NO_DECAY);
 		_failureRateI = FlashCardsGame.keyToPercentI(properties, "Failure.Rate", 50);
 		_shuffleCardsSeed = FlashCardsGame.keyToLong(properties, "Shuffle.Cards.Seed", 0);
 		if (_shuffleCardsSeed < 0) {
@@ -59,7 +59,7 @@ public class QuizGenerator {
 				"Percentage.For.Recents", 50);
 		_r = new Random();
 		_r.setSeed(seed);
-		_adjustCurrentQuiz = false;
+		_changedQuizGeneratorParameters = false;
 		correctQuizGeneratorProperties(nCards);
 	}
 
@@ -143,7 +143,7 @@ public class QuizGenerator {
 		 */
 		final int topChoiceForSlots = _topIndexInCards - nNewWords;
 		final int nChoicesForSlots = topChoiceForSlots + 1;
-		if (nRecentWords >= nChoicesForSlots || _typeOfDecay == TypeOfDecay.NONE) {
+		if (nRecentWords >= nChoicesForSlots || _typeOfDecay == TypeOfDecay.NO_DECAY) {
 			for (int k = 0; k < nRecentWords; ++k) {
 				array[nNewWords + k] = topChoiceForSlots - (k % nChoicesForSlots);
 			}
@@ -303,16 +303,17 @@ public class QuizGenerator {
 		final String field0 = fields[0].toUpperCase();
 		if (field0.equalsIgnoreCase("TCI")) {
 			_topIndexInCards = FlashCardsGame.fieldsToInt(fields, _topIndexInCards);
-			_adjustCurrentQuiz = true;
+			_changedQuizGeneratorParameters = true;
 		}
 	}
 
-	QuizPlusTransition reactToQuizPlus(final int nCards, final QuizPlus quizPlus) {
-		if (_adjustCurrentQuiz) {
+	QuizPlusStatusChange getStatusChange(final int nCards, final QuizPlus quizPlus) {
+		if (_changedQuizGeneratorParameters) {
 			final QuizPlus newQuizPlus = createNewQuizPlus(nCards);
-			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.ADJUST);
+			_changedQuizGeneratorParameters = false;
+			return new QuizPlusStatusChange(quizPlus, newQuizPlus,
+					TypeOfChange.PARAMETERS_CHANGED);
 		}
-		_adjustCurrentQuiz = false;
 		if (quizPlus.haveWon(_failureRateI)) {
 			final QuizPlus newQuizPlus;
 			if (!quizPlus._criticalQuizIndicesOnly) {
@@ -323,14 +324,14 @@ public class QuizGenerator {
 				newQuizPlus = new QuizPlus(quizPlus);
 				newQuizPlus.resetForFullMode();
 			}
-			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.WIN);
+			return new QuizPlusStatusChange(quizPlus, newQuizPlus, TypeOfChange.WIN);
 		}
 		if (quizPlus.haveLost(_failureRateI)) {
 			final QuizPlus newQuizPlus = new QuizPlus(quizPlus);
 			newQuizPlus.adjustQuizForLoss(_r);
-			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.LOSS);
+			return new QuizPlusStatusChange(quizPlus, newQuizPlus, TypeOfChange.LOSS);
 		}
-		return new QuizPlusTransition(quizPlus, quizPlus, TypeOfChange.NULL);
+		return new QuizPlusStatusChange(quizPlus, quizPlus, TypeOfChange.NO_STATUS_CHANGE);
 	}
 
 	String getString() {
