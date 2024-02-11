@@ -485,7 +485,7 @@ public class FlashCardsGame {
 	}
 
 	final String getString() {
-		return String.format("%s, %s", _quizIsA_B ? "A_B" : "B_A",
+		return String.format("%s: %s, %s", getCoreFilePath(), _quizIsA_B ? "A_B" : "B_A",
 				_quizGenerator.getString());
 	}
 
@@ -507,8 +507,8 @@ public class FlashCardsGame {
 			System.out.printf("\n\n");
 		}
 		_printedSomething = true;
-		System.out.printf("%s\n%s\n%s Initial Quiz Summary %s\n\n", //
-				getString(), _IntroString, getCoreFilePath(), summaryString);
+		System.out.printf("%s\n%s\nInitial Quiz Summary %s\n\n", //
+				getString(), _IntroString, summaryString);
 		long[] oldValues = storeValues();
 		/** Main loop: */
 		Outside_Loop : for (boolean keepGoing = true; keepGoing;) {
@@ -527,20 +527,24 @@ public class FlashCardsGame {
 						if (quizPlusStatusChange._oldQuizPlus._criticalQuizIndicesOnly) {
 							reasonForChangeString = "Re-do Original Quiz:";
 						} else {
-							reasonForChangeString = String.format("Moving on within %s:",
-									getCoreFilePath());
+							reasonForChangeString = "Moving on!:";
 						}
 					} else {
 						/** We have a PARAMETERS_CHANGED. */
-						reasonForChangeString = "New Quiz as per User Input";
+						reasonForChangeString = "User Changed Properties:";
 					}
 					final String oldSummaryString = quizPlusStatusChange._oldQuizPlus
 							.getSummaryString();
 					final String newSummaryString = quizPlusStatusChange._newQuizPlus
 							.getSummaryString();
-					System.out.printf("%s\n%s\n%s %s %s%c%s\n\n", //
-							getString(), _IntroString, getCoreFilePath(), reasonForChangeString,
-							oldSummaryString, _RtArrow, newSummaryString);
+					if (_printedSomething) {
+						System.out.println();
+						System.out.println();
+					}
+					_printedSomething = true;
+					System.out.printf("%s\n%s\n%s %s%c%s\n\n", //
+							getString(), _IntroString, reasonForChangeString, oldSummaryString,
+							_RtArrow, newSummaryString);
 					break;
 				case NO_STATUS_CHANGE :
 					/** No win or loss, and no adjustments from the user. Do nothing. */
@@ -561,7 +565,7 @@ public class FlashCardsGame {
 			final String typeIPrompt = getTypeIPrompt(indexInCards, clue);
 			boolean gotItRight = false;
 			int nWrongResponses = 0;
-			for (;; ++nWrongResponses) {
+			for (; !gotItRight; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
 				final String response0 = readLine(sc);
 				if (response0.length() == 1) {
@@ -583,8 +587,8 @@ public class FlashCardsGame {
 					}
 				}
 				if (response0.length() == 0) {
-					System.out.printf("%s Did you get it right (%c or Y/N)?\n", answer,
-							_ReturnSymbol);
+					System.out.printf("%c%s%c Did you get it right (%c or Y/N)?\n", _RtArrow,
+							answer, _LtArrow, _ReturnSymbol);
 					final String response1 = readLine(sc);
 					gotItRight = response1.length() == 0
 							|| Character.toUpperCase(response1.charAt(0)) == 'Y';
@@ -594,16 +598,15 @@ public class FlashCardsGame {
 				} else {
 					gotItRight = response0.equalsIgnoreCase(answer);
 					if (!gotItRight) {
-						System.out.printf("%s\n\n", answer);
+						System.out.printf("%c%s%c\n\n", _RtArrow, answer, _LtArrow);
 					}
 				}
 				if (!gotItRight) {
 					++nWrongResponses;
 				}
-			}
-			if (gotItRight) {
-				_quizPlus.reactToRightResponse(/* wasWrongAtLeastOnce= */nWrongResponses > 0);
-				break;
+				if (gotItRight) {
+					_quizPlus.reactToRightResponse(/* wasWrongAtLeastOnce= */nWrongResponses > 0);
+				}
 			}
 		}
 	}
