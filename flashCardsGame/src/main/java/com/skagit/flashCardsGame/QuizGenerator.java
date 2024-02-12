@@ -5,14 +5,6 @@ import java.util.Properties;
 import java.util.Random;
 
 public class QuizGenerator {
-	static enum TypeOfDecay {
-		EXPONENTIAL, LINEAR, NO_DECAY
-	}
-
-	static enum TypeOfChange {
-		NOTHING_TO_SOMETHING, RESTART, WIN, LOSS, PARAMETERS_CHANGED, NO_STATUS_CHANGE
-	}
-
 	private int _topIndexInCards;
 	private final int _maxNNewWords;
 	private final int _maxNRecentWords;
@@ -20,46 +12,47 @@ public class QuizGenerator {
 	private final TypeOfDecay _typeOfDecay;
 	private final int _failureRateI;
 	private final int _percentageForRecentsI;
-	private final long _shuffleCardsSeed;
 
 	private final Random _r;
 
 	private boolean _changedQuizGeneratorParameters;
 
 	QuizGenerator(final Properties properties, final int nCards, final long seed) {
-		_topIndexInCards = FlashCardsGame.keyToInt(properties, "Top.Card.Index", 1);
-		_maxNNewWords = FlashCardsGame.keyToInt(properties, "Number.Of.New.Words", 1);
-		_nRepeatsOfNew = FlashCardsGame.keyToInt(properties,
-				"Number.Of.Times.To.Show.New.Words", 1);
-		_maxNRecentWords = FlashCardsGame.keyToInt(properties, "Number.Of.Recent.Words", 3);
-		_typeOfDecay = FlashCardsGame.keyToTypeOfDecay(properties, "Type.Of.Decay",
-				TypeOfDecay.NO_DECAY);
-		_failureRateI = FlashCardsGame.keyToPercentI(properties, "Failure.Rate", 50);
-		_shuffleCardsSeed = FlashCardsGame.keyToLong(properties, "Shuffle.Cards.Seed", 0);
-		if (_shuffleCardsSeed < 0) {
-			/**
-			 * For super-random, we don't allow the user to start anywhere except at the
-			 * beginning.
-			 */
+		_topIndexInCards = FlashCardsGame.PropertyPlusToInt(properties, PropertyPlus.TCI);
+		_maxNNewWords = FlashCardsGame.PropertyPlusToInt(properties,
+				PropertyPlus.N_NEW_WORDS);
+		_nRepeatsOfNew = FlashCardsGame.PropertyPlusToInt(properties,
+				PropertyPlus.N_TIMES_FOR_NEW_WORDS);
+		_maxNRecentWords = FlashCardsGame.PropertyPlusToInt(properties,
+				PropertyPlus.N_RECENT_WORDS);
+		if (seed < 0) {
 			_topIndexInCards = Math.min(_topIndexInCards, _maxNNewWords + _maxNRecentWords - 1);
 		}
-		_percentageForRecentsI = FlashCardsGame.keyToPercentI(properties,
-				"Percentage.For.Recents", 50);
+		_typeOfDecay = FlashCardsGame.PropertyPlusToTypeOfDecay(properties,
+				PropertyPlus.DECAY);
+		_failureRateI = FlashCardsGame.PropertyPlusToPercentI(properties, PropertyPlus.FR);
+		_percentageForRecentsI = FlashCardsGame.PropertyPlusToPercentI(properties,
+				PropertyPlus.PFR);
 		_r = new Random();
-		_r.setSeed(seed);
+		if (seed >= 0) {
+			_r.setSeed(Math.max(5, seed));
+		}
+		while (_r.nextLong() < Long.MAX_VALUE / 2) {
+		}
 		_changedQuizGeneratorParameters = false;
 		correctQuizGeneratorProperties(nCards);
 	}
 
 	void updateProperties(final Properties properties) {
-		properties.put("Top.Card.Index", Integer.toString(_topIndexInCards));
-		properties.put("Number.Of.New.Words", Integer.toString(_maxNNewWords));
-		properties.put("Number.Of.Times.To.Show.New.Words", Integer.toString(_nRepeatsOfNew));
-		properties.put("Number.Of.Recent.Words", Integer.toString(_maxNRecentWords));
-		properties.put("Type.Of.Decay", _typeOfDecay.name());
-		properties.put("Failure.Rate", Integer.toString(_failureRateI) + '%');
-		properties.put("Shuffle.Cards.Seed", Long.toString(_shuffleCardsSeed));
-		properties.put("Percentage.For.Recents",
+		properties.put(PropertyPlus.TCI._realName, Integer.toString(_topIndexInCards));
+		properties.put(PropertyPlus.N_NEW_WORDS._realName, Integer.toString(_maxNNewWords));
+		properties.put(PropertyPlus.N_TIMES_FOR_NEW_WORDS._realName,
+				Integer.toString(_nRepeatsOfNew));
+		properties.put(PropertyPlus.N_RECENT_WORDS._realName,
+				Integer.toString(_maxNRecentWords));
+		properties.put(PropertyPlus.DECAY._realName, _typeOfDecay.name());
+		properties.put(PropertyPlus.FR._realName, Integer.toString(_failureRateI) + '%');
+		properties.put(PropertyPlus.PFR._realName,
 				Integer.toString(_percentageForRecentsI) + '%');
 	}
 
@@ -69,25 +62,6 @@ public class QuizGenerator {
 
 	void correctQuizGeneratorProperties(final int nCards) {
 		_topIndexInCards = Math.max(0, Math.min(_topIndexInCards, nCards - 1));
-	}
-
-	public void shuffleCards(final Card[] cards) {
-		if (_shuffleCardsSeed == 0) {
-			return;
-		}
-		final Random r = new Random();
-		if (_shuffleCardsSeed > 0) {
-			r.setSeed(_shuffleCardsSeed);
-			while (Math.abs(r.nextLong()) < Long.MAX_VALUE / 10) {
-			}
-		}
-		final int nCards = cards.length;
-		for (int k = 0; k < nCards; ++k) {
-			final int kk = k + r.nextInt(nCards - k);
-			final Card card = cards[k];
-			cards[k] = cards[kk];
-			cards[kk] = card;
-		}
 	}
 
 	QuizPlus createNewQuizPlus(final int nCards) {
@@ -296,22 +270,22 @@ public class QuizGenerator {
 		}
 	}
 
-	QuizPlusStatusChange getStatusChange(final int nCards, final boolean restarted,
+	QuizPlusTransition getStatusChange(final int nCards, final boolean restarted,
 			final QuizPlus quizPlus) {
 		if (restarted) {
 			final QuizPlus newQuizPlus = quizPlus;
 			newQuizPlus.resetForFullMode();
-			return new QuizPlusStatusChange(quizPlus, newQuizPlus, TypeOfChange.RESTART);
+			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.RESTART);
 		}
 		if (quizPlus == null) {
 			final QuizPlus newQuizPlus = createNewQuizPlus(nCards);
-			return new QuizPlusStatusChange(quizPlus, newQuizPlus,
+			return new QuizPlusTransition(quizPlus, newQuizPlus,
 					TypeOfChange.NOTHING_TO_SOMETHING);
 		}
 		if (_changedQuizGeneratorParameters) {
 			final QuizPlus newQuizPlus = createNewQuizPlus(nCards);
 			_changedQuizGeneratorParameters = false;
-			return new QuizPlusStatusChange(quizPlus, newQuizPlus,
+			return new QuizPlusTransition(quizPlus, newQuizPlus,
 					TypeOfChange.PARAMETERS_CHANGED);
 		}
 		if (quizPlus.haveWon(_failureRateI)) {
@@ -324,28 +298,21 @@ public class QuizGenerator {
 				newQuizPlus = new QuizPlus(quizPlus);
 				newQuizPlus.resetForFullMode();
 			}
-			return new QuizPlusStatusChange(quizPlus, newQuizPlus, TypeOfChange.WIN);
+			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.WIN);
 		}
 		if (quizPlus.haveLost(_failureRateI)) {
 			final QuizPlus newQuizPlus = new QuizPlus(quizPlus);
 			newQuizPlus.adjustQuizForLoss(_r);
-			return new QuizPlusStatusChange(quizPlus, newQuizPlus, TypeOfChange.LOSS);
+			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.LOSS);
 		}
-		return new QuizPlusStatusChange(quizPlus, quizPlus, TypeOfChange.NO_STATUS_CHANGE);
+		return new QuizPlusTransition(quizPlus, quizPlus, TypeOfChange.NO_CHANGE);
 	}
 
 	String getString() {
-		String s = String.format(//
+		final String s = String.format(//
 				"TopIIC=%d, #New/Recent Words=%d/%d, Failure=%d%%, Decay=%s", //
 				_topIndexInCards, _maxNNewWords, _maxNRecentWords, _failureRateI,
 				_typeOfDecay.name());
-		if (_shuffleCardsSeed < 0) {
-			s += ", Random.Shuffle.";
-		} else if (_shuffleCardsSeed > 0) {
-			s += String.format(", Card.Shuffle.Seed=%d.", _shuffleCardsSeed);
-		} else {
-			s += '.';
-		}
 		return s;
 	}
 
@@ -353,5 +320,4 @@ public class QuizGenerator {
 	public String toString() {
 		return getString();
 	}
-
 }

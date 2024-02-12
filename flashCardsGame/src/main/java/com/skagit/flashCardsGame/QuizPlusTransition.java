@@ -1,14 +1,17 @@
 package com.skagit.flashCardsGame;
 
-class QuizPlusStatusChange {
-	final QuizPlus _oldQuizPlus;
+class QuizPlusTransition {
 	final QuizPlus _newQuizPlus;
-	final QuizGenerator.TypeOfChange _typeOfChange;
+	final TypeOfChange _typeOfChange;
 	final String _reasonForChangeString;
 	final String _transitionString;
-	QuizPlusStatusChange(final QuizPlus oldQuizPlus, final QuizPlus newQuizPlus,
-			final QuizGenerator.TypeOfChange typeOfChange) {
-		_oldQuizPlus = oldQuizPlus;
+
+	/**
+	 * Converts an input QuizPlus to a "transitioned" QuizPlus, and specifies the reason for
+	 * doing so, along with two Strings that are useful for printouts.
+	 */
+	QuizPlusTransition(final QuizPlus quizPlus, final QuizPlus newQuizPlus,
+			final TypeOfChange typeOfChange) {
 		_newQuizPlus = newQuizPlus;
 		_typeOfChange = typeOfChange;
 		switch (_typeOfChange) {
@@ -19,7 +22,7 @@ class QuizPlusStatusChange {
 				_reasonForChangeString = "Initial Quiz Summary";
 				break;
 			case WIN :
-				if (_oldQuizPlus._criticalQuizIndicesOnly) {
+				if (quizPlus._criticalQuizIndicesOnly) {
 					_reasonForChangeString = "Re-do Original Quiz:";
 				} else {
 					_reasonForChangeString = "Moving on!:";
@@ -31,20 +34,21 @@ class QuizPlusStatusChange {
 			case PARAMETERS_CHANGED :
 				_reasonForChangeString = "User Changed Properties:";
 				break;
-			case NO_STATUS_CHANGE :
+			case NO_CHANGE :
 			default :
 				_reasonForChangeString = "";
 				break;
 		}
 		final String oldSummaryString;
-		if (_oldQuizPlus == null) {
+		if (quizPlus == null) {
 			oldSummaryString = String.format("{%c|%c}", FlashCardsGame._EmptySet,
 					FlashCardsGame._EmptySet);
 		} else {
-			oldSummaryString = _oldQuizPlus.getSummaryString();
+			oldSummaryString = quizPlus.getSummaryString();
 		}
 		final String newSummaryString = _newQuizPlus.getSummaryString();
 		_transitionString = String.format("%s%c%s", oldSummaryString, FlashCardsGame._RtArrow,
 				newSummaryString);
 	}
+
 }

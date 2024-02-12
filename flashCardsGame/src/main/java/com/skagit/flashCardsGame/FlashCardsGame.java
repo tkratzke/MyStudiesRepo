@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -26,7 +25,7 @@ public class FlashCardsGame {
 	final static char _DnArrow = '\u2193';
 	final static char _EmptySet = '\u2205';
 	final static char _ReturnSymbol = '\u23CE';
-	final static char _CheckSymbol = _ReturnSymbol;
+	final static char _JulieModeSymbol = _ReturnSymbol;
 	final static char _QuitSymbol = 'Q';
 	final static char _EditPropertiesSymbol = 'E';
 	final static char _RestartSymbol = 'R';
@@ -35,14 +34,10 @@ public class FlashCardsGame {
 
 	final static File _UserDirFile = new File(System.getProperty("user.dir"));
 
-	final private static long _Seed;
 	static {
-		final BigInteger bigInteger = new BigInteger(
-				"1953102919570208198208131985030219910105201301192015102720231229");
-		_Seed = bigInteger.mod(new BigInteger(Long.toString(Long.MAX_VALUE))).longValue();
 		_IntroString = String.format(
-				"%c=Check Mode, %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
-				_CheckSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
+				"%c=\"Julie Mode\", %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
+				_JulieModeSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
 	}
 	/** Either of the following two FieldSeparators seems to work. */
 	@SuppressWarnings("unused")
@@ -54,6 +49,7 @@ public class FlashCardsGame {
 
 	final private File _propertiesFile;
 	final private Properties _properties;
+	final private long _seed;
 	boolean _quizIsA_B;
 	Card[] _cards;
 	final QuizGenerator _quizGenerator;
@@ -80,22 +76,49 @@ public class FlashCardsGame {
 			}
 		}
 		_properties = new Properties();
-		try (
-				InputStreamReader in = new InputStreamReader(new FileInputStream(_propertiesFile),
-						"UTF-8")) {
-			_properties.load(in);
+		try (InputStreamReader isr = new InputStreamReader(
+				new FileInputStream(_propertiesFile), "UTF-8")) {
+			final Properties properties = new Properties();
+			properties.load(isr);
+			final int nPropertyPluses = PropertyPlus._Values.length;
+			for (int k = 0; k < nPropertyPluses; ++k) {
+				final PropertyPlus propertyPlus = PropertyPlus._Values[k];
+				final String key = propertyPlus._realName;
+				_properties.put(key, properties.get(key));
+			}
 		} catch (final IOException e) {
+			e.printStackTrace();
 		}
 
-		final String quizTypeProperty = keyToString(_properties, "Quiz.Type");
-		_quizIsA_B = quizTypeProperty.length() == 0
-				|| Character.toUpperCase(quizTypeProperty.charAt(0)) != _B_ASymbol;
+		final String quizTypeString = PropertyPlusToString(_properties, PropertyPlus.QT);
+		_quizIsA_B = quizTypeString.length() == 0
+				|| Character.toUpperCase(quizTypeString.charAt(0)) != _B_ASymbol;
+		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
 		_printedSomething = false;
 		loadCards();
-		_quizGenerator = new QuizGenerator(_properties, _cards.length, _Seed);
-		_quizGenerator.shuffleCards(_cards);
+		_quizGenerator = new QuizGenerator(_properties, _cards.length, _seed);
+		shuffleCards(_cards);
 		_quizPlus = null;
+	}
+
+	private void shuffleCards(final Card[] cards) {
+		if (_seed == 0) {
+			return;
+		}
+		final Random r = new Random();
+		if (_seed > 0) {
+			r.setSeed(_seed);
+		}
+		while (Math.abs(r.nextLong()) < Long.MAX_VALUE / 5) {
+		}
+		final int nCards = cards.length;
+		for (int k = 0; k < nCards; ++k) {
+			final int kk = k + r.nextInt(nCards - k);
+			final Card card = cards[k];
+			cards[k] = cards[kk];
+			cards[kk] = card;
+		}
 	}
 
 	private void writeCardsToDisk() {
@@ -285,26 +308,46 @@ public class FlashCardsGame {
 	}
 
 	void updateProperties() {
-		_properties.put("Quiz.Type", _quizIsA_B ? "A_B" : "B_A");
+		_properties.put(PropertyPlus.QT._realName, _quizIsA_B ? "A_B" : "B_A");
+		_properties.put(PropertyPlus.SEED._realName, Long.toString(_seed));
 		_quizGenerator.updateProperties(_properties);
 	}
 
 	void reWritePropertiesFile() {
 		final Properties properties;
-		final long shuffleCardsSeed = keyToLong(_properties, "Shuffle.Cards.Seed", 0); //
+		final long shuffleCardsSeed = PropertyPlusToLong(_properties, PropertyPlus.SEED); //
 		if (shuffleCardsSeed < 0) {
 			properties = (Properties) _properties.clone();
-			final int topIndexInCards0 = keyToInt(properties, "Top.Card.Index", 1);
-			final int maxNNewWords = keyToInt(properties, "Number.Of.New.Words", 1);
-			final int maxNRecentWords = keyToInt(properties, "Number.Of.Recent.Words", 3);
+			final int topIndexInCards0 = PropertyPlusToInt(properties, PropertyPlus.TCI);
+			final int maxNNewWords = PropertyPlusToInt(properties, PropertyPlus.N_NEW_WORDS);
+			final int maxNRecentWords = PropertyPlusToInt(properties,
+					PropertyPlus.N_RECENT_WORDS);
 			final int topIndexInCards1 = Math.min(topIndexInCards0,
 					maxNNewWords + maxNRecentWords - 1);
-			properties.put("Top.Card.Index", Long.toString(topIndexInCards1));
+			properties.put(PropertyPlus.TCI._realName, Long.toString(topIndexInCards1));
 		} else {
 			properties = _properties;
 		}
-		try (FileOutputStream fos = new FileOutputStream(_propertiesFile)) {
-			properties.store(fos, /* comments= */null);
+		try (PrintWriter pw = new PrintWriter(new FileOutputStream(_propertiesFile))) {
+			final int nPropertyPluses = PropertyPlus._Values.length;
+			for (int k0 = 0; k0 < nPropertyPluses; ++k0) {
+				final PropertyPlus propertyPlus = PropertyPlus._Values[k0];
+				final String comment = propertyPlus._comment;
+				if (comment != null && comment.length() > 0) {
+					if (k0 > 0) {
+						pw.println();
+					}
+					final String[] lines = comment.trim().split("\n");
+					final int nLines = lines.length;
+					for (int k1 = 0; k1 < nLines; ++k1) {
+						pw.printf("! %s", lines[k1]);
+						pw.println();
+					}
+				}
+				final String realPropertyName = propertyPlus._realName;
+				pw.printf("%s=%s", realPropertyName, properties.get(realPropertyName));
+				pw.println();
+			}
 		} catch (final IOException e) {
 		}
 	}
@@ -392,66 +435,77 @@ public class FlashCardsGame {
 		return array;
 	}
 
-	private static String keyToString(final Properties properties, final String key) {
-		return CleanString((String) properties.get(key));
+	private static String PropertyPlusToString(final Properties properties,
+			final PropertyPlus propertyPlus) {
+		return CleanString((String) properties.get(propertyPlus._realName));
 	}
 
-	static int keyToInt(final Properties properties, final String key,
-			final int lastResort) {
-		final String s = keyToString(properties, key);
-		final String[] fields = s.split("\s");
-		return fieldsToInt(fields, lastResort);
+	static int PropertyPlusToInt(final Properties properties,
+			final PropertyPlus propertyPlus) {
+		final String s = PropertyPlusToString(properties, propertyPlus);
+		final String[] fields = s.split(_WhiteSpace);
+		final int defaultValue = Integer.parseInt(propertyPlus._defaultStringValue);
+		return fieldsToInt(fields, defaultValue);
 	}
 
-	static long keyToLong(final Properties properties, final String key,
-			final long lastResort) {
-		final String s = keyToString(properties, key);
-		final String[] fields = s.split("\s");
-		return fieldsToLong(fields, lastResort);
+	static long PropertyPlusToLong(final Properties properties,
+			final PropertyPlus propertyPlus) {
+		final String s = PropertyPlusToString(properties, propertyPlus);
+		final String[] fields = s.split(_WhiteSpace);
+		final long defaultValue = Long.parseLong(propertyPlus._defaultStringValue);
+		return fieldsToLong(fields, defaultValue);
 	}
 
-	static boolean keyToBoolean(final Properties properties, final String key,
-			final boolean lastResort) {
-		final String s = keyToString(properties, key);
-		final String[] fields = s.split("\s");
-		return fieldsToBoolean(fields, lastResort);
+	static boolean PropertyPlusToBoolean(final Properties properties,
+			final PropertyPlus propertyPlus) {
+		final String s = PropertyPlusToString(properties, propertyPlus);
+		final String[] fields = s.split(_WhiteSpace);
+		final String dsv = propertyPlus._defaultStringValue;
+		final char char0 = (dsv == null || dsv.length() == 0) ? 'F' : dsv.charAt(0);
+		final boolean defaultValue = char0 == 'T' || char0 == 'Y';
+		return fieldsToBoolean(fields, defaultValue);
 	}
 
-	static QuizGenerator.TypeOfDecay keyToTypeOfDecay(final Properties properties,
-			final String key, final QuizGenerator.TypeOfDecay lastResort) {
-		final String s = keyToString(properties, key);
-		final String[] fields = s.split("\s");
-		return fieldsToTypeOfDecay(fields, lastResort);
+	static TypeOfDecay PropertyPlusToTypeOfDecay(final Properties properties,
+			final PropertyPlus propertyPlus) {
+		final String s = PropertyPlusToString(properties, propertyPlus);
+		final String[] fields = s.split(_WhiteSpace);
+		final TypeOfDecay defaultValue = TypeOfDecay
+				.valueOf(propertyPlus._defaultStringValue);
+		return fieldsToTypeOfDecay(fields, defaultValue);
 	}
 
-	static int keyToPercentI(final Properties properties, final String key,
-			final int lastResort) {
-		final String s = keyToString(properties, key);
-		final String[] fields = s.split("\s");
-		return fieldsToPercentI(fields, lastResort);
+	static int PropertyPlusToPercentI(final Properties properties,
+			final PropertyPlus propertyPlus) {
+		final String s = PropertyPlusToString(properties, propertyPlus);
+		final String[] fields = s.split(_WhiteSpace);
+		final String defaultStringValue = propertyPlus._defaultStringValue;
+		final int defaultValue = Integer
+				.parseInt(defaultStringValue.substring(0, defaultStringValue.length() - 1));
+		return fieldsToPercentI(fields, defaultValue);
 	}
 
-	static int fieldsToInt(final String[] fields, final int lastResort) {
+	static int fieldsToInt(final String[] fields, final int defaultValue) {
 		for (final String field : fields) {
 			try {
 				return Integer.parseInt(field);
 			} catch (final NumberFormatException e) {
 			}
 		}
-		return lastResort;
+		return defaultValue;
 	}
 
-	static long fieldsToLong(final String[] fields, final long lastResort) {
+	static long fieldsToLong(final String[] fields, final long defaultValue) {
 		for (final String field : fields) {
 			try {
 				return Long.parseLong(field);
 			} catch (final NumberFormatException e) {
 			}
 		}
-		return lastResort;
+		return defaultValue;
 	}
 
-	static boolean fieldsToBoolean(final String[] fields, final boolean lastResort) {
+	static boolean fieldsToBoolean(final String[] fields, final boolean defaultValue) {
 		for (final String field : fields) {
 			if (field == null || field.length() == 0) {
 				continue;
@@ -468,23 +522,22 @@ public class FlashCardsGame {
 			} catch (final NumberFormatException e) {
 			}
 		}
-		return lastResort;
+		return defaultValue;
 	}
 
-	static QuizGenerator.TypeOfDecay fieldsToTypeOfDecay(final String[] fields,
-			final QuizGenerator.TypeOfDecay lastResort) {
+	static TypeOfDecay fieldsToTypeOfDecay(final String[] fields,
+			final TypeOfDecay defaultValue) {
 		for (final String field : fields) {
-			for (final QuizGenerator.TypeOfDecay typeOfDecay : QuizGenerator.TypeOfDecay
-					.values()) {
+			for (final TypeOfDecay typeOfDecay : TypeOfDecay._Values) {
 				if (field.equalsIgnoreCase(typeOfDecay.name())) {
 					return typeOfDecay;
 				}
 			}
 		}
-		return lastResort;
+		return defaultValue;
 	}
 
-	static int fieldsToPercentI(final String[] fields, final int lastResort) {
+	static int fieldsToPercentI(final String[] fields, final int defaultValue) {
 		for (final String field : fields) {
 			final int len = field.length();
 			if (len < 2) {
@@ -498,12 +551,12 @@ public class FlashCardsGame {
 			} catch (final NumberFormatException e) {
 			}
 		}
-		return lastResort;
+		return defaultValue;
 	}
 
 	final String getString() {
-		return String.format("%s: %s, %s", getCoreFilePath(), _quizIsA_B ? "A_B" : "B_A",
-				_quizGenerator.getString());
+		return String.format("%s: %s, ShuffleCardsSeed[%d], %s", getCoreFilePath(),
+				_quizIsA_B ? "A_B" : "B_A", _seed, _quizGenerator.getString());
 	}
 
 	@Override
@@ -523,12 +576,12 @@ public class FlashCardsGame {
 		boolean restarted = false;
 		OUTSIDE_LOOP : for (boolean keepGoing = true; keepGoing;) {
 			/** Check for a status change from _quizPlus. */
-			final QuizPlusStatusChange quizPlusStatusChange = _quizGenerator
-					.getStatusChange(nCards, restarted, _quizPlus);
-			_quizPlus = quizPlusStatusChange._newQuizPlus;
+			final QuizPlusTransition quizPlusTransition = _quizGenerator.getStatusChange(nCards,
+					restarted, _quizPlus);
+			_quizPlus = quizPlusTransition._newQuizPlus;
 			restarted = false;
-			final QuizGenerator.TypeOfChange typeOfChange = quizPlusStatusChange._typeOfChange;
-			if (typeOfChange != QuizGenerator.TypeOfChange.NO_STATUS_CHANGE) {
+			final TypeOfChange typeOfChange = quizPlusTransition._typeOfChange;
+			if (typeOfChange != TypeOfChange.NO_CHANGE) {
 				if (_printedSomething) {
 					System.out.println();
 					System.out.println();
@@ -536,8 +589,8 @@ public class FlashCardsGame {
 				_printedSomething = true;
 				System.out.printf("%s\n%s %s\n\n%s\n\n", //
 						getString(), //
-						quizPlusStatusChange._reasonForChangeString,
-						quizPlusStatusChange._transitionString, //
+						quizPlusTransition._reasonForChangeString,
+						quizPlusTransition._transitionString, //
 						_IntroString);
 			}
 			if (madeChangesFrom(oldValues)) {
@@ -581,9 +634,6 @@ public class FlashCardsGame {
 					final String response1 = readLine(sc);
 					gotItRight = response1.length() == 0
 							|| Character.toUpperCase(response1.charAt(0)) == 'Y';
-					if (!gotItRight) {
-						System.out.println("Try again.");
-					}
 				} else {
 					gotItRight = response0.equalsIgnoreCase(answer);
 					if (!gotItRight) {
@@ -611,6 +661,8 @@ public class FlashCardsGame {
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
 			flashCardsGame.mainLoop(sc);
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 	}
 
