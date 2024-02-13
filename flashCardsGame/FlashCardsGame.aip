@@ -31,10 +31,15 @@
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
     <ROW Directory="Data_Dir" Directory_Parent="APPDIR" DefaultDir="Data"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+    <ROW Directory="com_Dir" Directory_Parent="java_Dir" DefaultDir="com"/>
+    <ROW Directory="flashCardsGame_Dir" Directory_Parent="skagit_Dir" DefaultDir="FLASHC~1|flashCardsGame"/>
+    <ROW Directory="java_Dir" Directory_Parent="APPDIR" DefaultDir="java"/>
+    <ROW Directory="skagit_Dir" Directory_Parent="com_Dir" DefaultDir="skagit"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="APPDIR" ComponentId="{B22B7CA2-7801-4F3C-8FCC-5098D1BD466E}" Directory_="APPDIR" Attributes="0"/>
     <ROW Component="Basics.txt" ComponentId="{DE6F9EB6-08BB-40C5-B4E1-F020677D3520}" Directory_="Data_Dir" Attributes="0" KeyPath="LingoDeer.properties" Type="0"/>
+    <ROW Component="Card.java" ComponentId="{9AD38698-2960-4F6F-A825-1E87E819DD68}" Directory_="flashCardsGame_Dir" Attributes="0" KeyPath="Card.java" Type="0"/>
     <ROW Component="FlashCardsGame.jar" ComponentId="{92E4CEB1-E229-458E-9690-B5D365CC50FE}" Directory_="APPDIR" Attributes="0" KeyPath="FlashCardsGame.jar" Type="0"/>
     <ROW Component="ProductInformation" ComponentId="{2EB4AD36-AE9E-4A20-8705-8D9258F821E6}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
   </COMPONENT>
@@ -47,6 +52,12 @@
     <ROW File="LingoDeer.properties" Component_="Basics.txt" FileName="LINGOD~1.PRO|LingoDeer.properties" Attributes="0" SourcePath="Data\LingoDeer.properties" SelfReg="false"/>
     <ROW File="LingoDeer.txt" Component_="Basics.txt" FileName="LINGOD~1.TXT|LingoDeer.txt" Attributes="0" SourcePath="Data\LingoDeer.txt" SelfReg="false"/>
     <ROW File="FlashCardsGame.bat" Component_="FlashCardsGame.jar" FileName="FLASHC~1.BAT|FlashCardsGame.bat" Attributes="0" SourcePath="FlashCardsSandbox\FlashCardsGame.bat" SelfReg="false"/>
+    <ROW File="Card.java" Component_="Card.java" FileName="CARD~1.JAV|Card.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\Card.java" SelfReg="false"/>
+    <ROW File="Enums.java" Component_="Card.java" FileName="ENUMS~1.JAV|Enums.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\Enums.java" SelfReg="false"/>
+    <ROW File="FlashCardsGame.java" Component_="Card.java" FileName="FLASHC~1.JAV|FlashCardsGame.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\FlashCardsGame.java" SelfReg="false"/>
+    <ROW File="QuizGenerator.java" Component_="Card.java" FileName="QUIZGE~1.JAV|QuizGenerator.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizGenerator.java" SelfReg="false"/>
+    <ROW File="QuizPlus.java" Component_="Card.java" FileName="QUIZPL~1.JAV|QuizPlus.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizPlus.java" SelfReg="false"/>
+    <ROW File="QuizPlusTransition.java" Component_="Card.java" FileName="QUIZPL~2.JAV|QuizPlusTransition.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizPlusTransition.java" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
@@ -123,6 +134,7 @@
     <ROW Feature_="MainFeature" Component_="ProductInformation"/>
     <ROW Feature_="MainFeature" Component_="FlashCardsGame.jar"/>
     <ROW Feature_="MainFeature" Component_="Basics.txt"/>
+    <ROW Feature_="MainFeature" Component_="Card.java"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>

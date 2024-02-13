@@ -43,50 +43,40 @@ public class FlashCardsGame {
 	 * https://namnguyen1202.hashnode.dev/removing-vietnamese-diacritic-in-java
 	 * </pre>
 	 */
-	final static String[][] _Replacements = { //
-			{"[áàảãạâấầẩẫậăắằẳẵặ]", "a"}, //
-			{"[ÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶ]", "A"}, //
-			{"[đ]", "d"}, //
-			{"[Đ]", "D"}, //
-			{"[éèẻẽẹêếềểễệ]", "e"}, //
-			{"[ÉÈẺẼẸÊẾỀỂỄỆ]", "E"}, //
-			{"[íìỉĩị]", "i"}, //
-			{"[ÍÌỈĨỊ]", "I"}, //
-			{"[óòỏõọôốồổỗộơớờởỡợ]", "o"}, //
-			{"[ÓÒỎÕỌÔỐỒỔỖỘƠỚỜỢỠỢ]", "O"}, //
-			{"[úùủũụưứừửữự]", "u"}, //
-			{"[ÚÙỦŨỤƯỨỪỬỮỰ]", "U"}, //
-			{"[ýỳỷỹỵ]", "y"}, //
-			{"[ÝỲỶỸỴ]", "Y"}//
-	};
-	static final HashMap<Character, Character> _VnToEngCharMap;
-	static {
-		_VnToEngCharMap = new HashMap<>();
-		final int nReplacePairs = _Replacements.length;
-		for (int k0 = 0; k0 < nReplacePairs; ++k0) {
-			final String[] pair = _Replacements[k0];
-			final String vnChars = pair[0];
-			final char engChar = pair[1].charAt(0);
-			final int nVnChars = vnChars.length();
-			for (int k1 = 0; k1 < nVnChars; ++k1) {
-				_VnToEngCharMap.put(vnChars.charAt(k1), engChar);
+	static final HashMap<Character, Character> _VnToEngCharMap = new HashMap<>() {
+		private static final long serialVersionUID = 1L;
+		{
+			final String[][] mappings = { //
+					{"áàảãạâấầẩẫậăắằẳẵặ", "a"}, //
+					{"ÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶ", "A"}, //
+					{"đ", "d"}, //
+					{"Đ", "D"}, //
+					{"éèẻẽẹêếềểễệ", "e"}, //
+					{"ÉÈẺẼẸÊẾỀỂỄỆ", "E"}, //
+					{"íìỉĩị", "i"}, //
+					{"ÍÌỈĨỊ", "I"}, //
+					{"óòỏõọôốồổỗộơớờởỡợ", "o"}, //
+					{"ÓÒỎÕỌÔỐỒỔỖỘƠỚỜỢỠỢ", "O"}, //
+					{"úùủũụưứừửữự", "u"}, //
+					{"ÚÙỦŨỤƯỨỪỬỮỰ", "U"}, //
+					{"ýỳỷỹỵ", "y"}, //
+					{"ÝỲỶỸỴ", "Y"}//
+			};
+			final int nReplacePairs = mappings.length;
+			for (int k0 = 0; k0 < nReplacePairs; ++k0) {
+				final String[] pair = mappings[k0];
+				final char engChar = pair[1].charAt(0);
+				final String vnChars = pair[0];
+				final int nVnChars = vnChars.length();
+				for (int k1 = 0; k1 < nVnChars; ++k1) {
+					final char vnChar = vnChars.charAt(k1);
+					put(vnChar, engChar);
+				}
 			}
 		}
 	};
 
-	final static String StripVNDiacritics(final String s0) {
-		String s = s0;
-		final int nReplacePairs = _Replacements.length;
-		for (int k = 0; k < nReplacePairs; ++k) {
-			final String[] pair = _Replacements[k];
-			final String regEx = pair[0];
-			final String replacement = pair[1];
-			s = s.replaceAll(regEx, replacement);
-		}
-		return s;
-	}
-
-	final static String StripVNDiacritics2(final String s) {
+	final static String StripVNDiacritics(final String s) {
 		final StringBuilder sb = new StringBuilder(s);
 		for (int k = 0; k < sb.length(); k++) {
 			final char c = sb.charAt(k);
@@ -291,11 +281,13 @@ public class FlashCardsGame {
 					final Card oldCard = cardMap.get(newCard);
 					if (oldCard != null) {
 						if (_printedSomething) {
-							System.out.printf("\n\n");
+							System.out.println();
+							System.out.println();
 						}
 						_printedSomething = true;
-						System.out.printf("Merging\n%s into\n%s", newCard.getString(),
-								oldCard.getString());
+						System.out.println("Merging");
+						System.out.println("newCard.getString()" + " into");;
+						System.out.print(oldCard.getString());
 						oldCard._comment = (oldCard._comment + "\n" + comment).trim();
 					} else {
 						cardMap.put(newCard, newCard);
@@ -712,10 +704,12 @@ public class FlashCardsGame {
 						gotItPartiallyWrong = !gotItRight;
 					}
 					if (!gotItRight) {
-						System.out.printf("%c%s%c\n\n", _RtArrow, answer, _LtArrow);
+						System.out.printf("%c%s%c", _RtArrow, answer, _LtArrow);
 					} else if (gotItPartiallyWrong) {
-						System.out.printf("NB: %s\n\n", answer);
+						System.out.printf("NB: %s", answer);
 					}
+					System.out.println();
+					System.out.println();
 				}
 				if (!gotItRight) {
 					++nWrongResponses;
