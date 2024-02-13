@@ -31,61 +31,62 @@ public class FlashCardsGame {
 	final static char _EditPropertiesSymbol = 'E';
 	final static char _RestartSymbol = 'R';
 	final static char _B_ASymbol = 'B';
-	final static String _IntroString;
+	final static String _IntroString = String.format(
+			"%c=\"Julie Mode\", %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
+			_JulieModeSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
 
 	final static File _UserDirFile = new File(System.getProperty("user.dir"));
 
-	static {
-		_IntroString = String.format(
-				"%c=\"Julie Mode\", %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
-				_JulieModeSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
-	}
-
 	/**
 	 * <pre>
-	 * Good article on dealing with diacritics.
+	 * Good article on dealing with VN diacritics.
 	 * https://namnguyen1202.hashnode.dev/removing-vietnamese-diacritic-in-java
 	 * </pre>
 	 */
-	static final char[][] _VnToEngPairs = { //
-			{'á', 'a'}, {'à', 'a'}, {'ả', 'a'}, {'ã', 'a'}, {'ạ', 'a'}, {'ắ', 'a'}, {'ằ', 'a'},
-			{'ẳ', 'a'}, {'ẵ', 'a'}, {'ặ', 'a'}, {'ấ', 'a'}, {'ầ', 'a'}, {'ẩ', 'a'}, {'ẫ', 'a'},
-			{'ậ', 'a'}, //
-			{'é', 'e'}, {'è', 'e'}, {'ẻ', 'e'}, {'ẽ', 'e'}, {'ẹ', 'e'}, {'ế', 'e'}, {'ề', 'e'},
-			{'ể', 'e'}, {'ễ', 'e'}, {'ệ', 'e'}, //
-			{'í', 'i'}, {'ì', 'i'}, {'ỉ', 'i'}, {'ĩ', 'i'}, {'ị', 'i'}, //
-			{'ó', 'o'}, {'ò', 'o'}, {'ỏ', 'o'}, {'õ', 'o'}, {'ọ', 'o'}, {'ố', 'o'}, {'ồ', 'o'},
-			{'ổ', 'o'}, {'ỗ', 'o'}, {'ộ', 'o'}, {'ớ', 'o'}, {'ờ', 'o'}, {'ở', 'o'}, {'ỡ', 'o'},
-			{'ợ', 'o'}, //
-			{'ú', 'u'}, {'ù', 'u'}, {'ủ', 'u'}, {'ũ', 'u'}, {'ụ', 'u'}, {'ứ', 'u'}, {'ừ', 'u'},
-			{'ử', 'u'}, {'ữ', 'u'}, {'ự', 'u'}, //
-			{'ý', 'y'}, {'ỳ', 'y'}, {'ỷ', 'y'}, {'ỹ', 'y'}, {'ỵ', 'y'}, //
-			{'đ', 'd'}, //
-			{'Á', 'A'}, {'À', 'A'}, {'Ả', 'A'}, {'Ã', 'A'}, {'Ạ', 'A'}, {'Ắ', 'A'}, {'Ằ', 'A'},
-			{'Ẳ', 'A'}, {'Ẵ', 'A'}, {'Ặ', 'A'}, {'Ấ', 'A'}, {'Ầ', 'A'}, {'Ẩ', 'A'}, {'Ẫ', 'A'},
-			{'Ậ', 'A'}, //
-			{'É', 'E'}, {'È', 'E'}, {'Ẻ', 'E'}, {'Ẽ', 'E'}, {'Ẹ', 'E'}, {'Ế', 'E'}, {'Ề', 'E'},
-			{'Ể', 'E'}, {'Ễ', 'E'}, {'Ệ', 'E'}, //
-			{'Í', 'I'}, {'Ì', 'I'}, {'Ỉ', 'I'}, {'Ĩ', 'I'}, {'Ị', 'I'}, //
-			{'Ó', 'O'}, {'Ò', 'O'}, {'Ỏ', 'O'}, {'Õ', 'O'}, {'Ọ', 'O'}, {'Ố', 'O'}, {'Ồ', 'O'},
-			{'Ổ', 'O'}, {'Ỗ', 'O'}, {'Ộ', 'O'}, {'Ớ', 'O'}, {'Ờ', 'O'}, {'Ở', 'O'}, {'Ỡ', 'O'},
-			{'Ợ', 'O'}, //
-			{'Ú', 'U'}, {'Ù', 'U'}, {'Ủ', 'U'}, {'Ũ', 'U'}, {'Ụ', 'U'}, {'Ứ', 'U'}, {'Ừ', 'U'},
-			{'Ử', 'U'}, {'Ữ', 'U'}, {'Ự', 'U'}, //
-			{'Ý', 'Y'}, {'Ỳ', 'Y'}, {'Ỷ', 'Y'}, {'Ỹ', 'Y'}, {'Ỵ', 'Y'}, //
-			{'Đ', 'd'} //
+	final static String[][] _Replacements = { //
+			{"[áàảãạâấầẩẫậăắằẳẵặ]", "a"}, //
+			{"[ÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶ]", "A"}, //
+			{"[đ]", "d"}, //
+			{"[Đ]", "D"}, //
+			{"[éèẻẽẹêếềểễệ]", "e"}, //
+			{"[ÉÈẺẼẸÊẾỀỂỄỆ]", "E"}, //
+			{"[íìỉĩị]", "i"}, //
+			{"[ÍÌỈĨỊ]", "I"}, //
+			{"[óòỏõọôốồổỗộơớờởỡợ]", "o"}, //
+			{"[ÓÒỎÕỌÔỐỒỔỖỘƠỚỜỢỠỢ]", "O"}, //
+			{"[úùủũụưứừửữự]", "u"}, //
+			{"[ÚÙỦŨỤƯỨỪỬỮỰ]", "U"}, //
+			{"[ýỳỷỹỵ]", "y"}, //
+			{"[ÝỲỶỸỴ]", "Y"}//
 	};
 	static final HashMap<Character, Character> _VnToEngCharMap;
 	static {
 		_VnToEngCharMap = new HashMap<>();
-		final int nPairs = _VnToEngPairs.length;
-		for (int k = 0; k < nPairs; ++k) {
-			final char[] pair = _VnToEngPairs[k];
-			_VnToEngCharMap.put(pair[0], pair[1]);
+		final int nReplacePairs = _Replacements.length;
+		for (int k0 = 0; k0 < nReplacePairs; ++k0) {
+			final String[] pair = _Replacements[k0];
+			final String vnChars = pair[0];
+			final char engChar = pair[1].charAt(0);
+			final int nVnChars = vnChars.length();
+			for (int k1 = 0; k1 < nVnChars; ++k1) {
+				_VnToEngCharMap.put(vnChars.charAt(k1), engChar);
+			}
 		}
 	};
 
-	final static String StripVNDiacritics(final String s) {
+	final static String StripVNDiacritics(final String s0) {
+		String s = s0;
+		final int nReplacePairs = _Replacements.length;
+		for (int k = 0; k < nReplacePairs; ++k) {
+			final String[] pair = _Replacements[k];
+			final String regEx = pair[0];
+			final String replacement = pair[1];
+			s = s.replaceAll(regEx, replacement);
+		}
+		return s;
+	}
+
+	final static String StripVNDiacritics2(final String s) {
 		final StringBuilder sb = new StringBuilder(s);
 		for (int k = 0; k < sb.length(); k++) {
 			final char c = sb.charAt(k);
@@ -652,11 +653,11 @@ public class FlashCardsGame {
 					System.out.println();
 				}
 				_printedSomething = true;
-				System.out.printf("%s\n%s %s\n\n%s\n\n", //
-						getString(), //
-						quizPlusTransition._reasonForChangeString,
-						quizPlusTransition._transitionString, //
-						_IntroString);
+				System.out.println(getString());
+				System.out.println(_IntroString);
+				System.out.print(quizPlusTransition._reasonForChangeString);
+				System.out.println(" " + quizPlusTransition._transitionString);
+				System.out.println();
 			}
 			if (madeChangesFrom(oldValues)) {
 				updateProperties();
