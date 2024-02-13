@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
@@ -39,6 +40,63 @@ public class FlashCardsGame {
 				"%c=\"Julie Mode\", %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
 				_JulieModeSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
 	}
+
+	/**
+	 * <pre>
+	 * Good article on dealing with diacritics.
+	 * https://namnguyen1202.hashnode.dev/removing-vietnamese-diacritic-in-java
+	 * </pre>
+	 */
+	static final char[][] _VnToEngPairs = { //
+			{'á', 'a'}, {'à', 'a'}, {'ả', 'a'}, {'ã', 'a'}, {'ạ', 'a'}, {'ắ', 'a'}, {'ằ', 'a'},
+			{'ẳ', 'a'}, {'ẵ', 'a'}, {'ặ', 'a'}, {'ấ', 'a'}, {'ầ', 'a'}, {'ẩ', 'a'}, {'ẫ', 'a'},
+			{'ậ', 'a'}, //
+			{'é', 'e'}, {'è', 'e'}, {'ẻ', 'e'}, {'ẽ', 'e'}, {'ẹ', 'e'}, {'ế', 'e'}, {'ề', 'e'},
+			{'ể', 'e'}, {'ễ', 'e'}, {'ệ', 'e'}, //
+			{'í', 'i'}, {'ì', 'i'}, {'ỉ', 'i'}, {'ĩ', 'i'}, {'ị', 'i'}, //
+			{'ó', 'o'}, {'ò', 'o'}, {'ỏ', 'o'}, {'õ', 'o'}, {'ọ', 'o'}, {'ố', 'o'}, {'ồ', 'o'},
+			{'ổ', 'o'}, {'ỗ', 'o'}, {'ộ', 'o'}, {'ớ', 'o'}, {'ờ', 'o'}, {'ở', 'o'}, {'ỡ', 'o'},
+			{'ợ', 'o'}, //
+			{'ú', 'u'}, {'ù', 'u'}, {'ủ', 'u'}, {'ũ', 'u'}, {'ụ', 'u'}, {'ứ', 'u'}, {'ừ', 'u'},
+			{'ử', 'u'}, {'ữ', 'u'}, {'ự', 'u'}, //
+			{'ý', 'y'}, {'ỳ', 'y'}, {'ỷ', 'y'}, {'ỹ', 'y'}, {'ỵ', 'y'}, //
+			{'đ', 'd'}, //
+			{'Á', 'A'}, {'À', 'A'}, {'Ả', 'A'}, {'Ã', 'A'}, {'Ạ', 'A'}, {'Ắ', 'A'}, {'Ằ', 'A'},
+			{'Ẳ', 'A'}, {'Ẵ', 'A'}, {'Ặ', 'A'}, {'Ấ', 'A'}, {'Ầ', 'A'}, {'Ẩ', 'A'}, {'Ẫ', 'A'},
+			{'Ậ', 'A'}, //
+			{'É', 'E'}, {'È', 'E'}, {'Ẻ', 'E'}, {'Ẽ', 'E'}, {'Ẹ', 'E'}, {'Ế', 'E'}, {'Ề', 'E'},
+			{'Ể', 'E'}, {'Ễ', 'E'}, {'Ệ', 'E'}, //
+			{'Í', 'I'}, {'Ì', 'I'}, {'Ỉ', 'I'}, {'Ĩ', 'I'}, {'Ị', 'I'}, //
+			{'Ó', 'O'}, {'Ò', 'O'}, {'Ỏ', 'O'}, {'Õ', 'O'}, {'Ọ', 'O'}, {'Ố', 'O'}, {'Ồ', 'O'},
+			{'Ổ', 'O'}, {'Ỗ', 'O'}, {'Ộ', 'O'}, {'Ớ', 'O'}, {'Ờ', 'O'}, {'Ở', 'O'}, {'Ỡ', 'O'},
+			{'Ợ', 'O'}, //
+			{'Ú', 'U'}, {'Ù', 'U'}, {'Ủ', 'U'}, {'Ũ', 'U'}, {'Ụ', 'U'}, {'Ứ', 'U'}, {'Ừ', 'U'},
+			{'Ử', 'U'}, {'Ữ', 'U'}, {'Ự', 'U'}, //
+			{'Ý', 'Y'}, {'Ỳ', 'Y'}, {'Ỷ', 'Y'}, {'Ỹ', 'Y'}, {'Ỵ', 'Y'}, //
+			{'Đ', 'd'} //
+	};
+	static final HashMap<Character, Character> _VnToEngCharMap;
+	static {
+		_VnToEngCharMap = new HashMap<>();
+		final int nPairs = _VnToEngPairs.length;
+		for (int k = 0; k < nPairs; ++k) {
+			final char[] pair = _VnToEngPairs[k];
+			_VnToEngCharMap.put(pair[0], pair[1]);
+		}
+	};
+
+	final static String StripVNDiacritics(final String s) {
+		final StringBuilder sb = new StringBuilder(s);
+		for (int k = 0; k < sb.length(); k++) {
+			final char c = sb.charAt(k);
+			final Character bigC = _VnToEngCharMap.get(c);
+			if (bigC != null) {
+				sb.setCharAt(k, bigC);
+			}
+		}
+		return sb.toString();
+	}
+
 	/** Either of the following two FieldSeparators seems to work. */
 	@SuppressWarnings("unused")
 	final private static String _FieldSeparator0 = "\\s*\\t\\s*";
@@ -51,6 +109,7 @@ public class FlashCardsGame {
 	final private Properties _properties;
 	final private long _seed;
 	boolean _quizIsA_B;
+	boolean _ignoreDiacritics;
 	Card[] _cards;
 	final QuizGenerator _quizGenerator;
 	QuizPlus _quizPlus;
@@ -84,15 +143,15 @@ public class FlashCardsGame {
 			for (int k = 0; k < nPropertyPluses; ++k) {
 				final PropertyPlus propertyPlus = PropertyPlus._Values[k];
 				final String key = propertyPlus._realName;
-				_properties.put(key, properties.get(key));
+				final Object o = properties.get(key);
+				_properties.put(key, o == null ? propertyPlus._defaultStringValue : o);
 			}
 		} catch (final IOException e) {
-			e.printStackTrace();
 		}
 
-		final String quizTypeString = PropertyPlusToString(_properties, PropertyPlus.QT);
-		_quizIsA_B = quizTypeString.length() == 0
-				|| Character.toUpperCase(quizTypeString.charAt(0)) != _B_ASymbol;
+		_quizIsA_B = PropertyPlusToBoolean(_properties, PropertyPlus.QUIZ_TYPE);
+		_ignoreDiacritics = PropertyPlusToBoolean(_properties,
+				PropertyPlus.IGNORE_DIACRITICS);
 		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
 		_printedSomething = false;
@@ -308,15 +367,17 @@ public class FlashCardsGame {
 	}
 
 	void updateProperties() {
-		_properties.put(PropertyPlus.QT._realName, _quizIsA_B ? "A_B" : "B_A");
+		_properties.put(PropertyPlus.QUIZ_TYPE._realName, Boolean.toString(_quizIsA_B));
+		_properties.put(PropertyPlus.IGNORE_DIACRITICS._realName,
+				Boolean.toString(_ignoreDiacritics));
 		_properties.put(PropertyPlus.SEED._realName, Long.toString(_seed));
 		_quizGenerator.updateProperties(_properties);
 	}
 
 	void reWritePropertiesFile() {
 		final Properties properties;
-		final long shuffleCardsSeed = PropertyPlusToLong(_properties, PropertyPlus.SEED); //
-		if (shuffleCardsSeed < 0) {
+		final long seed = PropertyPlusToLong(_properties, PropertyPlus.SEED); //
+		if (seed < 0) {
 			properties = (Properties) _properties.clone();
 			final int topIndexInCards0 = PropertyPlusToInt(properties, PropertyPlus.TCI);
 			final int maxNNewWords = PropertyPlusToInt(properties, PropertyPlus.N_NEW_WORDS);
@@ -461,7 +522,9 @@ public class FlashCardsGame {
 		final String s = PropertyPlusToString(properties, propertyPlus);
 		final String[] fields = s.split(_WhiteSpace);
 		final String dsv = propertyPlus._defaultStringValue;
-		final char char0 = (dsv == null || dsv.length() == 0) ? 'F' : dsv.charAt(0);
+		final char char0 = (dsv == null || dsv.length() == 0)
+				? 'F'
+				: Character.toUpperCase(dsv.charAt(0));
 		final boolean defaultValue = char0 == 'T' || char0 == 'Y';
 		return fieldsToBoolean(fields, defaultValue);
 	}
@@ -555,8 +618,10 @@ public class FlashCardsGame {
 	}
 
 	final String getString() {
-		return String.format("%s: %s, ShuffleCardsSeed[%d], %s", getCoreFilePath(),
-				_quizIsA_B ? "A_B" : "B_A", _seed, _quizGenerator.getString());
+		return String.format("%s: %c%c%c%s RandomSeed[%d], %s", getCoreFilePath(),
+				_quizIsA_B ? 'A' : 'B', _RtArrow, _quizIsA_B ? 'B' : 'A', //
+				_ignoreDiacritics ? ",IgnoreDiacritics" : "", //
+				_seed, _quizGenerator.getString());
 	}
 
 	@Override
@@ -635,9 +700,20 @@ public class FlashCardsGame {
 					gotItRight = response1.length() == 0
 							|| Character.toUpperCase(response1.charAt(0)) == 'Y';
 				} else {
-					gotItRight = response0.equalsIgnoreCase(answer);
+					final boolean gotItPartiallyWrong;
+					if (_ignoreDiacritics) {
+						final String response0Stripped = StripVNDiacritics(response0);
+						final String answerStripped = StripVNDiacritics(answer);
+						gotItRight = response0Stripped.equalsIgnoreCase(answerStripped);
+						gotItPartiallyWrong = !response0.equalsIgnoreCase(answer);
+					} else {
+						gotItRight = response0.equalsIgnoreCase(answer);
+						gotItPartiallyWrong = !gotItRight;
+					}
 					if (!gotItRight) {
 						System.out.printf("%c%s%c\n\n", _RtArrow, answer, _LtArrow);
+					} else if (gotItPartiallyWrong) {
+						System.out.printf("NB: %s\n\n", answer);
 					}
 				}
 				if (!gotItRight) {

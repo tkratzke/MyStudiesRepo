@@ -13,7 +13,9 @@ enum PropertyPlus {
 	PFR("Percentage.For.Recents", "75%", ""), //
 	FR("Failure.Rate", "10%", ""), //
 	DECAY("Type.Of.Decay", "LINEAR", ""), //
-	QT("Quiz.Type", "B_A", "Which Way to Quiz:");
+	QUIZ_TYPE("Quiz.Type.Is.A_to_B", "FALSE", "Types of Quizzes:\n" //
+			+ "\"Which Way to Quiz\" and \"Ignore Diacritics or not:\""), //
+	IGNORE_DIACRITICS("Ignore.Diacritics", "FALSE", "");
 
 	final static PropertyPlus[] _Values = values();
 
