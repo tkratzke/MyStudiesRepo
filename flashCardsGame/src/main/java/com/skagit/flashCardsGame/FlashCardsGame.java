@@ -19,23 +19,16 @@ import java.util.TreeMap;
 
 public class FlashCardsGame {
 
-	final static char _RtArrow = '\u2192';
 	final static char _LtArrow = '\u2190';
-	final static char _RtLtArrow = '\u2194';
-	final static char _UpArrow = '\u2191';
-	final static char _DnArrow = '\u2193';
-	final static char _EmptySet = '\u2205';
-	final static char _ReturnSymbol = '\u23CE';
+	final static char _RtArrow = '\u2192';
+	final static char _EmptySetChar = '\u2205';
 	final static char _CheckSymbol = '\u2714';
 
-	final static char _JulieModeSymbol = _ReturnSymbol;
-	final static char _QuitSymbol = 'Q';
-	final static char _EditPropertiesSymbol = 'E';
-	final static char _DidNotKnowItSymbol = '?';
-	final static char _RestartSymbol = 'R';
-	final static char _B_ASymbol = 'B';
-
-	final static File _UserDirFile = new File(System.getProperty("user.dir"));
+	final private static char _ReturnChar = '\u23CE';
+	final private static char _QuitChar = 'Q';
+	final private static char _EditPropertiesChar = 'E';
+	final private static char _DidNotKnowItChar = 'N';
+	final private static char _RestartChar = 'R';
 
 	/**
 	 * <pre>
@@ -47,23 +40,26 @@ public class FlashCardsGame {
 		private static final long serialVersionUID = 1L;
 		{
 			final String[][] mappings = { //
-					{"aáàảãạâấầẩẫậăắằẳẵặ", "a"}, //
-					{"dđ", "d"}, //
-					{"eéèẻẽẹêếềểễệ", "e"}, //
-					{"iíìỉĩị", "i"}, //
-					{"oóòỏõọôốồổỗộơớờởỡợ", "o"}, //
-					{"uúùủũụưứừửữự", "u"}, //
-					{"yýỳỷỹỵ", "y"}, //
+					{"áàảãạâấầẩẫậăắằẳẵặ", "a"}, //
+					{"đ", "d"}, //
+					{"éèẻẽẹêếềểễệ", "e"}, //
+					{"íìỉĩị", "i"}, //
+					{"óòỏõọôốồổỗộơớờởỡợ", "o"}, //
+					{"úùủũụưứừửữự", "u"}, //
+					{"ýỳỷỹỵ", "y"}, //
 			};
 			final int nPairs = mappings.length;
 			for (int k0 = 0; k0 < nPairs; ++k0) {
 				final String[] pair = mappings[k0];
 				final char engChar = pair[1].charAt(0);
+				final char engCharUc = Character.toUpperCase(engChar);
 				final String vnChars = pair[0];
 				final int nVnChars = vnChars.length();
 				for (int k1 = 0; k1 < nVnChars; ++k1) {
 					final char vnChar = vnChars.charAt(k1);
+					final char vnCharUc = Character.toUpperCase(vnChar);
 					put(vnChar, engChar);
+					put(vnCharUc, engCharUc);
 				}
 			}
 		}
@@ -73,10 +69,9 @@ public class FlashCardsGame {
 		final StringBuilder sb = new StringBuilder(s);
 		for (int k = 0; k < sb.length(); k++) {
 			final char c = sb.charAt(k);
-			final char cLc = Character.toLowerCase(c);
-			final Character targetLc = _VnToEngCharMap.get(Character.toLowerCase(cLc));
-			if (targetLc != null) {
-				sb.setCharAt(k, c == cLc ? targetLc : Character.toUpperCase(targetLc));
+			final Character target = _VnToEngCharMap.get(c);
+			if (target != null) {
+				sb.setCharAt(k, target);
 			}
 		}
 		return sb.toString();
@@ -93,7 +88,7 @@ public class FlashCardsGame {
 	final private File _propertiesFile;
 	final private Properties _properties;
 	final private long _seed;
-	boolean _quizIsA_B, _ignoreDiacritics, _julieMode;
+	boolean _quizIsA_B, _ignoreDiacritics;
 	Card[] _cards;
 	final QuizGenerator _quizGenerator;
 	QuizPlus _quizPlus;
@@ -136,7 +131,6 @@ public class FlashCardsGame {
 		_quizIsA_B = PropertyPlusToBoolean(_properties, PropertyPlus.QUIZ_TYPE);
 		_ignoreDiacritics = PropertyPlusToBoolean(_properties,
 				PropertyPlus.IGNORE_DIACRITICS);
-		_julieMode = PropertyPlusToBoolean(_properties, PropertyPlus.JULIE_MODE);
 		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
 		_printedSomething = false;
@@ -239,7 +233,7 @@ public class FlashCardsGame {
 				 */
 				in.mark(1);
 				/**
-				 * If the first character is NOT_JULIE_MODE feff, go back to the beginning of the
+				 * If the first character is NOT_HONOR_MODE feff, go back to the beginning of the
 				 * file. If it IS feff, ignore it and continue on.
 				 */
 				if (in.read() != 0xFEFF) {
@@ -358,7 +352,6 @@ public class FlashCardsGame {
 		_properties.put(PropertyPlus.QUIZ_TYPE._realName, Boolean.toString(_quizIsA_B));
 		_properties.put(PropertyPlus.IGNORE_DIACRITICS._realName,
 				Boolean.toString(_ignoreDiacritics));
-		_properties.put(PropertyPlus.JULIE_MODE._realName, Boolean.toString(_julieMode));
 		_quizGenerator.updateProperties(_properties);
 	}
 
@@ -441,7 +434,7 @@ public class FlashCardsGame {
 
 	final String getTypeIIPrompt() {
 		final String prompt = String.format("Enter: %c=Done, R=Restart same quiz ",
-				_ReturnSymbol);
+				_ReturnChar);
 		return prompt + _quizGenerator.getTypeIIPrompt();
 	}
 
@@ -662,50 +655,38 @@ public class FlashCardsGame {
 			for (; !gotItRight; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
 				final String response = readLine(sc);
-				final JulieAnswer julieAnswer;
+				final HonorAnswer honorAnswer;
 				if (response.length() == 0) {
-					if (_julieMode) {
-						julieAnswer = JulieAnswer.RIGHT;
+					System.out.printf("%c%s%c Did you get it right (%c=Yes, %c=No)?\n", _RtArrow,
+							answer, _LtArrow, _ReturnChar, _DidNotKnowItChar);
+					final String s = readLine(sc);
+					if (s.length() > 0 && Character.toUpperCase(s.charAt(0)) == _DidNotKnowItChar) {
+						honorAnswer = HonorAnswer.WRONG;
 					} else {
-						System.out.printf("%c%s%c Did you get it right (%c=Yes, %c=No)?\n", _RtArrow,
-								answer, _LtArrow, _ReturnSymbol, _DidNotKnowItSymbol);
-						final String julieResponse = readLine(sc);
-						julieAnswer = (julieResponse.length() == 0
-								|| julieResponse.charAt(0) != _DidNotKnowItSymbol)
-										? JulieAnswer.RIGHT
-										: JulieAnswer.WRONG;
-					}
-				} else if (response.length() == 1) {
-					/**
-					 * quit, restart, edit the properties, respond when _julieMode = true, or it's a
-					 * response.
-					 */
-					final char char0 = response.charAt(0);
-					if (char0 == _QuitSymbol) {
-						keepGoing = false;
-						return;
-					} else if (char0 == _EditPropertiesSymbol) {
-						modifyProperties(sc);
-						continue OUTSIDE_LOOP;
-					} else if (char0 == _RestartSymbol) {
-						_quizPlus.resetForFullMode();
-						restarted = true;
-						continue OUTSIDE_LOOP;
-					} else if (_julieMode) {
-						julieAnswer = (char0 != _DidNotKnowItSymbol)
-								? JulieAnswer.RIGHT
-								: JulieAnswer.WRONG;
-					} else {
-						julieAnswer = JulieAnswer.NOT_JULIE_MODE;
+						honorAnswer = HonorAnswer.RIGHT;
 					}
 				} else {
-					if (_julieMode) {
-						julieAnswer = JulieAnswer.RIGHT;
-					} else {
-						julieAnswer = JulieAnswer.WRONG;
+					honorAnswer = HonorAnswer.NOT_HONOR_MODE;
+					if (response.length() == 1) {
+						/**
+						 * quit, restart, edit the properties, or fall through, letting this be a bona
+						 * fide response (such as ở).
+						 */
+						final char char0 = response.charAt(0);
+						if (char0 == _QuitChar) {
+							keepGoing = false;
+							return;
+						} else if (char0 == _EditPropertiesChar) {
+							modifyProperties(sc);
+							continue OUTSIDE_LOOP;
+						} else if (char0 == _RestartChar) {
+							_quizPlus.resetForFullMode();
+							restarted = true;
+							continue OUTSIDE_LOOP;
+						}
 					}
 				}
-				final DiffReport diffReport = new DiffReport(julieAnswer, _ignoreDiacritics,
+				final DiffReport diffReport = new DiffReport(honorAnswer, _ignoreDiacritics,
 						response, answer);
 				final String diffString = diffReport._diffString;
 				if (diffString != null) {
@@ -725,15 +706,9 @@ public class FlashCardsGame {
 	}
 
 	String getIntroString() {
-		if (!_julieMode) {
-			return String.format(
-					"%c=\"Julie Mode\", %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
-					_JulieModeSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
-		}
 		return String.format(
-				"%c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %c=You know it, %c=You do not know it",
-				_EditPropertiesSymbol, _QuitSymbol, _RestartSymbol, _ReturnSymbol,
-				_DidNotKnowItSymbol);
+				"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
+				_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartChar);
 	}
 
 	static String CleanString(final String s) {

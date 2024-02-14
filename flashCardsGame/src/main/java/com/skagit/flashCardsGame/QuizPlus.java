@@ -11,13 +11,13 @@ import java.util.TreeMap;
 
 class QuizPlus implements Serializable {
 	private static final long serialVersionUID = 1L;
-	final int[] _fullQuiz;
-	final int[] _origFullQuiz;
-	private final int[] _criticalIndicesInQuiz;
+	final private int[] _fullQuiz;
+	final private int[] _origFullQuiz;
+	final private int[] _criticalIndicesInQuiz;
 	private int _currentIndexInQuiz;
 	private int _nWrongs, _nRights;
 	boolean _criticalQuizIndicesOnly;
-	private final HashMap<Integer, NWrongsAndHits> _indexInCardsToNWrongsAndHits;
+	final private HashMap<Integer, NWrongsAndHits> _indexInCardsToNWrongsAndHits;
 	private int _firstWrongIndexInCards;
 
 	static class NWrongsAndHits implements Cloneable {
@@ -241,7 +241,7 @@ class QuizPlus implements Serializable {
 			}
 			final TreeMap<Integer, int[]> map = iPass == 0 ? mapofNonCriticals : mapOfCriticals;
 			final String mapString = mapToString(map);
-			if (mapString.indexOf(FlashCardsGame._EmptySet) >= 0) {
+			if (mapString.indexOf(FlashCardsGame._EmptySetChar) >= 0) {
 				s += mapString;
 			} else {
 				s += String.format("(%s)", mapString);
@@ -254,7 +254,7 @@ class QuizPlus implements Serializable {
 	private static final String mapToString(final TreeMap<Integer, int[]> map) {
 		final int nEntries = map.size();
 		if (nEntries == 0) {
-			return "" + FlashCardsGame._EmptySet;
+			return "" + FlashCardsGame._EmptySetChar;
 		}
 		final int[][] indexInCardsAndCount = new int[nEntries][];
 		final Iterator<Map.Entry<Integer, int[]>> it = map.entrySet().iterator();

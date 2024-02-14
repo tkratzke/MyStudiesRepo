@@ -14,11 +14,9 @@ enum PropertyPlus {
 	FR("Failure.Rate", "10%", ""), //
 	DECAY("Type.Of.Decay", "LINEAR", ""), //
 	QUIZ_TYPE("Quiz.Type.Is.A_to_B", "FALSE", "Types of Quizzes:\n" //
-			+ "\"Which Way to Quiz, " + //
-			"Ignore Diacritics or not, and" + //
-			"\"JulieAnswer\":"), //
-	IGNORE_DIACRITICS("Ignore.Diacritics", "FALSE", ""), //
-	JULIE_MODE("Julie.Mode", "FALSE", "");
+			+ "\"Which Way to Quiz, and\n" + //
+			"Ignore Diacritics or not:"), //
+	IGNORE_DIACRITICS("Ignore.Diacritics", "FALSE", "");
 
 	final static PropertyPlus[] _Values = values();
 
@@ -43,6 +41,6 @@ enum TypeOfChange {
 	final static TypeOfChange[] _Values = values();
 }
 
-enum JulieAnswer {
-	RIGHT, WRONG, NOT_JULIE_MODE
+enum HonorAnswer {
+	RIGHT, WRONG, NOT_HONOR_MODE
 }

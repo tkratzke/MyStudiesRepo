@@ -41,8 +41,8 @@ class QuizPlusTransition {
 		}
 		final String oldSummaryString;
 		if (quizPlus == null) {
-			oldSummaryString = String.format("{%c|%c}", FlashCardsGame._EmptySet,
-					FlashCardsGame._EmptySet);
+			oldSummaryString = String.format("{%c|%c}", FlashCardsGame._EmptySetChar,
+					FlashCardsGame._EmptySetChar);
 		} else {
 			oldSummaryString = quizPlus.getSummaryString();
 		}

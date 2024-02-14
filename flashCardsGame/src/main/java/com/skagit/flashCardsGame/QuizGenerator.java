@@ -6,14 +6,14 @@ import java.util.Random;
 
 public class QuizGenerator {
 	private int _topIndexInCards;
-	private final int _maxNNewWords;
-	private final int _maxNRecentWords;
-	private final int _nRepeatsOfNew;
-	private final TypeOfDecay _typeOfDecay;
-	private final int _failureRateI;
-	private final int _percentageForRecentsI;
+	final private int _maxNNewWords;
+	final private int _maxNRecentWords;
+	final private int _nRepeatsOfNew;
+	final private TypeOfDecay _typeOfDecay;
+	final private int _failureRateI;
+	final private int _percentageForRecentsI;
 
-	private final Random _r;
+	final private Random _r;
 
 	private boolean _changedQuizGeneratorParameters;
 
