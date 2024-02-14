@@ -6,13 +6,11 @@ public class DiffReport {
 	final boolean _gotItRight, _gotItExactlyRight;
 	final String _diffString;
 
-	DiffReport(final boolean julieMode, final boolean ignoreDiacritics,
+	DiffReport(final JulieAnswer julieAnswer, final boolean ignoreDiacritics,
 			final String response0, final String answer0) {
 		final String response0Lc = response0.toLowerCase();
-		if (julieMode) {
-			_gotItRight = _gotItExactlyRight = response0Lc.length() == 0
-					|| response0Lc.charAt(0) == 'y';
-			/** In JulieMode, there is never a diffString. */
+		if (julieAnswer != JulieAnswer.NOT_JULIE_MODE) {
+			_gotItRight = _gotItExactlyRight = julieAnswer == JulieAnswer.RIGHT;
 			_diffString = null;
 			return;
 		}

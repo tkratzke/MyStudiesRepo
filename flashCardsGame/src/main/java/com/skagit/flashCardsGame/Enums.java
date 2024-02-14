@@ -14,8 +14,11 @@ enum PropertyPlus {
 	FR("Failure.Rate", "10%", ""), //
 	DECAY("Type.Of.Decay", "LINEAR", ""), //
 	QUIZ_TYPE("Quiz.Type.Is.A_to_B", "FALSE", "Types of Quizzes:\n" //
-			+ "\"Which Way to Quiz\" and \"Ignore Diacritics or not:\""), //
-	IGNORE_DIACRITICS("Ignore.Diacritics", "FALSE", "");
+			+ "\"Which Way to Quiz, " + //
+			"Ignore Diacritics or not, and" + //
+			"\"JulieAnswer\":"), //
+	IGNORE_DIACRITICS("Ignore.Diacritics", "FALSE", ""), //
+	JULIE_MODE("Julie.Mode", "FALSE", "");
 
 	final static PropertyPlus[] _Values = values();
 
@@ -38,4 +41,8 @@ enum TypeOfDecay {
 enum TypeOfChange {
 	NOTHING_TO_SOMETHING, RESTART, WIN, LOSS, PARAMETERS_CHANGED, NO_CHANGE;
 	final static TypeOfChange[] _Values = values();
+}
+
+enum JulieAnswer {
+	RIGHT, WRONG, NOT_JULIE_MODE
 }

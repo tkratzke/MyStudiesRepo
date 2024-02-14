@@ -31,11 +31,9 @@ public class FlashCardsGame {
 	final static char _JulieModeSymbol = _ReturnSymbol;
 	final static char _QuitSymbol = 'Q';
 	final static char _EditPropertiesSymbol = 'E';
+	final static char _DidNotKnowItSymbol = '?';
 	final static char _RestartSymbol = 'R';
 	final static char _B_ASymbol = 'B';
-	final static String _IntroString = String.format(
-			"%c=\"Julie Mode\", %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
-			_JulieModeSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
 
 	final static File _UserDirFile = new File(System.getProperty("user.dir"));
 
@@ -95,8 +93,7 @@ public class FlashCardsGame {
 	final private File _propertiesFile;
 	final private Properties _properties;
 	final private long _seed;
-	boolean _quizIsA_B;
-	boolean _ignoreDiacritics;
+	boolean _quizIsA_B, _ignoreDiacritics, _julieMode;
 	Card[] _cards;
 	final QuizGenerator _quizGenerator;
 	QuizPlus _quizPlus;
@@ -139,6 +136,7 @@ public class FlashCardsGame {
 		_quizIsA_B = PropertyPlusToBoolean(_properties, PropertyPlus.QUIZ_TYPE);
 		_ignoreDiacritics = PropertyPlusToBoolean(_properties,
 				PropertyPlus.IGNORE_DIACRITICS);
+		_julieMode = PropertyPlusToBoolean(_properties, PropertyPlus.JULIE_MODE);
 		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
 		_printedSomething = false;
@@ -241,8 +239,8 @@ public class FlashCardsGame {
 				 */
 				in.mark(1);
 				/**
-				 * If the first character is NOT feff, go back to the beginning of the file. If it
-				 * IS feff, ignore it and continue on.
+				 * If the first character is NOT_JULIE_MODE feff, go back to the beginning of the
+				 * file. If it IS feff, ignore it and continue on.
 				 */
 				if (in.read() != 0xFEFF) {
 					in.reset();
@@ -356,10 +354,11 @@ public class FlashCardsGame {
 	}
 
 	void updateProperties() {
+		_properties.put(PropertyPlus.SEED._realName, Long.toString(_seed));
 		_properties.put(PropertyPlus.QUIZ_TYPE._realName, Boolean.toString(_quizIsA_B));
 		_properties.put(PropertyPlus.IGNORE_DIACRITICS._realName,
 				Boolean.toString(_ignoreDiacritics));
-		_properties.put(PropertyPlus.SEED._realName, Long.toString(_seed));
+		_properties.put(PropertyPlus.JULIE_MODE._realName, Boolean.toString(_julieMode));
 		_quizGenerator.updateProperties(_properties);
 	}
 
@@ -641,7 +640,7 @@ public class FlashCardsGame {
 				}
 				_printedSomething = true;
 				System.out.println(getString());
-				System.out.println(_IntroString);
+				System.out.println(getIntroString());
 				System.out.print(quizPlusTransition._reasonForChangeString);
 				System.out.println(" " + quizPlusTransition._transitionString);
 				System.out.println();
@@ -652,7 +651,7 @@ public class FlashCardsGame {
 				oldValues = storeValues();
 			}
 
-			/** INSIDE_LOOP is to get an answer to a clue. */
+			/** INSIDE_LOOP is to get a response to a clue. */
 			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
 			final Card card = _cards[indexInCards];
 			final String clue = CleanString(_quizIsA_B ? card._aSide : card._bSide);
@@ -660,37 +659,53 @@ public class FlashCardsGame {
 			final String typeIPrompt = getTypeIPrompt(indexInCards, clue);
 			boolean gotItRight = false;
 			int nWrongResponses = 0;
-			INSIDE_LOOP : for (; !gotItRight; ++nWrongResponses) {
+			for (; !gotItRight; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
-				String response = readLine(sc);
-				if (response.length() == 1) {
-					/** Either quit, restart, or edit the properties. */
+				final String response = readLine(sc);
+				final JulieAnswer julieAnswer;
+				if (response.length() == 0) {
+					if (_julieMode) {
+						julieAnswer = JulieAnswer.RIGHT;
+					} else {
+						System.out.printf("%c%s%c Did you get it right (%c=Yes, %c=No)?\n", _RtArrow,
+								answer, _LtArrow, _ReturnSymbol, _DidNotKnowItSymbol);
+						final String julieResponse = readLine(sc);
+						julieAnswer = (julieResponse.length() == 0
+								|| julieResponse.charAt(0) != _DidNotKnowItSymbol)
+										? JulieAnswer.RIGHT
+										: JulieAnswer.WRONG;
+					}
+				} else if (response.length() == 1) {
+					/**
+					 * quit, restart, edit the properties, respond when _julieMode = true, or it's a
+					 * response.
+					 */
 					final char char0 = response.charAt(0);
 					if (char0 == _QuitSymbol) {
 						keepGoing = false;
-						break INSIDE_LOOP;
+						return;
 					} else if (char0 == _EditPropertiesSymbol) {
 						modifyProperties(sc);
-						if (madeChangesFrom(oldValues)) {
-							continue OUTSIDE_LOOP;
-						}
-						continue INSIDE_LOOP;
+						continue OUTSIDE_LOOP;
 					} else if (char0 == _RestartSymbol) {
 						_quizPlus.resetForFullMode();
 						restarted = true;
 						continue OUTSIDE_LOOP;
+					} else if (_julieMode) {
+						julieAnswer = (char0 != _DidNotKnowItSymbol)
+								? JulieAnswer.RIGHT
+								: JulieAnswer.WRONG;
+					} else {
+						julieAnswer = JulieAnswer.NOT_JULIE_MODE;
+					}
+				} else {
+					if (_julieMode) {
+						julieAnswer = JulieAnswer.RIGHT;
+					} else {
+						julieAnswer = JulieAnswer.WRONG;
 					}
 				}
-				final boolean julieMode;
-				if (response.length() == 0) {
-					julieMode = true;
-					System.out.printf("%c%s%c Did you get it right ((%c or Y) vs N)?\n", _RtArrow,
-							answer, _LtArrow, _ReturnSymbol);
-					response = readLine(sc);
-				} else {
-					julieMode = false;
-				}
-				final DiffReport diffReport = new DiffReport(julieMode, _ignoreDiacritics,
+				final DiffReport diffReport = new DiffReport(julieAnswer, _ignoreDiacritics,
 						response, answer);
 				final String diffString = diffReport._diffString;
 				if (diffString != null) {
@@ -707,6 +722,18 @@ public class FlashCardsGame {
 				}
 			}
 		}
+	}
+
+	String getIntroString() {
+		if (!_julieMode) {
+			return String.format(
+					"%c=\"Julie Mode\", %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
+					_JulieModeSymbol, _EditPropertiesSymbol, _QuitSymbol, _RestartSymbol);
+		}
+		return String.format(
+				"%c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %c=You know it, %c=You do not know it",
+				_EditPropertiesSymbol, _QuitSymbol, _RestartSymbol, _ReturnSymbol,
+				_DidNotKnowItSymbol);
 	}
 
 	static String CleanString(final String s) {
