@@ -26,6 +26,8 @@ public class FlashCardsGame {
 	final static char _DnArrow = '\u2193';
 	final static char _EmptySet = '\u2205';
 	final static char _ReturnSymbol = '\u23CE';
+	final static char _CheckSymbol = '\u2714';
+
 	final static char _JulieModeSymbol = _ReturnSymbol;
 	final static char _QuitSymbol = 'Q';
 	final static char _EditPropertiesSymbol = 'E';
@@ -47,23 +49,16 @@ public class FlashCardsGame {
 		private static final long serialVersionUID = 1L;
 		{
 			final String[][] mappings = { //
-					{"áàảãạâấầẩẫậăắằẳẵặ", "a"}, //
-					{"ÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶ", "A"}, //
-					{"đ", "d"}, //
-					{"Đ", "D"}, //
-					{"éèẻẽẹêếềểễệ", "e"}, //
-					{"ÉÈẺẼẸÊẾỀỂỄỆ", "E"}, //
-					{"íìỉĩị", "i"}, //
-					{"ÍÌỈĨỊ", "I"}, //
-					{"óòỏõọôốồổỗộơớờởỡợ", "o"}, //
-					{"ÓÒỎÕỌÔỐỒỔỖỘƠỚỜỢỠỢ", "O"}, //
-					{"úùủũụưứừửữự", "u"}, //
-					{"ÚÙỦŨỤƯỨỪỬỮỰ", "U"}, //
-					{"ýỳỷỹỵ", "y"}, //
-					{"ÝỲỶỸỴ", "Y"}//
+					{"aáàảãạâấầẩẫậăắằẳẵặ", "a"}, //
+					{"dđ", "d"}, //
+					{"eéèẻẽẹêếềểễệ", "e"}, //
+					{"iíìỉĩị", "i"}, //
+					{"oóòỏõọôốồổỗộơớờởỡợ", "o"}, //
+					{"uúùủũụưứừửữự", "u"}, //
+					{"yýỳỷỹỵ", "y"}, //
 			};
-			final int nReplacePairs = mappings.length;
-			for (int k0 = 0; k0 < nReplacePairs; ++k0) {
+			final int nPairs = mappings.length;
+			for (int k0 = 0; k0 < nPairs; ++k0) {
 				final String[] pair = mappings[k0];
 				final char engChar = pair[1].charAt(0);
 				final String vnChars = pair[0];
@@ -80,9 +75,10 @@ public class FlashCardsGame {
 		final StringBuilder sb = new StringBuilder(s);
 		for (int k = 0; k < sb.length(); k++) {
 			final char c = sb.charAt(k);
-			final Character bigC = _VnToEngCharMap.get(c);
-			if (bigC != null) {
-				sb.setCharAt(k, bigC);
+			final char cLc = Character.toLowerCase(c);
+			final Character targetLc = _VnToEngCharMap.get(Character.toLowerCase(cLc));
+			if (targetLc != null) {
+				sb.setCharAt(k, c == cLc ? targetLc : Character.toUpperCase(targetLc));
 			}
 		}
 		return sb.toString();
@@ -92,7 +88,7 @@ public class FlashCardsGame {
 	@SuppressWarnings("unused")
 	final private static String _FieldSeparator0 = "\\s*\\t\\s*";
 	final private static String _FieldSeparator = "(\s*\t\s*)+";
-	final private static String _WhiteSpace = "\s+";
+	final static String _WhiteSpace = "\s+";
 	final private static String _DefaultPropertiesFilePath = "Data/LingoDeer";
 	final private static String _PropertiesEnding = ".properties";
 
@@ -623,8 +619,7 @@ public class FlashCardsGame {
 	}
 
 	String readLine(final Scanner sc) {
-		final String line = sc != null ? sc.nextLine() : System.console().readLine();
-		return CleanString(line);
+		return CleanString(sc != null ? sc.nextLine() : System.console().readLine());
 	}
 
 	void mainLoop(final Scanner sc) {
@@ -660,17 +655,17 @@ public class FlashCardsGame {
 			/** INSIDE_LOOP is to get an answer to a clue. */
 			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
 			final Card card = _cards[indexInCards];
-			final String clue = _quizIsA_B ? card._aSide : card._bSide;
-			final String answer = _quizIsA_B ? card._bSide : card._aSide;
+			final String clue = CleanString(_quizIsA_B ? card._aSide : card._bSide);
+			final String answer = CleanString(_quizIsA_B ? card._bSide : card._aSide);
 			final String typeIPrompt = getTypeIPrompt(indexInCards, clue);
 			boolean gotItRight = false;
 			int nWrongResponses = 0;
 			INSIDE_LOOP : for (; !gotItRight; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
-				final String response0 = readLine(sc);
-				if (response0.length() == 1) {
+				String response = readLine(sc);
+				if (response.length() == 1) {
 					/** Either quit, restart, or edit the properties. */
-					final char char0 = response0.charAt(0);
+					final char char0 = response.charAt(0);
 					if (char0 == _QuitSymbol) {
 						keepGoing = false;
 						break INSIDE_LOOP;
@@ -686,31 +681,24 @@ public class FlashCardsGame {
 						continue OUTSIDE_LOOP;
 					}
 				}
-				if (response0.length() == 0) {
-					System.out.printf("%c%s%c Did you get it right (%c or Y/N)?\n", _RtArrow,
+				final boolean julieMode;
+				if (response.length() == 0) {
+					julieMode = true;
+					System.out.printf("%c%s%c Did you get it right ((%c or Y) vs N)?\n", _RtArrow,
 							answer, _LtArrow, _ReturnSymbol);
-					final String response1 = readLine(sc);
-					gotItRight = response1.length() == 0
-							|| Character.toUpperCase(response1.charAt(0)) == 'Y';
+					response = readLine(sc);
 				} else {
-					final boolean gotItPartiallyWrong;
-					if (_ignoreDiacritics) {
-						final String response0Stripped = StripVNDiacritics(response0);
-						final String answerStripped = StripVNDiacritics(answer);
-						gotItRight = response0Stripped.equalsIgnoreCase(answerStripped);
-						gotItPartiallyWrong = !response0.equalsIgnoreCase(answer);
-					} else {
-						gotItRight = response0.equalsIgnoreCase(answer);
-						gotItPartiallyWrong = !gotItRight;
-					}
-					if (!gotItRight) {
-						System.out.printf("%c%s%c", _RtArrow, answer, _LtArrow);
-					} else if (gotItPartiallyWrong) {
-						System.out.printf("NB: %s", answer);
-					}
+					julieMode = false;
+				}
+				final DiffReport diffReport = new DiffReport(julieMode, _ignoreDiacritics,
+						response, answer);
+				final String diffString = diffReport._diffString;
+				if (diffString != null) {
+					System.out.print(diffString);
 					System.out.println();
 					System.out.println();
 				}
+				gotItRight = diffReport._gotItRight;
 				if (!gotItRight) {
 					++nWrongResponses;
 				}
