@@ -656,11 +656,13 @@ public class FlashCardsGame {
 				System.out.print(typeIPrompt);
 				final String response = readLine(sc);
 				final HonorAnswer honorAnswer;
+				String honorResponse = null;
 				if (response.length() == 0) {
 					System.out.printf("%c%s%c Did you get it right (%c=Yes, %c=No)?\n", _RtArrow,
 							answer, _LtArrow, _ReturnChar, _DidNotKnowItChar);
-					final String s = readLine(sc);
-					if (s.length() > 0 && Character.toUpperCase(s.charAt(0)) == _DidNotKnowItChar) {
+					honorResponse = readLine(sc);
+					if (honorResponse.length() > 0
+							&& Character.toUpperCase(honorResponse.charAt(0)) == _DidNotKnowItChar) {
 						honorAnswer = HonorAnswer.WRONG;
 					} else {
 						honorAnswer = HonorAnswer.RIGHT;
@@ -689,6 +691,9 @@ public class FlashCardsGame {
 				final DiffReport diffReport = new DiffReport(honorAnswer, _ignoreDiacritics,
 						response, answer);
 				final String diffString = diffReport._diffString;
+				if (honorResponse != null && honorResponse.length() > 0) {
+					System.out.println();
+				}
 				if (diffString != null) {
 					System.out.print(diffString);
 					System.out.println();
