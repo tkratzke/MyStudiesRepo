@@ -29,6 +29,8 @@ public class FlashCardsGame {
 	final private static char _EditPropertiesChar = 'E';
 	final private static char _YesChar = 'Y';
 	final private static char _NoChar = 'N';
+	final private static String _YesString = "Yes";
+	final private static String _NoString = "No";
 	final private static char _RestartChar = 'R';
 
 	/**
@@ -445,19 +447,16 @@ public class FlashCardsGame {
 		for (;;) {
 			final String prompt = getTypeIIPrompt();
 			System.out.printf("%s: ", prompt);
-			final String myLine = readLine(sc).toUpperCase().trim();
-			final String[] fields = myLine.trim().split(_WhiteSpace);
-			final String field0 = (fields == null || fields.length == 0
-					|| fields[0].length() == 0) ? "" : fields[0];
-			final int field0Len = field0.length();
-			if (myLine.length() == 0 && field0Len == 0) {
-				/** Done editing. */
+			final String myLine = readLine(sc).toUpperCase();
+			if (myLine.length() == 0) {
 				return;
-			} else if (field0Len == 0) {
-				continue;
-			} else {
-				_quizGenerator.modifySingleProperty(fields);
 			}
+			final String[] fields = myLine.split(_WhiteSpace);
+			/**
+			 * Currently, we have no properties of our own to edit, so we immediately turn it
+			 * over to _quizGenerator.
+			 */
+			_quizGenerator.modifySingleProperty(fields);
 		}
 	}
 
@@ -656,82 +655,68 @@ public class FlashCardsGame {
 			final String clue = CleanString(_quizIsA_B ? card._aSide : card._bSide);
 			final String answer = CleanString(_quizIsA_B ? card._bSide : card._aSide);
 			final String typeIPrompt = getTypeIPrompt(indexInCards, clue);
-			boolean gotItRight = false;
-			int nWrongResponses = 0;
-			for (; !gotItRight; ++nWrongResponses) {
+			boolean wasWrongAtLeastOnce = false;
+			for (boolean gotItRight = false; !gotItRight;) {
 				System.out.print(typeIPrompt);
 				final String response = readLine(sc);
-				final HonorResult honorResult;
-				String honorResponse = null;
 				if (response.length() == 0) {
-					System.out.printf("%c%s%c Did you get it right (%c=Yes, %c=No)? ", _RtArrow,
-							answer, _LtArrow, _ReturnChar, _NoChar);
-					honorResponse = readLine(sc);
-					final boolean haveBlankHonorResponse = honorResponse.length() == 0;
-					if (!haveBlankHonorResponse
-							&& Character.toUpperCase(honorResponse.charAt(0)) == _NoChar) {
-						honorResult = HonorResult.WRONG;
-					} else {
-						honorResult = HonorResult.RIGHT;
-					}
-				} else {
-					honorResult = HonorResult.NOT_HONOR_MODE;
-					if (response.length() == 1) {
-						/**
-						 * quit, restart, edit the properties, or fall through, letting this be a bona
-						 * fide response (such as ở).
-						 */
-						final char char0Uc = Character.toUpperCase(response.charAt(0));
-						if (char0Uc == _QuitChar) {
-							keepGoing = false;
-							return;
-						} else if (char0Uc == _EditPropertiesChar) {
-							modifyProperties(sc);
-							continue OUTSIDE_LOOP;
-						} else if (char0Uc == _RestartChar) {
-							_quizPlus.resetForFullMode();
-							restarted = true;
-							continue OUTSIDE_LOOP;
-						}
+					final String prompt = String.format(" %c%s%c Get it right", _RtArrow, answer,
+							_LtArrow);
+					gotItRight = getYesNo(sc, prompt, true);
+					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
+					continue;
+				}
+				if (response.length() == 1) {
+					/**
+					 * quit, restart, edit the properties, or fall through, letting this be a bona
+					 * fide response (such as ở).
+					 */
+					final char char0Uc = Character.toUpperCase(response.charAt(0));
+					if (char0Uc == _QuitChar) {
+						keepGoing = false;
+						return;
+					} else if (char0Uc == _EditPropertiesChar) {
+						modifyProperties(sc);
+						continue OUTSIDE_LOOP;
+					} else if (char0Uc == _RestartChar) {
+						_quizPlus.resetForFullMode();
+						restarted = true;
+						continue OUTSIDE_LOOP;
 					}
 				}
-				final DiffReport diffReport = new DiffReport(honorResult, _ignoreDiacritics,
-						response, answer);
+				final DiffReport diffReport = new DiffReport(_ignoreDiacritics, response, answer);
 				final String diffString = diffReport._diffString;
 				gotItRight = diffReport._gotItRight;
 				if (diffString != null) {
 					System.out.print(diffString);
-					if (gotItRight && !diffReport._gotItExactlyRight) {
-						System.out.printf(".  Count as wrong? %c=No,%c=Yes ", _ReturnChar, _YesChar);
-						/**
-						 * There's an automatic line feed in readLine so this block of code does not
-						 * provide a line feed.
-						 */
-						final String countAsWrongResponse = readLine(sc);
-						final boolean emptyLine = countAsWrongResponse.length() == 0;
-						final boolean countAsWrong = !emptyLine
-								&& Character.toUpperCase(countAsWrongResponse.charAt(0)) == _YesChar;
-						if (countAsWrong) {
-							gotItRight = false;
-						}
+					if (gotItRight) {
+						gotItRight = !getYesNo(sc, " Count as wrong", false);
 					} else {
-						/**
-						 * There is no automatic line feed and we have a diffString. We must provide a
-						 * line feed.
-						 */
-						System.out.println();
+						gotItRight = getYesNo(sc, " Count as right", false);
 					}
-					/** With a diffString, we need an extra line before the next question. */
-					System.out.println();
 				}
-				if (!gotItRight) {
-					++nWrongResponses;
-				}
-				if (gotItRight) {
-					_quizPlus.reactToRightResponse(/* wasWrongAtLeastOnce= */nWrongResponses > 0);
-				}
+				wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 			}
+			_quizPlus.reactToRightResponse(wasWrongAtLeastOnce);
 		}
+	}
+
+	private boolean getYesNo(final Scanner sc, final String prompt,
+			final boolean defaultValue) {
+		final char otherChar = defaultValue ? _NoChar : _YesChar;
+		final String defaultString = defaultValue ? _YesString : _NoString;
+		final String otherString = defaultValue ? _NoString : _YesString;
+		System.out.printf("%s? %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString, otherChar,
+				otherString);
+		final String response = readLine(sc);
+		/** After the line feed from reading a line, provide another. */
+		System.out.println();
+		if (response.length() == 0) {
+			return defaultValue;
+		}
+		return Character.toUpperCase(response.charAt(0)) == otherChar
+				? !defaultValue
+				: defaultValue;
 	}
 
 	String getIntroString() {
