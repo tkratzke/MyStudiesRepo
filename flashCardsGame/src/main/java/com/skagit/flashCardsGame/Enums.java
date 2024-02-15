@@ -41,6 +41,6 @@ enum TypeOfChange {
 	final static TypeOfChange[] _Values = values();
 }
 
-enum HonorAnswer {
+enum HonorResult {
 	RIGHT, WRONG, NOT_HONOR_MODE
 }

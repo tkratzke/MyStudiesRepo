@@ -27,7 +27,8 @@ public class FlashCardsGame {
 	final private static char _ReturnChar = '\u23CE';
 	final private static char _QuitChar = 'Q';
 	final private static char _EditPropertiesChar = 'E';
-	final private static char _DidNotKnowItChar = 'N';
+	final private static char _YesChar = 'Y';
+	final private static char _NoChar = 'N';
 	final private static char _RestartChar = 'R';
 
 	/**
@@ -135,6 +136,8 @@ public class FlashCardsGame {
 		reWritePropertiesFile();
 		_printedSomething = false;
 		loadCards();
+		announceAndClumpDuplicates();
+		writeCardsToDisk();
 		_quizGenerator = new QuizGenerator(_properties, _cards.length, _seed);
 		shuffleCards(_cards);
 		_quizPlus = null;
@@ -272,10 +275,10 @@ public class FlashCardsGame {
 							System.out.println();
 							System.out.println();
 						}
-						_printedSomething = true;
 						System.out.println("Merging");
 						System.out.println("newCard.getString()" + " into");;
 						System.out.print(oldCard.getString());
+						_printedSomething = true;
 						oldCard._comment = (oldCard._comment + "\n" + comment).trim();
 					} else {
 						cardMap.put(newCard, newCard);
@@ -289,8 +292,6 @@ public class FlashCardsGame {
 		final int nCards = cardMap.size();
 		_cards = cardMap.keySet().toArray(new Card[nCards]);
 		Arrays.sort(_cards, Card._ByIndexOnly);
-		announceAndClumpDuplicates();
-		writeCardsToDisk();
 	}
 
 	private void announceAndClumpDuplicates() {
@@ -313,11 +314,13 @@ public class FlashCardsGame {
 				if (slaves != null) {
 					final Card oldCard = kingToSlaves.ceilingKey(card);
 					if (_printedSomething) {
-						System.out.printf("\n\n");
+						System.out.println();
+						System.out.println();
 					}
+					System.out.println(String.format("Duplicate %s:", sideBeingChecked));
+					System.out.println(oldCard.getString());
+					System.out.print(card.getString());
 					_printedSomething = true;
-					System.out.printf("Duplicate %s:\n%s\n%s", sideBeingChecked,
-							oldCard.getString(), card.getString());
 					slaves.add(card);
 					_cards[k] = null;
 				} else {
@@ -447,9 +450,11 @@ public class FlashCardsGame {
 			final String field0 = (fields == null || fields.length == 0
 					|| fields[0].length() == 0) ? "" : fields[0];
 			final int field0Len = field0.length();
-			if (field0Len == 0) {
+			if (myLine.length() == 0 && field0Len == 0) {
 				/** Done editing. */
 				return;
+			} else if (field0Len == 0) {
+				continue;
 			} else {
 				_quizGenerator.modifySingleProperty(fields);
 			}
@@ -611,7 +616,7 @@ public class FlashCardsGame {
 	}
 
 	String readLine(final Scanner sc) {
-		return CleanString(sc != null ? sc.nextLine() : System.console().readLine());
+		return CleanString(sc.nextLine());
 	}
 
 	void mainLoop(final Scanner sc) {
@@ -627,6 +632,7 @@ public class FlashCardsGame {
 			restarted = false;
 			final TypeOfChange typeOfChange = quizPlusTransition._typeOfChange;
 			if (typeOfChange != TypeOfChange.NO_CHANGE) {
+				/** A new quiz is worth a double line feed. */
 				if (_printedSomething) {
 					System.out.println();
 					System.out.println();
@@ -636,6 +642,7 @@ public class FlashCardsGame {
 				System.out.println(getIntroString());
 				System.out.print(quizPlusTransition._reasonForChangeString);
 				System.out.println(" " + quizPlusTransition._transitionString);
+				/** An extra line feed before the first question of this quiz. */
 				System.out.println();
 			}
 			if (madeChangesFrom(oldValues)) {
@@ -644,7 +651,6 @@ public class FlashCardsGame {
 				oldValues = storeValues();
 			}
 
-			/** INSIDE_LOOP is to get a response to a clue. */
 			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
 			final Card card = _cards[indexInCards];
 			final String clue = CleanString(_quizIsA_B ? card._aSide : card._bSide);
@@ -655,51 +661,69 @@ public class FlashCardsGame {
 			for (; !gotItRight; ++nWrongResponses) {
 				System.out.print(typeIPrompt);
 				final String response = readLine(sc);
-				final HonorAnswer honorAnswer;
+				final HonorResult honorResult;
 				String honorResponse = null;
 				if (response.length() == 0) {
-					System.out.printf("%c%s%c Did you get it right (%c=Yes, %c=No)?\n", _RtArrow,
-							answer, _LtArrow, _ReturnChar, _DidNotKnowItChar);
+					System.out.printf("%c%s%c Did you get it right (%c=Yes, %c=No)? ", _RtArrow,
+							answer, _LtArrow, _ReturnChar, _NoChar);
 					honorResponse = readLine(sc);
-					if (honorResponse.length() > 0
-							&& Character.toUpperCase(honorResponse.charAt(0)) == _DidNotKnowItChar) {
-						honorAnswer = HonorAnswer.WRONG;
+					final boolean haveBlankHonorResponse = honorResponse.length() == 0;
+					if (!haveBlankHonorResponse
+							&& Character.toUpperCase(honorResponse.charAt(0)) == _NoChar) {
+						honorResult = HonorResult.WRONG;
 					} else {
-						honorAnswer = HonorAnswer.RIGHT;
+						honorResult = HonorResult.RIGHT;
 					}
 				} else {
-					honorAnswer = HonorAnswer.NOT_HONOR_MODE;
+					honorResult = HonorResult.NOT_HONOR_MODE;
 					if (response.length() == 1) {
 						/**
 						 * quit, restart, edit the properties, or fall through, letting this be a bona
 						 * fide response (such as ở).
 						 */
-						final char char0 = response.charAt(0);
-						if (char0 == _QuitChar) {
+						final char char0Uc = Character.toUpperCase(response.charAt(0));
+						if (char0Uc == _QuitChar) {
 							keepGoing = false;
 							return;
-						} else if (char0 == _EditPropertiesChar) {
+						} else if (char0Uc == _EditPropertiesChar) {
 							modifyProperties(sc);
 							continue OUTSIDE_LOOP;
-						} else if (char0 == _RestartChar) {
+						} else if (char0Uc == _RestartChar) {
 							_quizPlus.resetForFullMode();
 							restarted = true;
 							continue OUTSIDE_LOOP;
 						}
 					}
 				}
-				final DiffReport diffReport = new DiffReport(honorAnswer, _ignoreDiacritics,
+				final DiffReport diffReport = new DiffReport(honorResult, _ignoreDiacritics,
 						response, answer);
 				final String diffString = diffReport._diffString;
-				if (honorResponse != null && honorResponse.length() > 0) {
-					System.out.println();
-				}
+				gotItRight = diffReport._gotItRight;
 				if (diffString != null) {
 					System.out.print(diffString);
-					System.out.println();
+					if (gotItRight && !diffReport._gotItExactlyRight) {
+						System.out.printf(".  Count as wrong? %c=No,%c=Yes ", _ReturnChar, _YesChar);
+						/**
+						 * There's an automatic line feed in readLine so this block of code does not
+						 * provide a line feed.
+						 */
+						final String countAsWrongResponse = readLine(sc);
+						final boolean emptyLine = countAsWrongResponse.length() == 0;
+						final boolean countAsWrong = !emptyLine
+								&& Character.toUpperCase(countAsWrongResponse.charAt(0)) == _YesChar;
+						if (countAsWrong) {
+							gotItRight = false;
+						}
+					} else {
+						/**
+						 * There is no automatic line feed and we have a diffString. We must provide a
+						 * line feed.
+						 */
+						System.out.println();
+					}
+					/** With a diffString, we need an extra line before the next question. */
 					System.out.println();
 				}
-				gotItRight = diffReport._gotItRight;
 				if (!gotItRight) {
 					++nWrongResponses;
 				}

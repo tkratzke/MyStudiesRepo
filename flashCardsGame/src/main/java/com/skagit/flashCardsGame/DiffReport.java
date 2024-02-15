@@ -6,11 +6,11 @@ public class DiffReport {
 	final boolean _gotItRight, _gotItExactlyRight;
 	final String _diffString;
 
-	DiffReport(final HonorAnswer honorAnswer, final boolean ignoreDiacritics,
+	DiffReport(final HonorResult honorResult, final boolean ignoreDiacritics,
 			final String response0, final String answer0) {
 		final String response0Lc = response0.toLowerCase();
-		if (honorAnswer != HonorAnswer.NOT_HONOR_MODE) {
-			_gotItRight = _gotItExactlyRight = honorAnswer == HonorAnswer.RIGHT;
+		if (honorResult != HonorResult.NOT_HONOR_MODE) {
+			_gotItRight = _gotItExactlyRight = honorResult == HonorResult.RIGHT;
 			_diffString = null;
 			return;
 		}
@@ -32,18 +32,40 @@ public class DiffReport {
 			_gotItRight = false;
 		}
 
+		final String[] answer0Fields = answer0Lc.split(FlashCardsGame._WhiteSpace);
 		if (_gotItRight) {
 			/** We must be ignoring diacritics and did not get it exactly right. */
-			_diffString = String.format("%c (%s)", FlashCardsGame._CheckSymbol, answer0);
+			String diffString = String.format("%c [%s", FlashCardsGame._CheckSymbol, answer0);
+			final String[] responseFields = response0Lc.split(FlashCardsGame._WhiteSpace);
+			final int nResponseFields = responseFields.length;
+			final int nAnswer0Fields = answer0Fields.length;
+			if (nResponseFields != nAnswer0Fields) {
+				diffString += "(Different number of fields?!)";
+			} else {
+				boolean foundSomething = false;
+				for (int k = 0; k < nAnswer0Fields; ++k) {
+					final String responseField = responseFields[k];
+					final String answer0Field = answer0Fields[k];
+					if (!responseField.equals(answer0Field)) {
+						diffString += String.format(" (%s)", answer0Field);
+						foundSomething = true;
+						break;
+					}
+				}
+				if (!foundSomething) {
+					diffString += "(Couldn't find the difference?!)";
+				}
+			}
+			diffString += ']';
+			_diffString = diffString;
 			return;
 		}
 
-		/** Got it wrong. Start with the answer and add the differences. */
+		/** Flat out got it wrong. Start with the answer and add the differences. */
 		String diffString = String.format("%c%s%c", FlashCardsGame._RtArrow, answer0Lc,
 				FlashCardsGame._LtArrow);
 
 		final String[] responseFields = responseLc.split(FlashCardsGame._WhiteSpace);
-		final String[] answer0Fields = answer0Lc.split(FlashCardsGame._WhiteSpace);
 		final String[] answerFields = answerLc.split(FlashCardsGame._WhiteSpace);
 		final ArrayList<String> wrongs = new ArrayList<>();
 		final int nResponseFields = responseFields.length;
@@ -64,11 +86,6 @@ public class DiffReport {
 			wrongs.add(answer0Fields[k]);
 		}
 		final int nWrongs = wrongs.size();
-		/** If nWrongs > 2, it's a mess; don't report anything. */
-		if (nWrongs > 2) {
-			_diffString = diffString;
-			return;
-		}
 		final int nToReport = Math.min(2, nWrongs);
 		for (int k = 0; k < nToReport; ++k) {
 			if (k == 0) {
