@@ -17,8 +17,8 @@
  15.	mấy quyển:                        	how many books
  16.	hai quyển:                        	two books
  17.	tranh:                            	a picture or painting
- 18.	tôi thích ly bia Việt Nam này:    	I like this cup of VN beer
- 19.	hai quyển vở này đều là của tôi:  	these two notebooks are both mine
+ 18.	hai quyển vở này đều là của tôi:  	these two notebooks are both mine
+ 19.	tôi thích ly bia Việt Nam này:    	I like this cup of VN beer
 
  20.	ly cà phê đó là của bố:           	that cup of coffee is dad's
  21.	tôi thích bát canh này:           	I like this bowl of soup

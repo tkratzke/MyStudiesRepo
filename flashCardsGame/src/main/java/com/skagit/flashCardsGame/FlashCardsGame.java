@@ -85,7 +85,6 @@ public class FlashCardsGame {
 	final private static String _FieldSeparator0 = "\\s*\\t\\s*";
 	final private static String _FieldSeparator = "(\s*\t\s*)+";
 	final static String _WhiteSpace = "\s+";
-	final private static String _DefaultPropertiesFilePath = "Data/LingoDeer";
 	final private static String _PropertiesEnding = ".properties";
 
 	final private File _propertiesFile;
@@ -98,13 +97,7 @@ public class FlashCardsGame {
 	boolean _printedSomething;
 
 	FlashCardsGame(final Scanner sc, final String[] args) {
-		final int nArgs = args.length;
-		final String propertiesFilePath;
-		if (nArgs > 0 && args[0].length() > 0) {
-			propertiesFilePath = args[0];
-		} else {
-			propertiesFilePath = _DefaultPropertiesFilePath;
-		}
+		final String propertiesFilePath = args[0];
 		if (propertiesFilePath.toLowerCase().endsWith(_PropertiesEnding)) {
 			_propertiesFile = new File(propertiesFilePath);
 		} else {
@@ -434,7 +427,7 @@ public class FlashCardsGame {
 			final long successRateI = Math.round((100d * nRights) / nTrials);
 			s += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%)", nRights, nWrongs, successRateI);
 		}
-		return s + String.format(": %s ", clue);
+		return s + String.format("::%s: ", clue);
 	}
 
 	final String getTypeIIPrompt() {
@@ -603,9 +596,9 @@ public class FlashCardsGame {
 	}
 
 	final String getString() {
-		return String.format("%s: %c%c%c%s RandomSeed[%d], %s", getCoreFilePath(),
+		return String.format("%s: %c%c%c%s RandomSeed[%d] %s", getCoreFilePath(),
 				_quizIsA_B ? 'A' : 'B', _RtArrow, _quizIsA_B ? 'B' : 'A', //
-				_ignoreDiacritics ? ",IgnoreDiacritics" : "", //
+				_ignoreDiacritics ? " IgnoreDiacritics" : "", //
 				_seed, _quizGenerator.getString());
 	}
 
@@ -684,7 +677,7 @@ public class FlashCardsGame {
 						continue OUTSIDE_LOOP;
 					}
 				}
-				final DiffReport diffReport = new DiffReport(_ignoreDiacritics, response, answer);
+				final DiffReport diffReport = new DiffReport(_ignoreDiacritics, answer, response);
 				final String diffString = diffReport._diffString;
 				gotItRight = diffReport._gotItRight;
 				if (diffString != null) {
@@ -730,6 +723,21 @@ public class FlashCardsGame {
 			return "";
 		}
 		return s.trim().replaceAll(_WhiteSpace, " ");
+	}
+
+	public static boolean StringEquals(final String s0, final String s1) {
+		final byte[] bytes0 = s0.getBytes();
+		final byte[] bytes1 = s1.getBytes();
+		final int n0 = bytes0.length, n1 = bytes1.length;
+		if (n0 != n1) {
+			return false;
+		}
+		for (int k = 0; k < n0; ++k) {
+			if (bytes0[k] != bytes1[k]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static void main(final String[] args) {
