@@ -244,7 +244,8 @@ class QuizPlus implements Serializable {
 			if (mapString.indexOf(FlashCardsGame._EmptySetChar) >= 0) {
 				s += mapString;
 			} else {
-				s += String.format("(%s)", mapString);
+				// s += String.format("(%s)", mapString);
+				s += mapString;
 			}
 		}
 		s += "}";

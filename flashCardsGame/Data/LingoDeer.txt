@@ -1,195 +1,195 @@
-  0.	này:                              	this
-  1.	cái:                              	class'f'r/inanimate objects
-  2.	quyển:                            	class'f'r/books and volumes (cannot stand alone)
-  3.	ly:                               	class'f'r/cups and glasses (can stand alone)
-  4.	cốc:                              	class'f'r/cups and glasses (can stand alone)
-  5.	bát:                              	class'f'r/bowls (can stand alone)
-  6.	bức:                              	class'f'r/narrow rect'g'lar things (can stand alone)
-  7.	tờ:                               	class'f'r/paper-like things (cannot stand alone)
-  8.	đều:                              	all or both
-  9.	cô ấy:                            	she or her
+  0.	này:                             	this
+  1.	cái:                             	class'f'r/inanimate objects
+  2.	quyển:                           	class'f'r/books and volumes (cannot stand alone)
+  3.	ly:                              	class'f'r/cups and glasses (can stand alone)
+  4.	cốc:                             	class'f'r/cups and glasses (can stand alone)
+  5.	bát:                             	class'f'r/bowls (can stand alone)
+  6.	bức:                             	class'f'r/narrow rect'g'lar things (can stand alone)
+  7.	tờ:                              	class'f'r/paper-like things (cannot stand alone)
+  8.	đều:                             	all or both
+  9.	cô ấy:                           	she or her
 
- 10.	anh ấy:                           	he or him
- 11.	cổ:                               	shortened form of cô ấy
- 12.	ảnh:                              	shortened form of anh ấy
- 13.	ảnh:                              	an image or photo
- 14.	mấy cái:                          	how many (needs something)
- 15.	mấy quyển:                        	how many books
- 16.	hai quyển:                        	two books
- 17.	tranh:                            	a picture or painting
- 18.	tôi thích ly bia Việt Nam này:    	I like this cup of VN beer
- 19.	hai quyển vở này đều là của tôi:  	these two notebooks are both mine
+ 10.	anh ấy:                          	he or him
+ 11.	cổ:                              	shortened form of cô ấy
+ 12.	ảnh:                             	shortened form of anh ấy
+ 13.	ảnh:                             	an image or photo
+ 14.	tranh:                           	a picture or painting
+ 15.	mấy cái:                         	how many (needs something)
+ 16.	mấy quyển:                       	how many books
+ 17.	hai quyển:                       	two books
+ 18.	tôi thích ly bia Việt Nam này:   	I like this cup of VN beer
+ 19.	hai quyển vở này đều là của tôi: 	these two notebooks are both mine
 
- 20.	ly cà phê đó là của bố:           	that cup of coffee is dad's
- 21.	tôi thích bát canh này:           	I like this bowl of soup
- 22.	những tờ giấy đó là của ai:       	whose pieces of paper are those
+ 20.	ly cà phê đó là của bố:          	that cup of coffee is dad's
+ 21.	tôi thích bát canh này:          	I like this bowl of soup
+ 22.	những tờ giấy đó là của ai:      	whose pieces of paper are those
  23.	những tờ giấy đó là của chúng tôi:	those pieces of paper are ours
- 24.	bức tranh này là của anh trai:    	this picture is the older brother's
- 25.	bức tranh này là của ai:          	whose picture is this
- 26.	chị gái thích bức ảnh này:        	the older sister likes this photo
- 27.	anh trai không thích bức ảnh kia: 	the older brother doesn't like that photo over there
- 28.	Việt Nam:                         	Vietnam
- 29.	nước Mỹ:                          	United States
+ 24.	bức tranh này là của anh trai:   	this picture is the older brother's
+ 25.	bức tranh này là của ai:         	whose picture is this
+ 26.	chị gái thích bức ảnh này:       	the older sister likes this photo
+ 27.	anh trai không thích bức ảnh kia:	the older brother doesn't like that photo over there
+ 28.	Việt Nam:                        	Vietnam
+ 29.	nước Mỹ:                         	United States
 
- 30.	nước Anh:                         	United Kingdom
- 31.	Trung Quốc:                       	China
- 32.	người Việt Nam:                   	Vietnamese
- 33.	người Mỹ:                         	American
- 34.	người Pháp:                       	French
- 35.	người Trung Quốc:                 	Chinese
- 36.	bố:                               	dad
- 37.	mẹ:                               	mom
- 38.	con trai:                         	a son
- 39.	con gái:                          	a daughter
+ 30.	nước Anh:                        	United Kingdom
+ 31.	Trung Quốc:                      	China
+ 32.	người Việt Nam:                  	Vietnamese person
+ 33.	người Mỹ:                        	American
+ 34.	người Pháp:                      	French
+ 35.	người Trung Quốc:                	Chinese
+ 36.	bố:                              	dad
+ 37.	mẹ:                              	mom
+ 38.	con trai:                        	a son
+ 39.	con gái:                         	a daughter
 
- 40.	nhà:                              	a home or a house
- 41.	anh trai:                         	a older brother
- 42.	chị gái:                          	a older sister
- 43.	em trai:                          	a younger brother
- 44.	em gái:                           	a younger sister
- 45.	vợ:                               	a wife
- 46.	chồng:                            	a husband
- 47.	ông:                              	a grandfather
- 48.	bác:                              	an uncle
- 49.	cô:                               	an aunt
+ 40.	nhà:                             	a home or a house
+ 41.	anh trai:                        	a older brother
+ 42.	chị gái:                         	a older sister
+ 43.	em trai:                         	a younger brother
+ 44.	em gái:                          	a younger sister
+ 45.	vợ:                              	a wife
+ 46.	chồng:                           	a husband
+ 47.	ông:                             	a grandfather
+ 48.	bác:                             	an uncle
+ 49.	cô:                              	an aunt
 
- 50.	giáo viên:                        	a teacher
- 51.	học sinh:                         	a student
- 52.	bác sĩ:                           	a doctor
- 53.	y tá:                             	a nurse
- 54.	luật sư:                          	a lawyer
- 55.	tiền:                             	money
- 56.	xe:                               	a car
- 57.	đầu bếp:                          	a chef
- 58.	dao:                              	a knife
- 59.	cảnh sát:                         	a police officer
+ 50.	giáo viên:                       	a teacher
+ 51.	học sinh:                        	a student
+ 52.	bác sĩ:                          	a doctor
+ 53.	y tá:                            	a nurse
+ 54.	luật sư:                         	a lawyer
+ 55.	tiền:                            	money
+ 56.	xe:                              	a car
+ 57.	đầu bếp:                         	a chef
+ 58.	dao:                             	a knife
+ 59.	cảnh sát:                        	a police officer
 
- 60.	súng:                             	a gun
- 61.	táo:                              	an apple
- 62.	chuối:                            	a banana
- 63.	dâu tây:                          	a strawberry
- 64.	dưa hấu:                          	a watermelon
- 65.	thích:                            	to like
- 66.	nho:                              	a grape
- 67.	xoài:                             	a mango
- 68.	cảm ơn:                           	thank you
- 69.	tên:                              	a name
+ 60.	súng:                            	a gun
+ 61.	táo:                             	an apple
+ 62.	chuối:                           	a banana
+ 63.	dâu tây:                         	a strawberry
+ 64.	dưa hấu:                         	a watermelon
+ 65.	thích:                           	to like
+ 66.	nho:                             	a grape
+ 67.	xoài:                            	a mango
+ 68.	cảm ơn:                          	thank you
+ 69.	tên:                             	a name
 
- 70.	bánh mì:                          	bread
- 71.	pizza:                            	pizza
- 72.	phở:                              	pho
- 73.	hoa quả:                          	fruit
- 74.	ăn:                               	to eat
- 75.	uống:                             	to drink
- 76.	nước:                             	water
- 77.	sữa:                              	milk
- 78.	trà:                              	tea
- 79.	cà phê:                           	coffee
+ 70.	bánh mì:                         	bread
+ 71.	pizza:                           	pizza
+ 72.	phở:                             	pho
+ 73.	hoa quả:                         	fruit
+ 74.	ăn:                              	to eat
+ 75.	uống:                            	to drink
+ 76.	nước:                            	water
+ 77.	sữa:                             	milk
+ 78.	trà:                             	tea
+ 79.	cà phê:                          	coffee
 
- 80.	sandwich:                         	sandwich
- 81.	chả giò:                          	egg roll
- 82.	nem:                              	spring roll
- 83.	kem:                              	ice cream
- 84.	bít tết:                          	beef steak
- 85.	làm:                              	to do
- 86.	hát:                              	to sing
- 87.	nhảy:                             	to dance
- 88.	nhảy:                             	to jump
- 89.	đọc:                              	to read
+ 80.	sandwich:                        	sandwich
+ 81.	chả giò:                         	egg roll
+ 82.	nem:                             	spring roll
+ 83.	kem:                             	ice cream
+ 84.	bít tết:                         	beef steak
+ 85.	làm:                             	to do
+ 86.	hát:                             	to sing
+ 87.	nhảy:                            	to dance
+ 88.	nhảy:                            	to jump
+ 89.	đọc:                             	to read
 
- 90.	sách:                             	a book
- 91.	viết:                             	to write
- 92.	thư:                              	a letter
- 93.	nghe:                             	to listen
- 94.	nhạc:                             	music
- 95.	báo:                              	newspaper
- 96.	chạy bộ:                          	to run
- 97.	bơi:                              	to swim
- 98.	chơi:                             	to play
- 99.	xem:                              	to see or to watch
+ 90.	sách:                            	a book
+ 91.	viết:                            	to write
+ 92.	thư:                             	a letter
+ 93.	nghe:                            	to listen
+ 94.	nhạc:                            	music
+ 95.	báo:                             	newspaper
+ 96.	chạy bộ:                         	to run
+ 97.	bơi:                             	to swim
+ 98.	chơi:                            	to play
+ 99.	xem:                             	to see or to watch
 
-100.	nói chuyện:                       	to talk
-101.	ti vi:                            	TV
-102.	mèo:                              	a cat
-103.	chó:                              	a dog
-104.	cừu:                              	a sheep
-105.	ngựa:                             	a horse
-106.	khỏ:                              	a monkey
-107.	thỏ:                              	a rabbit
-108.	chim:                             	a bird
-109.	gà:                               	a chicken
+100.	nói chuyện:                      	to talk
+101.	ti vi:                           	TV
+102.	mèo:                             	a cat
+103.	chó:                             	a dog
+104.	cừu:                             	a sheep
+105.	ngựa:                            	a horse
+106.	khỏ:                             	a monkey
+107.	thỏ:                             	a rabbit
+108.	chim:                            	a bird
+109.	gà:                              	a chicken
 
-110.	cá:                               	a fish
-111.	lợn:                              	a pig
-112.	vịt:                              	a duck
-113.	chuột:                            	a mouse
-114.	điện thoại:                       	a telephone
-115.	số:                               	a number
-116.	bút:                              	a pen
-117.	vở:                               	a notebook
-118.	đào:                              	peach
-119.	bàn:                              	a table
+110.	cá:                              	a fish
+111.	lợn:                             	a pig
+112.	vịt:                             	a duck
+113.	chuột:                           	a mouse
+114.	điện thoại:                      	a telephone
+115.	số:                              	a number
+116.	bút:                             	a pen
+117.	vở:                              	a notebook
+118.	đào:                             	peach
+119.	bàn:                             	a table
 
-120.	ghế:                              	a chair
-121.	bóng:                             	a ball
-122.	bia:                              	beer
-123.	cơm:                              	rice
-124.	canh:                             	soup
-125.	giấy:                             	paper
-126.	nông dân:                         	a farmer
-127.	giám đốc:                         	director or CEO
-128.	giáo sư:                          	a professor
-129.	đỏ:                               	red
+120.	ghế:                             	a chair
+121.	bóng:                            	a ball
+122.	bia:                             	beer
+123.	cơm:                             	rice
+124.	canh:                            	soup
+125.	giấy:                            	paper
+126.	nông dân:                        	a farmer
+127.	giám đốc:                        	director or CEO
+128.	giáo sư:                         	a professor
+129.	đỏ:                              	red
 
-130.	vàng:                             	yellow
-131.	tím:                              	purple
-132.	xanh da trời:                     	blue
-133.	xanh lá cây:                      	green
-134.	da cam:                           	orange
-135.	màu:                              	a color
-136.	trắng:                            	white
-137.	đen:                              	black
-138.	quốc kì:                          	national flag
-139.	con:                              	child or children
+130.	vàng:                            	yellow
+131.	tím:                             	purple
+132.	xanh da trời:                    	blue
+133.	xanh lá cây:                     	green
+134.	da cam:                          	orange
+135.	màu:                             	a color
+136.	trắng:                           	white
+137.	đen:                             	black
+138.	quốc kì:                         	national flag
+139.	con:                             	child or children
 
-140.	trường:                           	a school
-141.	ngân hàng:                        	a bank
-142.	bệnh viện:                        	a hospital
-143.	thư viện:                         	a library
-144.	công viên:                        	a park
-145.	rạp chiếu phim:                   	a cinema
-146.	quán cà phê:                      	coffee shop
-147.	vườn thú:                         	a zoo
-148.	ngựa vằn:                         	a zebra
-149.	sư tử:                            	a lion
+140.	trường:                          	a school
+141.	ngân hàng:                       	a bank
+142.	bệnh viện:                       	a hospital
+143.	thư viện:                        	a library
+144.	công viên:                       	a park
+145.	rạp chiếu phim:                  	a cinema
+146.	quán cà phê:                     	coffee shop
+147.	vườn thú:                        	a zoo
+148.	ngựa vằn:                        	a zebra
+149.	sư tử:                           	a lion
 
-150.	trên:                             	on, or on top
-151.	dưới:                             	under
-152.	trái:                             	to the left
-153.	phải:                             	to the right
-154.	trong:                            	in or inside
-155.	không:                            	zero
-156.	một:                              	one
-157.	hai:                              	two
-158.	ba:                               	three
-159.	bốn:                              	four
+150.	trên:                            	on, or on top
+151.	dưới:                            	under
+152.	trái:                            	to the left
+153.	phải:                            	to the right
+154.	trong:                           	in or inside
+155.	không:                           	zero
+156.	một:                             	one
+157.	hai:                             	two
+158.	ba:                              	three
+159.	bốn:                             	four
 
-160.	năm:                              	five
-161.	sáu:                              	six
-162.	bảy:                              	seven
-163.	tám:                              	eight
-164.	chín:                             	nine
-165.	mười:                             	ten
-166.	ngoài:                            	out or outside
-167.	trước:                            	in front of
-168.	sau:                              	behind
-169.	túi:                              	a handbag
+160.	năm:                             	five
+161.	sáu:                             	six
+162.	bảy:                             	seven
+163.	tám:                             	eight
+164.	chín:                            	nine
+165.	mười:                            	ten
+166.	ngoài:                           	out or outside
+167.	trước:                           	in front of
+168.	sau:                             	behind
+169.	túi:                             	a handbag
 
-170.	bên cạnh:                         	next to or beside
-171.	giữa:                             	between
-172.	bếp:                              	a kitchen
-173.	phòng khách:                      	a living room
-174.	phòng ngủ:                        	a bedroom
-175.	nhà vệ sinh:                      	a bathroom
-176.	tắm:                              	to take a shower
-177.	ngủ:                              	to sleep
+170.	bên cạnh:                        	next to or beside
+171.	giữa:                            	between
+172.	bếp:                             	a kitchen
+173.	phòng khách:                     	a living room
+174.	phòng ngủ:                       	a bedroom
+175.	nhà vệ sinh:                     	a bathroom
+176.	tắm:                             	to take a shower
+177.	ngủ:                             	to sleep

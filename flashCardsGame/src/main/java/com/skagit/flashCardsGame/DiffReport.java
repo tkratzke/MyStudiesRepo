@@ -15,14 +15,11 @@ public class DiffReport {
 		final String[] response0Fields = response0.split(FlashCardsGame._WhiteSpace);
 		final int nAnswerFields = answer0Fields.length;
 		final int nResponseFields = response0Fields.length;
-		final String answer, response;
 		if (ignoreDiacritics) {
-			answer = FlashCardsGame.StripVNDiacritics(answer0);
-			response = FlashCardsGame.StripVNDiacritics(response0);
+			final String answer = FlashCardsGame.StripVNDiacritics(answer0);
+			final String response = FlashCardsGame.StripVNDiacritics(response0);
 			_gotItRight = answer.equalsIgnoreCase(response);
 		} else {
-			answer = answer0;
-			response = response0;
 			_gotItRight = false;
 		}
 
@@ -45,22 +42,21 @@ public class DiffReport {
 		/** Got it wrong. Start with the answer and add one differences. */
 		final String diffString = String.format("[%c%s%c", FlashCardsGame._RtArrow, answer0,
 				FlashCardsGame._LtArrow);
-		final String[] answerFields;
-		final String[] responseFields;
-		if (ignoreDiacritics) {
-			answerFields = answer.split(FlashCardsGame._WhiteSpace);
-			responseFields = response.split(FlashCardsGame._WhiteSpace);
-		} else {
-			answerFields = answer0Fields;
-			responseFields = response0Fields;
-		}
 		final int nSmaller = Math.min(nAnswerFields, nResponseFields);
 		for (int k = 0; k < nSmaller; ++k) {
-			final String answerField = answerFields[k];
-			final String responseField = responseFields[k];
+			final String answer0Field = answer0Fields[k];
+			final String response0Field = response0Fields[k];
+			final String answerField, responseField;
+			if (ignoreDiacritics) {
+				answerField = FlashCardsGame.StripVNDiacritics(answer0Field);
+				responseField = FlashCardsGame.StripVNDiacritics(response0Field);
+			} else {
+				answerField = answer0Field;
+				responseField = response0Field;
+			}
 			if (!answerField.equalsIgnoreCase(responseField)) {
 				_diffString = diffString
-						+ String.format(" (%s/%s)]", answer0Fields[k], response0Fields[k]);
+						+ String.format(" (%s/%s)]", answer0Field, response0Field);
 				return;
 			}
 		}

@@ -84,17 +84,16 @@ public class FlashCardsGame {
 	@SuppressWarnings("unused")
 	final private static String _FieldSeparator0 = "\\s*\\t\\s*";
 	final private static String _FieldSeparator = "(\s*\t\s*)+";
-	final static String _WhiteSpace = "\s+";
 	final private static String _PropertiesEnding = ".properties";
+	final static String _WhiteSpace = "\s+";
 
 	final private File _propertiesFile;
 	final private Properties _properties;
 	final private long _seed;
-	boolean _quizIsA_B, _ignoreDiacritics;
-	Card[] _cards;
-	final QuizGenerator _quizGenerator;
-	QuizPlus _quizPlus;
-	boolean _printedSomething;
+	final private boolean _quizIsA_B, _ignoreDiacritics;
+	final private Card[] _cards;
+	final private QuizGenerator _quizGenerator;
+	private QuizPlus _quizPlus;
 
 	FlashCardsGame(final Scanner sc, final String[] args) {
 		final String propertiesFilePath = args[0];
@@ -129,8 +128,10 @@ public class FlashCardsGame {
 				PropertyPlus.IGNORE_DIACRITICS);
 		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
-		_printedSomething = false;
-		loadCards();
+		final TreeMap<Card, Card> cardMap = loadCards();
+		final int nCards = cardMap.size();
+		_cards = cardMap.keySet().toArray(new Card[nCards]);
+		Arrays.sort(_cards, Card._ByIndexOnly);
 		announceAndClumpDuplicates();
 		writeCardsToDisk();
 		_quizGenerator = new QuizGenerator(_properties, _cards.length, _seed);
@@ -165,7 +166,7 @@ public class FlashCardsGame {
 		for (final Card card : _cards) {
 			maxASideLen = Math.max(maxASideLen, card._aSide.length());
 		}
-		final String aSideFormat = String.format("%%-%ds", maxASideLen + 1);
+		final String aSideFormat = String.format("%%-%ds", maxASideLen);
 		final File cardsFile = getCardsFile();
 		try (PrintWriter pw = new PrintWriter(cardsFile)) {
 			for (int k = 0; k < nCards; ++k) {
@@ -218,7 +219,7 @@ public class FlashCardsGame {
 	 * </pre>
 	 */
 
-	private void loadCards() {
+	private TreeMap<Card, Card> loadCards() {
 		final TreeMap<Card, Card> cardMap = new TreeMap<Card, Card>(Card._ByAThenB);
 		final File cardsFile = getCardsFile();
 		try (BufferedReader in = new BufferedReader(
@@ -266,14 +267,11 @@ public class FlashCardsGame {
 					newCard._comment = comment;
 					final Card oldCard = cardMap.get(newCard);
 					if (oldCard != null) {
-						if (_printedSomething) {
-							System.out.println();
-							System.out.println();
-						}
 						System.out.println("Merging");
 						System.out.println("newCard.getString()" + " into");;
 						System.out.print(oldCard.getString());
-						_printedSomething = true;
+						System.out.println();
+						System.out.println();
 						oldCard._comment = (oldCard._comment + "\n" + comment).trim();
 					} else {
 						cardMap.put(newCard, newCard);
@@ -284,9 +282,7 @@ public class FlashCardsGame {
 			}
 		} catch (final IOException e) {
 		}
-		final int nCards = cardMap.size();
-		_cards = cardMap.keySet().toArray(new Card[nCards]);
-		Arrays.sort(_cards, Card._ByIndexOnly);
+		return cardMap;
 	}
 
 	private void announceAndClumpDuplicates() {
@@ -308,14 +304,11 @@ public class FlashCardsGame {
 				final ArrayList<Card> slaves = kingToSlaves.get(card);
 				if (slaves != null) {
 					final Card oldCard = kingToSlaves.ceilingKey(card);
-					if (_printedSomething) {
-						System.out.println();
-						System.out.println();
-					}
 					System.out.println(String.format("Duplicate %s:", sideBeingChecked));
 					System.out.println(oldCard.getString());
 					System.out.print(card.getString());
-					_printedSomething = true;
+					System.out.println();
+					System.out.println();
 					slaves.add(card);
 					_cards[k] = null;
 				} else {
@@ -410,24 +403,26 @@ public class FlashCardsGame {
 		}
 	}
 
-	final String getTypeIPrompt(final int indexInCards, final String clue) {
-		String s = "";
+	final String getTypeIPrompt0(final int indexInCards) {
+		String typeIPrompt = "";
 		final int currentIndexInQuiz = _quizPlus.getCurrentIndexInQuiz();
 		if (_quizPlus.isCriticalQuizIndex(currentIndexInQuiz)) {
-			s += "*";
+			typeIPrompt += "*";
 		}
 		final int cardNumber = _cards[indexInCards]._cardNumber;
 		final int quizLen = _quizPlus.getCurrentQuizLen();
-		s += String.format("%d of %d(IIC=%d,#%d)", currentIndexInQuiz + 1, quizLen,
+		typeIPrompt += String.format("%d of %d(IIC=%d,#%d)", currentIndexInQuiz + 1, quizLen,
 				indexInCards, cardNumber);
 		final int nRights = _quizPlus.getNRights();
 		final int nWrongs = _quizPlus.getNWrongs();
 		final int nTrials = nRights + nWrongs;
 		if (nTrials > 0) {
 			final long successRateI = Math.round((100d * nRights) / nTrials);
-			s += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%)", nRights, nWrongs, successRateI);
+			typeIPrompt += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%)", nRights, nWrongs,
+					successRateI);
 		}
-		return s + String.format("::%s: ", clue);
+		return typeIPrompt;
+		// return s + String.format("::%s:", clue);
 	}
 
 	final String getTypeIIPrompt() {
@@ -625,16 +620,11 @@ public class FlashCardsGame {
 			final TypeOfChange typeOfChange = quizPlusTransition._typeOfChange;
 			if (typeOfChange != TypeOfChange.NO_CHANGE) {
 				/** A new quiz is worth a double line feed. */
-				if (_printedSomething) {
-					System.out.println();
-					System.out.println();
-				}
-				_printedSomething = true;
 				System.out.println(getString());
 				System.out.println(getIntroString());
 				System.out.print(quizPlusTransition._reasonForChangeString);
 				System.out.println(" " + quizPlusTransition._transitionString);
-				/** An extra line feed before the first question of this quiz. */
+				System.out.println();
 				System.out.println();
 			}
 			if (madeChangesFrom(oldValues)) {
@@ -647,13 +637,26 @@ public class FlashCardsGame {
 			final Card card = _cards[indexInCards];
 			final String clue = CleanString(_quizIsA_B ? card._aSide : card._bSide);
 			final String answer = CleanString(_quizIsA_B ? card._bSide : card._aSide);
-			final String typeIPrompt = getTypeIPrompt(indexInCards, clue);
+			final String typeIPrompt0 = getTypeIPrompt0(indexInCards);
+			final int len = typeIPrompt0.length() + 2 + clue.length() + 1 + 1 + answer.length();
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
-				System.out.print(typeIPrompt);
+				final boolean longQuestion;
+				if (len >= 85) {
+					System.out.printf("%s\n\t%s", typeIPrompt0, clue);
+					System.out.println();
+					System.out.print('\t');
+					longQuestion = true;
+				} else {
+					System.out.printf("%s::%s: ", typeIPrompt0, clue);
+					longQuestion = false;
+				}
 				final String response = readLine(sc);
 				if (response.length() == 0) {
-					final String prompt = String.format(" %c%s%c Get it right", _RtArrow, answer,
+					if (!longQuestion) {
+						System.out.print(' ');
+					}
+					final String prompt = String.format("%c%s%c Get it right", _RtArrow, answer,
 							_LtArrow);
 					gotItRight = getYesNo(sc, prompt, true);
 					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
@@ -681,12 +684,17 @@ public class FlashCardsGame {
 				final String diffString = diffReport._diffString;
 				gotItRight = diffReport._gotItRight;
 				if (diffString != null) {
+					if (longQuestion) {
+						System.out.print('\t');
+					}
 					System.out.print(diffString);
 					if (gotItRight) {
 						gotItRight = !getYesNo(sc, " Count as wrong", false);
 					} else {
 						gotItRight = getYesNo(sc, " Count as right", false);
 					}
+				} else if (longQuestion) {
+					System.out.println();
 				}
 				wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 			}
