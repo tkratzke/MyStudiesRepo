@@ -752,10 +752,10 @@ public class FlashCardsGame {
 						continue OUTSIDE_LOOP;
 					}
 				}
-				final DiffReport diffReport = new DiffReport(_ignoreVnDiacritics, answer,
+				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(_ignoreVnDiacritics, answer,
 						response);
-				final String diffString = diffReport._diffString;
-				gotItRight = diffReport._gotItRight;
+				final String diffString = responseEvaluator._diffString;
+				gotItRight = responseEvaluator._gotItRight;
 				if (diffString != null) {
 					if (longQuestion) {
 						System.out.print('\t');
