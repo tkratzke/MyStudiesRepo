@@ -26,7 +26,7 @@ class Card {
 		return 2;
 	}
 
-	static final Comparator<Card> _ByIndexOnly = new Comparator<>() {
+	static final Comparator<Card> _ByCardNumberOnly = new Comparator<>() {
 
 		@Override
 		public int compare(final Card card0, final Card card1) {

@@ -4,7 +4,7 @@ public class DiffReport {
 	final boolean _gotItRight;
 	final String _diffString;
 
-	DiffReport(final boolean ignoreDiacritics, final String answer0,
+	DiffReport(final boolean ignoreVnDiacritics, final String answer0,
 			final String response0) {
 		if (answer0.equalsIgnoreCase(response0)) {
 			_gotItRight = true;
@@ -15,7 +15,7 @@ public class DiffReport {
 		final String[] response0Fields = response0.split(FlashCardsGame._WhiteSpace);
 		final int nAnswerFields = answer0Fields.length;
 		final int nResponseFields = response0Fields.length;
-		if (ignoreDiacritics) {
+		if (ignoreVnDiacritics) {
 			final String answer = FlashCardsGame.StripVNDiacritics(answer0);
 			final String response = FlashCardsGame.StripVNDiacritics(response0);
 			_gotItRight = answer.equalsIgnoreCase(response);
@@ -47,7 +47,7 @@ public class DiffReport {
 			final String answer0Field = answer0Fields[k];
 			final String response0Field = response0Fields[k];
 			final String answerField, responseField;
-			if (ignoreDiacritics) {
+			if (ignoreVnDiacritics) {
 				answerField = FlashCardsGame.StripVNDiacritics(answer0Field);
 				responseField = FlashCardsGame.StripVNDiacritics(response0Field);
 			} else {

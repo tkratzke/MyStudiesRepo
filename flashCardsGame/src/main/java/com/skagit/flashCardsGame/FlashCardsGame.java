@@ -95,7 +95,7 @@ public class FlashCardsGame {
 	final private File _propertiesFile;
 	final private Properties _properties;
 	final private long _seed;
-	final private boolean _quizIsA_B, _ignoreDiacritics;
+	final private boolean _quizIsA_B, _ignoreVnDiacritics;
 	final private int _longLine;
 	final private Card[] _cards;
 	final private QuizGenerator _quizGenerator;
@@ -132,17 +132,27 @@ public class FlashCardsGame {
 		}
 
 		_quizIsA_B = PropertyPlusToBoolean(_properties, PropertyPlus.QUIZ_TYPE);
-		_ignoreDiacritics = PropertyPlusToBoolean(_properties,
-				PropertyPlus.IGNORE_DIACRITICS);
+		_ignoreVnDiacritics = PropertyPlusToBoolean(_properties,
+				PropertyPlus.IGNORE_VN_DIACRITICS);
 		_longLine = PropertyPlusToInt(_properties, PropertyPlus.LONG_LINE);
 		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
-		final TreeMap<Card, Card> cardMap = loadCards();
-		final int nCards = cardMap.size();
-		_cards = cardMap.keySet().toArray(new Card[nCards]);
-		Arrays.sort(_cards, Card._ByIndexOnly);
-		announceAndClumpDuplicates();
+		final MyCardMap myCardMap = loadMyCardMap();
+		final int nCards = myCardMap.size();
+		_cards = myCardMap.keySet().toArray(new Card[nCards]);
+		Arrays.sort(_cards, Card._ByCardNumberOnly);
+		final int[] dupCounts = announceAndClumpDuplicates();
 		writeCardsToDisk();
+		final int nMerges = myCardMap._nMerges;
+		final int nADups = dupCounts[1];
+		final int nBDups = dupCounts[0];
+		if (nMerges > 0 || nADups > 0 || nBDups > 0) {
+			if (_needLineFeed) {
+				System.out.println();
+				System.out.println(
+						String.format("nMerges=%d nADups=%d nBDups = %d.", nMerges, nADups, nBDups));
+			}
+		}
 		_quizGenerator = new QuizGenerator(_properties, _cards.length, _seed);
 		shuffleCards(_cards);
 		_quizPlus = null;
@@ -227,9 +237,17 @@ public class FlashCardsGame {
 	 * https://stackoverflow.com/questions/17405165/first-character-of-the-reading-from-the-text-file-%C3%AF
 	 * </pre>
 	 */
+	private static class MyCardMap extends TreeMap<Card, Card> {
+		private static final long serialVersionUID = 1L;
+		int _nMerges;
+		MyCardMap(final Comparator<Card> comparator) {
+			super(comparator);
+			_nMerges = 0;
+		}
+	}
 
-	private TreeMap<Card, Card> loadCards() {
-		final TreeMap<Card, Card> cardMap = new TreeMap<Card, Card>(Card._ByAThenB);
+	private MyCardMap loadMyCardMap() {
+		final MyCardMap myCardMap = new MyCardMap(Card._ByAThenB);
 		final File cardsFile = getCardsFile();
 		try (BufferedReader in = new BufferedReader(
 				new InputStreamReader(new FileInputStream(cardsFile), "UTF-8"))) {
@@ -254,7 +272,7 @@ public class FlashCardsGame {
 					final String line = fileSc.nextLine().trim();
 					final String[] fields = line.split(_FieldSeparator);
 					final int nFields = fields.length;
-					final int cardNumber = cardMap.size();
+					final int cardNumber = myCardMap.size();
 					if (nFields < 2) {
 						if (comment.length() == 0) {
 							comment = line;
@@ -274,18 +292,18 @@ public class FlashCardsGame {
 					final Card newCard = new Card(cardNumber, aSide, bSide);
 					comment = comment.trim();
 					newCard._comment = comment;
-					final Card oldCard = cardMap.get(newCard);
+					final Card oldCard = myCardMap.get(newCard);
 					if (oldCard != null) {
 						if (_needLineFeed) {
 							System.out.println();
 						}
-						System.out.println("Merging");
-						System.out.println("newCard.getString()" + " into");;
+						System.out.println(String.format("Merge #%d:", ++myCardMap._nMerges));
+						System.out.println(newCard.getString() + " into");;
 						System.out.println(oldCard.getString());
 						_needLineFeed = true;
 						oldCard._comment = (oldCard._comment + "\n" + comment).trim();
 					} else {
-						cardMap.put(newCard, newCard);
+						myCardMap.put(newCard, newCard);
 					}
 					comment = "";
 				}
@@ -293,11 +311,12 @@ public class FlashCardsGame {
 			}
 		} catch (final IOException e) {
 		}
-		return cardMap;
+		return myCardMap;
 	}
 
-	private void announceAndClumpDuplicates() {
+	private int[] announceAndClumpDuplicates() {
 		final int nCards = _cards.length;
+		final int[] dupCounts = new int[]{0, 0};
 		for (int iPass = 0; iPass < 2; ++iPass) {
 			/** If _quizIsA_B, we want to do the A-side second. */
 			final Comparator<Card> comparator;
@@ -318,7 +337,8 @@ public class FlashCardsGame {
 					if (_needLineFeed) {
 						System.out.println();
 					}
-					System.out.println(String.format("Duplicate %s:", sideBeingChecked));
+					System.out.println(String.format("Duplicate %s #%d:", sideBeingChecked,
+							dupCounts[1 - iPass]++));
 					System.out.println(oldCard.getString());
 					System.out.println(card.getString());
 					_needLineFeed = true;
@@ -349,13 +369,14 @@ public class FlashCardsGame {
 			}
 			System.arraycopy(newCards, 0, _cards, 0, nCards);
 		}
+		return dupCounts;
 	}
 
 	void updateProperties() {
 		_properties.put(PropertyPlus.SEED._realName, Long.toString(_seed));
 		_properties.put(PropertyPlus.QUIZ_TYPE._realName, Boolean.toString(_quizIsA_B));
-		_properties.put(PropertyPlus.IGNORE_DIACRITICS._realName,
-				Boolean.toString(_ignoreDiacritics));
+		_properties.put(PropertyPlus.IGNORE_VN_DIACRITICS._realName,
+				Boolean.toString(_ignoreVnDiacritics));
 		_quizGenerator.updateProperties(_properties);
 	}
 
@@ -610,7 +631,7 @@ public class FlashCardsGame {
 	final String getString() {
 		return String.format("%s: %c%c%c%s RandomSeed[%d] LongLine[%d]\n%s",
 				getCoreFilePath(), _quizIsA_B ? 'A' : 'B', _RtArrow, _quizIsA_B ? 'B' : 'A', //
-				_ignoreDiacritics ? " IgnoreDiacritics" : "", //
+				_ignoreVnDiacritics ? (" " + PropertyPlus.IGNORE_VN_DIACRITICS._comment) : "", //
 				_seed, _longLine, _quizGenerator.getString());
 	}
 
@@ -731,7 +752,8 @@ public class FlashCardsGame {
 						continue OUTSIDE_LOOP;
 					}
 				}
-				final DiffReport diffReport = new DiffReport(_ignoreDiacritics, answer, response);
+				final DiffReport diffReport = new DiffReport(_ignoreVnDiacritics, answer,
+						response);
 				final String diffString = diffReport._diffString;
 				gotItRight = diffReport._gotItRight;
 				if (diffString != null) {

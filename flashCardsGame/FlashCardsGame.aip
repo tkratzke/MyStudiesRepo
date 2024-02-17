@@ -38,7 +38,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="APPDIR" ComponentId="{B22B7CA2-7801-4F3C-8FCC-5098D1BD466E}" Directory_="APPDIR" Attributes="0"/>
-    <ROW Component="Basics.txt" ComponentId="{CC1657A8-6B5B-4C5B-AADB-7D68E2B7669D}" Directory_="Data_Dir" Attributes="0" KeyPath="FlashCardsGame.bat_1" Type="0"/>
+    <ROW Component="Basics.txt" ComponentId="{2991E7B8-6311-4D6B-BBAD-FA5AA5DC97BB}" Directory_="Data_Dir" Attributes="0" KeyPath="FlashCardsGame.bat" Type="0"/>
     <ROW Component="Card.java" ComponentId="{9AD38698-2960-4F6F-A825-1E87E819DD68}" Directory_="flashCardsGame_Dir" Attributes="0" KeyPath="Card.java" Type="0"/>
     <ROW Component="FlashCardsGame.jar" ComponentId="{92E4CEB1-E229-458E-9690-B5D365CC50FE}" Directory_="APPDIR" Attributes="0" KeyPath="FlashCardsGame.jar" Type="0"/>
     <ROW Component="ProductInformation" ComponentId="{2EB4AD36-AE9E-4A20-8705-8D9258F821E6}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
@@ -55,9 +55,9 @@
     <ROW File="QuizGenerator.java" Component_="Card.java" FileName="QUIZGE~1.JAV|QuizGenerator.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizGenerator.java" SelfReg="false"/>
     <ROW File="QuizPlus.java" Component_="Card.java" FileName="QUIZPL~1.JAV|QuizPlus.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizPlus.java" SelfReg="false"/>
     <ROW File="QuizPlusTransition.java" Component_="Card.java" FileName="QUIZPL~2.JAV|QuizPlusTransition.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizPlusTransition.java" SelfReg="false"/>
-    <ROW File="FlashCardsGame.bat_1" Component_="Basics.txt" FileName="FLASHC~1.BAT|FlashCardsGame.bat" Attributes="0" SourcePath="Data\FlashCardsGame.bat" SelfReg="false"/>
-    <ROW File="LingoDeer.properties" Component_="Basics.txt" FileName="LINGOD~1.PRO|LingoDeer.properties" Attributes="0" SourcePath="Data\LingoDeer.properties" SelfReg="false"/>
-    <ROW File="LingoDeer.txt" Component_="Basics.txt" FileName="LINGOD~1.TXT|LingoDeer.txt" Attributes="0" SourcePath="Data\LingoDeer.txt" SelfReg="false"/>
+    <ROW File="FlashCardsGame.bat" Component_="Basics.txt" FileName="FLASHC~1.BAT|FlashCardsGame.bat" Attributes="0" SourcePath="Data\FlashCardsGame.bat" SelfReg="false"/>
+    <ROW File="VnVocab.properties" Component_="Basics.txt" FileName="VNVOCA~1.PRO|VnVocab.properties" Attributes="0" SourcePath="Data\VnVocab.properties" SelfReg="false"/>
+    <ROW File="VnVocab.txt" Component_="Basics.txt" FileName="VnVocab.txt" Attributes="0" SourcePath="Data\VnVocab.txt" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
