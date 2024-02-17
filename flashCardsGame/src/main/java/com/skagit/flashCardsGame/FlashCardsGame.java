@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
@@ -22,16 +23,20 @@ public class FlashCardsGame {
 	final static char _LtArrow = '\u2190';
 	final static char _RtArrow = '\u2192';
 	final static char _EmptySetChar = '\u2205';
-	final static char _CheckSymbol = '\u2714';
+	final static char _HeavyCheckSymbol = '\u2714';
 
 	final private static char _ReturnChar = '\u23CE';
-	final private static char _QuitChar = 'Q';
-	final private static char _EditPropertiesChar = 'E';
+	final private static char _QuitChar = '!';
+	final private static char _EditPropertiesChar = '@';
+	final private static char _RestartChar = '#';
 	final private static char _YesChar = 'Y';
 	final private static char _NoChar = 'N';
 	final private static String _YesString = "Yes";
 	final private static String _NoString = "No";
-	final private static char _RestartChar = 'R';
+
+	final private static String _HelpString = String.format(
+			"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
+			_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartChar);
 
 	/**
 	 * <pre>
@@ -91,11 +96,14 @@ public class FlashCardsGame {
 	final private Properties _properties;
 	final private long _seed;
 	final private boolean _quizIsA_B, _ignoreDiacritics;
+	final private int _longLine;
 	final private Card[] _cards;
 	final private QuizGenerator _quizGenerator;
 	private QuizPlus _quizPlus;
+	private boolean _needLineFeed;
 
 	FlashCardsGame(final Scanner sc, final String[] args) {
+		_needLineFeed = false;
 		final String propertiesFilePath = args[0];
 		if (propertiesFilePath.toLowerCase().endsWith(_PropertiesEnding)) {
 			_propertiesFile = new File(propertiesFilePath);
@@ -126,6 +134,7 @@ public class FlashCardsGame {
 		_quizIsA_B = PropertyPlusToBoolean(_properties, PropertyPlus.QUIZ_TYPE);
 		_ignoreDiacritics = PropertyPlusToBoolean(_properties,
 				PropertyPlus.IGNORE_DIACRITICS);
+		_longLine = PropertyPlusToInt(_properties, PropertyPlus.LONG_LINE);
 		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
 		final TreeMap<Card, Card> cardMap = loadCards();
@@ -267,11 +276,13 @@ public class FlashCardsGame {
 					newCard._comment = comment;
 					final Card oldCard = cardMap.get(newCard);
 					if (oldCard != null) {
+						if (_needLineFeed) {
+							System.out.println();
+						}
 						System.out.println("Merging");
 						System.out.println("newCard.getString()" + " into");;
-						System.out.print(oldCard.getString());
-						System.out.println();
-						System.out.println();
+						System.out.println(oldCard.getString());
+						_needLineFeed = true;
 						oldCard._comment = (oldCard._comment + "\n" + comment).trim();
 					} else {
 						cardMap.put(newCard, newCard);
@@ -304,11 +315,13 @@ public class FlashCardsGame {
 				final ArrayList<Card> slaves = kingToSlaves.get(card);
 				if (slaves != null) {
 					final Card oldCard = kingToSlaves.ceilingKey(card);
+					if (_needLineFeed) {
+						System.out.println();
+					}
 					System.out.println(String.format("Duplicate %s:", sideBeingChecked));
 					System.out.println(oldCard.getString());
-					System.out.print(card.getString());
-					System.out.println();
-					System.out.println();
+					System.out.println(card.getString());
+					_needLineFeed = true;
 					slaves.add(card);
 					_cards[k] = null;
 				} else {
@@ -403,7 +416,7 @@ public class FlashCardsGame {
 		}
 	}
 
-	final String getTypeIPrompt0(final int indexInCards) {
+	final private String getTypeIPrompt(final int indexInCards) {
 		String typeIPrompt = "";
 		final int currentIndexInQuiz = _quizPlus.getCurrentIndexInQuiz();
 		if (_quizPlus.isCriticalQuizIndex(currentIndexInQuiz)) {
@@ -422,20 +435,24 @@ public class FlashCardsGame {
 					successRateI);
 		}
 		return typeIPrompt;
-		// return s + String.format("::%s:", clue);
 	}
 
-	final String getTypeIIPrompt() {
+	final private String getTypeIIPrompt() {
 		final String prompt = String.format("Enter: %c=Done, R=Restart same quiz ",
 				_ReturnChar);
 		return prompt + _quizGenerator.getTypeIIPrompt();
 	}
 
-	void modifyProperties(final Scanner sc) {
+	final private void modifyProperties(final Scanner sc) {
 		for (;;) {
+			if (_needLineFeed) {
+				System.out.println();
+			}
 			final String prompt = getTypeIIPrompt();
-			System.out.printf("%s: ", prompt);
+			System.out.print(prompt);
+			System.out.print(": ");
 			final String myLine = readLine(sc).toUpperCase();
+			_needLineFeed = true;
 			if (myLine.length() == 0) {
 				return;
 			}
@@ -591,10 +608,10 @@ public class FlashCardsGame {
 	}
 
 	final String getString() {
-		return String.format("%s: %c%c%c%s RandomSeed[%d] %s", getCoreFilePath(),
-				_quizIsA_B ? 'A' : 'B', _RtArrow, _quizIsA_B ? 'B' : 'A', //
+		return String.format("%s: %c%c%c%s RandomSeed[%d] LongLine[%d]\n%s",
+				getCoreFilePath(), _quizIsA_B ? 'A' : 'B', _RtArrow, _quizIsA_B ? 'B' : 'A', //
 				_ignoreDiacritics ? " IgnoreDiacritics" : "", //
-				_seed, _quizGenerator.getString());
+				_seed, _longLine, _quizGenerator.getString());
 	}
 
 	@Override
@@ -602,15 +619,32 @@ public class FlashCardsGame {
 		return getString();
 	}
 
-	String readLine(final Scanner sc) {
+	static String readLine(final Scanner sc) {
 		return CleanString(sc.nextLine());
 	}
+
+	final static private EnumSet<TypeOfChange> _NewQuizSet = EnumSet.of(//
+			TypeOfChange.CRITICAL_ONLY_WIN, //
+			TypeOfChange.MOVE_ON_WIN, //
+			TypeOfChange.LOSS, //
+			TypeOfChange.NOTHING_TO_SOMETHING, //
+			TypeOfChange.PARAMETERS_CHANGED, //
+			TypeOfChange.RESTART//
+	);
+
+	final static private EnumSet<TypeOfChange> _ReallyNewQuizSet = EnumSet.of(//
+			TypeOfChange.MOVE_ON_WIN, //
+			TypeOfChange.NOTHING_TO_SOMETHING, //
+			TypeOfChange.PARAMETERS_CHANGED //
+	);
 
 	void mainLoop(final Scanner sc) {
 		final int nCards = _cards.length;
 		long[] oldValues = storeValues();
 		_quizPlus = null;
 		boolean restarted = false;
+		boolean needHelpString = true;
+
 		OUTSIDE_LOOP : for (boolean keepGoing = true; keepGoing;) {
 			/** Check for a status change from _quizPlus. */
 			final QuizPlusTransition quizPlusTransition = _quizGenerator.getStatusChange(nCards,
@@ -618,14 +652,25 @@ public class FlashCardsGame {
 			_quizPlus = quizPlusTransition._newQuizPlus;
 			restarted = false;
 			final TypeOfChange typeOfChange = quizPlusTransition._typeOfChange;
-			if (typeOfChange != TypeOfChange.NO_CHANGE) {
-				/** A new quiz is worth a double line feed. */
-				System.out.println(getString());
-				System.out.println(getIntroString());
-				System.out.print(quizPlusTransition._reasonForChangeString);
+			if (_NewQuizSet.contains(typeOfChange)) {
+				System.out.println();
+				if (_needLineFeed) {
+					System.out.println();
+				}
+				if (_ReallyNewQuizSet.contains(typeOfChange)) {
+					/** For a really new one, add another lineFeed. */
+					System.out.println();
+					System.out.println(getString());
+					needHelpString = true;
+				} else {
+					needHelpString = !needHelpString;
+				}
+				if (needHelpString) {
+					System.out.println(_HelpString);
+				}
+				System.out.print(typeOfChange._reasonForChangeString);
 				System.out.println(" " + quizPlusTransition._transitionString);
-				System.out.println();
-				System.out.println();
+				_needLineFeed = true;
 			}
 			if (madeChangesFrom(oldValues)) {
 				updateProperties();
@@ -637,18 +682,23 @@ public class FlashCardsGame {
 			final Card card = _cards[indexInCards];
 			final String clue = CleanString(_quizIsA_B ? card._aSide : card._bSide);
 			final String answer = CleanString(_quizIsA_B ? card._bSide : card._aSide);
-			final String typeIPrompt0 = getTypeIPrompt0(indexInCards);
+			final String typeIPrompt0 = getTypeIPrompt(indexInCards);
 			final int len = typeIPrompt0.length() + 2 + clue.length() + 1 + 1 + answer.length();
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
 				final boolean longQuestion;
-				if (len >= 85) {
-					System.out.printf("%s\n\t%s", typeIPrompt0, clue);
+				if (_needLineFeed) {
+					System.out.println();
+				}
+				if (len >= _longLine) {
+					System.out.println(typeIPrompt0);
+					System.out.printf("\t%s", clue);
 					System.out.println();
 					System.out.print('\t');
 					longQuestion = true;
 				} else {
-					System.out.printf("%s::%s: ", typeIPrompt0, clue);
+					System.out.print(typeIPrompt0 + "::" + clue + ": ");
+					_needLineFeed = true;
 					longQuestion = false;
 				}
 				final String response = readLine(sc);
@@ -656,9 +706,10 @@ public class FlashCardsGame {
 					if (!longQuestion) {
 						System.out.print(' ');
 					}
-					final String prompt = String.format("%c%s%c Get it right", _RtArrow, answer,
+					final String prompt = String.format("%c%s%c Get it right?", _RtArrow, answer,
 							_LtArrow);
 					gotItRight = getYesNo(sc, prompt, true);
+					_needLineFeed = true;
 					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 					continue;
 				}
@@ -689,12 +740,13 @@ public class FlashCardsGame {
 					}
 					System.out.print(diffString);
 					if (gotItRight) {
-						gotItRight = !getYesNo(sc, " Count as wrong", false);
+						gotItRight = !getYesNo(sc, " Count as wrong?", false);
 					} else {
-						gotItRight = getYesNo(sc, " Count as right", false);
+						gotItRight = getYesNo(sc, " Count as right?", false);
 					}
-				} else if (longQuestion) {
-					System.out.println();
+					_needLineFeed = true;
+				} else {
+					_needLineFeed = longQuestion;
 				}
 				wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 			}
@@ -702,28 +754,20 @@ public class FlashCardsGame {
 		}
 	}
 
-	private boolean getYesNo(final Scanner sc, final String prompt,
-			final boolean defaultValue) {
-		final char otherChar = defaultValue ? _NoChar : _YesChar;
-		final String defaultString = defaultValue ? _YesString : _NoString;
-		final String otherString = defaultValue ? _NoString : _YesString;
-		System.out.printf("%s? %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString, otherChar,
+	private static boolean getYesNo(final Scanner sc, final String prompt,
+			final boolean returnIsYes) {
+		final char otherChar = returnIsYes ? _NoChar : _YesChar;
+		final String defaultString = returnIsYes ? _YesString : _NoString;
+		final String otherString = returnIsYes ? _NoString : _YesString;
+		System.out.printf("%s %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString, otherChar,
 				otherString);
 		final String response = readLine(sc);
-		/** After the line feed from reading a line, provide another. */
-		System.out.println();
 		if (response.length() == 0) {
-			return defaultValue;
+			return returnIsYes;
 		}
 		return Character.toUpperCase(response.charAt(0)) == otherChar
-				? !defaultValue
-				: defaultValue;
-	}
-
-	String getIntroString() {
-		return String.format(
-				"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
-				_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartChar);
+				? !returnIsYes
+				: returnIsYes;
 	}
 
 	static String CleanString(final String s) {

@@ -25,7 +25,7 @@ public class DiffReport {
 
 		if (_gotItRight) {
 			/** We must be ignoring diacritics, got it right, but not exactly right. */
-			final String s = String.format("%c [%c%s%c", FlashCardsGame._CheckSymbol,
+			final String s = String.format("%c [%c%s%c", FlashCardsGame._HeavyCheckSymbol,
 					FlashCardsGame._RtArrow, answer0, FlashCardsGame._LtArrow);
 			for (int k = 0; k < nAnswerFields; ++k) {
 				final String answer0Field = answer0Fields[k];

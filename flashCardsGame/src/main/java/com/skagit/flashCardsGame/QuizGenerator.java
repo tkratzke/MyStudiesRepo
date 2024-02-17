@@ -290,15 +290,18 @@ public class QuizGenerator {
 		}
 		if (quizPlus.haveWon(_failureRateI)) {
 			final QuizPlus newQuizPlus;
+			final TypeOfChange typeOfChange;
 			if (!quizPlus._criticalQuizIndicesOnly) {
 				_topIndexInCards += _maxNNewWords;
 				correctQuizGeneratorProperties(nCards);
 				newQuizPlus = createNewQuizPlus(nCards);
+				typeOfChange = TypeOfChange.MOVE_ON_WIN;
 			} else {
 				newQuizPlus = new QuizPlus(quizPlus);
 				newQuizPlus.resetForFullMode();
+				typeOfChange = TypeOfChange.CRITICAL_ONLY_WIN;
 			}
-			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.WIN);
+			return new QuizPlusTransition(quizPlus, newQuizPlus, typeOfChange);
 		}
 		if (quizPlus.haveLost(_failureRateI)) {
 			final QuizPlus newQuizPlus = new QuizPlus(quizPlus);
