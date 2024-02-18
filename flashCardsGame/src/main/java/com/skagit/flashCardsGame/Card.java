@@ -1,19 +1,73 @@
 package com.skagit.flashCardsGame;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 class Card {
+	final private static int _MaxLenForPart = 40;
+
+	private static class MyArrayList extends ArrayList<String> {
+		private static final long serialVersionUID = 1L;
+		int _maxLen;
+		MyArrayList(final String s) {
+			super();
+			String part = "";
+			int maxLen = 0;
+			final String[] fields = s.split(FlashCardsGame._WhiteSpace);
+			final int nFields = fields.length;
+			for (int k = 0; k < nFields; ++k) {
+				final String field = fields[k];
+				final int fieldLen = field.length();
+				if (fieldLen > 0) {
+					final int partLen = part.length();
+					if (partLen + (partLen > 0 ? 1 : 0) + fieldLen > _MaxLenForPart) {
+						if (partLen > 0) {
+							add(part);
+							maxLen = Math.max(maxLen, partLen);
+						}
+						part = field;
+					} else {
+						part += (partLen > 0 ? " " : "") + field;
+					}
+				}
+			}
+			final int partLen = part.length();
+			if (partLen > 0) {
+				add(part);
+				maxLen = Math.max(maxLen, partLen);
+			}
+			_maxLen = maxLen;
+		}
+	}
 
 	int _cardNumber;
-	final String _aSide;
-	final String _bSide;
-	String _comment;
+	final String _fullASide;
+	final String _fullBSide;
+	final MyArrayList _aParts;
+	final MyArrayList _bParts;
 
 	Card(final int cardNumber, final String aSide, final String bSide) {
 		_cardNumber = cardNumber;
-		_aSide = aSide;
-		_bSide = bSide;
-		_comment = "";
+		_fullASide = aSide;
+		_fullBSide = bSide;
+		_aParts = new MyArrayList(aSide);
+		_bParts = new MyArrayList(bSide);
+	}
+
+	ArrayList<String> getASides() {
+		return _aParts;
+	}
+
+	ArrayList<String> getBSides() {
+		return _bParts;
+	}
+
+	int getMaxALen() {
+		return _aParts._maxLen;
+	}
+
+	int getMaxBSide() {
+		return _bParts._maxLen;
 	}
 
 	private static int NullCompare(final Card card0, final Card card1) {
@@ -47,7 +101,7 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			return card0._aSide.compareToIgnoreCase(card1._aSide);
+			return card0._fullASide.compareToIgnoreCase(card1._fullASide);
 		}
 	};
 
@@ -59,7 +113,7 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			return card0._bSide.compareToIgnoreCase(card1._bSide);
+			return card0._fullBSide.compareToIgnoreCase(card1._fullBSide);
 		}
 	};
 
@@ -84,10 +138,7 @@ class Card {
 	}
 
 	String getString() {
-		if (_comment == null || _comment.length() == 0) {
-			return String.format("%04d.\t%s:\t%s", _cardNumber, _aSide, _bSide);
-		}
-		return String.format("%s\n%04d.\t%s:\t%s", _comment, _cardNumber, _aSide, _bSide);
+		return String.format("%04d.\t%s:\t%s", _cardNumber, _fullASide, _fullBSide);
 	}
 
 	@Override

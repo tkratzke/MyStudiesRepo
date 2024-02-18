@@ -137,85 +137,23 @@ public class FlashCardsGame {
 		_longLine = PropertyPlusToInt(_properties, PropertyPlus.LONG_LINE);
 		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
-		final MyCardMap myCardMap = loadMyCardMap();
-		final int nCards = myCardMap.size();
-		_cards = myCardMap.keySet().toArray(new Card[nCards]);
+		final TreeMap<Card, Card> cardMap = loadCardMap();
+		final int nCards = cardMap.size();
+		_cards = cardMap.keySet().toArray(new Card[nCards]);
 		Arrays.sort(_cards, Card._ByCardNumberOnly);
 		final int[] dupCounts = announceAndClumpDuplicates();
-		writeCardsToDisk();
-		final int nMerges = myCardMap._nMerges;
+		reWriteCardsFile();
 		final int nADups = dupCounts[1];
 		final int nBDups = dupCounts[0];
-		if (nMerges > 0 || nADups > 0 || nBDups > 0) {
+		if (nADups > 0 || nBDups > 0) {
 			if (_needLineFeed) {
 				System.out.println();
-				System.out.println(
-						String.format("nMerges=%d nADups=%d nBDups = %d.", nMerges, nADups, nBDups));
 			}
+			System.out.println(String.format("nADups=%d nBDups = %d.", nADups, nBDups));
 		}
 		_quizGenerator = new QuizGenerator(_properties, _cards.length, _seed);
 		shuffleCards(_cards);
 		_quizPlus = null;
-	}
-
-	private void shuffleCards(final Card[] cards) {
-		if (_seed == 0) {
-			return;
-		}
-		final Random r = new Random();
-		if (_seed > 0) {
-			r.setSeed(_seed);
-		}
-		while (Math.abs(r.nextLong()) < Long.MAX_VALUE / 5) {
-		}
-		final int nCards = cards.length;
-		for (int k = 0; k < nCards; ++k) {
-			final int kk = k + r.nextInt(nCards - k);
-			final Card card = cards[k];
-			cards[k] = cards[kk];
-			cards[kk] = card;
-		}
-	}
-
-	private void writeCardsToDisk() {
-		final int nCards = _cards.length;
-		final int nDigits = (int) (Math.log10(nCards) + 1d);
-		final String cardNumberFormat = String.format("%%%dd.", nDigits);
-		int maxASideLen = 0;
-		for (final Card card : _cards) {
-			maxASideLen = Math.max(maxASideLen, card._aSide.length());
-		}
-		final String aSideFormat = String.format("%%-%ds", maxASideLen);
-		final File cardsFile = getCardsFile();
-		try (PrintWriter pw = new PrintWriter(cardsFile)) {
-			for (int k = 0; k < nCards; ++k) {
-				final Card card = _cards[k];
-				final String cardNumberString = String.format(cardNumberFormat, card._cardNumber);
-				final String aSideString = String.format(aSideFormat, card._aSide + ":");
-				String comment = card._comment;
-				boolean printedBlankLine = false;
-				if (k > 0) {
-					if (k % 10 == 0) {
-						pw.println();
-						printedBlankLine = true;
-					}
-					pw.println();
-				}
-				if (comment != null) {
-					comment = comment.trim();
-					if (comment.length() > 0) {
-						if (k > 0 && !printedBlankLine) {
-							pw.println();
-						}
-						pw.println(comment);
-					}
-				}
-				final String s = String.format("%s\t%s\t%s", cardNumberString, aSideString,
-						card._bSide);
-				pw.print(s);
-			}
-		} catch (final FileNotFoundException e) {
-		}
 	}
 
 	private File getCardsFile() {
@@ -237,19 +175,11 @@ public class FlashCardsGame {
 	 * https://stackoverflow.com/questions/17405165/first-character-of-the-reading-from-the-text-file-%C3%AF
 	 * </pre>
 	 */
-	private static class MyCardMap extends TreeMap<Card, Card> {
-		private static final long serialVersionUID = 1L;
-		int _nMerges;
-		MyCardMap(final Comparator<Card> comparator) {
-			super(comparator);
-			_nMerges = 0;
-		}
-	}
 
-	private MyCardMap loadMyCardMap() {
-		final MyCardMap myCardMap = new MyCardMap(Card._ByAThenB);
+	private TreeMap<Card, Card> loadCardMap() {
+		final TreeMap<Card, Card> cardMap = new TreeMap<>(Card._ByAThenB);
 		final File cardsFile = getCardsFile();
-		try (BufferedReader in = new BufferedReader(
+		try (final BufferedReader in = new BufferedReader(
 				new InputStreamReader(new FileInputStream(cardsFile), "UTF-8"))) {
 			/** Mark the stream at the beginning of the file. */
 			if (in.markSupported()) {
@@ -266,52 +196,137 @@ public class FlashCardsGame {
 					in.reset();
 				}
 			}
+
+			String aSide = "";
+			String bSide = "";
 			try (final Scanner fileSc = new Scanner(in)) {
-				String comment = "";
 				while (fileSc.hasNext()) {
-					final String line = fileSc.nextLine().trim();
-					final String[] fields = line.split(_FieldSeparator);
-					final int nFields = fields.length;
-					final int cardNumber = myCardMap.size();
-					if (nFields < 2) {
-						if (comment.length() == 0) {
-							comment = line;
-						} else {
-							comment = comment + "\n" + line;
+					final String nextLine = fileSc.nextLine().stripTrailing();
+					final String[] rawFields = nextLine.split(_FieldSeparator);
+					final int nFields = rawFields.length;
+					final String[] cleanFields = new String[nFields];
+					boolean haveSomething = false;
+					for (int k = 0; k < nFields; ++k) {
+						cleanFields[k] = CleanField(rawFields[k]);
+						if (cleanFields[k].length() > 0) {
+							haveSomething = true;
 						}
+					}
+					if (!haveSomething) {
 						continue;
 					}
-					String aSide = CleanString(fields[nFields > 2 ? 1 : 0]);
-					String bSide = CleanString(fields[nFields > 2 ? 2 : 1]);
-					if (aSide.endsWith(".") || aSide.endsWith(":")) {
-						aSide = aSide.substring(0, aSide.length() - 1);
-					}
-					if (bSide.endsWith(".") || bSide.endsWith(":")) {
-						bSide = bSide.substring(0, bSide.length() - 1);
-					}
-					final Card newCard = new Card(cardNumber, aSide, bSide);
-					comment = comment.trim();
-					newCard._comment = comment;
-					final Card oldCard = myCardMap.get(newCard);
-					if (oldCard != null) {
-						if (_needLineFeed) {
-							System.out.println();
+					final String field0Raw = rawFields[0];
+					final String cleanField0 = CleanField(field0Raw);
+					final int cardNumber = stringToInt(cleanField0);
+					if (cardNumber >= 0) {
+						if (nFields == 1) {
+							continue;
 						}
-						System.out.println(String.format("Merge #%d:", ++myCardMap._nMerges));
-						System.out.println(newCard.getString() + " into");;
-						System.out.println(oldCard.getString());
-						_needLineFeed = true;
-						oldCard._comment = (oldCard._comment + "\n" + comment).trim();
+						/**
+						 * nextLine starts with a number and has at least one other field. Wrap up the
+						 * old entry.
+						 */
+						if (aSide.length() > 0 && bSide.length() > 0) {
+							wrapUp(cardMap, aSide, bSide);
+							aSide = "";
+							bSide = "";
+						}
+						if (nFields >= 3) {
+							aSide = augment(aSide, cleanFields[1]);
+							bSide = augment(bSide, cleanFields[2]);
+							continue;
+						}
+						/**
+						 * nFields must be 2, and there is a number field. If after the number field,
+						 * there are at least 2 tabs before the next field, this is b-side. Otherwise,
+						 * it is a-side.
+						 */
+						int nTabs = 0;
+						/** Count the tabs after field0 and before the next field. */
+						for (int k = nextLine.indexOf(field0Raw) + field0Raw.length();; ++k) {
+							final char c = nextLine.charAt(k);
+							if (!Character.isWhitespace(c)) {
+								break;
+							}
+							if (c == '\t') {
+								if (++nTabs == 2) {
+									break;
+								}
+							}
+						}
+						if (nTabs == 1) {
+							aSide = augment(aSide, cleanFields[1]);
+						} else {
+							bSide = augment(bSide, cleanFields[1]);
+						}
 					} else {
-						myCardMap.put(newCard, newCard);
+						/** A continuation line. If there's nothing to continue, we skip it. */
+						if (nFields < 2 || aSide.length() > 0 || bSide.length() > 0) {
+							final String cleanField1 = CleanField(cleanFields[1]);
+							if (nFields >= 3) {
+								aSide = augment(aSide, cleanField1);
+								bSide = augment(bSide, CleanField(cleanFields[2]));
+							} else {
+								/**
+								 * There is one field and it must be added to aSides or bSides. Count the
+								 * tabs from the beginning of the line to the first field.
+								 */
+								int nTabs = 0;
+								for (int k = 0;; ++k) {
+									final char c = nextLine.charAt(k);
+									if (!Character.isWhitespace(c)) {
+										break;
+									}
+									if (c == '\t') {
+										if (++nTabs == 2) {
+											break;
+										}
+									}
+								}
+								if (nTabs == 1) {
+									aSide = augment(aSide, cleanField1);
+								} else {
+									bSide = augment(bSide, cleanField1);
+								}
+							}
+						}
 					}
-					comment = "";
+				}
+				if (aSide.length() > 0 && bSide.length() > 0) {
+					wrapUp(cardMap, aSide, bSide);
+					aSide = "";
+					bSide = "";
 				}
 			} catch (final Exception e) {
 			}
 		} catch (final IOException e) {
 		}
-		return myCardMap;
+		return cardMap;
+	}
+
+	private static String augment(final String oldS, final String newS) {
+		return CleanString(oldS + (oldS.length() > 0 ? " " : "") + newS);
+	}
+
+	private static void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
+			final String bSide) {
+		final Card card = new Card(cardMap.size(), aSide, bSide);
+		cardMap.put(card, card);
+	}
+
+	static private int stringToInt(String s) {
+		final int len = s == null ? 0 : s.length();
+		if (len == 0) {
+			return -1;
+		}
+		if (s.charAt(len - 1) == '.') {
+			s = s.substring(0, len - 1);
+		}
+		try {
+			return Integer.parseInt(s);
+		} catch (final NumberFormatException e) {
+			return -1;
+		}
 	}
 
 	private int[] announceAndClumpDuplicates() {
@@ -372,6 +387,51 @@ public class FlashCardsGame {
 		return dupCounts;
 	}
 
+	private void reWriteCardsFile() {
+		final int nCards = _cards.length;
+		final int nDigits = (int) (Math.log10(nCards) + 1d);
+		final String cardNumberFormat = String.format("%%%dd", nDigits);
+		int maxASideLen = 0;
+		for (final Card card : _cards) {
+			maxASideLen = Math.max(maxASideLen, card.getMaxALen());
+		}
+		final String aPartFormat = String.format("%%-%ds", maxASideLen);
+		final String blankNumberFormat = String.format("%%-%ds", nDigits);
+		final String blankNumberString = String.format(blankNumberFormat, "");
+		final File cardsFile = getCardsFile();
+		try (PrintWriter pw = new PrintWriter(cardsFile)) {
+			boolean recentWasMultiLine = false;
+			for (int k0 = 0; k0 < nCards; ++k0) {
+				final Card card = _cards[k0];
+				final ArrayList<String> aParts = card._aParts;
+				final ArrayList<String> bParts = card._bParts;
+				final int nAParts = aParts.size();
+				final int nBParts = bParts.size();
+				final int nParts = Math.max(nAParts, nBParts);
+				if (k0 > 0 && (recentWasMultiLine || k0 % 10 == 0)) {
+					pw.println();
+				}
+				recentWasMultiLine = nParts > 1;
+				for (int k1 = 0; k1 < nParts; ++k1) {
+					final String aPart = k1 < nAParts ? aParts.get(k1) : "";
+					if (k1 == 0) {
+						pw.printf(cardNumberFormat, card._cardNumber);
+					} else {
+						pw.print(blankNumberString);
+					}
+					pw.print("\t");
+					pw.printf(aPartFormat, aPart);
+					if (k1 < nBParts) {
+						pw.print("\t");
+						pw.print(bParts.get(k1));
+					}
+					pw.println();
+				}
+			}
+		} catch (final FileNotFoundException e) {
+		}
+	}
+
 	void updateProperties() {
 		_properties.put(PropertyPlus.SEED._realName, Long.toString(_seed));
 		_properties.put(PropertyPlus.QUIZ_TYPE._realName, Boolean.toString(_quizIsA_B));
@@ -416,6 +476,25 @@ public class FlashCardsGame {
 				pw.println();
 			}
 		} catch (final IOException e) {
+		}
+	}
+
+	private void shuffleCards(final Card[] cards) {
+		if (_seed == 0) {
+			return;
+		}
+		final Random r = new Random();
+		if (_seed > 0) {
+			r.setSeed(_seed);
+		}
+		while (Math.abs(r.nextLong()) < Long.MAX_VALUE / 5) {
+		}
+		final int nCards = cards.length;
+		for (int k = 0; k < nCards; ++k) {
+			final int kk = k + r.nextInt(nCards - k);
+			final Card card = cards[k];
+			cards[k] = cards[kk];
+			cards[kk] = card;
 		}
 	}
 
@@ -701,8 +780,8 @@ public class FlashCardsGame {
 
 			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
 			final Card card = _cards[indexInCards];
-			final String clue = CleanString(_quizIsA_B ? card._aSide : card._bSide);
-			final String answer = CleanString(_quizIsA_B ? card._bSide : card._aSide);
+			final String clue = CleanString(_quizIsA_B ? card._fullASide : card._fullBSide);
+			final String answer = CleanString(_quizIsA_B ? card._fullBSide : card._fullASide);
 			final String typeIPrompt0 = getTypeIPrompt(indexInCards);
 			final int len = typeIPrompt0.length() + 2 + clue.length() + 1 + 1 + answer.length();
 			boolean wasWrongAtLeastOnce = false;
@@ -752,8 +831,8 @@ public class FlashCardsGame {
 						continue OUTSIDE_LOOP;
 					}
 				}
-				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(_ignoreVnDiacritics, answer,
-						response);
+				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(
+						_ignoreVnDiacritics, answer, response);
 				final String diffString = responseEvaluator._diffString;
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffString != null) {
@@ -797,6 +876,16 @@ public class FlashCardsGame {
 			return "";
 		}
 		return s.trim().replaceAll(_WhiteSpace, " ");
+	}
+
+	private static String CleanField(final String field) {
+		if (field == null) {
+			return "";
+		}
+		final String s1 = field.replaceAll("[,\\.;:?!@#$%^&*]+", " ");
+		final String s2 = s1.trim();
+		final String s3 = s2.replaceAll(_WhiteSpace, " ");
+		return s3;
 	}
 
 	public static boolean StringEquals(final String s0, final String s1) {
