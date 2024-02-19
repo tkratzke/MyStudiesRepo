@@ -24,7 +24,7 @@ public class FlashCardsGame {
 	final static char _RtArrowChar = '\u2192';
 	final static char _EmptySetChar = '\u2205';
 	final static char _HeavyCheckChar = '\u2714';
-	final static char _TabChar = '\u2B72';
+	final static char _TabChar = '\u2409';
 
 	final private static char _ReturnChar = '\u23CE';
 	final private static char _QuitChar = '!';
@@ -35,7 +35,7 @@ public class FlashCardsGame {
 	final private static String _YesString = "Yes";
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
-	final private static int _LongLine = 35;
+	final private static int _LongLine = 85;
 
 	final private static String _HelpString = String.format(
 			"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %s=Next Line is Continuation",
@@ -553,8 +553,9 @@ public class FlashCardsGame {
 			final String prompt = getTypeIIPrompt();
 			System.out.print(prompt);
 			System.out.print(": ");
-			final String myLine = new InputString(sc)._inputString.toUpperCase();
-			_needLineFeed = true;
+			final InputString inputString = new InputString(sc);
+			final String myLine = inputString._inputString.toUpperCase();
+			_needLineFeed = !inputString._lastLineWasBlank;
 			if (myLine.length() == 0) {
 				return;
 			}
@@ -710,9 +711,12 @@ public class FlashCardsGame {
 	}
 
 	final String getString() {
-		return String.format("%s: %c%c%c%s RandomSeed[%d] LongLine[%d]\n%s",
-				getCoreFilePath(), _quizIsA_B ? 'A' : 'B', _RtArrowChar, _quizIsA_B ? 'B' : 'A', //
-				_ignoreVnDiacritics ? (" " + PropertyPlus.IGNORE_VN_DIACRITICS._comment) : "", //
+		return String.format("%s: %c%c%c%s RandomSeed[%d] \n%s", //
+				getCoreFilePath(), //
+				_quizIsA_B ? 'A' : 'B', _RtArrowChar, _quizIsA_B ? 'B' : 'A', //
+				_ignoreVnDiacritics ? //
+						(" " + PropertyPlus.IGNORE_VN_DIACRITICS._comment) : //
+						"", //
 				_seed, _quizGenerator.getString());
 	}
 
@@ -794,8 +798,7 @@ public class FlashCardsGame {
 				if (len >= _LongLine || clueListSize > 1) {
 					System.out.println(typeIPrompt0);
 					for (int k = 0; k < clueListSize; ++k) {
-						final String cluePart = clueParts.get(k);
-						System.out.println("\t" + cluePart);
+						System.out.println("\t" + clueParts.get(k));
 					}
 					longQuestion = true;
 				} else {
@@ -807,8 +810,9 @@ public class FlashCardsGame {
 				if (response.length() == 0) {
 					final String prompt = String.format("\t%c%s%c Get it right?", _RtArrowChar,
 							answer, _LtArrowChar);
-					gotItRight = getYesNo(sc, prompt, true);
-					_needLineFeed = true;
+					final BooleanPair booleanPair = getYesNo(sc, prompt, true);
+					gotItRight = booleanPair._returnValue;
+					_needLineFeed = !booleanPair._lastLineWasBlank;
 					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 					continue;
 				}
@@ -840,9 +844,13 @@ public class FlashCardsGame {
 					}
 					System.out.print(diffString);
 					if (gotItRight) {
-						gotItRight = !getYesNo(sc, " Count as wrong?", false);
+						final BooleanPair booleanPair = getYesNo(sc, " Count as wrong?", false);
+						gotItRight = !booleanPair._returnValue;
+						_needLineFeed = !booleanPair._lastLineWasBlank;
 					} else {
-						gotItRight = getYesNo(sc, " Count as right?", false);
+						final BooleanPair booleanPair = getYesNo(sc, " Count as right?", false);
+						gotItRight = booleanPair._returnValue;
+						_needLineFeed = !booleanPair._lastLineWasBlank;
 					}
 					_needLineFeed = true;
 				} else {
@@ -854,20 +862,34 @@ public class FlashCardsGame {
 		}
 	}
 
-	private static boolean getYesNo(final Scanner sc, final String prompt,
+	private static class BooleanPair {
+		final boolean _returnValue, _lastLineWasBlank;
+
+		private BooleanPair(final boolean returnValue, final boolean lastLineWasBlank) {
+			_returnValue = returnValue;
+			_lastLineWasBlank = lastLineWasBlank;
+		}
+
+	}
+	private static BooleanPair getYesNo(final Scanner sc, final String prompt,
 			final boolean returnIsYes) {
 		final char otherChar = returnIsYes ? _NoChar : _YesChar;
 		final String defaultString = returnIsYes ? _YesString : _NoString;
 		final String otherString = returnIsYes ? _NoString : _YesString;
 		System.out.printf("%s %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString, otherChar,
 				otherString);
-		final String response = new InputString(sc)._inputString;
+		final InputString inputString = new InputString(sc);
+		final String response = inputString._inputString;
+		final boolean lastLineWasBlank = inputString._lastLineWasBlank;
+		final boolean returnValue;
 		if (response.length() == 0) {
-			return returnIsYes;
+			returnValue = returnIsYes;
+		} else {
+			returnValue = Character.toUpperCase(response.charAt(0)) == otherChar
+					? !returnIsYes
+					: returnIsYes;
 		}
-		return Character.toUpperCase(response.charAt(0)) == otherChar
-				? !returnIsYes
-				: returnIsYes;
+		return new BooleanPair(returnValue, lastLineWasBlank);
 	}
 
 	static String CleanWhiteSpace(final String s) {
@@ -903,8 +925,6 @@ public class FlashCardsGame {
 	}
 
 	public static void main(final String[] args) {
-		System.out.println(_TabChar);
-		System.exit(33);
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
 			flashCardsGame.mainLoop(sc);
