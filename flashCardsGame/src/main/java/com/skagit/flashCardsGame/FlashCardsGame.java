@@ -36,6 +36,7 @@ public class FlashCardsGame {
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
 	final private static int _LongLine = 100;
+	final private static int _BlockSize = 10;
 
 	final private static String _HelpString = String.format(
 			"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %s=Next Line is Continuation",
@@ -90,9 +91,9 @@ public class FlashCardsGame {
 	}
 
 	/** Either of the following two FieldSeparators seems to work. */
+	final private static String _FieldSeparator = "\\s*\\t\\s*";
 	@SuppressWarnings("unused")
-	final private static String _FieldSeparator0 = "\\s*\\t\\s*";
-	final private static String _FieldSeparator = "(\s*\t\s*)+";
+	final private static String _FieldSeparator1 = "(\s*\t\s*)+";
 	final private static String _PropertiesEnding = ".properties";
 	final static String _WhiteSpace = "\s+";
 
@@ -321,10 +322,12 @@ public class FlashCardsGame {
 	}
 
 	static private int stringToInt(String s) {
-		final int len = s == null ? 0 : s.length();
+		int len = s == null ? 0 : s.length();
 		if (len == 0) {
 			return -1;
 		}
+		s = s.trim();
+		len = s.length();
 		if (s.charAt(len - 1) == '.') {
 			s = s.substring(0, len - 1);
 		}
@@ -407,16 +410,19 @@ public class FlashCardsGame {
 		final File cardsFile = getCardsFile();
 		try (PrintWriter pw = new PrintWriter(cardsFile)) {
 			boolean recentWasMultiLine = false;
-			for (int k0 = 0; k0 < nCards; ++k0) {
+			for (int k0 = 0, nPrinted = 0; k0 < nCards; ++k0) {
 				final Card card = _cards[k0];
 				final ArrayList<String> aParts = card._aParts;
 				final ArrayList<String> bParts = card._bParts;
 				final int nAParts = aParts.size();
 				final int nBParts = bParts.size();
 				final int nParts = Math.max(nAParts, nBParts);
-				if (k0 > 0 && (recentWasMultiLine || k0 % 10 == 0)) {
-					pw.println();
+				if (k0 > 0) {
+					if ((nParts > 1 || recentWasMultiLine || (nPrinted % _BlockSize == 1))) {
+						pw.println();
+					}
 				}
+				++nPrinted;
 				recentWasMultiLine = nParts > 1;
 				for (int k1 = 0; k1 < nParts; ++k1) {
 					final String aPart = k1 < nAParts ? aParts.get(k1) : "";
