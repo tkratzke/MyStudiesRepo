@@ -89,7 +89,11 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			return card0._fullASide.compareToIgnoreCase(card1._fullASide);
+			final String a0 = card0._fullASide;
+			final String a1 = card1._fullASide;
+			final String a0a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(a0));
+			final String a1a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(a1));
+			return a0a.compareToIgnoreCase(a1a);
 		}
 	};
 
@@ -101,7 +105,11 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			return card0._fullBSide.compareToIgnoreCase(card1._fullBSide);
+			final String b0 = card0._fullBSide;
+			final String b1 = card1._fullBSide;
+			final String b0a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(b0));
+			final String b1a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(b1));
+			return b0a.compareToIgnoreCase(b1a);
 		}
 	};
 

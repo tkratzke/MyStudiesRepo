@@ -2,21 +2,21 @@
    	                                        	afternoon (on the garage)
 
   1	Hôm nay anh sẽ đi gym từ chín giờ đến   	Today I will go to the gym at 900 until
-   	mười một giờ ba mươi                    	1130
+   	mười một giờ ba mươi                    	11:30
 
-  2	Anh sẽ nói chuyện với Thal lúc mười hai 	I will talk to Thal at 1215
+  2	Anh sẽ nói chuyện với Thal lúc mười hai 	I will talk to Thal at 12:15
    	giờ mười lăm                            
 
-  3	Anh sẽ chơi chess lúc một giờ bốn mươi  	I will do chess at 145
-  4	Anh sẽ đi bơi từ mười hai giờ đến ba giờ	I will go swimming at 200 until 330
+  3	Anh sẽ chơi chess lúc một giờ bốn mươi  	I will do chess at 1:45
+  4	Anh sẽ đi bơi từ mười hai giờ đến ba giờ	I will go swimming at 2:00 until 3:30
    	ba mươi                                 
 
   5	anh sẽ nói chuyện bao giờ em dậy        	I will talk to you when you wake up
   6	Chác anh sẽ không đi gym hay đi bơi     	Probably I will not go to the gym or
    	                                        	swim
 
-  7	anh sẽ học Tiêng Việt với Thal lúc mười 	I will study VN with Thal from 1215 to
-   	hai giờ mười lăm đến mười hai giờ ba    	1230
+  7	anh sẽ học Tiêng Việt với Thal lúc mười 	I will study VN with Thal from 12:15 to
+   	hai giờ mười lăm đến mười hai giờ ba    	12:30
    	mươi                                    
 
   8	có thể anh cũng sẽ học toán với Lan     	Maybe I will also study math with Lan
@@ -453,26 +453,26 @@
 388	u                                       	vowel in boo
 389	ư                                       	vowel in uhoo
 
-390	anh làm nghế gì ạ                       	what do you do? or what is your job?
-391	tôi là giáo viên                        	I am a teacher
-392	anh làm việc ở đâu                      	where do you work?
-393	tôi làm việc ở Hà Nội                   	I work in Hà Nôi
-394	anh học ở đâu                           	where do you study?
-395	Anh học ở nhà                           	I study at home
-396	Chị sống ở đâu?                         	where do you live?
-397	xin chào                                	hello (polite)
-398	chào                                    	hello (informal) or "good bye"
-399	chào bạn                                	hello to friend
+390	anh làm nghế gì ạ                       	what do you do or what is your job
+391	anh làm nghề gì                         	what do you do or what is your job
+392	tôi là giáo viên                        	I am a teacher
+393	anh làm việc ở đâu                      	where do you work
+394	tôi làm việc ở Hà Nội                   	I work in Hà Nôi
+395	anh học ở đâu                           	where do you study
+396	Anh học ở nhà                           	I study at home
+397	Chị sống ở đâu                          	where do you live
+398	xin chào                                	hello (polite)
+399	chào                                    	hello (informal) or "good bye"
 
-400	chào em                                 	hello to younger person
-401	chào chị ạ                              	hello to older female
-402	chào anh ạ                              	hello to older brother
-403	chào ông ạ                              	hello to grandfatherly
-404	chào cháu                               	hello to child
-405	chào bà ạ                               	hello to grandmotherly
-406	chào cô Hạnh ạ                          	hello to teacher Hạnh (female)
-407	ạ                                       	word at end of sentence showing respect
-408	anh làm nghề gì                         	what do you do or what is your job
+400	chào bạn                                	hello to friend
+401	chào em                                 	hello to younger person
+402	chào chị ạ                              	hello to older female
+403	chào anh ạ                              	hello to older brother
+404	chào ông ạ                              	hello to grandfatherly
+405	chào cháu                               	hello to child
+406	chào bà ạ                               	hello to grandmotherly
+407	chào cô Hạnh ạ                          	hello to teacher Hạnh (female)
+408	ạ                                       	word at end of sentence showing respect
 409	anh làm việc                            	làm việc is "work "
 
 410	có phải là xxx khoong                   	are you xxx

@@ -9,20 +9,20 @@ class InputString {
 		String s = "";
 		boolean lastLineWasBlank = false;
 		for (;;) {
-			final String rawLine = sc.nextLine();
-			final int rawLineLen = rawLine.length();
-			final boolean mustContinue = rawLineLen > 0
-					&& rawLine.charAt(rawLineLen - 1) == 't';
-			if (!rawLine.isBlank()) {
+			final String thisLine = sc.nextLine();
+			final int len = thisLine.length();
+			final boolean moreLines = len > 0 && thisLine.charAt(len - 1) == '\t';
+			if (!thisLine.isBlank()) {
 				lastLineWasBlank = false;
-				s += " " + rawLine;
-			} else if (mustContinue) {
+				s += " " + thisLine;
+			} else if (moreLines) {
 				lastLineWasBlank = true;
 			}
-			if (!mustContinue) {
+			if (!moreLines) {
 				break;
 			}
-			System.out.print("\t");
+			/** The next line has indented input. */
+			System.out.print('\t');
 		}
 		_inputString = FlashCardsGame.CleanWhiteSpace(s);
 		_lastLineWasBlank = lastLineWasBlank;
