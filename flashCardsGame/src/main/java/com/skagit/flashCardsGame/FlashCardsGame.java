@@ -422,7 +422,6 @@ public class FlashCardsGame {
 						pw.println();
 					}
 				}
-				++nPrinted;
 				recentWasMultiLine = nParts > 1;
 				for (int k1 = 0; k1 < nParts; ++k1) {
 					final String aPart = k1 < nAParts ? aParts.get(k1) : "";
@@ -439,6 +438,7 @@ public class FlashCardsGame {
 					}
 					pw.println();
 				}
+				++nPrinted;
 			}
 		} catch (final FileNotFoundException e) {
 		}
@@ -807,13 +807,11 @@ public class FlashCardsGame {
 				final boolean longQuestion;
 				if (len >= _LongLine || clueListSize > 1) {
 					System.out.println(typeIPrompt0);
+					System.out.print('\t');
 					for (int k = 0; k < clueListSize; ++k) {
-						System.out.print("\t" + clueParts.get(k));
-						if (k < clueListSize - 1) {
-							System.out.println();
-						} else {
-							System.out.print(' ');
-						}
+						System.out.print(clueParts.get(k));
+						System.out.println();
+						System.out.print('\t');
 					}
 					longQuestion = true;
 				} else {

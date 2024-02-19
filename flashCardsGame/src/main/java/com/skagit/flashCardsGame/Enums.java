@@ -14,9 +14,9 @@ enum PropertyPlus {
 	FR("Failure.Rate", "10%", ""), //
 	DECAY("Type.Of.Decay", "LINEAR", ""), //
 	QUIZ_TYPE("Quiz.Type.Is.A_to_B", "FALSE", "Types of Quizzes:\n" //
-			+ "\"Which Way to Quiz, and\n" + //
-			"Ignore Diacritics or not:"), //
-	IGNORE_VN_DIACRITICS("Ignore.VN.Diacritics", "FALSE", "Ignore VN Diacritics");
+			+ "\"Which Way to Quiz\" and\n" + //
+			"Ignore VnDiacritics or not:"), //
+	IGNORE_VN_DIACRITICS("Ignore.VN.Diacritics", "FALSE", "");
 
 	final static PropertyPlus[] _Values = values();
 
@@ -51,8 +51,4 @@ enum TypeOfChange {
 	TypeOfChange(final String reasonForChangeString) {
 		_reasonForChangeString = reasonForChangeString;
 	}
-}
-
-enum HonorResult {
-	RIGHT, WRONG, NOT_HONOR_MODE
 }
