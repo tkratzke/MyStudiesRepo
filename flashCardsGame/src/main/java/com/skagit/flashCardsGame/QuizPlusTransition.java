@@ -21,7 +21,7 @@ class QuizPlusTransition {
 			oldSummaryString = quizPlus.getSummaryString();
 		}
 		final String newSummaryString = _newQuizPlus.getSummaryString();
-		_transitionString = String.format("%s%c%s", oldSummaryString, FlashCardsGame._RtArrow,
+		_transitionString = String.format("%s%c%s", oldSummaryString, FlashCardsGame._RtArrowChar,
 				newSummaryString);
 	}
 

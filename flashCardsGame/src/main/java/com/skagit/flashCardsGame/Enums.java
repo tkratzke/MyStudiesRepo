@@ -16,8 +16,7 @@ enum PropertyPlus {
 	QUIZ_TYPE("Quiz.Type.Is.A_to_B", "FALSE", "Types of Quizzes:\n" //
 			+ "\"Which Way to Quiz, and\n" + //
 			"Ignore Diacritics or not:"), //
-	IGNORE_VN_DIACRITICS("Ignore.VN.Diacritics", "FALSE", "Ignore VN Diacritics"), //
-	LONG_LINE("Long.Line", "80", "What is considered a long line and broken up:");
+	IGNORE_VN_DIACRITICS("Ignore.VN.Diacritics", "FALSE", "Ignore VN Diacritics");
 
 	final static PropertyPlus[] _Values = values();
 

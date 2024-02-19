@@ -20,10 +20,11 @@ import java.util.TreeMap;
 
 public class FlashCardsGame {
 
-	final static char _LtArrow = '\u2190';
-	final static char _RtArrow = '\u2192';
+	final static char _LtArrowChar = '\u2190';
+	final static char _RtArrowChar = '\u2192';
 	final static char _EmptySetChar = '\u2205';
-	final static char _HeavyCheckSymbol = '\u2714';
+	final static char _HeavyCheckChar = '\u2714';
+	final static char _TabChar = '\u2B72';
 
 	final private static char _ReturnChar = '\u23CE';
 	final private static char _QuitChar = '!';
@@ -32,11 +33,14 @@ public class FlashCardsGame {
 	final private static char _YesChar = 'Y';
 	final private static char _NoChar = 'N';
 	final private static String _YesString = "Yes";
-	final private static String _NoString = "No";
+	final static String _NoString = "No";
+	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
+	final private static int _LongLine = 35;
 
 	final private static String _HelpString = String.format(
-			"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz",
-			_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartChar);
+			"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %s=Next Line is Continuation",
+			_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartChar,
+			"" + _TabChar + _ReturnChar);
 
 	/**
 	 * <pre>
@@ -96,7 +100,6 @@ public class FlashCardsGame {
 	final private Properties _properties;
 	final private long _seed;
 	final private boolean _quizIsA_B, _ignoreVnDiacritics;
-	final private int _longLine;
 	final private Card[] _cards;
 	final private QuizGenerator _quizGenerator;
 	private QuizPlus _quizPlus;
@@ -134,7 +137,6 @@ public class FlashCardsGame {
 		_quizIsA_B = PropertyPlusToBoolean(_properties, PropertyPlus.QUIZ_TYPE);
 		_ignoreVnDiacritics = PropertyPlusToBoolean(_properties,
 				PropertyPlus.IGNORE_VN_DIACRITICS);
-		_longLine = PropertyPlusToInt(_properties, PropertyPlus.LONG_LINE);
 		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
 		final TreeMap<Card, Card> cardMap = loadCardMap();
@@ -305,7 +307,7 @@ public class FlashCardsGame {
 	}
 
 	private static String augment(final String oldS, final String newS) {
-		return CleanString(oldS + (oldS.length() > 0 ? " " : "") + newS);
+		return CleanWhiteSpace(oldS + (oldS.length() > 0 ? " " : "") + newS);
 	}
 
 	private static void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
@@ -393,7 +395,7 @@ public class FlashCardsGame {
 		final String cardNumberFormat = String.format("%%%dd", nDigits);
 		int maxASideLen = 0;
 		for (final Card card : _cards) {
-			maxASideLen = Math.max(maxASideLen, card.getMaxALen());
+			maxASideLen = Math.max(maxASideLen, card._aParts._maxLen);
 		}
 		final String aPartFormat = String.format("%%-%ds", maxASideLen);
 		final String blankNumberFormat = String.format("%%-%ds", nDigits);
@@ -551,7 +553,7 @@ public class FlashCardsGame {
 			final String prompt = getTypeIIPrompt();
 			System.out.print(prompt);
 			System.out.print(": ");
-			final String myLine = readLine(sc).toUpperCase();
+			final String myLine = new InputString(sc)._inputString.toUpperCase();
 			_needLineFeed = true;
 			if (myLine.length() == 0) {
 				return;
@@ -588,7 +590,7 @@ public class FlashCardsGame {
 
 	private static String PropertyPlusToString(final Properties properties,
 			final PropertyPlus propertyPlus) {
-		return CleanString((String) properties.get(propertyPlus._realName));
+		return CleanWhiteSpace((String) properties.get(propertyPlus._realName));
 	}
 
 	static int PropertyPlusToInt(final Properties properties,
@@ -709,18 +711,14 @@ public class FlashCardsGame {
 
 	final String getString() {
 		return String.format("%s: %c%c%c%s RandomSeed[%d] LongLine[%d]\n%s",
-				getCoreFilePath(), _quizIsA_B ? 'A' : 'B', _RtArrow, _quizIsA_B ? 'B' : 'A', //
+				getCoreFilePath(), _quizIsA_B ? 'A' : 'B', _RtArrowChar, _quizIsA_B ? 'B' : 'A', //
 				_ignoreVnDiacritics ? (" " + PropertyPlus.IGNORE_VN_DIACRITICS._comment) : "", //
-				_seed, _longLine, _quizGenerator.getString());
+				_seed, _quizGenerator.getString());
 	}
 
 	@Override
 	public String toString() {
 		return getString();
-	}
-
-	static String readLine(final Scanner sc) {
-		return CleanString(sc.nextLine());
 	}
 
 	final static private EnumSet<TypeOfChange> _NewQuizSet = EnumSet.of(//
@@ -780,34 +778,35 @@ public class FlashCardsGame {
 
 			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
 			final Card card = _cards[indexInCards];
-			final String clue = CleanString(_quizIsA_B ? card._fullASide : card._fullBSide);
-			final String answer = CleanString(_quizIsA_B ? card._fullBSide : card._fullASide);
+			final ArrayList<String> clueParts = _quizIsA_B ? card._aParts : card._bParts;
+			final String clue = CleanWhiteSpace(_quizIsA_B ? card._fullASide : card._fullBSide);
+			final String answer = CleanWhiteSpace(
+					_quizIsA_B ? card._fullBSide : card._fullASide);
 			final String typeIPrompt0 = getTypeIPrompt(indexInCards);
 			final int len = typeIPrompt0.length() + 2 + clue.length() + 1 + 1 + answer.length();
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
-				final boolean longQuestion;
 				if (_needLineFeed) {
 					System.out.println();
 				}
-				if (len >= _longLine) {
+				final int clueListSize = clueParts.size();
+				final boolean longQuestion;
+				if (len >= _LongLine || clueListSize > 1) {
 					System.out.println(typeIPrompt0);
-					System.out.printf("\t%s", clue);
-					System.out.println();
-					System.out.print('\t');
+					for (int k = 0; k < clueListSize; ++k) {
+						final String cluePart = clueParts.get(k);
+						System.out.println("\t" + cluePart);
+					}
 					longQuestion = true;
 				} else {
 					System.out.print(typeIPrompt0 + "::" + clue + ": ");
-					_needLineFeed = true;
 					longQuestion = false;
 				}
-				final String response = readLine(sc);
+				final InputString inputString = new InputString(sc);
+				final String response = inputString._inputString;
 				if (response.length() == 0) {
-					if (!longQuestion) {
-						System.out.print(' ');
-					}
-					final String prompt = String.format("%c%s%c Get it right?", _RtArrow, answer,
-							_LtArrow);
+					final String prompt = String.format("\t%c%s%c Get it right?", _RtArrowChar,
+							answer, _LtArrowChar);
 					gotItRight = getYesNo(sc, prompt, true);
 					_needLineFeed = true;
 					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
@@ -831,8 +830,8 @@ public class FlashCardsGame {
 						continue OUTSIDE_LOOP;
 					}
 				}
-				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(
-						_ignoreVnDiacritics, answer, response);
+				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc,
+						_ignoreVnDiacritics, card, _quizIsA_B, response);
 				final String diffString = responseEvaluator._diffString;
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffString != null) {
@@ -862,7 +861,7 @@ public class FlashCardsGame {
 		final String otherString = returnIsYes ? _NoString : _YesString;
 		System.out.printf("%s %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString, otherChar,
 				otherString);
-		final String response = readLine(sc);
+		final String response = new InputString(sc)._inputString;
 		if (response.length() == 0) {
 			return returnIsYes;
 		}
@@ -871,7 +870,7 @@ public class FlashCardsGame {
 				: returnIsYes;
 	}
 
-	static String CleanString(final String s) {
+	static String CleanWhiteSpace(final String s) {
 		if (s == null) {
 			return "";
 		}
@@ -882,7 +881,7 @@ public class FlashCardsGame {
 		if (field == null) {
 			return "";
 		}
-		final String s1 = field.replaceAll("[,\\.;:?!@#$%^&*]+", " ");
+		final String s1 = field.replaceAll(_RegExForPunct, " ");
 		final String s2 = s1.trim();
 		final String s3 = s2.replaceAll(_WhiteSpace, " ");
 		return s3;
@@ -904,6 +903,8 @@ public class FlashCardsGame {
 	}
 
 	public static void main(final String[] args) {
+		System.out.println(_TabChar);
+		System.exit(33);
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
 			flashCardsGame.mainLoop(sc);

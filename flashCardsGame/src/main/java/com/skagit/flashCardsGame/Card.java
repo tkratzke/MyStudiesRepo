@@ -6,7 +6,7 @@ import java.util.Comparator;
 class Card {
 	final private static int _MaxLenForPart = 40;
 
-	private static class MyArrayList extends ArrayList<String> {
+	static class MyArrayList extends ArrayList<String> {
 		private static final long serialVersionUID = 1L;
 		int _maxLen;
 		MyArrayList(final String s) {
@@ -52,18 +52,6 @@ class Card {
 		_fullBSide = bSide;
 		_aParts = new MyArrayList(aSide);
 		_bParts = new MyArrayList(bSide);
-	}
-
-	ArrayList<String> getASides() {
-		return _aParts;
-	}
-
-	ArrayList<String> getBSides() {
-		return _bParts;
-	}
-
-	int getMaxALen() {
-		return _aParts._maxLen;
 	}
 
 	int getMaxBSide() {

@@ -317,7 +317,7 @@ class QuizPlus implements Serializable {
 		if (nInStreak == 1) {
 			return String.format("%d%s", firstMemberOfStreak, countString);
 		}
-		return String.format("%d%c%d%s", firstMemberOfStreak, FlashCardsGame._RtArrow,
+		return String.format("%d%c%d%s", firstMemberOfStreak, FlashCardsGame._RtArrowChar,
 				lastMemberOfStreak, countString);
 	}
 
