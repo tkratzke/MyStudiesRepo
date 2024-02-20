@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 class Card {
-	final private static int _MaxLenForPart = 40;
-
 	static class MyArrayList extends ArrayList<String> {
 		private static final long serialVersionUID = 1L;
 		int _maxLen;
@@ -20,7 +18,8 @@ class Card {
 				final int fieldLen = field.length();
 				if (fieldLen > 0) {
 					final int partLen = part.length();
-					if (partLen + (partLen > 0 ? 1 : 0) + fieldLen > _MaxLenForPart) {
+					if (partLen + (partLen > 0 ? 1 : 0) + fieldLen > //
+							FlashCardsGame._MaxLenForCardPart) {
 						if (partLen > 0) {
 							add(part);
 							maxLen = Math.max(maxLen, partLen);

@@ -35,7 +35,8 @@ public class FlashCardsGame {
 	final private static String _YesString = "Yes";
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
-	final private static int _LongLine = 100;
+	final static int _MaxLenForCardPart = 45;
+	final private static int _LongLine = 85;
 	final private static int _BlockSize = 10;
 
 	final private static String _HelpString = String.format(
@@ -220,88 +221,81 @@ public class FlashCardsGame {
 					final String rawField0 = rawFields[0];
 					final int cardNumber = stringToInt(rawField0);
 					if (cardNumber >= 0) {
-						if (nFields == 1) {
-							/**
-							 * A number and nothing else doesn't count for anything; even as a
-							 * terminator of the previous Card.
-							 */
-							continue;
-						}
-						/**
-						 * nextLine starts with a number and has at least one other field. Wrap up the
-						 * old entry.
-						 */
+						/** nextLine starts with a number; Wrap up the old entry. */
 						wrapUp(cardMap, aSide, bSide);
 						aSide = "";
 						bSide = "";
-						if (nFields >= 3) {
+						if (nFields < 2) {
+							continue;
+						} else if (nFields == 2) {
+							/**
+							 * nFields = 2 and there is a number field. If after the number field, there
+							 * are at least 2 tabs before the next field, this is b-side. Otherwise, it
+							 * is a-side.
+							 */
+							int nTabs = 0;
+							for (int k = nextLine.indexOf(rawField0) + rawField0.length();; ++k) {
+								final char c = nextLine.charAt(k);
+								if (!Character.isWhitespace(c)) {
+									break;
+								}
+								if (c == '\t') {
+									if (++nTabs == 2) {
+										bSide = augment(bSide, rawFields[1]);
+										break;
+									}
+								}
+							}
+							if (nTabs == 1) {
+								aSide = augment(aSide, rawFields[1]);
+							}
+						} else {
+							/** With 3 or more fields, the 2nd is aSide and the 3rd is bSide. */
 							aSide = augment(aSide, rawFields[1]);
 							bSide = augment(bSide, rawFields[2]);
 							continue;
 						}
-						/**
-						 * nFields must be 2, and there is a number field. If after the number field,
-						 * there are at least 2 tabs before the next field, this is b-side. Otherwise,
-						 * it is a-side.
-						 */
-						int nTabs = 0;
-						/** Count the tabs after field0 and before the next field. */
-						for (int k = nextLine.indexOf(rawField0) + rawField0.length();; ++k) {
-							final char c = nextLine.charAt(k);
-							if (!Character.isWhitespace(c)) {
-								break;
-							}
-							if (c == '\t') {
-								if (++nTabs == 2) {
-									break;
-								}
-							}
-						}
-						if (nTabs == 1) {
-							aSide = augment(aSide, rawFields[1]);
-						} else {
-							bSide = augment(bSide, rawFields[1]);
-						}
 					} else {
 						/**
-						 * A continuation line. If there's nothing to continue, we skip it.
-						 * Furthermore, nFields must be at least 2 because we demand a tab to get past
-						 * the vacant number field.
+						 * No number field and so it's a continuation line. If there's nothing to
+						 * continue, we skip it. Furthermore, nFields must be at least 2 because we
+						 * demand a tab to get past the vacant number field.
 						 */
-						if (aSide.length() > 0 || bSide.length() > 0 || nFields < 2) {
-							final String rawField1 = rawFields[1];
-							if (nFields >= 3) {
-								aSide = augment(aSide, rawField1);
-								bSide = augment(bSide, rawFields[2]);
-							} else {
-								/**
-								 * There is one field and it must be added to aSide or bSide. Count the
-								 * tabs from the beginning of the line to the first field.
-								 */
-								int nTabs = 0;
-								for (int k = 0;; ++k) {
-									final char c = nextLine.charAt(k);
-									if (!Character.isWhitespace(c)) {
+						if (aSide.length() == 0 && bSide.length() == 0) {
+							continue;
+						}
+						if (nFields < 2) {
+							continue;
+						}
+						final String rawField1 = rawFields[1];
+						if (nFields >= 3) {
+							aSide = augment(aSide, rawField1);
+							bSide = augment(bSide, rawFields[2]);
+						} else {
+							/**
+							 * There is one field and it must be added to aSide or bSide. Count the tabs
+							 * from the beginning of the line to the first field.
+							 */
+							int nTabs = 0;
+							for (int k = 0;; ++k) {
+								final char c = nextLine.charAt(k);
+								if (!Character.isWhitespace(c)) {
+									break;
+								}
+								if (c == '\t') {
+									if (++nTabs == 2) {
+										bSide = augment(bSide, rawField1);
 										break;
 									}
-									if (c == '\t') {
-										if (++nTabs == 2) {
-											break;
-										}
-									}
 								}
-								if (nTabs == 1) {
-									aSide = augment(aSide, rawField1);
-								} else {
-									bSide = augment(bSide, rawField1);
-								}
+							}
+							if (nTabs == 1) {
+								aSide = augment(aSide, rawField1);
 							}
 						}
 					}
 				}
 				wrapUp(cardMap, aSide, bSide);
-				aSide = "";
-				bSide = "";
 			} catch (final Exception e) {
 			}
 		} catch (final IOException e) {
@@ -796,8 +790,7 @@ public class FlashCardsGame {
 			final String clue = CleanWhiteSpace(_quizIsA_B ? card._fullASide : card._fullBSide);
 			final String answer = CleanWhiteSpace(
 					_quizIsA_B ? card._fullBSide : card._fullASide);
-			final String typeIPrompt0 = getTypeIPrompt(indexInCards);
-			final int len = typeIPrompt0.length() + 2 + clue.length() + 1 + 1 + answer.length();
+			final String typeIPrompt = getTypeIPrompt(indexInCards);
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
 				if (_needLineFeed) {
@@ -805,27 +798,41 @@ public class FlashCardsGame {
 				}
 				final int clueListSize = clueParts.size();
 				final boolean longQuestion;
+				final int len = typeIPrompt.length() + 2 + clue.length() + 2;
 				if (len >= _LongLine || clueListSize > 1) {
-					System.out.println(typeIPrompt0);
+					System.out.println(typeIPrompt);
 					System.out.print('\t');
 					for (int k = 0; k < clueListSize; ++k) {
 						System.out.print(clueParts.get(k));
-						System.out.println();
-						System.out.print('\t');
+						if (k < clueListSize - 1) {
+							System.out.println();
+							System.out.print('\t');
+						} else {
+							System.out.print(": ");
+						}
 					}
 					longQuestion = true;
 				} else {
-					System.out.print(typeIPrompt0 + "::" + clue + ": ");
+					System.out.print(typeIPrompt + "::" + clue + ": ");
 					longQuestion = false;
 				}
 				final InputString inputString = new InputString(sc);
 				final String response = inputString._inputString;
 				if (response.length() == 0) {
-					final String prompt = String.format("\t%c%s%c Get it right?", _RtArrowChar,
-							answer, _LtArrowChar);
-					final BooleanPair booleanPair = getYesNo(sc, prompt, true);
-					gotItRight = booleanPair._returnValue;
-					_needLineFeed = !booleanPair._lastLineWasBlank;
+					final ArrayList<String> answerParts = _quizIsA_B ? card._bParts : card._aParts;
+					String prompt = String.format("\t%c", _RtArrowChar);
+					final int nAnswerParts = answerParts.size();
+					for (int k = 0; k < nAnswerParts; ++k) {
+						prompt += answerParts.get(k);
+						if (k < nAnswerParts - 1) {
+							prompt += "\n\t";
+						} else {
+							prompt += String.format("%c Get it right?", _LtArrowChar);
+						}
+					}
+					final YesNoResponse yesNoResponse = new YesNoResponse(sc, prompt, true);
+					gotItRight = yesNoResponse._yesValue;
+					_needLineFeed = !yesNoResponse._lastLineWasBlank;
 					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 					continue;
 				}
@@ -857,18 +864,10 @@ public class FlashCardsGame {
 					}
 					System.out.print(diffString);
 					final String preface = longQuestion ? "\n\t" : " ";
-					if (gotItRight) {
-						final BooleanPair booleanPair = getYesNo(sc, preface + "Count as wrong?",
-								false);
-						gotItRight = !booleanPair._returnValue;
-						_needLineFeed = !booleanPair._lastLineWasBlank;
-					} else {
-						final BooleanPair booleanPair = getYesNo(sc, preface + "Count as right?",
-								false);
-						gotItRight = booleanPair._returnValue;
-						_needLineFeed = !booleanPair._lastLineWasBlank;
-					}
-					_needLineFeed = true;
+					final YesNoResponse yesNoResponse = new YesNoResponse(sc,
+							preface + "Count as right?", gotItRight);
+					gotItRight = yesNoResponse._yesValue;
+					_needLineFeed = !yesNoResponse._lastLineWasBlank;
 				} else {
 					_needLineFeed = longQuestion;
 				}
@@ -878,34 +877,30 @@ public class FlashCardsGame {
 		}
 	}
 
-	private static class BooleanPair {
-		final boolean _returnValue, _lastLineWasBlank;
+	private static class YesNoResponse {
+		private final boolean _yesValue, _lastLineWasBlank;
 
-		private BooleanPair(final boolean returnValue, final boolean lastLineWasBlank) {
-			_returnValue = returnValue;
+		private YesNoResponse(final Scanner sc, final String prompt,
+				final boolean defaultYesValue) {
+			final char otherChar = defaultYesValue ? _NoChar : _YesChar;
+			final String defaultString = defaultYesValue ? _YesString : _NoString;
+			final String otherString = defaultYesValue ? _NoString : _YesString;
+			System.out.printf("%s %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString, otherChar,
+					otherString);
+			final InputString inputString = new InputString(sc);
+			final String response = inputString._inputString;
+			final boolean lastLineWasBlank = inputString._lastLineWasBlank;
+			final boolean yesValue;
+			if (response.length() == 0) {
+				yesValue = defaultYesValue;
+			} else {
+				yesValue = Character.toUpperCase(response.charAt(0)) == otherChar
+						? !defaultYesValue
+						: defaultYesValue;
+			}
+			_yesValue = yesValue;
 			_lastLineWasBlank = lastLineWasBlank;
 		}
-
-	}
-	private static BooleanPair getYesNo(final Scanner sc, final String prompt,
-			final boolean defaultBoolean) {
-		final char otherChar = defaultBoolean ? _NoChar : _YesChar;
-		final String defaultString = defaultBoolean ? _YesString : _NoString;
-		final String otherString = defaultBoolean ? _NoString : _YesString;
-		System.out.printf("%s %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString, otherChar,
-				otherString);
-		final InputString inputString = new InputString(sc);
-		final String response = inputString._inputString;
-		final boolean lastLineWasBlank = inputString._lastLineWasBlank;
-		final boolean returnValue;
-		if (response.length() == 0) {
-			returnValue = defaultBoolean;
-		} else {
-			returnValue = Character.toUpperCase(response.charAt(0)) == otherChar
-					? !defaultBoolean
-					: defaultBoolean;
-		}
-		return new BooleanPair(returnValue, lastLineWasBlank);
 	}
 
 	static String CleanWhiteSpace(final String s) {

@@ -9,10 +9,10 @@ enum PropertyPlus {
 					+ "Positive #: Use that for the Seed\n" //
 					+ "Any Negative #: Use SuperRandom:"), //
 	N_TIMES_FOR_NEW_WORDS("Number.Of.Times.For.New.Words", "1", //
-			"Parameters for Generating Quiz:"), //
+			"Parameters for Generating Quizzes:"), //
 	PFR("Percentage.For.Recents", "75%", ""), //
-	FR("Failure.Rate", "10%", ""), //
 	DECAY("Type.Of.Decay", "LINEAR", ""), //
+	AMR("Allowable.Miss.Rate", "10%", "Determines if quizzes are\n\"passed\" or not"), //
 	QUIZ_TYPE("Quiz.Type.Is.A_to_B", "FALSE", "Types of Quizzes:\n" //
 			+ "\"Which Way to Quiz\" and\n" + //
 			"Ignore VnDiacritics or not:"), //

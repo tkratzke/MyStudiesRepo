@@ -10,7 +10,7 @@ public class QuizGenerator {
 	final private int _maxNRecentWords;
 	final private int _nRepeatsOfNew;
 	final private TypeOfDecay _typeOfDecay;
-	final private int _failureRateI;
+	final private int _allowableMissRateI;
 	final private int _percentageForRecentsI;
 
 	final private Random _r;
@@ -30,7 +30,8 @@ public class QuizGenerator {
 		}
 		_typeOfDecay = FlashCardsGame.PropertyPlusToTypeOfDecay(properties,
 				PropertyPlus.DECAY);
-		_failureRateI = FlashCardsGame.PropertyPlusToPercentI(properties, PropertyPlus.FR);
+		_allowableMissRateI = FlashCardsGame.PropertyPlusToPercentI(properties,
+				PropertyPlus.AMR);
 		_percentageForRecentsI = FlashCardsGame.PropertyPlusToPercentI(properties,
 				PropertyPlus.PFR);
 		_r = new Random();
@@ -51,7 +52,8 @@ public class QuizGenerator {
 		properties.put(PropertyPlus.N_RECENT_WORDS._realName,
 				Integer.toString(_maxNRecentWords));
 		properties.put(PropertyPlus.DECAY._realName, _typeOfDecay.name());
-		properties.put(PropertyPlus.FR._realName, Integer.toString(_failureRateI) + '%');
+		properties.put(PropertyPlus.AMR._realName,
+				Integer.toString(_allowableMissRateI) + '%');
 		properties.put(PropertyPlus.PFR._realName,
 				Integer.toString(_percentageForRecentsI) + '%');
 	}
@@ -288,7 +290,7 @@ public class QuizGenerator {
 			return new QuizPlusTransition(quizPlus, newQuizPlus,
 					TypeOfChange.PARAMETERS_CHANGED);
 		}
-		if (quizPlus.haveWon(_failureRateI)) {
+		if (quizPlus.haveWon(_allowableMissRateI)) {
 			final QuizPlus newQuizPlus;
 			final TypeOfChange typeOfChange;
 			if (!quizPlus._criticalQuizIndicesOnly) {
@@ -303,7 +305,7 @@ public class QuizGenerator {
 			}
 			return new QuizPlusTransition(quizPlus, newQuizPlus, typeOfChange);
 		}
-		if (quizPlus.haveLost(_failureRateI)) {
+		if (quizPlus.haveLost(_allowableMissRateI)) {
 			final QuizPlus newQuizPlus = new QuizPlus(quizPlus);
 			newQuizPlus.adjustQuizForLoss(_r);
 			return new QuizPlusTransition(quizPlus, newQuizPlus, TypeOfChange.LOSS);
@@ -314,7 +316,7 @@ public class QuizGenerator {
 	String getString() {
 		final String s = String.format(//
 				"TopIIC=%d #New/Recent Words=%d/%d Failure=%d%% Decay=%s", //
-				_topIndexInCards, _maxNNewWords, _maxNRecentWords, _failureRateI,
+				_topIndexInCards, _maxNNewWords, _maxNRecentWords, _allowableMissRateI,
 				_typeOfDecay.name());
 		return s;
 	}
