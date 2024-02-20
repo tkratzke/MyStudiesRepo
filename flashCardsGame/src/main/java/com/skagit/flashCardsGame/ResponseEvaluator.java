@@ -1,6 +1,5 @@
 package com.skagit.flashCardsGame;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ResponseEvaluator {
@@ -37,16 +36,7 @@ public class ResponseEvaluator {
 		if (_gotItRight) {
 			diffString += FlashCardsGame._HeavyCheckChar + " ";
 		}
-		diffString += FlashCardsGame._RtArrowChar;
-		final ArrayList<String> rawAnswerParts = quizIsAToB ? card._bParts : card._aParts;
-		final int nAnswerParts = rawAnswerParts.size();
-		for (int k = 0; k < nAnswerParts; ++k) {
-			if (k > 0) {
-				diffString += "\n\t";
-			}
-			diffString += rawAnswerParts.get(k);
-		}
-		diffString += "" + FlashCardsGame._LtArrowChar;
+		diffString += card.getStringFromParts(!quizIsAToB);
 
 		final int nSmaller = Math.min(nAnswerFields, nResponseFields);
 		for (int k = 0; k < nSmaller; ++k) {

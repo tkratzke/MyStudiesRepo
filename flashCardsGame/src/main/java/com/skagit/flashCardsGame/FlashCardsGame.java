@@ -788,8 +788,6 @@ public class FlashCardsGame {
 			final Card card = _cards[indexInCards];
 			final ArrayList<String> clueParts = _quizIsA_B ? card._aParts : card._bParts;
 			final String clue = CleanWhiteSpace(_quizIsA_B ? card._fullASide : card._fullBSide);
-			final String answer = CleanWhiteSpace(
-					_quizIsA_B ? card._fullBSide : card._fullASide);
 			final String typeIPrompt = getTypeIPrompt(indexInCards);
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
@@ -819,17 +817,8 @@ public class FlashCardsGame {
 				final InputString inputString = new InputString(sc);
 				final String response = inputString._inputString;
 				if (response.length() == 0) {
-					final ArrayList<String> answerParts = _quizIsA_B ? card._bParts : card._aParts;
-					String prompt = String.format("\t%c", _RtArrowChar);
-					final int nAnswerParts = answerParts.size();
-					for (int k = 0; k < nAnswerParts; ++k) {
-						prompt += answerParts.get(k);
-						if (k < nAnswerParts - 1) {
-							prompt += "\n\t";
-						} else {
-							prompt += String.format("%c Get it right?", _LtArrowChar);
-						}
-					}
+					String prompt = "\t" + card.getStringFromParts(!_quizIsA_B);
+					prompt += " Get it right?";
 					final YesNoResponse yesNoResponse = new YesNoResponse(sc, prompt, true);
 					gotItRight = yesNoResponse._yesValue;
 					_needLineFeed = !yesNoResponse._lastLineWasBlank;

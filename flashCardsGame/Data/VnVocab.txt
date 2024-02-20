@@ -27,8 +27,12 @@
  13	quyển                                      	class'f'r/books and volumes (cannot stand
    	                                           	alone)
 
- 14	ly                                         	class'f'r/cups and glasses (can stand alone)
- 15	cốc                                        	class'f'r/cups and glasses (can stand alone)
+ 14	ly                                         	class'f'r/cups and glasses(c...) (can stand
+   	                                           	alone)
+
+ 15	cốc                                        	class'f'r/cups and glasses(l...) (can stand
+   	                                           	alone)
+
  16	bát                                        	class'f'r/bowls (can stand alone)
 
  17	bức                                        	class'f'r/narrow rect'g'lar things (can stand

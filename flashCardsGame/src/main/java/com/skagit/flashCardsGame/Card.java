@@ -53,10 +53,6 @@ class Card {
 		_bParts = new MyArrayList(bSide);
 	}
 
-	int getMaxBSide() {
-		return _bParts._maxLen;
-	}
-
 	private static int NullCompare(final Card card0, final Card card1) {
 		if ((card0 == null) != (card1 == null)) {
 			return card0 == null ? -1 : 1;
@@ -134,6 +130,21 @@ class Card {
 
 	String getString() {
 		return String.format("%04d.\t%s:\t%s", _cardNumber, _fullASide, _fullBSide);
+	}
+
+	String getStringFromParts(final boolean aSide) {
+		final ArrayList<String> parts = aSide ? _aParts : _bParts;
+		final int nParts = parts.size();
+		String s = "" + FlashCardsGame._RtArrowChar;
+		for (int k = 0; k < nParts; ++k) {
+			s += parts.get(k);
+			if (k < nParts - 1) {
+				s += "\n\t";
+			} else {
+				s += "" + FlashCardsGame._LtArrowChar;
+			}
+		}
+		return s;
 	}
 
 	@Override
