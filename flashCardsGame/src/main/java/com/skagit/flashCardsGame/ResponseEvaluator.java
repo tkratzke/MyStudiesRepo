@@ -22,7 +22,7 @@ public class ResponseEvaluator {
 		 * _diffString with the answer plus one difference.
 		 */
 		if (ignoreVnDiacritics) {
-			_gotItRight = equalsIgnoreCaseAndPunct(false, rawAnswer, rawResponse);
+			_gotItRight = equalsIgnoreCaseAndPunct(true, rawAnswer, rawResponse);
 		} else {
 			_gotItRight = false;
 		}
@@ -44,8 +44,13 @@ public class ResponseEvaluator {
 			final String responseField = rawResponseFields[k];
 			final boolean thisIsTheOne;
 			if (_gotItRight) {
+				/** Got it right, so ANY diff is interesting; do NOT ignore VN Diacritics. */
 				thisIsTheOne = !equalsIgnoreCaseAndPunct(false, answerField, responseField);
 			} else {
+				/**
+				 * Got it wrong, so some diff with the prescribed ignoring of VN diacritics
+				 * exists.
+				 */
 				thisIsTheOne = !equalsIgnoreCaseAndPunct(ignoreVnDiacritics, answerField,
 						responseField);
 			}
@@ -67,7 +72,7 @@ public class ResponseEvaluator {
 			final String s0, final String s1) {
 		final String s0a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(s0));
 		final String s1a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(s1));
-		if (ignoreVnDiacritics) {
+		if (!ignoreVnDiacritics) {
 			return s0a.equalsIgnoreCase(s1a);
 		}
 		final String s0b = FlashCardsGame.StripVNDiacritics(s0a);
