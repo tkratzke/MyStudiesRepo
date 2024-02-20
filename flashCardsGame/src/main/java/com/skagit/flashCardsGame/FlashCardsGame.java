@@ -35,7 +35,7 @@ public class FlashCardsGame {
 	final private static String _YesString = "Yes";
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
-	final static int _MaxLenForCardPart = 45;
+	final static int _MaxLenForCardPart = 40;
 	final private static int _LongLine = 85;
 	final private static int _BlockSize = 10;
 
@@ -393,14 +393,18 @@ public class FlashCardsGame {
 	private void reWriteCardsFile() {
 		final int nCards = _cards.length;
 		final int nDigits = (int) (Math.log10(nCards) + 1d);
-		final String cardNumberFormat = String.format("%%%dd", nDigits);
-		int maxASideLen = 0;
-		for (final Card card : _cards) {
-			maxASideLen = Math.max(maxASideLen, card._aParts._maxLen);
-		}
-		final String aPartFormat = String.format("%%-%ds", maxASideLen);
-		final String blankNumberFormat = String.format("%%-%ds", nDigits);
+		final String realNumberFormat = String.format("%%%dd.", nDigits);
+		final String blankNumberFormat = String.format("%%-%ds ", nDigits);
 		final String blankNumberString = String.format(blankNumberFormat, "");
+		final String aPartFormat;
+		{
+			int max = 0;
+			for (final Card card : _cards) {
+				max = Math.max(max, card._aParts._maxLen);
+			}
+			aPartFormat = String.format("%%-%ds", max);
+		}
+
 		final File cardsFile = getCardsFile();
 		try (PrintWriter pw = new PrintWriter(cardsFile)) {
 			boolean recentWasMultiLine = false;
@@ -420,7 +424,7 @@ public class FlashCardsGame {
 				for (int k1 = 0; k1 < nParts; ++k1) {
 					final String aPart = k1 < nAParts ? aParts.get(k1) : "";
 					if (k1 == 0) {
-						pw.printf(cardNumberFormat, card._cardNumber);
+						pw.printf(realNumberFormat, card._cardNumber);
 					} else {
 						pw.print(blankNumberString);
 					}
