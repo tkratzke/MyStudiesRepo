@@ -24,7 +24,7 @@ public class FlashCardsGame {
 	final static char _RtArrowChar = '\u2192';
 	final static char _EmptySetChar = '\u2205';
 	final static char _HeavyCheckChar = '\u2714';
-	final static char _TabChar = '\u2409';
+	final static char _TabSymbolChar = '\u2409';
 
 	final private static char _ReturnChar = '\u23CE';
 	final private static char _QuitChar = '!';
@@ -35,14 +35,14 @@ public class FlashCardsGame {
 	final private static String _YesString = "Yes";
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
-	final static int _MaxLenForCardPart = 40;
+	final static int _MaxLenForCardPart = 25;
 	final private static int _LongLine = 85;
 	final private static int _BlockSize = 10;
 
 	final private static String _HelpString = String.format(
 			"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %s=Next Line is Continuation",
 			_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartChar,
-			"" + _TabChar + _ReturnChar);
+			"" + _TabSymbolChar + _ReturnChar);
 
 	/**
 	 * <pre>
@@ -92,7 +92,7 @@ public class FlashCardsGame {
 	}
 
 	/** Either of the following two FieldSeparators seems to work. */
-	final private static String _FieldSeparator = "\\s*\\t\\s*";
+	final static String _FieldSeparator = "\\s*\\t\\s*";
 	@SuppressWarnings("unused")
 	final private static String _FieldSeparator1 = "(\s*\t\s*)+";
 	final private static String _PropertiesEnding = ".properties";
@@ -201,98 +201,18 @@ public class FlashCardsGame {
 				}
 			}
 
-			String aSide = "";
-			String bSide = "";
+			String aSide = null;
+			String bSide = null;
 			try (final Scanner fileSc = new Scanner(in)) {
 				while (fileSc.hasNext()) {
-					final String nextLine = fileSc.nextLine().stripTrailing();
-					final String[] rawFields = nextLine.split(_FieldSeparator);
-					final int nFields = rawFields.length;
-					boolean haveSomething = false;
-					for (int k = 0; k < nFields; ++k) {
-						if (!KillPunct(rawFields[k]).isBlank()) {
-							haveSomething = true;
-							break;
-						}
-					}
-					if (!haveSomething) {
-						continue;
-					}
-					final String rawField0 = rawFields[0];
-					final int cardNumber = stringToInt(rawField0);
-					if (cardNumber >= 0) {
-						/** nextLine starts with a number; Wrap up the old entry. */
+					final LineBreakDown lbd = new LineBreakDown(fileSc.nextLine());
+					if (!lbd._isContinuation || aSide == null || bSide == null) {
 						wrapUp(cardMap, aSide, bSide);
-						aSide = "";
-						bSide = "";
-						if (nFields < 2) {
-							continue;
-						} else if (nFields == 2) {
-							/**
-							 * nFields = 2 and there is a number field. If after the number field, there
-							 * are at least 2 tabs before the next field, this is b-side. Otherwise, it
-							 * is a-side.
-							 */
-							int nTabs = 0;
-							for (int k = nextLine.indexOf(rawField0) + rawField0.length();; ++k) {
-								final char c = nextLine.charAt(k);
-								if (!Character.isWhitespace(c)) {
-									break;
-								}
-								if (c == '\t') {
-									if (++nTabs == 2) {
-										bSide = augment(bSide, rawFields[1]);
-										break;
-									}
-								}
-							}
-							if (nTabs == 1) {
-								aSide = augment(aSide, rawFields[1]);
-							}
-						} else {
-							/** With 3 or more fields, the 2nd is aSide and the 3rd is bSide. */
-							aSide = augment(aSide, rawFields[1]);
-							bSide = augment(bSide, rawFields[2]);
-							continue;
-						}
+						aSide = CleanWhiteSpace(lbd._aSide);
+						bSide = CleanWhiteSpace(lbd._bSide);
 					} else {
-						/**
-						 * No number field and so it's a continuation line. If there's nothing to
-						 * continue, we skip it. Furthermore, nFields must be at least 2 because we
-						 * demand a tab to get past the vacant number field.
-						 */
-						if (aSide.length() == 0 && bSide.length() == 0) {
-							continue;
-						}
-						if (nFields < 2) {
-							continue;
-						}
-						final String rawField1 = rawFields[1];
-						if (nFields >= 3) {
-							aSide = augment(aSide, rawField1);
-							bSide = augment(bSide, rawFields[2]);
-						} else {
-							/**
-							 * There is one field and it must be added to aSide or bSide. Count the tabs
-							 * from the beginning of the line to the first field.
-							 */
-							int nTabs = 0;
-							for (int k = 0;; ++k) {
-								final char c = nextLine.charAt(k);
-								if (!Character.isWhitespace(c)) {
-									break;
-								}
-								if (c == '\t') {
-									if (++nTabs == 2) {
-										bSide = augment(bSide, rawField1);
-										break;
-									}
-								}
-							}
-							if (nTabs == 1) {
-								aSide = augment(aSide, rawField1);
-							}
-						}
+						aSide = CleanWhiteSpace(aSide + " " + lbd._aSide);
+						bSide = CleanWhiteSpace(bSide + " " + lbd._bSide);
 					}
 				}
 				wrapUp(cardMap, aSide, bSide);
@@ -303,32 +223,11 @@ public class FlashCardsGame {
 		return cardMap;
 	}
 
-	private static String augment(final String oldS, final String newS) {
-		return CleanWhiteSpace(oldS + (oldS.length() > 0 ? " " : "") + newS);
-	}
-
 	private static void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
 			final String bSide) {
-		if (aSide.length() > 0 && bSide.length() > 0) {
+		if (aSide != null && bSide != null && aSide.length() > 0 && bSide.length() > 0) {
 			final Card card = new Card(cardMap.size(), aSide, bSide);
 			cardMap.put(card, card);
-		}
-	}
-
-	static private int stringToInt(String s) {
-		int len = s == null ? 0 : s.length();
-		if (len == 0) {
-			return -1;
-		}
-		s = s.trim();
-		len = s.length();
-		if (s.charAt(len - 1) == '.') {
-			s = s.substring(0, len - 1);
-		}
-		try {
-			return Integer.parseInt(s);
-		} catch (final NumberFormatException e) {
-			return -1;
 		}
 	}
 

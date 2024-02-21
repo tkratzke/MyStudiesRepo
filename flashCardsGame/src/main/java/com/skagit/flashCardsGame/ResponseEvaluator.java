@@ -27,10 +27,10 @@ public class ResponseEvaluator {
 			_gotItRight = false;
 		}
 
-		final String[] rawAnswerFields = rawAnswer.split(FlashCardsGame._WhiteSpace);
-		final String[] rawResponseFields = rawResponse.split(FlashCardsGame._WhiteSpace);
-		final int nAnswerFields = rawAnswerFields.length;
-		final int nResponseFields = rawResponseFields.length;
+		final String[] answerFields = rawAnswer.split(FlashCardsGame._WhiteSpace);
+		final String[] responseFields = rawResponse.split(FlashCardsGame._WhiteSpace);
+		final int nAnswerFields = answerFields.length;
+		final int nResponseFields = responseFields.length;
 
 		String diffString = "";
 		if (_gotItRight) {
@@ -40,31 +40,30 @@ public class ResponseEvaluator {
 
 		final int nSmaller = Math.min(nAnswerFields, nResponseFields);
 		for (int k = 0; k < nSmaller; ++k) {
-			final String answerField = rawAnswerFields[k];
-			final String responseField = rawResponseFields[k];
+			final String answerField = answerFields[k];
+			final String responseField = responseFields[k];
 			final boolean thisIsTheOne;
 			if (_gotItRight) {
-				/** Got it right, so ANY diff is interesting; do NOT ignore VN Diacritics. */
+				/** Got it right; ANY diff is interesting; do NOT ignore VN Diacritics. */
 				thisIsTheOne = !equalsIgnoreCaseAndPunct(false, answerField, responseField);
 			} else {
 				/**
-				 * Got it wrong, so some diff with the prescribed ignoring of VN diacritics
-				 * exists.
+				 * Got it wrong; some diff with the prescribed ignoring of VN diacritics exists.
 				 */
 				thisIsTheOne = !equalsIgnoreCaseAndPunct(ignoreVnDiacritics, answerField,
 						responseField);
 			}
 			if (thisIsTheOne) {
-				_diffString = diffString + String.format(" (%s/%s)", answerField, responseField);
+				_diffString = String.format("%s (%s/%s)", diffString, answerField, responseField);
 				return;
 			}
 		}
 		if (nAnswerFields < nResponseFields) {
-			_diffString = diffString
-					+ String.format(" (null/%s)", rawResponseFields[nAnswerFields]);
+			_diffString = String.format("%s (null/%s)", diffString,
+					responseFields[nAnswerFields]);
 		} else {
-			_diffString = diffString
-					+ String.format(" (%s/null)", rawAnswerFields[nResponseFields]);
+			_diffString = String.format("%s (%s/null)", diffString,
+					answerFields[nResponseFields]);
 		}
 	}
 
