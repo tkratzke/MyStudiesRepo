@@ -33,7 +33,8 @@ public class LineBreakDown {
 		/** If field0 is a number, we will skip over it when looking for data fields. */
 		int cardNumber = -1;
 		try {
-			cardNumber = Integer.parseInt(FlashCardsGame.CleanWhiteSpace(field0));
+			cardNumber = Integer
+					.parseInt(FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(field0)));
 		} catch (final NumberFormatException e) {
 		}
 

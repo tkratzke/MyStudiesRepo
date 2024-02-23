@@ -18,10 +18,15 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import com.skagit.flashCardsGame.enums.ChangeType;
+import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
+import com.skagit.flashCardsGame.enums.PropertyPlus;
+import com.skagit.flashCardsGame.enums.QuizDirection;
+
 public class FlashCardsGame {
 
 	final static char _LtArrowChar = '\u2190';
-	final static char _RtArrowChar = '\u2192';
+	public final static char _RtArrowChar = '\u2192';
 	final static char _EmptySetChar = '\u2205';
 	final static char _HeavyCheckChar = '\u2714';
 	final static char _TabSymbolChar = '\u2409';
@@ -35,12 +40,13 @@ public class FlashCardsGame {
 	final private static String _YesString = "Yes";
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
-	final static int _MaxLenForCardPart = 25;
+	final private static int _MaxLenForCardPart = 25;
+	final private static int _MaxLenForQuizQuestion = 35;
 	final private static int _LongLine = 85;
 	final private static int _BlockSize = 10;
 
 	final private static String _HelpString = String.format(
-			"%c=\"Honor Mode,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %s=Next Line is Continuation",
+			"%c=\"Show-and-ask,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %s=Next Line is Continuation",
 			_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartChar,
 			"" + _TabSymbolChar + _ReturnChar);
 
@@ -94,14 +100,17 @@ public class FlashCardsGame {
 	/** Either of the following two FieldSeparators seems to work. */
 	final static String _FieldSeparator = "\\s*\\t\\s*";
 	@SuppressWarnings("unused")
-	final private static String _FieldSeparator1 = "(\s*\t\s*)+";
+	final private static String _FieldSeparator1 = "(\\s*\\t\\s*)+";
 	final private static String _PropertiesEnding = ".properties";
-	final static String _WhiteSpace = "\s+";
+	final static String _WhiteSpace = "\\s+";
 
 	final private File _propertiesFile;
 	final private Properties _properties;
-	final private long _seed;
-	final private boolean _quizIsA_B, _ignoreVnDiacritics;
+
+	final private long _randomSeed;
+	final private QuizDirection _quizDirection;
+	final private DiacriticsTreatment _diacriticsTreatment;
+
 	final private Card[] _cards;
 	final private QuizGenerator _quizGenerator;
 	private QuizPlus _quizPlus;
@@ -129,18 +138,19 @@ public class FlashCardsGame {
 			final int nPropertyPluses = PropertyPlus._Values.length;
 			for (int k = 0; k < nPropertyPluses; ++k) {
 				final PropertyPlus propertyPlus = PropertyPlus._Values[k];
-				final String key = propertyPlus._realName;
-				final Object o = properties.get(key);
-				_properties.put(key, o == null ? propertyPlus._defaultStringValue : o);
+				final String key = propertyPlus._propertyName;
+				final String validatedString = propertyPlus.getValidString(properties.get(key));
+				_properties.put(key, validatedString);
 			}
 		} catch (final IOException e) {
 		}
-
-		_quizIsA_B = PropertyPlusToBoolean(_properties, PropertyPlus.QUIZ_TYPE);
-		_ignoreVnDiacritics = PropertyPlusToBoolean(_properties,
-				PropertyPlus.IGNORE_VN_DIACRITICS);
-		_seed = PropertyPlusToLong(_properties, PropertyPlus.SEED);
 		reWritePropertiesFile();
+
+		final String typableString = PropertyPlus.QUIZ_DIRECTION.getValidString(_properties);
+		_quizDirection = QuizDirection.get(typableString);
+		_diacriticsTreatment = DiacriticsTreatment
+				.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
+		_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		final TreeMap<Card, Card> cardMap = loadCardMap();
 		final int nCards = cardMap.size();
 		_cards = cardMap.keySet().toArray(new Card[nCards]);
@@ -155,7 +165,7 @@ public class FlashCardsGame {
 			}
 			System.out.println(String.format("nADups=%d nBDups = %d.", nADups, nBDups));
 		}
-		_quizGenerator = new QuizGenerator(_properties, _cards.length, _seed);
+		_quizGenerator = new QuizGenerator(_properties, _cards.length, _randomSeed);
 		shuffleCards(_cards);
 		_quizPlus = null;
 	}
@@ -193,8 +203,8 @@ public class FlashCardsGame {
 				 */
 				in.mark(1);
 				/**
-				 * If the first character is NOT_HONOR_MODE feff, go back to the beginning of the
-				 * file. If it IS feff, ignore it and continue on.
+				 * If the first character is NOT feff, go back to the beginning of the file. If it
+				 * IS feff, ignore it and continue on.
 				 */
 				if (in.read() != 0xFEFF) {
 					in.reset();
@@ -239,11 +249,15 @@ public class FlashCardsGame {
 			final Comparator<Card> comparator;
 			final String sideBeingChecked;
 			if (iPass == 1) {
-				comparator = _quizIsA_B ? Card._ByASideOnly : Card._ByBSideOnly;
-				sideBeingChecked = _quizIsA_B ? "A-Side" : "B-Side";
+				comparator = _quizDirection == QuizDirection.A_TO_B
+						? Card._ByASideOnly
+						: Card._ByBSideOnly;
+				sideBeingChecked = _quizDirection == QuizDirection.A_TO_B ? "A-Side" : "B-Side";
 			} else {
-				comparator = _quizIsA_B ? Card._ByBSideOnly : Card._ByASideOnly;
-				sideBeingChecked = _quizIsA_B ? "B-Side" : "A-Side";
+				comparator = _quizDirection == QuizDirection.A_TO_B
+						? Card._ByBSideOnly
+						: Card._ByASideOnly;
+				sideBeingChecked = _quizDirection == QuizDirection.A_TO_B ? "B-Side" : "A-Side";
 			}
 			final TreeMap<Card, ArrayList<Card>> kingToSlaves = new TreeMap<>(comparator);
 			for (int k = 0; k < nCards; ++k) {
@@ -299,7 +313,9 @@ public class FlashCardsGame {
 		{
 			int max = 0;
 			for (final Card card : _cards) {
-				max = Math.max(max, card._aParts._maxLen);
+				final Card.CardParts aParts = card.new CardParts(/* a= */true,
+						_MaxLenForCardPart);
+				max = Math.max(max, aParts._maxLen);
 			}
 			aPartFormat = String.format("%%-%ds", max);
 		}
@@ -309,8 +325,8 @@ public class FlashCardsGame {
 			boolean recentWasMultiLine = false;
 			for (int k0 = 0, nPrinted = 0; k0 < nCards; ++k0) {
 				final Card card = _cards[k0];
-				final ArrayList<String> aParts = card._aParts;
-				final ArrayList<String> bParts = card._bParts;
+				final Card.CardParts aParts = card.new CardParts(true, _MaxLenForCardPart);
+				final Card.CardParts bParts = card.new CardParts(false, _MaxLenForCardPart);
 				final int nAParts = aParts.size();
 				final int nBParts = bParts.size();
 				final int nParts = Math.max(nAParts, nBParts);
@@ -342,25 +358,29 @@ public class FlashCardsGame {
 	}
 
 	void updateProperties() {
-		_properties.put(PropertyPlus.SEED._realName, Long.toString(_seed));
-		_properties.put(PropertyPlus.QUIZ_TYPE._realName, Boolean.toString(_quizIsA_B));
-		_properties.put(PropertyPlus.IGNORE_VN_DIACRITICS._realName,
-				Boolean.toString(_ignoreVnDiacritics));
+		_properties.put(PropertyPlus.RANDOM_SEED._propertyName, Long.toString(_randomSeed));
+		_properties.put(PropertyPlus.QUIZ_DIRECTION._propertyName, _quizDirection._typableString);
+		_properties.put(PropertyPlus.DIACRITICS_TREATMENT._propertyName,
+				_diacriticsTreatment.name());
 		_quizGenerator.updateProperties(_properties);
 	}
 
 	void reWritePropertiesFile() {
 		final Properties properties;
-		final long seed = PropertyPlusToLong(_properties, PropertyPlus.SEED); //
+		final long seed = Long
+				.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		if (seed < 0) {
 			properties = (Properties) _properties.clone();
-			final int topIndexInCards0 = PropertyPlusToInt(properties, PropertyPlus.TCI);
-			final int maxNNewWords = PropertyPlusToInt(properties, PropertyPlus.N_NEW_WORDS);
-			final int maxNRecentWords = PropertyPlusToInt(properties,
-					PropertyPlus.N_RECENT_WORDS);
+			final int topIndexInCards0 = Integer
+					.parseInt(PropertyPlus.TOP_CARD_INDEX.getValidString(_properties));
+			final int maxNNewWords = Integer
+					.parseInt(PropertyPlus.NUMBER_OF_NEW_WORDS.getValidString(_properties));
+			final int maxNRecentWords = Integer
+					.parseInt(PropertyPlus.NUMBER_OF_RECENT_WORDS.getValidString(_properties));
 			final int topIndexInCards1 = Math.min(topIndexInCards0,
 					maxNNewWords + maxNRecentWords - 1);
-			properties.put(PropertyPlus.TCI._realName, Long.toString(topIndexInCards1));
+			properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName,
+					Long.toString(topIndexInCards1));
 		} else {
 			properties = _properties;
 		}
@@ -380,7 +400,7 @@ public class FlashCardsGame {
 						pw.println();
 					}
 				}
-				final String realPropertyName = propertyPlus._realName;
+				final String realPropertyName = propertyPlus._propertyName;
 				pw.printf("%s=%s", realPropertyName, properties.get(realPropertyName));
 				pw.println();
 			}
@@ -389,12 +409,12 @@ public class FlashCardsGame {
 	}
 
 	private void shuffleCards(final Card[] cards) {
-		if (_seed == 0) {
+		if (_randomSeed == 0) {
 			return;
 		}
 		final Random r = new Random();
-		if (_seed > 0) {
-			r.setSeed(_seed);
+		if (_randomSeed > 0) {
+			r.setSeed(_randomSeed);
 		}
 		while (Math.abs(r.nextLong()) < Long.MAX_VALUE / 5) {
 		}
@@ -489,142 +509,20 @@ public class FlashCardsGame {
 	final long[] storeValues() {
 		final long[] core = new long[]{};
 		final long[] others = _quizGenerator.getPropertyValues();
-		final int nCore = core.length, nOthers = others.length;
+		final int nCore = core.length;
+		final int nOthers = others.length;
 		final long[] array = new long[nCore + nOthers];
 		System.arraycopy(core, 0, array, 0, nCore);
 		System.arraycopy(others, 0, array, nCore, nOthers);
 		return array;
 	}
 
-	private static String PropertyPlusToString(final Properties properties,
-			final PropertyPlus propertyPlus) {
-		return CleanWhiteSpace((String) properties.get(propertyPlus._realName));
-	}
-
-	static int PropertyPlusToInt(final Properties properties,
-			final PropertyPlus propertyPlus) {
-		final String s = PropertyPlusToString(properties, propertyPlus);
-		final String[] fields = s.split(_WhiteSpace);
-		final int defaultValue = Integer.parseInt(propertyPlus._defaultStringValue);
-		return fieldsToInt(fields, defaultValue);
-	}
-
-	static long PropertyPlusToLong(final Properties properties,
-			final PropertyPlus propertyPlus) {
-		final String s = PropertyPlusToString(properties, propertyPlus);
-		final String[] fields = s.split(_WhiteSpace);
-		final long defaultValue = Long.parseLong(propertyPlus._defaultStringValue);
-		return fieldsToLong(fields, defaultValue);
-	}
-
-	static boolean PropertyPlusToBoolean(final Properties properties,
-			final PropertyPlus propertyPlus) {
-		final String s = PropertyPlusToString(properties, propertyPlus);
-		final String[] fields = s.split(_WhiteSpace);
-		final String dsv = propertyPlus._defaultStringValue;
-		final char char0 = (dsv == null || dsv.length() == 0)
-				? 'F'
-				: Character.toUpperCase(dsv.charAt(0));
-		final boolean defaultValue = char0 == 'T' || char0 == 'Y';
-		return fieldsToBoolean(fields, defaultValue);
-	}
-
-	static TypeOfDecay PropertyPlusToTypeOfDecay(final Properties properties,
-			final PropertyPlus propertyPlus) {
-		final String s = PropertyPlusToString(properties, propertyPlus);
-		final String[] fields = s.split(_WhiteSpace);
-		final TypeOfDecay defaultValue = TypeOfDecay
-				.valueOf(propertyPlus._defaultStringValue);
-		return fieldsToTypeOfDecay(fields, defaultValue);
-	}
-
-	static int PropertyPlusToPercentI(final Properties properties,
-			final PropertyPlus propertyPlus) {
-		final String s = PropertyPlusToString(properties, propertyPlus);
-		final String[] fields = s.split(_WhiteSpace);
-		final String defaultStringValue = propertyPlus._defaultStringValue;
-		final int defaultValue = Integer
-				.parseInt(defaultStringValue.substring(0, defaultStringValue.length() - 1));
-		return fieldsToPercentI(fields, defaultValue);
-	}
-
-	static int fieldsToInt(final String[] fields, final int defaultValue) {
-		for (final String field : fields) {
-			try {
-				return Integer.parseInt(field);
-			} catch (final NumberFormatException e) {
-			}
-		}
-		return defaultValue;
-	}
-
-	static long fieldsToLong(final String[] fields, final long defaultValue) {
-		for (final String field : fields) {
-			try {
-				return Long.parseLong(field);
-			} catch (final NumberFormatException e) {
-			}
-		}
-		return defaultValue;
-	}
-
-	static boolean fieldsToBoolean(final String[] fields, final boolean defaultValue) {
-		for (final String field : fields) {
-			if (field == null || field.length() == 0) {
-				continue;
-			}
-			final char field0 = field.toUpperCase().charAt(0);
-			if (field0 == 'Y' || field0 == 'T') {
-				return true;
-			}
-			if (field0 == 'N' || field0 == 'F') {
-				return false;
-			}
-			try {
-				return Boolean.parseBoolean(field);
-			} catch (final NumberFormatException e) {
-			}
-		}
-		return defaultValue;
-	}
-
-	static TypeOfDecay fieldsToTypeOfDecay(final String[] fields,
-			final TypeOfDecay defaultValue) {
-		for (final String field : fields) {
-			for (final TypeOfDecay typeOfDecay : TypeOfDecay._Values) {
-				if (field.equalsIgnoreCase(typeOfDecay.name())) {
-					return typeOfDecay;
-				}
-			}
-		}
-		return defaultValue;
-	}
-
-	static int fieldsToPercentI(final String[] fields, final int defaultValue) {
-		for (final String field : fields) {
-			final int len = field.length();
-			if (len < 2) {
-				continue;
-			}
-			if (field.charAt(len - 1) != '%') {
-				continue;
-			}
-			try {
-				return Integer.parseInt(field.substring(0, len - 1));
-			} catch (final NumberFormatException e) {
-			}
-		}
-		return defaultValue;
-	}
-
 	final String getString() {
-		return String.format("%s: %c%c%c%s RandomSeed[%d] \n%s", //
+		return String.format("%s: %s%s RandomSeed[%d] \n%s", //
 				getCoreFilePath(), //
-				_quizIsA_B ? 'A' : 'B', _RtArrowChar, _quizIsA_B ? 'B' : 'A', //
-				_ignoreVnDiacritics ? //
-						(" " + PropertyPlus.IGNORE_VN_DIACRITICS._comment) : //
-						"", //
-				_seed, _quizGenerator.getString());
+				_quizDirection._fancyString, //
+				" Diacritics: " + _diacriticsTreatment.name(), //
+				_randomSeed, _quizGenerator.getString());
 	}
 
 	@Override
@@ -632,19 +530,19 @@ public class FlashCardsGame {
 		return getString();
 	}
 
-	final static private EnumSet<TypeOfChange> _NewQuizSet = EnumSet.of(//
-			TypeOfChange.CRITICAL_ONLY_WIN, //
-			TypeOfChange.MOVE_ON_WIN, //
-			TypeOfChange.LOSS, //
-			TypeOfChange.NOTHING_TO_SOMETHING, //
-			TypeOfChange.PARAMETERS_CHANGED, //
-			TypeOfChange.RESTART//
+	final static private EnumSet<ChangeType> _NewQuizSet = EnumSet.of(//
+			ChangeType.CRITICAL_ONLY_WIN, //
+			ChangeType.MOVE_ON_WIN, //
+			ChangeType.LOSS, //
+			ChangeType.NOTHING_TO_SOMETHING, //
+			ChangeType.PARAMETERS_CHANGED, //
+			ChangeType.RESTART//
 	);
 
-	final static private EnumSet<TypeOfChange> _ReallyNewQuizSet = EnumSet.of(//
-			TypeOfChange.MOVE_ON_WIN, //
-			TypeOfChange.NOTHING_TO_SOMETHING, //
-			TypeOfChange.PARAMETERS_CHANGED //
+	final static private EnumSet<ChangeType> _ReallyNewQuizSet = EnumSet.of(//
+			ChangeType.MOVE_ON_WIN, //
+			ChangeType.NOTHING_TO_SOMETHING, //
+			ChangeType.PARAMETERS_CHANGED //
 	);
 
 	void mainLoop(final Scanner sc) {
@@ -660,13 +558,13 @@ public class FlashCardsGame {
 					restarted, _quizPlus);
 			_quizPlus = quizPlusTransition._newQuizPlus;
 			restarted = false;
-			final TypeOfChange typeOfChange = quizPlusTransition._typeOfChange;
-			if (_NewQuizSet.contains(typeOfChange)) {
+			final ChangeType changeType = quizPlusTransition._changeType;
+			if (_NewQuizSet.contains(changeType)) {
 				System.out.println();
 				if (_needLineFeed) {
 					System.out.println();
 				}
-				if (_ReallyNewQuizSet.contains(typeOfChange)) {
+				if (_ReallyNewQuizSet.contains(changeType)) {
 					/** For a really new one, add another lineFeed. */
 					System.out.println();
 					System.out.println(getString());
@@ -677,7 +575,7 @@ public class FlashCardsGame {
 				if (needHelpString) {
 					System.out.println(_HelpString);
 				}
-				System.out.print(typeOfChange._reasonForChangeString);
+				System.out.print(changeType._reasonForChangeString);
 				System.out.println(" " + quizPlusTransition._transitionString);
 				_needLineFeed = true;
 			}
@@ -687,25 +585,27 @@ public class FlashCardsGame {
 				oldValues = storeValues();
 			}
 
-			final int indexInCards = _quizPlus.getCurrentQuiz_IndexInCards();
-			final Card card = _cards[indexInCards];
-			final ArrayList<String> clueParts = _quizIsA_B ? card._aParts : card._bParts;
-			final String clue = CleanWhiteSpace(_quizIsA_B ? card._fullASide : card._fullBSide);
-			final String typeIPrompt = getTypeIPrompt(indexInCards);
+			final int iic = _quizPlus.getCurrentQuiz_IndexInCards();
+			final Card card = _cards[iic];
+			final Card.CardParts clueParts = card.new CardParts(
+					_quizDirection == QuizDirection.A_TO_B, _MaxLenForQuizQuestion);
+			final String clue = CleanWhiteSpace(
+					_quizDirection == QuizDirection.A_TO_B ? card._fullASide : card._fullBSide);
+			final String typeIPrompt = getTypeIPrompt(iic);
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
 				if (_needLineFeed) {
 					System.out.println();
 				}
-				final int clueListSize = clueParts.size();
+				final int nClueParts = clueParts.size();
 				final boolean longQuestion;
 				final int len = typeIPrompt.length() + 2 + clue.length() + 2;
-				if (len >= _LongLine || clueListSize > 1) {
+				if (len >= _LongLine || nClueParts > 1) {
 					System.out.println(typeIPrompt);
 					System.out.print('\t');
-					for (int k = 0; k < clueListSize; ++k) {
+					for (int k = 0; k < nClueParts; ++k) {
 						System.out.print(clueParts.get(k));
-						if (k < clueListSize - 1) {
+						if (k < nClueParts - 1) {
 							System.out.println();
 							System.out.print('\t');
 						} else {
@@ -720,7 +620,8 @@ public class FlashCardsGame {
 				final InputString inputString = new InputString(sc);
 				final String response = inputString._inputString;
 				if (response.length() == 0) {
-					String prompt = "\t" + card.getStringFromParts(!_quizIsA_B);
+					String prompt = "\t" + card.getBrokenUpString(
+							_quizDirection == QuizDirection.B_TO_A, _MaxLenForQuizQuestion);
 					prompt += " Get it right?";
 					final YesNoResponse yesNoResponse = new YesNoResponse(sc, prompt, true);
 					gotItRight = yesNoResponse._yesValue;
@@ -747,7 +648,7 @@ public class FlashCardsGame {
 					}
 				}
 				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc,
-						_ignoreVnDiacritics, card, _quizIsA_B, response);
+						_diacriticsTreatment, card, _quizDirection, response, _MaxLenForQuizQuestion);
 				final String diffString = responseEvaluator._diffString;
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffString != null) {

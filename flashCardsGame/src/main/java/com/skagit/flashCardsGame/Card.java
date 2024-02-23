@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 class Card {
-	static class MyArrayList extends ArrayList<String> {
+	class CardParts extends ArrayList<String> {
 		private static final long serialVersionUID = 1L;
 		int _maxLen;
-		MyArrayList(final String s) {
+		CardParts(final boolean useASide, final int maxLen0) {
 			super();
 			String part = "";
+			final String fullSide = useASide ? _fullASide : _fullBSide;
 			int maxLen = 0;
-			final String[] fields = s.split(FlashCardsGame._WhiteSpace);
+			final String[] fields = fullSide.split(FlashCardsGame._WhiteSpace);
 			final int nFields = fields.length;
 			for (int k = 0; k < nFields; ++k) {
 				final String field = fields[k];
 				final int fieldLen = field.length();
 				if (fieldLen > 0) {
 					final int partLen = part.length();
-					if (partLen + (partLen > 0 ? 1 : 0) + fieldLen > //
-							FlashCardsGame._MaxLenForCardPart) {
+					if (partLen + (partLen > 0 ? 1 : 0) + fieldLen > maxLen0) {
 						if (partLen > 0) {
 							add(part);
 							maxLen = Math.max(maxLen, partLen);
@@ -42,15 +42,11 @@ class Card {
 	int _cardNumber;
 	final String _fullASide;
 	final String _fullBSide;
-	final MyArrayList _aParts;
-	final MyArrayList _bParts;
 
 	Card(final int cardNumber, final String aSide, final String bSide) {
 		_cardNumber = cardNumber;
 		_fullASide = aSide;
 		_fullBSide = bSide;
-		_aParts = new MyArrayList(aSide);
-		_bParts = new MyArrayList(bSide);
 	}
 
 	private static int NullCompare(final Card card0, final Card card1) {
@@ -132,8 +128,8 @@ class Card {
 		return String.format("%04d.\t%s:\t%s", _cardNumber, _fullASide, _fullBSide);
 	}
 
-	String getStringFromParts(final boolean aSide) {
-		final ArrayList<String> parts = aSide ? _aParts : _bParts;
+	String getBrokenUpString(final boolean a, final int specMaxLen) {
+		final CardParts parts = new CardParts(a, specMaxLen);
 		final int nParts = parts.size();
 		String s = "" + FlashCardsGame._RtArrowChar;
 		for (int k = 0; k < nParts; ++k) {

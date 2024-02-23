@@ -1,8 +1,10 @@
 package com.skagit.flashCardsGame;
 
+import com.skagit.flashCardsGame.enums.ChangeType;
+
 class QuizPlusTransition {
 	final QuizPlus _newQuizPlus;
-	final TypeOfChange _typeOfChange;
+	final ChangeType _changeType;
 	final String _transitionString;
 
 	/**
@@ -10,9 +12,9 @@ class QuizPlusTransition {
 	 * doing so, along with two Strings that are useful for printouts.
 	 */
 	QuizPlusTransition(final QuizPlus quizPlus, final QuizPlus newQuizPlus,
-			final TypeOfChange typeOfChange) {
+			final ChangeType changeType) {
 		_newQuizPlus = newQuizPlus;
-		_typeOfChange = typeOfChange;
+		_changeType = changeType;
 		final String oldSummaryString;
 		if (quizPlus == null) {
 			oldSummaryString = String.format("{%c|%c}", FlashCardsGame._EmptySetChar,
@@ -21,8 +23,8 @@ class QuizPlusTransition {
 			oldSummaryString = quizPlus.getSummaryString();
 		}
 		final String newSummaryString = _newQuizPlus.getSummaryString();
-		_transitionString = String.format("%s%c%s", oldSummaryString, FlashCardsGame._RtArrowChar,
-				newSummaryString);
+		_transitionString = String.format("%s%c%s", oldSummaryString,
+				FlashCardsGame._RtArrowChar, newSummaryString);
 	}
 
 }

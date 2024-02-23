@@ -27,12 +27,19 @@
 
  11.	này                                     	this
  12.	cái                                     	class'f'r/inanimate objects
+
  13.	quyển                                   	class'f'r/books and volumes
+
  14.	ly                                      	class'f'r/cups and glasses(c...)
+
  15.	cốc                                     	class'f'r/cups and glasses(l...)
+
  16.	bát                                     	class'f'r/bowls
+
  17.	bức                                     	class'f'r/narrow rect'g'lar things
+
  18.	tờ                                      	class'f'r/paper-like things
+
  19.	đều                                     	all or both
  20.	cô ấy                                   	she or her
 
