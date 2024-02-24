@@ -32,22 +32,32 @@ public enum PropertyPlus {
 
 	final public String _propertyName;
 	final String _defaultStringValue;
+	final public String _indicatorString;
 	final public String _comment;
 	PropertyPlus(final String defaultStringValue, final String comment) {
-		final String enumName = name();
-		final StringBuilder sb = new StringBuilder(enumName);
-		final int len = enumName.length();
-		for (int k = 0; k < len; ++k) {
-			final char c = sb.charAt(k);
+		final String enumName0 = name();
+		final StringBuilder sb0 = new StringBuilder(enumName0);
+		final int len0 = enumName0.length();
+		for (int k = 0; k < len0; ++k) {
+			final char c = sb0.charAt(k);
 			if (c == '_') {
-				sb.setCharAt(k, '.');
-			} else if (k > 0 && sb.charAt(k - 1) != '.') {
-				sb.setCharAt(k, Character.toLowerCase(c));
+				sb0.setCharAt(k, '.');
+			} else if (k > 0 && sb0.charAt(k - 1) != '.') {
+				sb0.setCharAt(k, Character.toLowerCase(c));
 			} else {
-				sb.setCharAt(k, Character.toUpperCase(c));
+				sb0.setCharAt(k, Character.toUpperCase(c));
 			}
 		}
-		_propertyName = sb.toString();
+		_propertyName = sb0.toString();
+		final String enumName1 = enumName0.replaceAll("_FOR_", "_").replaceAll("_OF_", "_");
+		final int len1 = enumName1.length();
+		final StringBuilder sb1 = new StringBuilder();
+		for (int k = 0; k < len1; ++k) {
+			if (k == 0 || enumName1.charAt(k - 1) == '_') {
+				sb1.append(enumName1.charAt(k));
+			}
+		}
+		_indicatorString = sb1.toString();
 		_defaultStringValue = defaultStringValue;
 		_comment = comment;
 	}
@@ -129,4 +139,5 @@ public enum PropertyPlus {
 	public String getValidString(final Properties properties) {
 		return getValidString(properties.get(_propertyName));
 	}
+
 }

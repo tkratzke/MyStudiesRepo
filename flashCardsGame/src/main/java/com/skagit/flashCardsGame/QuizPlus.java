@@ -14,7 +14,7 @@ class QuizPlus implements Serializable {
 	final private int[] _fullQuiz;
 	final private int[] _origFullQuiz;
 	final private int[] _criticalIndicesInQuiz;
-	private int _currentIndexInQuiz;
+	private int _currentQuizIdx;
 	private int _nWrongs, _nRights;
 	boolean _criticalQuizIndicesOnly;
 	final private HashMap<Integer, NWrongsAndHits> _indexInCardsToNWrongsAndHits;
@@ -48,7 +48,7 @@ class QuizPlus implements Serializable {
 		_fullQuiz = quizPlus._fullQuiz.clone();
 		_origFullQuiz = quizPlus._origFullQuiz.clone();
 		_criticalIndicesInQuiz = quizPlus._criticalIndicesInQuiz.clone();
-		_currentIndexInQuiz = quizPlus._currentIndexInQuiz;
+		_currentQuizIdx = quizPlus._currentQuizIdx;
 		_nWrongs = quizPlus._nWrongs;
 		_nRights = quizPlus._nRights;
 		_firstWrongIndexInCards = quizPlus._firstWrongIndexInCards;
@@ -64,7 +64,7 @@ class QuizPlus implements Serializable {
 		_criticalQuizIndicesOnly = quizPlus._criticalQuizIndicesOnly;
 	}
 
-	int getCurrentQuiz_IndexInCards(final int k) {
+	int getCurrentQuiz_CardIndex(final int k) {
 		return _fullQuiz[_criticalQuizIndicesOnly ? _criticalIndicesInQuiz[k] : k];
 	}
 
@@ -72,8 +72,8 @@ class QuizPlus implements Serializable {
 		return _criticalQuizIndicesOnly ? _criticalIndicesInQuiz.length : _fullQuiz.length;
 	}
 
-	int getCurrentQuiz_IndexInCards() {
-		return getCurrentQuiz_IndexInCards(_currentIndexInQuiz);
+	int getCurrentQuiz_CardIndex() {
+		return getCurrentQuiz_CardIndex(_currentQuizIdx);
 	}
 
 	boolean isCriticalQuizIndex(final int currentQuizIndex) {
@@ -83,8 +83,8 @@ class QuizPlus implements Serializable {
 		return Arrays.binarySearch(_criticalIndicesInQuiz, currentQuizIndex) >= 0;
 	}
 
-	int getCurrentIndexInQuiz() {
-		return _currentIndexInQuiz;
+	int getCurrentIdxInQuiz() {
+		return _currentQuizIdx;
 	}
 
 	int getNRights() {
@@ -96,8 +96,8 @@ class QuizPlus implements Serializable {
 	}
 
 	void reactToRightResponse(final boolean wasWrongAtLeastOnce) {
-		if (isCriticalQuizIndex(_currentIndexInQuiz)) {
-			final int indexInCards = getCurrentQuiz_IndexInCards(_currentIndexInQuiz);
+		if (isCriticalQuizIndex(_currentQuizIdx)) {
+			final int indexInCards = getCurrentQuiz_CardIndex(_currentQuizIdx);
 			final NWrongsAndHits nWrongsAndHits = _indexInCardsToNWrongsAndHits
 					.get(indexInCards);
 			++nWrongsAndHits._nHits;
@@ -111,7 +111,7 @@ class QuizPlus implements Serializable {
 				++_nRights;
 			}
 		}
-		++_currentIndexInQuiz;
+		++_currentQuizIdx;
 	}
 
 	void resetForFullMode() {
@@ -122,33 +122,33 @@ class QuizPlus implements Serializable {
 		_criticalQuizIndicesOnly = true;
 		final int nCriticalQuizIndices = getCurrentQuizLen();
 		for (int k = 0; k < nCriticalQuizIndices; ++k) {
-			final int indexInCards = getCurrentQuiz_IndexInCards(k);
+			final int indexInCards = getCurrentQuiz_CardIndex(k);
 			_indexInCardsToNWrongsAndHits.put(indexInCards, new NWrongsAndHits(0, 0));
 		}
 		/** Put it in FullMode. */
 		_criticalQuizIndicesOnly = false;
-		_currentIndexInQuiz = 0;
+		_currentQuizIdx = 0;
 		_nWrongs = _nRights = 0;
 		_firstWrongIndexInCards = -1;
 	}
 
-	boolean haveWon(final int failureRateI) {
+	boolean haveWon(final int failurePerCent) {
 		/**
-		 * We need a wrong rate that is <= failureRateI / 2 even assuming that we'll get the
+		 * We need a wrong rate that is <= failurePerCent / 2 even assuming that we'll get the
 		 * rest of the critical quiz indices wrong.
 		 */
 		final int nCriticalQuizIndices = _criticalIndicesInQuiz.length;
 		final int nWrongs = nCriticalQuizIndices - _nRights;
-		return 200 * nWrongs <= failureRateI * nCriticalQuizIndices;
+		return 200 * nWrongs <= failurePerCent * nCriticalQuizIndices;
 	}
 
-	boolean haveLost(final int failureRateI) {
+	boolean haveLost(final int failurePerCent) {
 		/**
-		 * We need a wrong rate that is >= failureRateI even assuming that we'll get the rest
-		 * of the critical quiz indices right.
+		 * We need a wrong rate that is >= failurePerCent even assuming that we'll get the
+		 * rest of the critical quiz indices right.
 		 */
 		final int nCriticalQuizIndices = _criticalIndicesInQuiz.length;
-		return 100 * _nWrongs >= failureRateI * nCriticalQuizIndices;
+		return 100 * _nWrongs >= failurePerCent * nCriticalQuizIndices;
 	}
 
 	void adjustQuizForLoss(final Random r) {
@@ -195,7 +195,7 @@ class QuizPlus implements Serializable {
 		for (int k = 0; k < nCriticalQuizIndices; ++k) {
 			_fullQuiz[_criticalIndicesInQuiz[k]] = newIndicesInCards[k];
 		}
-		_currentIndexInQuiz = 0;
+		_currentQuizIdx = 0;
 		_nWrongs = _nRights = 0;
 		_criticalQuizIndicesOnly = true;
 	}
@@ -204,7 +204,7 @@ class QuizPlus implements Serializable {
 		final int nInQuiz = getCurrentQuizLen();
 		int topIndexInCards = -1;
 		for (int k = 0; k < nInQuiz; ++k) {
-			topIndexInCards = Math.max(topIndexInCards, getCurrentQuiz_IndexInCards(k));
+			topIndexInCards = Math.max(topIndexInCards, getCurrentQuiz_CardIndex(k));
 		}
 		return topIndexInCards;
 	}
@@ -215,7 +215,7 @@ class QuizPlus implements Serializable {
 		final TreeMap<Integer, int[]> mapOfCriticals = new TreeMap<>();
 		final int quizLen = getCurrentQuizLen();
 		for (int k = 0; k < quizLen; ++k) {
-			final int indexInCards = getCurrentQuiz_IndexInCards(k);
+			final int indexInCards = getCurrentQuiz_CardIndex(k);
 			lo = Math.min(lo, indexInCards);
 			hi = Math.max(hi, indexInCards);
 		}
@@ -226,7 +226,7 @@ class QuizPlus implements Serializable {
 			} else {
 				map = mapofNonCriticals;
 			}
-			final int indexInCards = getCurrentQuiz_IndexInCards(k);
+			final int indexInCards = getCurrentQuiz_CardIndex(k);
 			final int[] count = map.get(indexInCards);
 			if (count == null) {
 				map.put(indexInCards, new int[]{1});

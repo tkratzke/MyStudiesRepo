@@ -31,6 +31,9 @@ public class FlashCardsGame {
 	final static char _HeavyCheckChar = '\u2714';
 	final static char _TabSymbolChar = '\u2409';
 
+	final static String _Prefix = "   ";
+	final private static int _LongLine = 85;
+
 	final private static char _ReturnChar = '\u23CE';
 	final private static char _QuitChar = '!';
 	final private static char _EditPropertiesChar = '@';
@@ -42,7 +45,6 @@ public class FlashCardsGame {
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
 	final private static int _MaxLenForCardPart = 25;
 	final private static int _MaxLenForQuizQuestion = 35;
-	final private static int _LongLine = 85;
 	final private static int _BlockSize = 10;
 
 	final private static String _HelpString = String.format(
@@ -359,7 +361,8 @@ public class FlashCardsGame {
 
 	void updateProperties() {
 		_properties.put(PropertyPlus.RANDOM_SEED._propertyName, Long.toString(_randomSeed));
-		_properties.put(PropertyPlus.QUIZ_DIRECTION._propertyName, _quizDirection._typableString);
+		_properties.put(PropertyPlus.QUIZ_DIRECTION._propertyName,
+				_quizDirection._typableString);
 		_properties.put(PropertyPlus.DIACRITICS_TREATMENT._propertyName,
 				_diacriticsTreatment.name());
 		_quizGenerator.updateProperties(_properties);
@@ -371,16 +374,16 @@ public class FlashCardsGame {
 				.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		if (seed < 0) {
 			properties = (Properties) _properties.clone();
-			final int topIndexInCards0 = Integer
+			final int topCardIdx0 = Integer
 					.parseInt(PropertyPlus.TOP_CARD_INDEX.getValidString(_properties));
 			final int maxNNewWords = Integer
 					.parseInt(PropertyPlus.NUMBER_OF_NEW_WORDS.getValidString(_properties));
 			final int maxNRecentWords = Integer
 					.parseInt(PropertyPlus.NUMBER_OF_RECENT_WORDS.getValidString(_properties));
-			final int topIndexInCards1 = Math.min(topIndexInCards0,
+			final int topIndexCardIdx1 = Math.min(topCardIdx0,
 					maxNNewWords + maxNRecentWords - 1);
 			properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName,
-					Long.toString(topIndexInCards1));
+					Long.toString(topIndexCardIdx1));
 		} else {
 			properties = _properties;
 		}
@@ -445,23 +448,23 @@ public class FlashCardsGame {
 		}
 	}
 
-	final private String getTypeIPrompt(final int indexInCards) {
+	final private String getTypeIPrompt(final int cardIdx) {
 		String typeIPrompt = "";
-		final int currentIndexInQuiz = _quizPlus.getCurrentIndexInQuiz();
-		if (_quizPlus.isCriticalQuizIndex(currentIndexInQuiz)) {
+		final int currentIdxInQuiz = _quizPlus.getCurrentIdxInQuiz();
+		if (_quizPlus.isCriticalQuizIndex(currentIdxInQuiz)) {
 			typeIPrompt += "*";
 		}
-		final int cardNumber = _cards[indexInCards]._cardNumber;
+		final int cardNumber = _cards[cardIdx]._cardNumber;
 		final int quizLen = _quizPlus.getCurrentQuizLen();
-		typeIPrompt += String.format("%d of %d(IIC=%d,#%d)", currentIndexInQuiz + 1, quizLen,
-				indexInCards, cardNumber);
+		typeIPrompt += String.format("%d of %d(CrdIdx=%d,#%d)", currentIdxInQuiz + 1, quizLen,
+				cardIdx, cardNumber);
 		final int nRights = _quizPlus.getNRights();
 		final int nWrongs = _quizPlus.getNWrongs();
 		final int nTrials = nRights + nWrongs;
 		if (nTrials > 0) {
-			final long successRateI = Math.round((100d * nRights) / nTrials);
+			final long successPerCent = Math.round((100d * nRights) / nTrials);
 			typeIPrompt += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%)", nRights, nWrongs,
-					successRateI);
+					successPerCent);
 		}
 		return typeIPrompt;
 	}
@@ -585,13 +588,13 @@ public class FlashCardsGame {
 				oldValues = storeValues();
 			}
 
-			final int iic = _quizPlus.getCurrentQuiz_IndexInCards();
-			final Card card = _cards[iic];
+			final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
+			final Card card = _cards[cardIdx];
 			final Card.CardParts clueParts = card.new CardParts(
 					_quizDirection == QuizDirection.A_TO_B, _MaxLenForQuizQuestion);
 			final String clue = CleanWhiteSpace(
 					_quizDirection == QuizDirection.A_TO_B ? card._fullASide : card._fullBSide);
-			final String typeIPrompt = getTypeIPrompt(iic);
+			final String typeIPrompt = getTypeIPrompt(cardIdx);
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
 				if (_needLineFeed) {

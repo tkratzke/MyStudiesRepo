@@ -14,7 +14,7 @@ public class QuizGenerator {
 	final private int _maxNRecentWords;
 	final private int _nRepeatsOfNew;
 	final private DecayType _decayType;
-	final private int _allowableMissRateI;
+	final private int _allowablePerCent;
 	final private int _percentageForRecentsI;
 
 	final private Random _r;
@@ -35,7 +35,7 @@ public class QuizGenerator {
 		}
 		_decayType = DecayType.valueOf(PropertyPlus.DECAY_TYPE.getValidString(properties));
 		String s = PropertyPlus.ALLOWABLE_MISS_PERCENTAGE.getValidString(properties);
-		_allowableMissRateI = Integer.parseInt(s.substring(0, s.length() - 1));
+		_allowablePerCent = Integer.parseInt(s.substring(0, s.length() - 1));
 		s = PropertyPlus.PERCENTAGE_FOR_RECENT_WORDS.getValidString(properties);
 		_percentageForRecentsI = Integer.parseInt(s.substring(0, s.length() - 1));
 		_r = new Random();
@@ -59,7 +59,7 @@ public class QuizGenerator {
 				Integer.toString(_maxNRecentWords));
 		properties.put(PropertyPlus.DECAY_TYPE._propertyName, _decayType.name());
 		properties.put(PropertyPlus.ALLOWABLE_MISS_PERCENTAGE._propertyName,
-				Integer.toString(_allowableMissRateI) + '%');
+				Integer.toString(_allowablePerCent) + '%');
 		properties.put(PropertyPlus.PERCENTAGE_FOR_RECENT_WORDS._propertyName,
 				Integer.toString(_percentageForRecentsI) + '%');
 	}
@@ -121,36 +121,35 @@ public class QuizGenerator {
 			final double[] cums = computeCums(nRecentWords, nChoicesForSlots);
 			for (int k = 0; k < nRecentWords; ++k) {
 				final double cum = _r.nextDouble();
-				final int indexInCards = selectIndexInCards(cums, cum);
-				array[nNewWords + k] = indexInCards;
-				annihilateIndexInCards(cums, indexInCards);
+				final int cardIdx = selectCardIdx(cums, cum);
+				array[nNewWords + k] = cardIdx;
+				annihilateCardIdxForArray2(cums, cardIdx);
 			}
 		}
 		return array;
 	}
 
-	private static int selectIndexInCards(final double[] cums, final double cum) {
+	private static int selectCardIdx(final double[] cums, final double cum) {
 		if (cum <= cums[0]) {
 			return 0;
 		} else if (cum >= cums[cums.length - 1]) {
 			return cums.length - 1;
 		}
-		final int indexInCards = Arrays.binarySearch(cums, cum);
-		if (indexInCards >= 0) {
-			return indexInCards;
+		final int cardIdx = Arrays.binarySearch(cums, cum);
+		if (cardIdx >= 0) {
+			return cardIdx;
 		}
-		return -indexInCards - 1;
+		return -cardIdx - 1;
 	}
 
-	private static void annihilateIndexInCards(final double[] cums,
-			final int indexInCards) {
+	private static void annihilateCardIdxForArray2(final double[] cums, final int cardIdx) {
 		final int nCums = cums.length;
-		final double probToDistribute = cums[indexInCards]
-				- (indexInCards == 0 ? 0d : cums[indexInCards - 1]);
+		final double probToDistribute = cums[cardIdx]
+				- (cardIdx == 0 ? 0d : cums[cardIdx - 1]);
 		final double scale = 1d / (1d - probToDistribute);
 		/** Convert cums to probs. */
 		for (int k = nCums - 1; k > 0; --k) {
-			if (k == indexInCards) {
+			if (k == cardIdx) {
 				cums[k] = 0d;
 			} else {
 				cums[k] = scale * (cums[k] - cums[k - 1]);
@@ -269,18 +268,36 @@ public class QuizGenerator {
 		return String.format("\n\tTCI(Top Card Index<%d>)", _topCardIndex);
 	}
 
+	private PropertyPlus getPropertyPlus(final String field0) {
+		if (field0 == null) {
+			return null;
+		}
+		for (final PropertyPlus propertyPlus : PropertyPlus._Values) {
+			if (propertyPlus._indicatorString.equals(field0)) {
+				return propertyPlus;
+			}
+		}
+		return null;
+	}
+
 	void modifySingleProperty(final String[] fields) {
-		final String field0 = fields[0].toUpperCase();
+		final int nFields = fields == null ? 0 : fields.length;
+		final String field0 = (nFields < 1) ? null : fields[0].toUpperCase();
+		final String field1 = (nFields < 2) ? null : fields[0].toUpperCase();
 		/** Only one field to check; TOP_CARD_INDEX. */
-		final PropertyPlus propertyPlus = PropertyPlus.valueOf(field0);
+		final PropertyPlus propertyPlus = getPropertyPlus(field0);
+		if (propertyPlus == null) {
+			return;
+		}
 		switch (propertyPlus) {
 			case TOP_CARD_INDEX :
-				final int oldTopIndexInCards = _topCardIndex;
-				final Integer integer = null;
-				if (integer != null) {
-					_topCardIndex = integer;
+				final int oldTopCardIdx = _topCardIndex;
+				try {
+					_topCardIndex = Integer.parseInt(field1);
+				} catch (final NumberFormatException e) {
+					/** We get here if field1 is null or not a number. */
 				}
-				_changedQuizGeneratorParameters = oldTopIndexInCards != _topCardIndex;
+				_changedQuizGeneratorParameters = oldTopCardIdx != _topCardIndex;
 				return;
 			case ALLOWABLE_MISS_PERCENTAGE :
 			case DIACRITICS_TREATMENT :
@@ -311,7 +328,7 @@ public class QuizGenerator {
 			_changedQuizGeneratorParameters = false;
 			return new QuizPlusTransition(quizPlus, newQuizPlus, ChangeType.PARAMETERS_CHANGED);
 		}
-		if (quizPlus.haveWon(_allowableMissRateI)) {
+		if (quizPlus.haveWon(_allowablePerCent)) {
 			final QuizPlus newQuizPlus;
 			final ChangeType changeType;
 			if (!quizPlus._criticalQuizIndicesOnly) {
@@ -326,7 +343,7 @@ public class QuizGenerator {
 			}
 			return new QuizPlusTransition(quizPlus, newQuizPlus, changeType);
 		}
-		if (quizPlus.haveLost(_allowableMissRateI)) {
+		if (quizPlus.haveLost(_allowablePerCent)) {
 			final QuizPlus newQuizPlus = new QuizPlus(quizPlus);
 			newQuizPlus.adjustQuizForLoss(_r);
 			return new QuizPlusTransition(quizPlus, newQuizPlus, ChangeType.LOSS);
@@ -336,8 +353,8 @@ public class QuizGenerator {
 
 	String getString() {
 		final String s = String.format(//
-				"TopIIC=%d #New/Recent Words=%d/%d Failure=%d%% Decay=%s", //
-				_topCardIndex, _maxNNewWords, _maxNRecentWords, _allowableMissRateI,
+				"TopCardIdx=%d #New/Recent Words=%d/%d Failure=%d%% Decay=%s", //
+				_topCardIndex, _maxNNewWords, _maxNRecentWords, _allowablePerCent,
 				_decayType.name());
 		return s;
 	}
