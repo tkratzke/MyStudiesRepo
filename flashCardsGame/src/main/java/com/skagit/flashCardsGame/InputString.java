@@ -4,10 +4,12 @@ import java.util.Scanner;
 
 class InputString {
 	final boolean _lastLineWasBlank;
+	final int _nLinesOfResponse;
 	final String _inputString;
 	InputString(final Scanner sc) {
 		String s = "";
 		boolean lastLineWasBlank = false;
+		int nLinesOfResponse = 1;
 		for (;;) {
 			final String thisLine = sc.nextLine();
 			final int len = thisLine.length();
@@ -22,9 +24,11 @@ class InputString {
 				break;
 			}
 			/** The next line has indented input. */
-			System.out.print('\t');
+			System.out.print(FlashCardsGame._Indent);
+			++nLinesOfResponse;
 		}
 		_inputString = FlashCardsGame.CleanWhiteSpace(s);
 		_lastLineWasBlank = lastLineWasBlank;
+		_nLinesOfResponse = nLinesOfResponse;
 	}
 }

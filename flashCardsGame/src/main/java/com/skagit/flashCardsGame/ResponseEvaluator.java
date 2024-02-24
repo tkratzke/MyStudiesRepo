@@ -1,52 +1,40 @@
 package com.skagit.flashCardsGame;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
 import com.skagit.flashCardsGame.enums.MatchType;
-import com.skagit.flashCardsGame.enums.QuizDirection;
 
 public class ResponseEvaluator {
 	final boolean _gotItRight;
-	final String _diffString;
+	final String[] _diffStrings;
 
 	ResponseEvaluator(final Scanner sc, final DiacriticsTreatment diacriticsTreatment,
-			final Card card, final QuizDirection quizDirection, final String rawResponse,
-			final int maxLenForQuizQuestion) {
+			final String rawAnswer, final String rawResponse) {
 
-		final String rawAnswer = quizDirection == QuizDirection.A_TO_B
-				? card._fullBSide
-				: card._fullASide;
 		final MatchType matchType = getMatchType(rawAnswer, rawResponse);
+		final boolean almostRight = matchType == MatchType.MATCHED_EXCEPT_DIACRITICS_ARE_WRONG;
 		if (matchType == MatchType.MATCHED_INCLUDING_DIACRITICS
-				|| (diacriticsTreatment == DiacriticsTreatment.RELAXED
-						&& matchType == MatchType.MATCHED_EXCEPT_DIACRITICS_ARE_WRONG)) {
+				|| (diacriticsTreatment == DiacriticsTreatment.RELAXED && almostRight)) {
 			_gotItRight = true;
-			_diffString = null;
+			_diffStrings = null;
 			return;
 		}
 
 		/**
 		 * We didn't get it exactly right. See if we got it "right enough" and then fill
-		 * _diffString with the answer plus up to two differences.
+		 * _diffStrings with the answer plus up to two differences.
 		 */
-		_gotItRight = diacriticsTreatment == DiacriticsTreatment.LENIENT
-				&& matchType == MatchType.MATCHED_EXCEPT_DIACRITICS_ARE_WRONG;
+		_gotItRight = diacriticsTreatment == DiacriticsTreatment.LENIENT && almostRight;
 
 		final String[] answerFields = rawAnswer.split(FlashCardsGame._WhiteSpace);
 		final String[] responseFields = rawResponse.split(FlashCardsGame._WhiteSpace);
 		final int nAnswerFields = answerFields.length;
 		final int nResponseFields = responseFields.length;
 
-		String diffString = "";
-		if (_gotItRight) {
-			diffString += FlashCardsGame._HeavyCheckChar + " ";
-		}
-		diffString += card.getBrokenUpString(quizDirection == QuizDirection.B_TO_A,
-				maxLenForQuizQuestion);
-
 		final int nSmaller = Math.min(nAnswerFields, nResponseFields);
-		int nDiffs = 0;
+		final ArrayList<String> diffStrings = new ArrayList<>();
 		for (int k = 0; k < nSmaller; ++k) {
 			final String answerField = answerFields[k];
 			final String responseField = responseFields[k];
@@ -75,28 +63,28 @@ public class ResponseEvaluator {
 				}
 			}
 			if (thisIsADiff) {
-				diffString += String.format(" (%s/%s)", answerField, responseField);
-				if (++nDiffs == 2) {
-					_diffString = diffString;
+				diffStrings.add(String.format("(%s/%s)", answerField, responseField));
+				if (diffStrings.size() == 2) {
+					_diffStrings = diffStrings.toArray(new String[diffStrings.size()]);
 					return;
 				}
 			}
 		}
 		for (int k = nAnswerFields; k < nResponseFields; ++k) {
-			diffString += String.format(" (null/%s)", responseFields[k]);
-			if (++nDiffs == 2) {
-				_diffString = diffString;
+			diffStrings.add(String.format("(null/%s)", responseFields[k]));
+			if (diffStrings.size() == 2) {
+				_diffStrings = diffStrings.toArray(new String[diffStrings.size()]);
 				return;
 			}
 		}
 		for (int k = nResponseFields; k < nAnswerFields; ++k) {
-			diffString += String.format(" (%s/null)", answerFields[k]);
-			if (++nDiffs == 2) {
-				_diffString = diffString;
+			diffStrings.add(String.format("(%s/null)", answerFields[k]));
+			if (diffStrings.size() == 2) {
+				_diffStrings = diffStrings.toArray(new String[diffStrings.size()]);
 				return;
 			}
 		}
-		_diffString = diffString;
+		_diffStrings = diffStrings.toArray(new String[diffStrings.size()]);
 	}
 
 	private static MatchType getMatchType(final String s0, final String s1) {

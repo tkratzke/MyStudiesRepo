@@ -31,8 +31,15 @@ public class FlashCardsGame {
 	final static char _HeavyCheckChar = '\u2714';
 	final static char _TabSymbolChar = '\u2409';
 
-	final static String _Prefix = "   ";
-	final private static int _LongLine = 85;
+	final static String _Indent = "   ";
+	final static int _IndentLen = _Indent.length();
+	final private static int _MaxLineLen = 85;
+
+	final private static String _Sep1 = "::";
+	final private static String _Sep2 = ": ";
+	final private static int _Sep1Len = _Sep1.length();
+	final private static int _Sep2Len = _Sep2.length();
+	final private static int _RoomLen = 10;
 
 	final private static char _ReturnChar = '\u23CE';
 	final private static char _QuitChar = '!';
@@ -590,37 +597,54 @@ public class FlashCardsGame {
 
 			final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
 			final Card card = _cards[cardIdx];
-			final Card.CardParts clueParts = card.new CardParts(
-					_quizDirection == QuizDirection.A_TO_B, _MaxLenForQuizQuestion);
 			final String clue = CleanWhiteSpace(
 					_quizDirection == QuizDirection.A_TO_B ? card._fullASide : card._fullBSide);
+			final int clueLen = clue.length();
+			final String answer = CleanWhiteSpace(
+					_quizDirection == QuizDirection.A_TO_B ? card._fullBSide : card._fullASide);
+			final int answerLen = answer.length();
 			final String typeIPrompt = getTypeIPrompt(cardIdx);
+			final int typeIPromptLen = typeIPrompt.length();
 			boolean wasWrongAtLeastOnce = false;
+			final int len1 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len + _RoomLen;
+			final int len2 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len + answerLen;
 			for (boolean gotItRight = false; !gotItRight;) {
+				_needLineFeed = _needLineFeed || len2 > _MaxLineLen;
 				if (_needLineFeed) {
 					System.out.println();
 				}
-				final int nClueParts = clueParts.size();
-				final boolean longQuestion;
-				final int len = typeIPrompt.length() + 2 + clue.length() + 2;
-				if (len >= _LongLine || nClueParts > 1) {
+				boolean longQuestion = false;
+				if (len1 <= _MaxLineLen || len2 <= _MaxLineLen) {
+					System.out.printf("%s%s%s%s", typeIPrompt, _Sep1, clue, _Sep2);
+				} else if (len1 <= _MaxLineLen) {
+					System.out.printf("%s%s%s%s", typeIPrompt, _Sep1, clue, _Sep2);
+				} else {
+					final String[] clueFields = clue.split(_WhiteSpace);
+					final int nClueFields = clueFields.length;
 					System.out.println(typeIPrompt);
-					System.out.print('\t');
-					for (int k = 0; k < nClueParts; ++k) {
-						System.out.print(clueParts.get(k));
-						if (k < nClueParts - 1) {
+					System.out.print(_Indent);
+					int nUsedOnCurrentLine = _IndentLen;
+					longQuestion = true;
+					for (int k = 0; k < nClueFields; ++k) {
+						final String clueField = clueFields[k];
+						final int clueFieldLen = clueField.length();
+						if (nUsedOnCurrentLine > _IndentLen
+								&& (nUsedOnCurrentLine + 1 + clueFieldLen + _RoomLen >= _MaxLineLen)) {
 							System.out.println();
-							System.out.print('\t');
+							System.out.print(_Indent);
+							System.out.print(clueField);
+							nUsedOnCurrentLine = _IndentLen + clueFieldLen;
+						} else if (nUsedOnCurrentLine == _IndentLen) {
+							System.out.print(clueField);
+							nUsedOnCurrentLine += clueFieldLen;
 						} else {
-							System.out.print(": ");
+							System.out.printf(" %s", clueField);
+							nUsedOnCurrentLine += 1 + clueFieldLen;
 						}
 					}
-					longQuestion = true;
-				} else {
-					System.out.print(typeIPrompt + "::" + clue + ": ");
-					longQuestion = false;
 				}
 				final InputString inputString = new InputString(sc);
+				longQuestion = longQuestion || inputString._nLinesOfResponse > 1;
 				final String response = inputString._inputString;
 				if (response.length() == 0) {
 					String prompt = "\t" + card.getBrokenUpString(
@@ -651,18 +675,66 @@ public class FlashCardsGame {
 					}
 				}
 				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc,
-						_diacriticsTreatment, card, _quizDirection, response, _MaxLenForQuizQuestion);
-				final String diffString = responseEvaluator._diffString;
+						_diacriticsTreatment, answer, response);
+				final String[] diffStrings = responseEvaluator._diffStrings;
 				gotItRight = responseEvaluator._gotItRight;
-				if (diffString != null) {
-					if (longQuestion) {
-						System.out.print('\t');
+				if (diffStrings != null) {
+					/** Because diffStrings is not null, print out the answer. */
+					final String[] answerFields = answer.split(_WhiteSpace);
+					if (gotItRight) {
+						answerFields[0] = "" + _HeavyCheckChar + " " + answerFields[0];
 					}
-					System.out.print(diffString);
-					final String preface = longQuestion ? "\n\t" : " ";
-					final YesNoResponse yesNoResponse = new YesNoResponse(sc,
-							preface + "Count as right?", gotItRight);
-					gotItRight = yesNoResponse._yesValue;
+					final int nAnswerFields = answerFields.length;
+					int nUsedOnCurrentLine = 0;
+					for (int k = 0; k < nAnswerFields;) {
+						final String answerField = answerFields[k];
+						final int answerFieldLen = answerField.length();
+						if (nUsedOnCurrentLine == 0) {
+							System.out.printf("%s%s", _Indent, answerField);
+							nUsedOnCurrentLine = _IndentLen + answerFieldLen;
+							++k;
+						} else if (nUsedOnCurrentLine + 1 + answerFieldLen > _MaxLineLen) {
+							System.out.println();
+							nUsedOnCurrentLine = 0;
+						} else {
+							System.out.printf(" %s", answerField);
+							++k;
+						}
+					}
+					/** And now the diffs. */
+					final int nDiffStrings = diffStrings.length;
+					String fullDiffString = "";
+					for (int k = 0; k < nDiffStrings; ++k) {
+						fullDiffString += (k == 0 ? "" : " ") + diffStrings[k];
+					}
+					final int fullDiffStringLen = fullDiffString.length();
+					final String fullYesNoPrompt;
+					if (gotItRight) {
+						fullYesNoPrompt = getFullYesNoPrompt("Count as Right? ", true, ' ');
+					} else {
+						fullYesNoPrompt = getFullYesNoPrompt("Count as Right? ", false, ' ');
+					}
+					final int fullYesNoPromptLen = fullYesNoPrompt.length();
+					if (nUsedOnCurrentLine + 1 + fullDiffStringLen + _Sep2Len + fullYesNoPromptLen
+							+ _RoomLen <= _MaxLineLen) {
+						System.out.printf(" %s%s%s", fullDiffString, _Sep2, fullYesNoPrompt);
+					} else {
+						System.out.println();
+						if ( //
+						_IndentLen + fullDiffStringLen + _Sep2Len + //
+								fullYesNoPromptLen + _RoomLen <= //
+								_MaxLineLen //
+						) {
+							System.out.printf("%s%s%s%s", _Indent, fullDiffString, _Sep2,
+									fullYesNoPrompt);
+						} else {
+							System.out.printf("%s%s", _Indent, fullDiffString);
+							System.out.println();
+							System.out.printf("%s%s", _Indent, fullYesNoPrompt);
+						}
+					}
+					final YesNoResponse yesNoResponse = new YesNoResponse(sc, fullYesNoPrompt,
+							gotItRight);
 					_needLineFeed = !yesNoResponse._lastLineWasBlank;
 				} else {
 					_needLineFeed = longQuestion;
@@ -673,16 +745,22 @@ public class FlashCardsGame {
 		}
 	}
 
+	private static String getFullYesNoPrompt(final String prompt,
+			final boolean defaultYesValue, final char ignored) {
+		final char otherChar = defaultYesValue ? _NoChar : _YesChar;
+		final String defaultString = defaultYesValue ? _YesString : _NoString;
+		final String otherString = defaultYesValue ? _NoString : _YesString;
+		return String.format("%s %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString,
+				otherChar, otherString);
+	}
+
 	private static class YesNoResponse {
 		private final boolean _yesValue, _lastLineWasBlank;
 
-		private YesNoResponse(final Scanner sc, final String prompt,
+		private YesNoResponse(final Scanner sc, final String fullYesNoPrompt,
 				final boolean defaultYesValue) {
 			final char otherChar = defaultYesValue ? _NoChar : _YesChar;
-			final String defaultString = defaultYesValue ? _YesString : _NoString;
-			final String otherString = defaultYesValue ? _NoString : _YesString;
-			System.out.printf("%s %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString, otherChar,
-					otherString);
+			System.out.print(fullYesNoPrompt);
 			final InputString inputString = new InputString(sc);
 			final String response = inputString._inputString;
 			final boolean lastLineWasBlank = inputString._lastLineWasBlank;

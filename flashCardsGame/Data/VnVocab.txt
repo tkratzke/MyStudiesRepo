@@ -14,35 +14,35 @@
   9.	lúc                      	at (some time)
  10.	ở                        	am, at, in, on
 
- 11.	Anh sẽ chơi chess lúc một	I will do chess at 1:45
+ 11.	anh sẽ chơi chess lúc một	I will do chess at 1:45
     	giờ bốn mươi lăm         	(anh)
 
- 12.	Hôm nay anh sẽ đi gym từ 	Today I will go to the
+ 12.	hôm nay anh sẽ đi gym từ 	today I will go to the
     	chín giờ đến mười một giờ	gym from 9:00 until 11:30
     	ba mươi                  	(anh)
 
- 13.	Anh sẽ nói chuyện với    	I will talk with Thal at
+ 13.	anh sẽ nói chuyện với    	I will talk with Thal at
     	Thal lúc mười hai giờ    	12:15 (anh)
     	mười lăm                 
 
- 14.	Anh sẽ đi bơi từ mười hai	I will go swimming from
+ 14.	anh sẽ đi bơi từ mười hai	I will go swimming from
     	giờ đến ba giờ ba mươi   	2:00 until 3:30 (anh)
 
- 15.	trưa nay anh sẽ làm việc 	Today I will work with G
+ 15.	trưa nay anh sẽ làm việc 	today I will work with G
     	với G                    	in the afternoon (anh)
 
- 16.	Anh sẽ nói chuyện bao giờ	I will talk to you when
+ 16.	anh sẽ nói chuyện bao giờ	I will talk to you when
     	em dậy                   	you wake up (anh)
 
- 17.	Chác, Anh sẽ không đi gym	Probably I will not go to
+ 17.	chác, anh sẽ không đi gym	probably I will not go to
     	hay đi bơi               	the gym or swim (anh)
 
- 18.	Anh sẽ học Tiêng Việt với	I will study VN with Thal
+ 18.	anh sẽ học Tiêng Việt với	I will study VN with Thal
     	Thal lúc mười hai giờ    	from 12:15 to 12:30 (anh)
     	mười lăm đến mười hai giờ
     	ba mươi                  
 
- 19.	có thể anh cũng sẽ học   	Maybe I will also study
+ 19.	có thể anh cũng sẽ học   	maybe I will also study
     	toán với Lan             	math with Lan (anh)
 
  20.	dâu tây                  	a strawberry
@@ -117,7 +117,7 @@
 
  51.	Việt Nam                 	Vietnam
  52.	nước Mỹ                  	United States
- 53.	nước Anh                 	United Kingdom
+ 53.	nước anh                 	United Kingdom
  54.	Trung Quốc               	China
  55.	người Việt Nam           	Vietnamese person
  56.	người Mỹ                 	American person
@@ -342,7 +342,7 @@
 
 251.	thứ tư                   	Wednesday
 252.	tháng giêng              	January
-253.	Anh buồn ngủ             	I am sleepy
+253.	anh buồn ngủ             	I am sleepy
 254.	buồn ngủ                 	sleepy
 255.	mệt                      	tired
 256.	bây giờ                  	now
@@ -545,7 +545,7 @@
 391.	anh làm việc ở đâu       	where do you work
 392.	tôi làm việc ở Hà Nội    	I work in Hà Nôi
 393.	anh học ở đâu            	where do you study
-394.	Anh học ở nhà            	I study at home
+394.	anh học ở nhà            	I study at home
 395.	Chị sống ở đâu           	where do you live
 396.	xin chào                 	hello (polite)
 
