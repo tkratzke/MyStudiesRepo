@@ -44,21 +44,22 @@ public class FlashCardsGame {
 	final private static int _CountAsRightLen = _CountAsRight.length();
 
 	final private static char _ReturnChar = '\u23CE';
+	final private static char _HelpChar = 'H';
 	final private static char _QuitChar = '!';
 	final private static char _EditPropertiesChar = '@';
 	final private static char _RestartQuizChar = '#';
-	final private static char _HelpChar = '$';
 	final private static char _YesChar = 'Y';
 	final private static char _NoChar = 'N';
 	final private static String _YesString = "Yes";
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
-	final private static int _MaxLenForCardPart = 25;
+	final private static int _MaxLenForCardPart = 35;
 	final private static int _BlockSize = 10;
 
 	final private static String _HelpString = String.format(
-			"%c=\"Show-and-ask,\" %c=Edit Properties, %c=Quit, %c=Restart Quiz, %s=Next Line is Continuation",
-			_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartQuizChar,
+			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, "
+					+ "%c=\"Show-and-ask,\" %s=Next Line is Continuation",
+			_HelpChar, _QuitChar, _EditPropertiesChar, _RestartQuizChar, _ReturnChar,
 			"" + _TabSymbolChar + _ReturnChar);
 
 	/**
@@ -345,7 +346,7 @@ public class FlashCardsGame {
 				final int nBParts = bParts.size();
 				final int nParts = Math.max(nAParts, nBParts);
 				if (k0 > 0) {
-					if ((nParts > 1 || recentWasMultiLine || (nPrinted % _BlockSize == 1))) {
+					if ((nParts > 1 || recentWasMultiLine || (nPrinted % _BlockSize == 0))) {
 						pw.println();
 					}
 				}
@@ -482,8 +483,7 @@ public class FlashCardsGame {
 	}
 
 	final private String getTypeIIPrompt() {
-		final String prompt = String.format("Enter: %c=Done, R=Restart same quiz ",
-				_ReturnChar);
+		final String prompt = String.format("Enter: %c=Done", _ReturnChar);
 		return prompt + _quizGenerator.getTypeIIPrompt();
 	}
 
@@ -604,19 +604,19 @@ public class FlashCardsGame {
 			final String typeIPrompt = getTypeIPrompt(cardIdx);
 			final int typeIPromptLen = typeIPrompt.length();
 			boolean wasWrongAtLeastOnce = false;
-			final int len1 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len + _RoomLen;
-			final int len2 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len + answerLen;
+			final int len1 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len
+					+ Math.min(_RoomLen, answerLen);
 			for (boolean gotItRight = false; !gotItRight;) {
 				final String[] clueFields = clue.split(_WhiteSpace);
 				final int nClueFields = clueFields.length;
 				final String[] answerFields = answer.split(_WhiteSpace);
 				final int nAnswerFields = answerFields.length;
-				_needLineFeed = _needLineFeed || len2 > _MaxLineLen;
+				_needLineFeed = _needLineFeed || len1 > _MaxLineLen;
 				if (_needLineFeed) {
 					System.out.println();
 				}
 				boolean longQuestion = false;
-				if (len1 <= _MaxLineLen || len2 <= _MaxLineLen) {
+				if (len1 <= _MaxLineLen) {
 					System.out.printf("%s%s%s%s", typeIPrompt, _Sep1, clue, _Sep2);
 				} else if (len1 <= _MaxLineLen) {
 					System.out.printf("%s%s%s%s", typeIPrompt, _Sep1, clue, _Sep2);
@@ -625,6 +625,7 @@ public class FlashCardsGame {
 					System.out.print(_Indent);
 					int nUsedOnCurrentLine = _IndentLen;
 					longQuestion = true;
+					/** Break up the clue. */
 					for (int k = 0; k < nClueFields; ++k) {
 						final String clueField = clueFields[k];
 						final int clueFieldLen = clueField.length();
@@ -649,6 +650,7 @@ public class FlashCardsGame {
 				final String response = inputString._inputString;
 				if (response.length() == 0) {
 					int nUsedOnCurrentLine = 0;
+					/** User just wants a check so we have to print out the answer. Break it up. */
 					for (int k = 0; k < nAnswerFields;) {
 						final String answerField = answerFields[k];
 						final int answerFieldLen = answerField.length();
@@ -705,7 +707,7 @@ public class FlashCardsGame {
 				final String[] diffStrings = responseEvaluator._diffStrings;
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffStrings != null) {
-					/** Because diffStrings is not null, print out the answer. */
+					/** Because diffStrings is not null, print out the answer, but break it up. */
 					int nUsedOnCurrentLine = 0;
 					for (int k = 0; k < nAnswerFields;) {
 						final String answerField;
@@ -728,7 +730,7 @@ public class FlashCardsGame {
 							++k;
 						}
 					}
-					/** And now the diffs. */
+					/** And now the diffs; consolidate to a single String. */
 					final int nDiffStrings = diffStrings.length;
 					String fullDiffString = "";
 					for (int k = 0; k < nDiffStrings; ++k) {
@@ -742,10 +744,15 @@ public class FlashCardsGame {
 						fullYesNoPrompt = getFullYesNoPrompt(_CountAsRight, false);
 					}
 					final int fullYesNoPromptLen = fullYesNoPrompt.length();
+					/** Put diffString and the prompt onto the current line if there's room. */
 					if (nUsedOnCurrentLine + 1 + fullDiffStringLen + _Sep2Len + fullYesNoPromptLen
 							+ _RoomLen <= _MaxLineLen) {
 						System.out.printf(" %s%s%s", fullDiffString, _Sep2, fullYesNoPrompt);
 					} else {
+						/**
+						 * Need a new line, but put diffString and the prompt onto a single line if
+						 * there's room.
+						 */
 						System.out.println();
 						if ( //
 						_IndentLen + fullDiffStringLen + _Sep2Len + //
@@ -755,6 +762,7 @@ public class FlashCardsGame {
 							System.out.printf("%s%s%s%s", _Indent, fullDiffString, _Sep2,
 									fullYesNoPrompt);
 						} else {
+							/** Otherwise, separate the diffString and the prompt string. */
 							System.out.printf("%s%s", _Indent, fullDiffString);
 							System.out.println();
 							System.out.printf("%s%s", _Indent, fullYesNoPrompt);

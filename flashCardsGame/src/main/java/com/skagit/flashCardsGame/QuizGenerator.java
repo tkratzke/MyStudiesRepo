@@ -283,7 +283,7 @@ public class QuizGenerator {
 	void modifySingleProperty(final String[] fields) {
 		final int nFields = fields == null ? 0 : fields.length;
 		final String field0 = (nFields < 1) ? null : fields[0].toUpperCase();
-		final String field1 = (nFields < 2) ? null : fields[0].toUpperCase();
+		final String field1 = (nFields < 2) ? null : fields[1].toUpperCase();
 		/** Only one field to check; TOP_CARD_INDEX. */
 		final PropertyPlus propertyPlus = getPropertyPlus(field0);
 		if (propertyPlus == null) {
