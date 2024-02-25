@@ -67,7 +67,7 @@ public class LineBreakDown {
 				}
 			}
 			if (nTabs == 1) {
-				_aSide = field1;
+				_aSide = FlashCardsGame.CleanWhiteSpace(field1);
 				_bSide = "";
 			} else {
 				_aSide = "";
@@ -75,8 +75,8 @@ public class LineBreakDown {
 			}
 		} else {
 			/** We have at least two data fields. */
-			_aSide = fields[k1];
-			_bSide = fields[k1 + 1];
+			_aSide = FlashCardsGame.CleanWhiteSpace(fields[k1]);
+			_bSide = FlashCardsGame.CleanWhiteSpace(fields[k1 + 1]);
 		}
 	}
 

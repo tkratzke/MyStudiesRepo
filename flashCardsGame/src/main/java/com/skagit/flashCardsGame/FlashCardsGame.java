@@ -40,11 +40,14 @@ public class FlashCardsGame {
 	final private static int _Sep1Len = _Sep1.length();
 	final private static int _Sep2Len = _Sep2.length();
 	final private static int _RoomLen = 10;
+	final private static String _CountAsRight = "Count as Right? ";
+	final private static int _CountAsRightLen = _CountAsRight.length();
 
 	final private static char _ReturnChar = '\u23CE';
 	final private static char _QuitChar = '!';
 	final private static char _EditPropertiesChar = '@';
-	final private static char _RestartChar = '#';
+	final private static char _RestartQuizChar = '#';
+	final private static char _HelpChar = '$';
 	final private static char _YesChar = 'Y';
 	final private static char _NoChar = 'N';
 	final private static String _YesString = "Yes";
@@ -54,8 +57,8 @@ public class FlashCardsGame {
 	final private static int _BlockSize = 10;
 
 	final private static String _HelpString = String.format(
-			"%c=\"Show-and-ask,\" %c=Edit Properties, %c=Quit, %c=Restart Current Quiz, %s=Next Line is Continuation",
-			_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartChar,
+			"%c=\"Show-and-ask,\" %c=Edit Properties, %c=Quit, %c=Restart Quiz, %s=Next Line is Continuation",
+			_ReturnChar, _EditPropertiesChar, _QuitChar, _RestartQuizChar,
 			"" + _TabSymbolChar + _ReturnChar);
 
 	/**
@@ -176,6 +179,9 @@ public class FlashCardsGame {
 		_quizGenerator = new QuizGenerator(_properties, _cards.length, _randomSeed);
 		shuffleCards(_cards);
 		_quizPlus = null;
+		System.out.println();
+		System.out.print(_HelpString);
+		System.out.println();
 	}
 
 	private File getCardsFile() {
@@ -226,11 +232,11 @@ public class FlashCardsGame {
 					final LineBreakDown lbd = new LineBreakDown(fileSc.nextLine());
 					if (!lbd._isContinuation || aSide == null || bSide == null) {
 						wrapUp(cardMap, aSide, bSide);
-						aSide = CleanWhiteSpace(lbd._aSide);
-						bSide = CleanWhiteSpace(lbd._bSide);
+						aSide = lbd._aSide;
+						bSide = lbd._bSide;
 					} else {
-						aSide = CleanWhiteSpace(aSide + " " + lbd._aSide);
-						bSide = CleanWhiteSpace(bSide + " " + lbd._bSide);
+						aSide = aSide + " " + lbd._aSide;
+						bSide = bSide + " " + lbd._bSide;
 					}
 				}
 				wrapUp(cardMap, aSide, bSide);
@@ -559,7 +565,6 @@ public class FlashCardsGame {
 		long[] oldValues = storeValues();
 		_quizPlus = null;
 		boolean restarted = false;
-		boolean needHelpString = true;
 
 		OUTSIDE_LOOP : for (boolean keepGoing = true; keepGoing;) {
 			/** Check for a status change from _quizPlus. */
@@ -577,12 +582,6 @@ public class FlashCardsGame {
 					/** For a really new one, add another lineFeed. */
 					System.out.println();
 					System.out.println(getString());
-					needHelpString = true;
-				} else {
-					needHelpString = !needHelpString;
-				}
-				if (needHelpString) {
-					System.out.println(_HelpString);
 				}
 				System.out.print(changeType._reasonForChangeString);
 				System.out.println(" " + quizPlusTransition._transitionString);
@@ -665,13 +664,12 @@ public class FlashCardsGame {
 							++k;
 						}
 					}
-					final String prompt = _Sep2 + "Get it right?";
-					final int promptLen = prompt.length();
-					if (nUsedOnCurrentLine + promptLen + _RoomLen <= _MaxLineLen) {
-						System.out.print(prompt);
+					if (nUsedOnCurrentLine + _Sep2Len + _CountAsRightLen
+							+ _RoomLen <= _MaxLineLen) {
+						System.out.printf("%s%s", _Sep2, _CountAsRight);
 					} else {
 						System.out.println();
-						System.out.printf("%sGet it right?");
+						System.out.printf("%s%s%", _Indent, _CountAsRight);
 					}
 					final YesNoResponse yesNoResponse = new YesNoResponse(sc, true);
 					gotItRight = yesNoResponse._yesValue;
@@ -691,9 +689,14 @@ public class FlashCardsGame {
 					} else if (char0Uc == _EditPropertiesChar) {
 						modifyProperties(sc);
 						continue OUTSIDE_LOOP;
-					} else if (char0Uc == _RestartChar) {
+					} else if (char0Uc == _RestartQuizChar) {
 						_quizPlus.resetForFullMode();
 						restarted = true;
+						continue OUTSIDE_LOOP;
+					} else if (char0Uc == _HelpChar) {
+						System.out.println();
+						System.out.print(_HelpString);
+						System.out.println();
 						continue OUTSIDE_LOOP;
 					}
 				}
@@ -734,9 +737,9 @@ public class FlashCardsGame {
 					final int fullDiffStringLen = fullDiffString.length();
 					final String fullYesNoPrompt;
 					if (gotItRight) {
-						fullYesNoPrompt = getFullYesNoPrompt("Count as Right? ", true, ' ');
+						fullYesNoPrompt = getFullYesNoPrompt(_CountAsRight, true);
 					} else {
-						fullYesNoPrompt = getFullYesNoPrompt("Count as Right? ", false, ' ');
+						fullYesNoPrompt = getFullYesNoPrompt(_CountAsRight, false);
 					}
 					final int fullYesNoPromptLen = fullYesNoPrompt.length();
 					if (nUsedOnCurrentLine + 1 + fullDiffStringLen + _Sep2Len + fullYesNoPromptLen
@@ -770,7 +773,7 @@ public class FlashCardsGame {
 	}
 
 	private static String getFullYesNoPrompt(final String prompt,
-			final boolean defaultYesValue, final char ignored) {
+			final boolean defaultYesValue) {
 		final char otherChar = defaultYesValue ? _NoChar : _YesChar;
 		final String defaultString = defaultYesValue ? _YesString : _NoString;
 		final String otherString = defaultYesValue ? _NoString : _YesString;
