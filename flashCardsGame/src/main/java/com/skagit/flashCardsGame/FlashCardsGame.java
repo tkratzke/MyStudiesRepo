@@ -51,7 +51,6 @@ public class FlashCardsGame {
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
 	final private static int _MaxLenForCardPart = 25;
-	final private static int _MaxLenForQuizQuestion = 35;
 	final private static int _BlockSize = 10;
 
 	final private static String _HelpString = String.format(
@@ -609,6 +608,10 @@ public class FlashCardsGame {
 			final int len1 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len + _RoomLen;
 			final int len2 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len + answerLen;
 			for (boolean gotItRight = false; !gotItRight;) {
+				final String[] clueFields = clue.split(_WhiteSpace);
+				final int nClueFields = clueFields.length;
+				final String[] answerFields = answer.split(_WhiteSpace);
+				final int nAnswerFields = answerFields.length;
 				_needLineFeed = _needLineFeed || len2 > _MaxLineLen;
 				if (_needLineFeed) {
 					System.out.println();
@@ -619,8 +622,6 @@ public class FlashCardsGame {
 				} else if (len1 <= _MaxLineLen) {
 					System.out.printf("%s%s%s%s", typeIPrompt, _Sep1, clue, _Sep2);
 				} else {
-					final String[] clueFields = clue.split(_WhiteSpace);
-					final int nClueFields = clueFields.length;
 					System.out.println(typeIPrompt);
 					System.out.print(_Indent);
 					int nUsedOnCurrentLine = _IndentLen;
@@ -642,15 +643,37 @@ public class FlashCardsGame {
 							nUsedOnCurrentLine += 1 + clueFieldLen;
 						}
 					}
+					System.out.print(_Sep2);
 				}
 				final InputString inputString = new InputString(sc);
 				longQuestion = longQuestion || inputString._nLinesOfResponse > 1;
 				final String response = inputString._inputString;
 				if (response.length() == 0) {
-					String prompt = "\t" + card.getBrokenUpString(
-							_quizDirection == QuizDirection.B_TO_A, _MaxLenForQuizQuestion);
-					prompt += " Get it right?";
-					final YesNoResponse yesNoResponse = new YesNoResponse(sc, prompt, true);
+					int nUsedOnCurrentLine = 0;
+					for (int k = 0; k < nAnswerFields;) {
+						final String answerField = answerFields[k];
+						final int answerFieldLen = answerField.length();
+						if (nUsedOnCurrentLine == 0) {
+							System.out.printf("%s%s", _Indent, answerField);
+							nUsedOnCurrentLine = _IndentLen + answerFieldLen;
+							++k;
+						} else if (nUsedOnCurrentLine + 1 + answerFieldLen > _MaxLineLen) {
+							System.out.println();
+							nUsedOnCurrentLine = 0;
+						} else {
+							System.out.printf(" %s", answerField);
+							++k;
+						}
+					}
+					final String prompt = _Sep2 + "Get it right?";
+					final int promptLen = prompt.length();
+					if (nUsedOnCurrentLine + promptLen + _RoomLen <= _MaxLineLen) {
+						System.out.print(prompt);
+					} else {
+						System.out.println();
+						System.out.printf("%sGet it right?");
+					}
+					final YesNoResponse yesNoResponse = new YesNoResponse(sc, true);
 					gotItRight = yesNoResponse._yesValue;
 					_needLineFeed = !yesNoResponse._lastLineWasBlank;
 					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
@@ -680,14 +703,15 @@ public class FlashCardsGame {
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffStrings != null) {
 					/** Because diffStrings is not null, print out the answer. */
-					final String[] answerFields = answer.split(_WhiteSpace);
-					if (gotItRight) {
-						answerFields[0] = "" + _HeavyCheckChar + " " + answerFields[0];
-					}
-					final int nAnswerFields = answerFields.length;
 					int nUsedOnCurrentLine = 0;
 					for (int k = 0; k < nAnswerFields;) {
-						final String answerField = answerFields[k];
+						final String answerField;
+						if (gotItRight && k == 0) {
+							/** Combine the first answer field with a Heavy Check Mark. */
+							answerField = String.format("%c %s", _HeavyCheckChar, answerFields[0]);
+						} else {
+							answerField = answerFields[k];
+						}
 						final int answerFieldLen = answerField.length();
 						if (nUsedOnCurrentLine == 0) {
 							System.out.printf("%s%s", _Indent, answerField);
@@ -733,8 +757,7 @@ public class FlashCardsGame {
 							System.out.printf("%s%s", _Indent, fullYesNoPrompt);
 						}
 					}
-					final YesNoResponse yesNoResponse = new YesNoResponse(sc, fullYesNoPrompt,
-							gotItRight);
+					final YesNoResponse yesNoResponse = new YesNoResponse(sc, gotItRight);
 					_needLineFeed = !yesNoResponse._lastLineWasBlank;
 				} else {
 					_needLineFeed = longQuestion;
@@ -757,10 +780,8 @@ public class FlashCardsGame {
 	private static class YesNoResponse {
 		private final boolean _yesValue, _lastLineWasBlank;
 
-		private YesNoResponse(final Scanner sc, final String fullYesNoPrompt,
-				final boolean defaultYesValue) {
+		private YesNoResponse(final Scanner sc, final boolean defaultYesValue) {
 			final char otherChar = defaultYesValue ? _NoChar : _YesChar;
-			System.out.print(fullYesNoPrompt);
 			final InputString inputString = new InputString(sc);
 			final String response = inputString._inputString;
 			final boolean lastLineWasBlank = inputString._lastLineWasBlank;

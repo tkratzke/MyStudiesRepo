@@ -94,7 +94,7 @@ public class ResponseEvaluator {
 			return MatchType.MATCHED_INCLUDING_DIACRITICS;
 		}
 		final String s0b = FlashCardsGame.StripVNDiacritics(s0a);
-		final String s1b = FlashCardsGame.StripVNDiacritics(s0b);
+		final String s1b = FlashCardsGame.StripVNDiacritics(s1a);
 		if (s0b.equalsIgnoreCase(s1b)) {
 			return MatchType.MATCHED_EXCEPT_DIACRITICS_ARE_WRONG;
 		}

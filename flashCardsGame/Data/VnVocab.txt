@@ -14,36 +14,36 @@
   9.	lúc                      	at (some time)
  10.	ở                        	am, at, in, on
 
- 11.	anh sẽ chơi chess lúc một	I will do chess at 1:45
-    	giờ bốn mươi lăm         	(anh)
+ 11.	tôi sẽ chơi chess lúc một	I will do chess at 1:45
+    	giờ bốn mươi lăm         	(tôi)
 
- 12.	hôm nay anh sẽ đi gym từ 	today I will go to the
+ 12.	hôm nay tôi sẽ đi gym từ 	today I will go to the
     	chín giờ đến mười một giờ	gym from 9:00 until 11:30
-    	ba mươi                  	(anh)
+    	ba mươi                  	(tôi)
 
- 13.	anh sẽ nói chuyện với    	I will talk with Thal at
-    	Thal lúc mười hai giờ    	12:15 (anh)
+ 13.	tôi sẽ nói chuyện với    	I will talk with Thal at
+    	Thal lúc mười hai giờ    	12:15 (tôi)
     	mười lăm                 
 
- 14.	anh sẽ đi bơi từ mười hai	I will go swimming from
-    	giờ đến ba giờ ba mươi   	2:00 until 3:30 (anh)
+ 14.	tôi sẽ đi bơi từ mười hai	I will go swimming from
+    	giờ đến ba giờ ba mươi   	2:00 until 3:30 (tôi)
 
- 15.	trưa nay anh sẽ làm việc 	today I will work with G
-    	với G                    	in the afternoon (anh)
+ 15.	trưa nay tôi sẽ làm việc 	today I will work with G
+    	với G                    	in the afternoon (tôi)
 
- 16.	anh sẽ nói chuyện bao giờ	I will talk to you when
-    	em dậy                   	you wake up (anh)
+ 16.	tôi sẽ nói chuyện bao giờ	I will talk to you when
+    	em dậy                   	you wake up (tôi)
 
- 17.	chác, anh sẽ không đi gym	probably I will not go to
-    	hay đi bơi               	the gym or swim (anh)
+ 17.	chác, tôi sẽ không đi gym	probably I will not go to
+    	hay đi bơi               	the gym or swim (tôi)
 
- 18.	anh sẽ học Tiêng Việt với	I will study VN with Thal
-    	Thal lúc mười hai giờ    	from 12:15 to 12:30 (anh)
+ 18.	tôi sẽ học Tiêng Việt với	I will study VN with Thal
+    	Thal lúc mười hai giờ    	from 12:15 to 12:30 (tôi)
     	mười lăm đến mười hai giờ
     	ba mươi                  
 
- 19.	có thể anh cũng sẽ học   	maybe I will also study
-    	toán với Lan             	math with Lan (anh)
+ 19.	có thể tôi cũng sẽ học   	maybe I will also study
+    	toán với Lan             	math with Lan (tôi)
 
  20.	dâu tây                  	a strawberry
 
@@ -321,8 +321,8 @@
 231.	buổi                     	time designator
 232.	trưa                     	noon
 233.	buổi trưa                	afternoon
-234.	anh khỏe không           	how are you (to male)
-235.	anh khỏe                 	I'm fine (for a male)
+234.	anh khỏe không           	how are you (anh)
+235.	tôi khỏe                 	I'm fine
 236.	ăn sáng                  	to have breakfast
 237.	mười sáu                 	sixteen
 238.	một trăm năm mươi lăm    	one hundred fifty five
@@ -342,7 +342,7 @@
 
 251.	thứ tư                   	Wednesday
 252.	tháng giêng              	January
-253.	anh buồn ngủ             	I am sleepy
+253.	tôi buồn ngủ             	I am sleepy
 254.	buồn ngủ                 	sleepy
 255.	mệt                      	tired
 256.	bây giờ                  	now
@@ -389,8 +389,8 @@
 287.	chồng tôi không phải là  	my husband is not VNese
     	người Việt Nam           
 
-288.	anh sẽ đi chợ            	you (male) will go
-    	                         	shopping (market)
+288.	anh sẽ đi chợ            	you will go
+    	                         	shopping (market) (anh)
 
 289.	tôi không nói tiếng việt 	I do not speak VN
 290.	tôi đang học tiếng Việt  	I am studying VN
@@ -417,7 +417,7 @@
 298.	trai                     	brother or male
 
 299.	anh sẽ đi mua đồ         	you will go shopping
-    	                         	(general)
+    	                         	(general) (anh)
 
 300.	chúng ta đã rửa nhà      	we (you and I) cleaned
     	                         	the house
@@ -538,14 +538,14 @@
 388.	ư                        	vowel in uhoo
 
 389.	anh làm nghế gì ạ        	what do you do or what is
-    	                         	your job
+    	                         	your job (anh)
 
 390.	tôi là giáo viên         	I am a teacher
 
-391.	anh làm việc ở đâu       	where do you work
+391.	anh làm việc ở đâu       	where do you work (anh)
 392.	tôi làm việc ở Hà Nội    	I work in Hà Nôi
-393.	anh học ở đâu            	where do you study
-394.	anh học ở nhà            	I study at home
+393.	anh học ở đâu            	where do you study (anh)
+394.	tôi học ở nhà            	I study at home
 395.	Chị sống ở đâu           	where do you live
 396.	xin chào                 	hello (polite)
 
@@ -567,8 +567,7 @@
 406.	ạ                        	word at end of sentence
     	                         	showing respect
 
-407.	anh làm việc             	làm việc is "work "
-408.	có phải là xxx khoong    	are you xxx
+407.	anh đang làm việc           you are working (anh)
 409.	nâu                      	brown
 410.	da                       	skin
 
