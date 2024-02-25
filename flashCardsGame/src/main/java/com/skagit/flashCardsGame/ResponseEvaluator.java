@@ -26,7 +26,7 @@ public class ResponseEvaluator {
 		 * We didn't get it exactly right. See if we got it "right enough" and then fill
 		 * _diffStrings with the answer plus up to two differences.
 		 */
-		_gotItRight = diacriticsTreatment == DiacriticsTreatment.LENIENT && almostRight;
+		_gotItRight = almostRight && diacriticsTreatment == DiacriticsTreatment.LENIENT;
 
 		final String[] answerFields = rawAnswer.split(FlashCardsGame._WhiteSpace);
 		final String[] responseFields = rawResponse.split(FlashCardsGame._WhiteSpace);

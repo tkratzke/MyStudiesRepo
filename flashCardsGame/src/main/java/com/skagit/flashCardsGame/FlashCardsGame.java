@@ -758,6 +758,7 @@ public class FlashCardsGame {
 						}
 					}
 					final YesNoResponse yesNoResponse = new YesNoResponse(sc, gotItRight);
+					gotItRight = yesNoResponse._yesValue;
 					_needLineFeed = !yesNoResponse._lastLineWasBlank;
 				} else {
 					_needLineFeed = longQuestion;
@@ -785,15 +786,13 @@ public class FlashCardsGame {
 			final InputString inputString = new InputString(sc);
 			final String response = inputString._inputString;
 			final boolean lastLineWasBlank = inputString._lastLineWasBlank;
-			final boolean yesValue;
 			if (response.length() == 0) {
-				yesValue = defaultYesValue;
+				_yesValue = defaultYesValue;
 			} else {
-				yesValue = Character.toUpperCase(response.charAt(0)) == otherChar
+				_yesValue = Character.toUpperCase(response.charAt(0)) == otherChar
 						? !defaultYesValue
 						: defaultYesValue;
 			}
-			_yesValue = yesValue;
 			_lastLineWasBlank = lastLineWasBlank;
 		}
 	}

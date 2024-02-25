@@ -389,8 +389,8 @@
 287.	chồng tôi không phải là  	my husband is not VNese
     	người Việt Nam           
 
-288.	anh sẽ đi chợ            	you will go
-    	                         	shopping (market) (anh)
+288.	anh sẽ đi chợ            	you will go shopping
+    	                         	(market) (anh)
 
 289.	tôi không nói tiếng việt 	I do not speak VN
 290.	tôi đang học tiếng Việt  	I am studying VN
@@ -567,74 +567,73 @@
 406.	ạ                        	word at end of sentence
     	                         	showing respect
 
-407.	anh đang làm việc           you are working (anh)
-409.	nâu                      	brown
-410.	da                       	skin
+407.	nâu                      	brown
+408.	da                       	skin
+409.	gia đình                 	a family
+410.	trò chơi                 	a game
 
-411.	gia đình                 	a family
-412.	trò chơi                 	a game
-413.	ngon                     	delicious
-414.	ma                       	a ghost
-415.	chăn                     	a blanket
-416.	ấm                       	be warm
-417.	cân                      	a scale
-418.	lên                      	up
-419.	mì Ý                     	spaghetti
-420.	xôi                      	sticky rice
+411.	ngon                     	delicious
+412.	ma                       	a ghost
+413.	chăn                     	a blanket
+414.	ấm                       	be warm
+415.	cân                      	a scale
+416.	lên                      	up
+417.	mì Ý                     	spaghetti
+418.	xôi                      	sticky rice
+419.	bơ                       	butter
+420.	mũ                       	a hat
 
-421.	bơ                       	butter
-422.	mũ                       	a hat
-423.	vui                      	to be happy
-424.	tôi/bạn                  	I/You (same age)
-425.	anh/chị                  	I/You (same gen older)
-426.	ông/bà cháu              	I/You (2 gen up)
-427.	cháu bác                 	I/You (1 gen up)
-428.	chú/cô cháu              	I/You (Uncle/Aunt)
-429.	gì                       	what (question)
-430.	người                    	a person
+421.	vui                      	to be happy
+422.	tôi/bạn                  	I/You (same age)
+423.	anh/chị                  	I/You (same gen older)
+424.	ông/bà cháu              	I/You (2 gen up)
+425.	cháu bác                 	I/You (1 gen up)
+426.	chú/cô cháu              	I/You (Uncle/Aunt)
+427.	gì                       	what (question)
+428.	người                    	a person
+429.	nườc                     	a country
+430.	nào                      	which (question)
 
-431.	nườc                     	a country
-432.	nào                      	which (question)
-433.	nghề                     	a job
-434.	nhân viên                	staff
-435.	văn phòng                	an office
-436.	sinh viên                	a university student
-437.	họa sĩ                   	an artist
-438.	ở đâu                    	where (question)
-439.	sống                     	to live
-440.	đặt tên                  	to name
+431.	nghề                     	a job
+432.	nhân viên                	staff
+433.	văn phòng                	an office
+434.	sinh viên                	a university student
+435.	họa sĩ                   	an artist
+436.	ở đâu                    	where (question)
+437.	sống                     	to live
+438.	đặt tên                  	to name
+439.	là                       	to be
+440.	quán phở                 	a phở house
 
-441.	là                       	to be
-442.	quán phở                 	a phở house
-443.	ăn trưa                  	to have lunch
-444.	ăn cơm                   	to eat lunch
-445.	quán cơm                 	a diner
-446.	ăn tối                   	to have dinner
-447.	nhà hàng                 	a big restaurant
-448.	dạy                      	to teach
-449.	pin                      	a battery
-450.	tủ                       	an armoire
+441.	ăn trưa                  	to have lunch
+442.	ăn cơm                   	to eat lunch
+443.	quán cơm                 	a diner
+444.	ăn tối                   	to have dinner
+445.	nhà hàng                 	a big restaurant
+446.	dạy                      	to teach
+447.	pin                      	a battery
+448.	tủ                       	an armoire
+449.	dỏ                       	dirty
+450.	na to                    	a soursop
 
-451.	dỏ                       	dirty
-452.	na to                    	a soursop
-453.	ga                       	a train station
-454.	đa                       	a banyon tree
-455.	đá                       	a rock
-456.	gõ                       	to tap hit or drum
+451.	ga                       	a train station
+452.	đa                       	a banyon tree
+453.	đá                       	a rock
+454.	gõ                       	to tap hit or drum
 
-457.	mõ                       	a tocsin (wooden bell or
+455.	mõ                       	a tocsin (wooden bell or
     	                         	bamboo tocsin)
 
-458.	hũ                       	vat
-459.	gỗ                       	wood
-460.	lễ                       	holiday
+456.	hũ                       	vat
+457.	gỗ                       	wood
+458.	lễ                       	holiday
+459.	xu                       	cent
+460.	so                       	to compare
 
-461.	xu                       	cent
-462.	so                       	to compare
-463.	xổ số                    	a lottery
+461.	xổ số                    	a lottery
 
-464.	ru                       	to put baby to sleep
+462.	ru                       	to put baby to sleep
     	                         	(lull)
 
-465.	cá rô                    	a perch (fish)
-466.	rổ                       	a basket
+463.	cá rô                    	a perch (fish)
+464.	rổ                       	a basket
