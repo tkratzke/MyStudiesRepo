@@ -32,14 +32,18 @@
     <ROW Directory="Data_Dir" Directory_Parent="APPDIR" DefaultDir="Data"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
     <ROW Directory="com_Dir" Directory_Parent="java_Dir" DefaultDir="com"/>
+    <ROW Directory="enums_Dir" Directory_Parent="flashCardsGame_Dir" DefaultDir="enums"/>
     <ROW Directory="flashCardsGame_Dir" Directory_Parent="skagit_Dir" DefaultDir="FLASHC~1|flashCardsGame"/>
-    <ROW Directory="java_Dir" Directory_Parent="APPDIR" DefaultDir="java"/>
+    <ROW Directory="java_Dir" Directory_Parent="main_Dir" DefaultDir="java"/>
+    <ROW Directory="main_Dir" Directory_Parent="src_Dir" DefaultDir="main"/>
     <ROW Directory="skagit_Dir" Directory_Parent="com_Dir" DefaultDir="skagit"/>
+    <ROW Directory="src_Dir" Directory_Parent="APPDIR" DefaultDir="src"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="APPDIR" ComponentId="{B22B7CA2-7801-4F3C-8FCC-5098D1BD466E}" Directory_="APPDIR" Attributes="0"/>
-    <ROW Component="Basics.txt" ComponentId="{2991E7B8-6311-4D6B-BBAD-FA5AA5DC97BB}" Directory_="Data_Dir" Attributes="0" KeyPath="FlashCardsGame.bat" Type="0"/>
-    <ROW Component="Card.java" ComponentId="{9AD38698-2960-4F6F-A825-1E87E819DD68}" Directory_="flashCardsGame_Dir" Attributes="0" KeyPath="Card.java" Type="0"/>
+    <ROW Component="BackupVnVocab.properties" ComponentId="{1D2E681B-41BE-4F22-8DBF-17EFF3498434}" Directory_="Data_Dir" Attributes="0" KeyPath="FlashCardsGame.bat" Type="0"/>
+    <ROW Component="Card.java" ComponentId="{E5B84CD1-106E-41B4-8B37-5FED7F432CE9}" Directory_="flashCardsGame_Dir" Attributes="0" KeyPath="Card.java" Type="0"/>
+    <ROW Component="ChangeType.java" ComponentId="{8F7DC055-4240-4778-8A99-BC820B249E2B}" Directory_="enums_Dir" Attributes="0" KeyPath="ChangeType.java" Type="0"/>
     <ROW Component="FlashCardsGame.jar" ComponentId="{92E4CEB1-E229-458E-9690-B5D365CC50FE}" Directory_="APPDIR" Attributes="0" KeyPath="FlashCardsGame.jar" Type="0"/>
     <ROW Component="ProductInformation" ComponentId="{2EB4AD36-AE9E-4A20-8705-8D9258F821E6}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
   </COMPONENT>
@@ -50,14 +54,22 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="FlashCardsGame.jar" Component_="FlashCardsGame.jar" FileName="FLASHC~1.JAR|FlashCardsGame.jar" Attributes="0" SourcePath="FlashCardsGame.jar" SelfReg="false"/>
     <ROW File="Card.java" Component_="Card.java" FileName="CARD~1.JAV|Card.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\Card.java" SelfReg="false"/>
-    <ROW File="Enums.java" Component_="Card.java" FileName="ENUMS~1.JAV|Enums.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\Enums.java" SelfReg="false"/>
+    <ROW File="ChangeType.java" Component_="ChangeType.java" FileName="CHANGE~1.JAV|ChangeType.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\enums\ChangeType.java" SelfReg="false"/>
+    <ROW File="DecayType.java" Component_="ChangeType.java" FileName="DECAYT~1.JAV|DecayType.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\enums\DecayType.java" SelfReg="false"/>
+    <ROW File="DiacriticsTreatment.java" Component_="ChangeType.java" FileName="DIACRI~1.JAV|DiacriticsTreatment.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\enums\DiacriticsTreatment.java" SelfReg="false"/>
+    <ROW File="MatchType.java" Component_="ChangeType.java" FileName="MATCHT~1.JAV|MatchType.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\enums\MatchType.java" SelfReg="false"/>
+    <ROW File="PropertyPlus.java" Component_="ChangeType.java" FileName="PROPER~1.JAV|PropertyPlus.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\enums\PropertyPlus.java" SelfReg="false"/>
+    <ROW File="QuizDirection.java" Component_="ChangeType.java" FileName="QUIZDI~1.JAV|QuizDirection.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\enums\QuizDirection.java" SelfReg="false"/>
     <ROW File="FlashCardsGame.java" Component_="Card.java" FileName="FLASHC~1.JAV|FlashCardsGame.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\FlashCardsGame.java" SelfReg="false"/>
+    <ROW File="InputString.java" Component_="Card.java" FileName="INPUTS~1.JAV|InputString.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\InputString.java" SelfReg="false"/>
+    <ROW File="LineBreakDown.java" Component_="Card.java" FileName="LINEBR~1.JAV|LineBreakDown.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\LineBreakDown.java" SelfReg="false"/>
     <ROW File="QuizGenerator.java" Component_="Card.java" FileName="QUIZGE~1.JAV|QuizGenerator.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizGenerator.java" SelfReg="false"/>
     <ROW File="QuizPlus.java" Component_="Card.java" FileName="QUIZPL~1.JAV|QuizPlus.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizPlus.java" SelfReg="false"/>
     <ROW File="QuizPlusTransition.java" Component_="Card.java" FileName="QUIZPL~2.JAV|QuizPlusTransition.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\QuizPlusTransition.java" SelfReg="false"/>
-    <ROW File="FlashCardsGame.bat" Component_="Basics.txt" FileName="FLASHC~1.BAT|FlashCardsGame.bat" Attributes="0" SourcePath="Data\FlashCardsGame.bat" SelfReg="false"/>
-    <ROW File="VnVocab.properties" Component_="Basics.txt" FileName="VNVOCA~1.PRO|VnVocab.properties" Attributes="0" SourcePath="Data\VnVocab.properties" SelfReg="false"/>
-    <ROW File="VnVocab.txt" Component_="Basics.txt" FileName="VnVocab.txt" Attributes="0" SourcePath="Data\VnVocab.txt" SelfReg="false"/>
+    <ROW File="ResponseEvaluator.java" Component_="Card.java" FileName="RESPON~1.JAV|ResponseEvaluator.java" Attributes="0" SourcePath="src\main\java\com\skagit\flashCardsGame\ResponseEvaluator.java" SelfReg="false"/>
+    <ROW File="FlashCardsGame.bat" Component_="BackupVnVocab.properties" FileName="FLASHC~1.BAT|FlashCardsGame.bat" Attributes="0" SourcePath="Data\FlashCardsGame.bat" SelfReg="false"/>
+    <ROW File="VnVocab.properties" Component_="BackupVnVocab.properties" FileName="VNVOCA~1.PRO|VnVocab.properties" Attributes="0" SourcePath="Data\VnVocab.properties" SelfReg="false"/>
+    <ROW File="VnVocab.txt" Component_="BackupVnVocab.properties" FileName="VnVocab.txt" Attributes="0" SourcePath="Data\VnVocab.txt" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
@@ -134,7 +146,8 @@
     <ROW Feature_="MainFeature" Component_="ProductInformation"/>
     <ROW Feature_="MainFeature" Component_="FlashCardsGame.jar"/>
     <ROW Feature_="MainFeature" Component_="Card.java"/>
-    <ROW Feature_="MainFeature" Component_="Basics.txt"/>
+    <ROW Feature_="MainFeature" Component_="ChangeType.java"/>
+    <ROW Feature_="MainFeature" Component_="BackupVnVocab.properties"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
