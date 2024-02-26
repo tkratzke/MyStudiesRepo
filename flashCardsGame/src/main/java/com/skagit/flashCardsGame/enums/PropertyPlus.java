@@ -80,7 +80,6 @@ public enum PropertyPlus {
 		} else {
 			s1 = s;
 		}
-		final int len1 = s1.length();
 		switch (this) {
 			case ALLOWABLE_MISS_PERCENTAGE :
 			case PERCENTAGE_FOR_RECENT_WORDS :
@@ -90,15 +89,15 @@ public enum PropertyPlus {
 			case TOP_CARD_INDEX :
 			case RANDOM_SEED :
 				try {
-					final int i = Integer.parseInt(s1.substring(0, len1 - 1));
+					final int i = Integer.parseInt(s1);
 					switch (this) {
 						case ALLOWABLE_MISS_PERCENTAGE :
 						case PERCENTAGE_FOR_RECENT_WORDS :
 							return 0 <= i && i <= 100 ? s : _defaultStringValue;
 						case NUMBER_OF_NEW_WORDS :
+							return i >= 1 ? s : _defaultStringValue;
 						case NUMBER_OF_RECENT_WORDS :
 						case NUMBER_OF_TIMES_FOR_NEW_WORDS :
-							return i >= 1 ? s : _defaultStringValue;
 						case TOP_CARD_INDEX :
 							return i >= 0 ? s : _defaultStringValue;
 						case RANDOM_SEED :

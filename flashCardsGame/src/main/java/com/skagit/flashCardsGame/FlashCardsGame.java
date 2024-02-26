@@ -41,7 +41,6 @@ public class FlashCardsGame {
 	final private static int _Sep2Len = _Sep2.length();
 	final private static int _RoomLen = 10;
 	final private static String _CountAsRight = "Count as Right? ";
-	final private static int _CountAsRightLen = _CountAsRight.length();
 
 	final private static char _ReturnChar = '\u23CE';
 	final private static char _HelpChar = 'H';
@@ -666,14 +665,16 @@ public class FlashCardsGame {
 							++k;
 						}
 					}
-					if (nUsedOnCurrentLine + _Sep2Len + _CountAsRightLen
-							+ _RoomLen <= _MaxLineLen) {
-						System.out.printf("%s%s", _Sep2, _CountAsRight);
+					final boolean defaultYesValue = true;
+					final String prompt = getFullYesNoPrompt(_CountAsRight, defaultYesValue);
+					final int promptLen = prompt.length();
+					if (nUsedOnCurrentLine + _Sep2Len + promptLen + _RoomLen <= _MaxLineLen) {
+						System.out.printf("%s%s", _Sep2, prompt);
 					} else {
 						System.out.println();
-						System.out.printf("%s%s%", _Indent, _CountAsRight);
+						System.out.printf("%s%s%", _Indent, prompt);
 					}
-					final YesNoResponse yesNoResponse = new YesNoResponse(sc, true);
+					final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
 					gotItRight = yesNoResponse._yesValue;
 					_needLineFeed = !yesNoResponse._lastLineWasBlank;
 					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
