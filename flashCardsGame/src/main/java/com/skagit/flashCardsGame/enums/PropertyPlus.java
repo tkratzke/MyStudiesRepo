@@ -3,11 +3,18 @@ package com.skagit.flashCardsGame.enums;
 import java.util.Properties;
 
 public enum PropertyPlus {
-	NUMBER_OF_NEW_WORDS(String.valueOf(1), "Specification of Window:"), //
+	NUMBER_OF_NEW_WORDS(String.valueOf(1), //
+			"*=Non-QuizGenerator Property\n" + //
+					"Specification of Window:"), //
 	NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
 	TOP_CARD_INDEX(String.valueOf(3), ""), //
 
 	QUIZ_DIRECTION("A->B", "\"A->B\" or \"B->A\":"), //
+	CLUMPING("A", //
+			"A: Clump Duplicate As\n" //
+					+ "B: Clump Duplicate Bs\n" //
+					+ "NONE: No clumping"), //
+
 	DIACRITICS_TREATMENT( //
 			DiacriticsTreatment.STRICT.name(), //
 			DiacriticsTreatment.STRICT._explanation + //
@@ -113,11 +120,14 @@ public enum PropertyPlus {
 		switch (this) {
 			case DECAY_TYPE :
 			case DIACRITICS_TREATMENT :
+			case CLUMPING :
 				try {
 					if (this == DECAY_TYPE) {
 						DecayType.valueOf(s);
-					} else {
+					} else if (this == DIACRITICS_TREATMENT) {
 						DiacriticsTreatment.valueOf(s);
+					} else {
+						Clumping.valueOf(s);
 					}
 				} catch (final IllegalArgumentException e) {
 					return _defaultStringValue;

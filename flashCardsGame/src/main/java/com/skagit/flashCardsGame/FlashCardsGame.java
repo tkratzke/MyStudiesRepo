@@ -19,6 +19,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 import com.skagit.flashCardsGame.enums.ChangeType;
+import com.skagit.flashCardsGame.enums.Clumping;
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
 import com.skagit.flashCardsGame.enums.QuizDirection;
@@ -34,6 +35,9 @@ public class FlashCardsGame {
 	final static String _Indent = "   ";
 	final static int _IndentLen = _Indent.length();
 	final private static int _MaxLineLen = 85;
+
+	final private static int _MaxLenForCardPart = 35;
+	final private static int _BlockSize = 10;
 
 	final private static String _Sep1 = "::";
 	final private static String _Sep2 = ": ";
@@ -52,8 +56,13 @@ public class FlashCardsGame {
 	final private static String _YesString = "Yes";
 	final static String _NoString = "No";
 	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
-	final private static int _MaxLenForCardPart = 35;
-	final private static int _BlockSize = 10;
+
+	/** Either of the following two FieldSeparators seems to work. */
+	final static String _FieldSeparator = "\\s*\\t\\s*";
+	@SuppressWarnings("unused")
+	final private static String _FieldSeparator1 = "(\\s*\\t\\s*)+";
+	final private static String _PropertiesEnding = ".properties";
+	final static String _WhiteSpace = "\\s+";
 
 	final private static String _HelpString = String.format(
 			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, "
@@ -108,19 +117,14 @@ public class FlashCardsGame {
 		return sb.toString();
 	}
 
-	/** Either of the following two FieldSeparators seems to work. */
-	final static String _FieldSeparator = "\\s*\\t\\s*";
-	@SuppressWarnings("unused")
-	final private static String _FieldSeparator1 = "(\\s*\\t\\s*)+";
-	final private static String _PropertiesEnding = ".properties";
-	final static String _WhiteSpace = "\\s+";
-
+	/** Non-static fields. */
 	final private File _propertiesFile;
 	final private Properties _properties;
 
 	final private long _randomSeed;
 	final private QuizDirection _quizDirection;
 	final private DiacriticsTreatment _diacriticsTreatment;
+	final private Clumping _clumping;
 
 	final private Card[] _cards;
 	final private QuizGenerator _quizGenerator;
@@ -162,6 +166,8 @@ public class FlashCardsGame {
 		_diacriticsTreatment = DiacriticsTreatment
 				.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
 		_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
+		final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
+		_clumping = Clumping.valueOf(clumpingString);
 		final TreeMap<Card, Card> cardMap = loadCardMap();
 		final int nCards = cardMap.size();
 		_cards = cardMap.keySet().toArray(new Card[nCards]);
@@ -259,25 +265,16 @@ public class FlashCardsGame {
 		final int nCards = _cards.length;
 		final int[] dupCounts = new int[]{0, 0};
 		for (int iPass = 0; iPass < 2; ++iPass) {
-			/** If _quizIsA_B, we want to do the A-side second. */
-			final Comparator<Card> comparator;
-			final String sideBeingChecked;
-			if (iPass == 1) {
-				comparator = _quizDirection == QuizDirection.A_TO_B
-						? Card._ByASideOnly
-						: Card._ByBSideOnly;
-				sideBeingChecked = _quizDirection == QuizDirection.A_TO_B ? "A-Side" : "B-Side";
-			} else {
-				comparator = _quizDirection == QuizDirection.A_TO_B
-						? Card._ByBSideOnly
-						: Card._ByASideOnly;
-				sideBeingChecked = _quizDirection == QuizDirection.A_TO_B ? "B-Side" : "A-Side";
-			}
+			final Comparator<Card> comparator = iPass == 0
+					? Card._ByASideOnly
+					: Card._ByBSideOnly;
+			final String sideBeingChecked = iPass == 0 ? "A-Side" : "B-Side";
 			final TreeMap<Card, ArrayList<Card>> kingToSlaves = new TreeMap<>(comparator);
 			for (int k = 0; k < nCards; ++k) {
 				final Card card = _cards[k];
 				final ArrayList<Card> slaves = kingToSlaves.get(card);
 				if (slaves != null) {
+					/** card has an existing king. */
 					final Card oldCard = kingToSlaves.ceilingKey(card);
 					if (_needLineFeed) {
 						System.out.println();
@@ -287,8 +284,13 @@ public class FlashCardsGame {
 					System.out.println(oldCard.getString());
 					System.out.println(card.getString());
 					_needLineFeed = true;
-					slaves.add(card);
-					_cards[k] = null;
+					final boolean makeSlave = iPass == 0
+							? (_clumping == Clumping.A)
+							: (_clumping == Clumping.B);
+					if (makeSlave) {
+						slaves.add(card);
+						_cards[k] = null;
+					}
 				} else {
 					kingToSlaves.put(card, new ArrayList<>());
 				}

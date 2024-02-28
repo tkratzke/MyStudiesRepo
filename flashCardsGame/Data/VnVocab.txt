@@ -3,186 +3,187 @@
   2.	trên                               	on, on top of, or above
   3.	dưới                               	under
   4.	trái                               	to the left
-  5.	trái                               	wrong
-  6.	trái                               	fruit designator (t )
-  7.	phải                               	to the right
-  8.	trong                              	in or inside
-  9.	từ                                 	from (some time)
+  5.	phải                               	to the right
+  6.	trong                              	in or inside
+  7.	từ                                 	from (some time)
+  8.	đến                                	to (some time, so "until")
+  9.	lúc                                	at (some time)
 
- 10.	đến                                	to (some time, so "until")
- 11.	lúc                                	at (some time)
- 12.	ở                                  	am, at, in, on
+ 10.	ở                                  	am, at, in, on
 
- 13.	tôi sẽ chơi chess lúc một giờ bốn  	I will do chess at 1:45 (tôi)
+ 11.	tôi sẽ chơi chess lúc một giờ bốn  	I will do chess at 1:45 (tôi)
     	mươi lăm                           
 
- 14.	hôm nay tôi sẽ đi gym từ chín giờ  	today I will go to the gym from
+ 12.	hôm nay tôi sẽ đi gym từ chín giờ  	today I will go to the gym from
     	đến mười một giờ ba mươi           	9:00 until 11:30 (tôi)
 
- 15.	tôi sẽ nói chuyện với Thal lúc mười	I will talk with Thal at 12:15
+ 13.	tôi sẽ nói chuyện với Thal lúc mười	I will talk with Thal at 12:15
     	hai giờ mười lăm                   	(tôi)
 
- 16.	tôi sẽ đi bơi từ mười hai giờ đến  	I will go swimming from 2:00 until
+ 14.	tôi sẽ đi bơi từ mười hai giờ đến  	I will go swimming from 2:00 until
     	ba giờ ba mươi                     	3:30 (tôi)
 
- 17.	trưa nay tôi sẽ làm việc với G     	today I will work with G in the
+ 15.	trưa nay tôi sẽ làm việc với G     	today I will work with G in the
     	                                   	afternoon (tôi)
 
- 18.	tôi sẽ nói chuyện bao giờ em dậy   	I will talk to you when you wake up
+ 16.	tôi sẽ nói chuyện bao giờ em dậy   	I will talk to you when you wake up
     	                                   	(tôi)
 
- 19.	chác, tôi sẽ không đi gym hay đi   	probably I will not go to the gym
+ 17.	chác, tôi sẽ không đi gym hay đi   	probably I will not go to the gym
     	bơi                                	or swim (tôi)
 
- 20.	tôi sẽ học Tiêng Việt với Thal lúc 	I will study VN with Thal from
+ 18.	tôi sẽ học Tiêng Việt với Thal lúc 	I will study VN with Thal from
     	mười hai giờ mười lăm đến mười hai 	12:15 to 12:30 (tôi)
     	giờ ba mươi                        
 
- 21.	có thể tôi cũng sẽ học toán với Lan	maybe I will also study math with
+ 19.	có thể tôi cũng sẽ học toán với Lan	maybe I will also study math with
     	                                   	Lan (tôi)
 
- 22.	này                                	this
- 23.	cái                                	class'f'r/inanimate objects
- 24.	quyển                              	class'f'r/books and volumes
- 25.	ly                                 	class'f'r/cups and glasses(c...)
- 26.	cốc                                	class'f'r/cups and glasses(l...)
- 27.	bát                                	class'f'r/bowls
- 28.	bức                                	class'f'r/narrow rect'g'lar things
- 29.	tờ                                 	class'f'r/paper-like things
+ 20.	này                                	this
+ 21.	cái                                	class'f'r/inanimate objects
+ 22.	quyển                              	class'f'r/books and volumes
+ 23.	ly                                 	class'f'r/cups and glasses(c...)
+ 24.	cốc                                	class'f'r/cups and glasses(l...)
+ 25.	bát                                	class'f'r/bowls
+ 26.	bức                                	class'f'r/narrow rect'g'lar things
+ 27.	tờ                                 	class'f'r/paper-like things
+ 28.	đều                                	all or both
+ 29.	cô ấy                              	she or her
 
- 30.	đều                                	all or both
- 31.	cô ấy                              	she or her
- 32.	anh ấy                             	he or him
- 33.	cổ                                 	shortened form of cô ấy
- 34.	cổ                                 	a neck
- 35.	ảnh                                	shortened form of anh ấy
- 36.	ảnh                                	an image or photo
- 37.	tranh                              	a picture or painting
- 38.	mấy cái                            	how many (needs something)
- 39.	mấy quyển                          	how many books
+ 30.	anh ấy                             	he or him
+ 31.	cổ                                 	shortened form of cô ấy
+ 32.	cổ                                 	a neck
+ 33.	ảnh                                	shortened form of anh ấy
+ 34.	ảnh                                	an image or photo
+ 35.	tranh                              	a picture or painting
+ 36.	mấy cái                            	how many (needs something)
+ 37.	mấy quyển                          	how many books
+ 38.	hai quyển                          	two books
+ 39.	tôi thích ly bia Việt Nam này      	I like this cup of VN beer
 
- 40.	hai quyển                          	two books
- 41.	tôi thích ly bia Việt Nam này      	I like this cup of VN beer
- 42.	hai quyển vở này đều là của tôi    	these two notebooks are both mine
- 43.	ly cà phê đó là của bố             	that cup of coffee is dad's
- 44.	tôi thích bát canh này             	I like this bowl of soup
- 45.	những tờ giấy đó là của ai         	whose pieces of paper are those
- 46.	những tờ giấy đó là của chúng tôi  	those pieces of paper are ours
- 47.	bức tranh này là của anh trai      	this picture is the older brother's
- 48.	bức tranh này là của ai            	whose picture is this
- 49.	chị gái thích bức ảnh này          	the older sister likes this photo
+ 40.	hai quyển vở này đều là của tôi    	these two notebooks are both mine
+ 41.	ly cà phê đó là của bố             	that cup of coffee is dad's
+ 42.	tôi thích bát canh này             	I like this bowl of soup
+ 43.	những tờ giấy đó là của ai         	whose pieces of paper are those
+ 44.	những tờ giấy đó là của chúng tôi  	those pieces of paper are ours
+ 45.	bức tranh này là của anh trai      	this picture is the older brother's
+ 46.	bức tranh này là của ai            	whose picture is this
+ 47.	chị gái thích bức ảnh này          	the older sister likes this photo
 
- 50.	anh trai không thích bức ảnh kia   	the older brother doesn't like that
+ 48.	anh trai không thích bức ảnh kia   	the older brother doesn't like that
     	                                   	photo over there
 
- 51.	Việt Nam                           	Vietnam
- 52.	nước Mỹ                            	United States
- 53.	nước anh                           	United Kingdom
- 54.	Trung Quốc                         	China
- 55.	người Việt Nam                     	Vietnamese person
- 56.	người Mỹ                           	American person
- 57.	người Pháp                         	French person
- 58.	người Trung Quốc                   	Chinese person
- 59.	bố                                 	dad
+ 49.	Việt Nam                           	Vietnam
 
- 60.	mẹ                                 	mom
- 61.	mẹ                                 	a mother
- 62.	con trai                           	a son
- 63.	con gái                            	a daughter
- 64.	từ từ                              	slow down
- 65.	nhà                                	a home or a house
- 66.	anh trai                           	an older brother
- 67.	chị gái                            	an older sister
- 68.	em trai                            	a younger brother
- 69.	em gái                             	a younger sister
+ 50.	nước Mỹ                            	United States
+ 51.	nước anh                           	United Kingdom
+ 52.	Trung Quốc                         	China
+ 53.	người Việt Nam                     	Vietnamese person
+ 54.	người Mỹ                           	American person
+ 55.	người Pháp                         	French person
+ 56.	người Trung Quốc                   	Chinese person
+ 57.	bố                                 	dad
+ 58.	mẹ                                 	mom
+ 59.	mẹ                                 	a mother
 
- 70.	vợ                                 	a wife
- 71.	chồng                              	a husband
- 72.	ông                                	a grandfather
- 73.	bác                                	an uncle
- 74.	cô                                 	an aunt
- 75.	giáo viên                          	a teacher
- 76.	học sinh                           	a student
- 77.	bác sĩ                             	a physician
- 78.	y tá                               	a nurse
- 79.	luật sư                            	a lawyer
+ 60.	con trai                           	a son
+ 61.	con gái                            	a daughter
+ 62.	từ từ                              	slow down
+ 63.	nhà                                	a home or a house
+ 64.	anh trai                           	an older brother
+ 65.	chị gái                            	an older sister
+ 66.	em trai                            	a younger brother
+ 67.	em gái                             	a younger sister
+ 68.	vợ                                 	a wife
+ 69.	chồng                              	a husband
 
- 80.	tiền                               	money
- 81.	đầu bếp                            	a chef
- 82.	dao                                	a knife
- 83.	cảnh sát                           	a police officer
- 84.	súng                               	a gun
- 85.	táo                                	an apple
- 86.	chuối                              	a banana
- 87.	thích                              	to like
- 88.	nho                                	a grape
- 89.	xoài                               	a mango
+ 70.	ông                                	a grandfather
+ 71.	bác                                	an uncle
+ 72.	cô                                 	an aunt
+ 73.	giáo viên                          	a teacher
+ 74.	học sinh                           	a student
+ 75.	bác sĩ                             	a physician
+ 76.	y tá                               	a nurse
+ 77.	luật sư                            	a lawyer
+ 78.	tiền                               	money
+ 79.	đầu bếp                            	a chef
 
- 90.	cảm ơn                             	thank you
- 91.	tên                                	a name
- 92.	bánh mì                            	bread
- 93.	pizza                              	a pizza
- 94.	phở                                	pho
- 95.	hoa quả                            	a fruit
- 96.	ăn                                 	to eat
- 97.	uống                               	to drink
- 98.	nước                               	water
- 99.	sữa                                	milk
+ 80.	dao                                	a knife
+ 81.	cảnh sát                           	a police officer
+ 82.	súng                               	a gun
+ 83.	táo                                	an apple
+ 84.	chuối                              	a banana
+ 85.	thích                              	to like
+ 86.	nho                                	a grape
+ 87.	xoài                               	a mango
+ 88.	trái                               	wrong
+ 89.	cảm ơn                             	thank you
 
-100.	trà                                	tea
-101.	cà phê                             	coffee
-102.	sandwich                           	a sandwich
-103.	chả giò                            	an egg roll
-104.	nem                                	a spring roll
-105.	kem                                	ice cream
-106.	bít tết                            	beef steak
-107.	xe                                 	a car (x 1 word)
-108.	mô tô                              	a car (m )
-109.	ô tô                               	a car (o )
+ 90.	tên                                	a name
+ 91.	bánh mì                            	bread
+ 92.	pizza                              	a pizza
+ 93.	phở                                	pho
+ 94.	hoa quả                            	a fruit
+ 95.	ăn                                 	to eat
+ 96.	uống                               	to drink
+ 97.	nước                               	water
+ 98.	sữa                                	milk
+ 99.	trà                                	tea
 
-110.	xe hơi                             	a car (x 2 words)
-111.	đi xe                              	to go by car
-112.	xe đạp                             	a bicycle
-113.	xe gắn máy                         	a motorcycle
-114.	xe xích lô                         	a cyclo
-115.	xe lửa                             	a train
-116.	làm                                	to do or to make
-117.	hát                                	to sing
-118.	nhảy                               	to dance
-119.	nhảy                               	to jump
+100.	cà phê                             	coffee
+101.	sandwich                           	a sandwich
+102.	chả giò                            	an egg roll
+103.	nem                                	a spring roll
+104.	kem                                	ice cream
+105.	bít tết                            	beef steak
+106.	xe                                 	a car (x 1 word)
+107.	mô tô                              	a car (m )
+108.	ô tô                               	a car (o )
+109.	xe hơi                             	a car (x 2 words)
 
-120.	đọc                                	to read
-121.	sách                               	a book
-122.	viết                               	to write
-123.	thư                                	a letter
-124.	nghe                               	to listen
-125.	nhạc                               	music
-126.	báo                                	a newspaper
-127.	chạy bộ                            	to run
-128.	bơi                                	to swim
-129.	chơi                               	to play
+110.	đi xe                              	to go by car
+111.	xe đạp                             	a bicycle
+112.	xe gắn máy                         	a motorcycle
+113.	xe xích lô                         	a cyclo
+114.	xe lửa                             	a train
+115.	làm                                	to do or to make
+116.	hát                                	to sing
+117.	nhảy                               	to dance
+118.	nhảy                               	to jump
+119.	đọc                                	to read
 
-130.	chơi                               	do (for games)
-131.	xem                                	to see or to watch
-132.	nói chuyện                         	to speak with each other
-133.	ti vi                              	TV
-134.	mèo                                	a cat
-135.	chó                                	a dog
-136.	cừu                                	a sheep
-137.	ngựa                               	a horse
-138.	khỏ                                	a monkey
-139.	thỏ                                	a rabbit
+120.	sách                               	a book
+121.	viết                               	to write
+122.	thư                                	a letter
+123.	nghe                               	to listen
+124.	nhạc                               	music
+125.	báo                                	a newspaper
+126.	chạy bộ                            	to run
+127.	bơi                                	to swim
+128.	chơi                               	to play
+129.	chơi                               	do (for games)
 
-140.	chim                               	a bird
-141.	gà                                 	a chicken
-142.	cá                                 	a fish
-143.	lợn                                	a pig
-144.	vịt                                	a duck
-145.	chuột                              	a mouse
-146.	điện thoại                         	a telephone
-147.	số                                 	a number
-148.	bút                                	a pen
-149.	vở                                 	a notebook
+130.	xem                                	to see or to watch
+131.	nói chuyện                         	to speak with each other
+132.	ti vi                              	TV
+133.	mèo                                	a cat
+134.	chó                                	a dog
+135.	cừu                                	a sheep
+136.	ngựa                               	a horse
+137.	khỏ                                	a monkey
+138.	thỏ                                	a rabbit
+139.	chim                               	a bird
+
+140.	gà                                 	a chicken
+141.	cá                                 	a fish
+142.	lợn                                	a pig
+143.	vịt                                	a duck
+144.	chuột                              	a mouse
+145.	điện thoại                         	a telephone
+146.	số                                 	a number
+147.	bút                                	a pen
+148.	vở                                 	a notebook
+149.	trái                               	fruit designator (t )
 
 150.	đào                                	a peach
 151.	bàn                                	a table

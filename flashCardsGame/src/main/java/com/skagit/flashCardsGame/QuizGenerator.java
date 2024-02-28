@@ -9,13 +9,15 @@ import com.skagit.flashCardsGame.enums.DecayType;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
 
 public class QuizGenerator {
-	private int _topCardIndex;
 	final private int _maxNNewWords;
 	final private int _maxNRecentWords;
+	private int _topCardIndex;
+
 	final private int _nRepeatsOfNew;
-	final private DecayType _decayType;
-	final private int _allowablePerCent;
 	final private int _percentageForRecentsI;
+	final private DecayType _decayType;
+
+	final private int _allowablePerCent;
 
 	final private Random _r;
 
@@ -49,19 +51,41 @@ public class QuizGenerator {
 	}
 
 	void updateProperties(final Properties properties) {
-		properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName,
-				Integer.toString(_topCardIndex));
-		properties.put(PropertyPlus.NUMBER_OF_NEW_WORDS._propertyName,
-				Integer.toString(_maxNNewWords));
-		properties.put(PropertyPlus.NUMBER_OF_TIMES_FOR_NEW_WORDS._propertyName,
-				Integer.toString(_nRepeatsOfNew));
-		properties.put(PropertyPlus.NUMBER_OF_RECENT_WORDS._propertyName,
-				Integer.toString(_maxNRecentWords));
-		properties.put(PropertyPlus.DECAY_TYPE._propertyName, _decayType.name());
-		properties.put(PropertyPlus.ALLOWABLE_MISS_PERCENTAGE._propertyName,
-				Integer.toString(_allowablePerCent) + '%');
-		properties.put(PropertyPlus.PERCENTAGE_FOR_RECENT_WORDS._propertyName,
-				Integer.toString(_percentageForRecentsI) + '%');
+		for (final PropertyPlus propertyPlus : PropertyPlus._Values) {
+			switch (propertyPlus) {
+				case ALLOWABLE_MISS_PERCENTAGE :
+					properties.put(propertyPlus._propertyName,
+							Integer.toString(_allowablePerCent) + '%');
+					break;
+				case CLUMPING :
+					break;
+				case DECAY_TYPE :
+					properties.put(propertyPlus._propertyName, _decayType.name());
+					break;
+				case DIACRITICS_TREATMENT :
+					break;
+				case NUMBER_OF_NEW_WORDS :
+					properties.put(propertyPlus._propertyName, Integer.toString(_maxNNewWords));
+					break;
+				case NUMBER_OF_RECENT_WORDS :
+					properties.put(propertyPlus._propertyName, Integer.toString(_maxNRecentWords));
+					break;
+				case NUMBER_OF_TIMES_FOR_NEW_WORDS :
+					properties.put(propertyPlus._propertyName, Integer.toString(_nRepeatsOfNew));
+					break;
+				case PERCENTAGE_FOR_RECENT_WORDS :
+					properties.put(propertyPlus._propertyName,
+							Integer.toString(_percentageForRecentsI) + '%');
+					break;
+				case QUIZ_DIRECTION :
+					break;
+				case RANDOM_SEED :
+					break;
+				case TOP_CARD_INDEX :
+					properties.put(propertyPlus._propertyName, Integer.toString(_topCardIndex));
+					break;
+			}
+		}
 	}
 
 	long[] getPropertyValues() {
@@ -308,6 +332,7 @@ public class QuizGenerator {
 			case PERCENTAGE_FOR_RECENT_WORDS :
 			case QUIZ_DIRECTION :
 			case RANDOM_SEED :
+			case CLUMPING :
 		}
 	}
 
