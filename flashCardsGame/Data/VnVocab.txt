@@ -11,32 +11,32 @@
 
  10.	ở                                  	am, at, in, on
 
- 11.	tôi sẽ chơi chess lúc một giờ bốn  	I will do chess at 1:45 (tôi)
+ 11.	tôi sẽ chơi chess lúc một giờ bốn  	I will do chess at 1:45 (tôi)	
     	mươi lăm                           
 
- 12.	hôm nay tôi sẽ đi gym từ chín giờ  	today I will go to the gym from
+ 12.	hôm nay tôi sẽ đi gym từ chín giờ  	today I will go to the gym from	
     	đến mười một giờ ba mươi           	9:00 until 11:30 (tôi)
 
- 13.	tôi sẽ nói chuyện với Thal lúc mười	I will talk with Thal at 12:15
+ 13.	tôi sẽ nói chuyện với Thal lúc mười	I will talk with Thal at 12:15	
     	hai giờ mười lăm                   	(tôi)
 
- 14.	tôi sẽ đi bơi từ mười hai giờ đến  	I will go swimming from 2:00 until
+ 14.	tôi sẽ đi bơi từ mười hai giờ đến  	I will go swimming from 2:00 until	
     	ba giờ ba mươi                     	3:30 (tôi)
 
- 15.	trưa nay tôi sẽ làm việc với G     	today I will work with G in the
+ 15.	trưa nay tôi sẽ làm việc với G     	today I will work with G in the	
     	                                   	afternoon (tôi)
 
- 16.	tôi sẽ nói chuyện bao giờ em dậy   	I will talk to you when you wake up
+ 16.	tôi sẽ nói chuyện bao giờ em dậy   	I will talk to you when you wake up	
     	                                   	(tôi)
 
- 17.	chác, tôi sẽ không đi gym hay đi   	probably I will not go to the gym
+ 17.	chác, tôi sẽ không đi gym hay đi   	probably I will not go to the gym	
     	bơi                                	or swim (tôi)
 
- 18.	tôi sẽ học Tiêng Việt với Thal lúc 	I will study VN with Thal from
-    	mười hai giờ mười lăm đến mười hai 	12:15 to 12:30 (tôi)
+ 18.	tôi sẽ học Tiêng Việt với Thal lúc 	I will study VN with Thal from	
+    	mười hai giờ mười lăm đến mười hai 	12:15 to 12:30 (tôi)	
     	giờ ba mươi                        
 
- 19.	có thể tôi cũng sẽ học toán với Lan	maybe I will also study math with
+ 19.	có thể tôi cũng sẽ học toán với Lan	maybe I will also study math with	
     	                                   	Lan (tôi)
 
  20.	này                                	this
@@ -70,7 +70,7 @@
  46.	bức tranh này là của ai            	whose picture is this
  47.	chị gái thích bức ảnh này          	the older sister likes this photo
 
- 48.	anh trai không thích bức ảnh kia   	the older brother doesn't like that
+ 48.	anh trai không thích bức ảnh kia   	the older brother doesn't like that	
     	                                   	photo over there
 
  49.	Việt Nam                           	Vietnam
@@ -336,7 +336,7 @@
 285.	mình                               	we (informal you and I)
 286.	chúng tôi                          	we (Lan and I)
 
-287.	chồng tôi không phải là người Việt 	my husband is not VNese
+287.	chồng tôi không phải là người Việt 	my husband is not VNese	
     	Nam                                
 
 288.	anh sẽ đi chợ                      	you will go shopping (market) (anh)
@@ -350,18 +350,18 @@
 295.	hôm qua tôi cũng học tiếng Việt    	yesterday I also studied VN
 296.	ngày mai tôi sẽ học tiếng Việt     	tomorrow I will study VN
 
-297.	bên                                	word going with left right above or
+297.	bên                                	word going with left right above or	
     	                                   	below
 
 298.	trai                               	brother or male
 
-299.	anh sẽ đi mua đồ                   	you will go shopping (general)
+299.	anh sẽ đi mua đồ                   	you will go shopping (general)	
     	                                   	(anh)
 
 300.	chúng ta đã rửa nhà                	we (you and I) cleaned the house
 301.	tôi đưa D đi bơi                   	I take D swimming
 
-302.	tôi có một buổi hẹn với bác sĩ     	I have an appointment with the
+302.	tôi có một buổi hẹn với bác sĩ     	I have an appointment with the	
     	                                   	doctor
 
 303.	mi                                 	you (very familiar)
@@ -459,7 +459,7 @@
 387.	u                                  	vowel in boo
 388.	ư                                  	vowel in uhoo
 
-389.	anh làm nghế gì ạ                  	what do you do or what is your job
+389.	anh làm nghế gì ạ                  	what do you do or what is your job	
     	                                   	(anh)
 
 390.	tôi là giáo viên                   	I am a teacher
@@ -480,7 +480,7 @@
 404.	chào bà ạ                          	hello to grandmotherly
 405.	chào cô Hạnh ạ                     	hello to teacher Hạnh (female)
 
-406.	ạ                                  	word at end of sentence showing
+406.	ạ                                  	word at end of sentence showing	
     	                                   	respect
 
 407.	nâu                                	brown
@@ -537,7 +537,7 @@
 453.	đá                                 	a rock
 454.	gõ                                 	to tap hit or drum
 
-455.	mõ                                 	a tocsin (wooden bell or bamboo
+455.	mõ                                 	a tocsin (wooden bell or bamboo	
     	                                   	tocsin)
 
 456.	hũ                                 	vat

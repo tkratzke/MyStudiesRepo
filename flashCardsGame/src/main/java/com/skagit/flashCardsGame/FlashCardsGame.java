@@ -359,11 +359,14 @@ public class FlashCardsGame {
 					} else {
 						pw.print(blankNumberString);
 					}
-					pw.print("\t");
+					pw.print('\t');
 					pw.printf(aPartFormat, aPart);
 					if (k1 < nBParts) {
-						pw.print("\t");
+						pw.print('\t');
 						pw.print(bParts.get(k1));
+					}
+					if (k1 < nParts - 1) {
+						pw.print('\t');
 					}
 					pw.println();
 				}

@@ -74,29 +74,22 @@ public enum PropertyPlus {
 			return _defaultStringValue;
 		}
 		final String s = (String) o;
-		final int len = s == null ? 0 : s.length();
-		if (len == 0) {
-			return _defaultStringValue;
-		}
-		final String s1;
-		if (this == ALLOWABLE_MISS_PERCENTAGE || this == PERCENTAGE_FOR_RECENT_WORDS) {
-			if (len == 1 || s.charAt(len - 1) != '%') {
-				return _defaultStringValue;
-			}
-			s1 = s.substring(0, len - 1);
-		} else {
-			s1 = s;
-		}
+		String stringToParseForAnInt = s;
 		switch (this) {
 			case ALLOWABLE_MISS_PERCENTAGE :
 			case PERCENTAGE_FOR_RECENT_WORDS :
+				final int len = s == null ? 0 : s.length();
+				if (len < 2 || s.charAt(len - 1) != '%') {
+					return _defaultStringValue;
+				}
+				stringToParseForAnInt = s.substring(0, len - 1);
 			case NUMBER_OF_NEW_WORDS :
 			case NUMBER_OF_RECENT_WORDS :
 			case NUMBER_OF_TIMES_FOR_NEW_WORDS :
 			case TOP_CARD_INDEX :
 			case RANDOM_SEED :
 				try {
-					final int i = Integer.parseInt(s1);
+					final int i = Integer.parseInt(stringToParseForAnInt);
 					switch (this) {
 						case ALLOWABLE_MISS_PERCENTAGE :
 						case PERCENTAGE_FOR_RECENT_WORDS :
@@ -109,40 +102,41 @@ public enum PropertyPlus {
 							return i >= 0 ? s : _defaultStringValue;
 						case RANDOM_SEED :
 							return s;
-						default :
+						/** No need for a break; Cannot get to the following: */
+						case CLUMPING :
+						case DECAY_TYPE :
+						case DIACRITICS_TREATMENT :
+						case QUIZ_DIRECTION :
 					}
 				} catch (final NumberFormatException e) {
 					return _defaultStringValue;
 				}
-			default :
-		}
-
-		switch (this) {
+				/** No need for a break; Cannot get here. */
+			case CLUMPING :
 			case DECAY_TYPE :
 			case DIACRITICS_TREATMENT :
-			case CLUMPING :
 				try {
 					if (this == DECAY_TYPE) {
 						DecayType.valueOf(s);
 					} else if (this == DIACRITICS_TREATMENT) {
 						DiacriticsTreatment.valueOf(s);
-					} else {
+					} else if (this == CLUMPING) {
 						Clumping.valueOf(s);
 					}
 				} catch (final IllegalArgumentException e) {
 					return _defaultStringValue;
 				}
-				break;
+				return s;
 			case QUIZ_DIRECTION :
 				for (final QuizDirection quizDirection : QuizDirection._Values) {
 					if (quizDirection._typableString.equalsIgnoreCase(s)) {
-						return quizDirection._typableString;
+						return s;
 					}
 				}
 				return _defaultStringValue;
-			default :
 		}
-		return s;
+		/** To keep the compiler happy: */
+		return null;
 	}
 
 	public String getValidString(final Properties properties) {
