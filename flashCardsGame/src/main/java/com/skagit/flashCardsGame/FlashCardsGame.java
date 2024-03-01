@@ -55,7 +55,7 @@ public class FlashCardsGame {
 	final private static char _NoChar = 'N';
 	final private static String _YesString = "Yes";
 	final static String _NoString = "No";
-	final static String _RegExForPunct = "[,.;:?!@#$%^&*]+";
+	final static String _RegExForPunct = "[,.;:?!]+";
 
 	/** Either of the following two FieldSeparators seems to work. */
 	final static String _FieldSeparator = "\\s*\\t\\s*";
@@ -205,6 +205,13 @@ public class FlashCardsGame {
 
 	/**
 	 * <pre>
+	 * Interesting note on deleting remote repositories:
+	 * https://stackoverflow.com/questions/8625406/how-to-delete-a-branch-in-the-remote-repository-using-egit
+	 * </pre>
+	 */
+
+	/**
+	 * <pre>
 	 * Interesting note on text files and the "right" way to do things:
 	 * https://stackoverflow.com/questions/17405165/first-character-of-the-reading-from-the-text-file-%C3%AF
 	 * </pre>
@@ -236,13 +243,16 @@ public class FlashCardsGame {
 			try (final Scanner fileSc = new Scanner(in)) {
 				while (fileSc.hasNext()) {
 					final LineBreakDown lbd = new LineBreakDown(fileSc.nextLine());
-					if (!lbd._isContinuation || aSide == null || bSide == null) {
-						wrapUp(cardMap, aSide, bSide);
+					if (aSide == null) {
 						aSide = lbd._aSide;
 						bSide = lbd._bSide;
 					} else {
-						aSide = aSide + " " + lbd._aSide;
-						bSide = bSide + " " + lbd._bSide;
+						aSide += " " + lbd._aSide;
+						bSide += " " + lbd._bSide;
+					}
+					if (!lbd._nextLineIsContinuation) {
+						wrapUp(cardMap, aSide, bSide);
+						aSide = bSide = null;
 					}
 				}
 				wrapUp(cardMap, aSide, bSide);

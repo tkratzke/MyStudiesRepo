@@ -3,12 +3,14 @@ package com.skagit.flashCardsGame;
 public class LineBreakDown {
 	final String _aSide;
 	final String _bSide;
-	final boolean _isContinuation;
+	final boolean _nextLineIsContinuation;
 
 	LineBreakDown(final String line) {
+		final int len = line == null ? 0 : line.length();
+		_nextLineIsContinuation = len < 1 ? false : line.charAt(len - 1) == '\t';
+
 		if (line.isBlank()) {
 			_aSide = _bSide = "";
-			_isContinuation = false;
 			return;
 		}
 		final String[] fields = line.split(FlashCardsGame._FieldSeparator);
@@ -22,17 +24,16 @@ public class LineBreakDown {
 			}
 		}
 		if (k0 == nFields) {
+			/** Never found a non-blank field. */
 			_aSide = _bSide = "";
-			_isContinuation = false;
 			return;
 		}
 		final String field0 = fields[k0];
-		/** If the line starts with white space that contains a tab, then k0 will be 1. */
-		_isContinuation = k0 > 0;
 
 		/** If field0 is a number, we will skip over it when looking for data fields. */
 		int cardNumber = -1;
 		try {
+			/** We kill punctuation to get rid of a period or a colon. */
 			cardNumber = Integer
 					.parseInt(FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(field0)));
 		} catch (final NumberFormatException e) {
@@ -44,7 +45,9 @@ public class LineBreakDown {
 		if (k1 >= nFields) {
 			/** There's no data. */
 			_aSide = _bSide = "";
-		} else if (k1 == nFields - 1) {
+			return;
+		}
+		if (k1 == nFields - 1) {
 			/** There's only one data field. Is it a or b? */
 			final int startTabCount;
 			if (cardNumber >= 0) {
@@ -66,12 +69,13 @@ public class LineBreakDown {
 					}
 				}
 			}
+			final String dataField = FlashCardsGame.CleanWhiteSpace(field1);
 			if (nTabs == 1) {
-				_aSide = FlashCardsGame.CleanWhiteSpace(field1);
+				_aSide = dataField;
 				_bSide = "";
 			} else {
 				_aSide = "";
-				_bSide = field1;
+				_bSide = dataField;
 			}
 		} else {
 			/** We have at least two data fields. */
@@ -82,12 +86,28 @@ public class LineBreakDown {
 
 	String getString() {
 		return String.format("a:%s, b:%s, %s", _aSide, _bSide,
-				_isContinuation ? "Cont" : "Orig");
+				_nextLineIsContinuation ? "Cont" : "Orig");
 	}
 
 	@Override
 	public String toString() {
 		return getString();
+	}
+
+	public static void main(final String[] args) {
+		final String[] fields = "\t  ab".split(FlashCardsGame._FieldSeparator);
+		final int nFields = fields.length;
+
+		/** Set field0 to the first non-blank field and k0 to its index. */
+		int k0 = 0;
+		for (; k0 < nFields; ++k0) {
+			if (!fields[k0].isBlank()) {
+				break;
+			}
+		}
+		@SuppressWarnings("unused")
+		final int x = 0;
+
 	}
 
 }
