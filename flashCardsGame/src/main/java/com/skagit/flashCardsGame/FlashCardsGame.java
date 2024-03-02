@@ -331,6 +331,9 @@ public class FlashCardsGame {
 
 	private void reWriteCardsFile() {
 		final int nCards = _cards.length;
+		if (nCards == 0) {
+			return;
+		}
 		final int nDigits = (int) (Math.log10(nCards) + 1d);
 		final String realNumberFormat = String.format("%%%dd.", nDigits);
 		final String blankNumberFormat = String.format("%%-%ds ", nDigits);
