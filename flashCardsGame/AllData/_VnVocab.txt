@@ -11,6 +11,17 @@
 
  10.	ở                                  	am, at, in, on
 
+ 20.	này                                	this
+ 21.	cái                                	class'f'r/inanimate objects
+ 22.	quyển                              	class'f'r/books and volumes
+ 23.	ly                                 	class'f'r/cups and glasses(c...)
+ 24.	cốc                                	class'f'r/cups and glasses(l...)
+ 25.	bát                                	class'f'r/bowls
+ 26.	bức                                	class'f'r/narrow rect'g'lar things
+ 27.	tờ                                 	class'f'r/paper-like things
+ 28.	đều                                	all or both
+ 29.	cô ấy                              	she or her
+
  11.	tôi sẽ chơi chess lúc một giờ bốn  	I will do chess at 1:45 (tôi)	
     	mươi lăm                           
 
@@ -38,17 +49,6 @@
 
  19.	có thể tôi cũng sẽ học toán với Lan	maybe I will also study math with	
     	                                   	Lan (tôi)
-
- 20.	này                                	this
- 21.	cái                                	class'f'r/inanimate objects
- 22.	quyển                              	class'f'r/books and volumes
- 23.	ly                                 	class'f'r/cups and glasses(c...)
- 24.	cốc                                	class'f'r/cups and glasses(l...)
- 25.	bát                                	class'f'r/bowls
- 26.	bức                                	class'f'r/narrow rect'g'lar things
- 27.	tờ                                 	class'f'r/paper-like things
- 28.	đều                                	all or both
- 29.	cô ấy                              	she or her
 
  30.	anh ấy                             	he or him
  31.	cổ                                 	shortened form of cô ấy

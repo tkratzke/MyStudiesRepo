@@ -378,7 +378,7 @@ public class QuizGenerator {
 
 	String getString() {
 		final String s = String.format(//
-				"TopCardIdx=%d #New/Recent Words=%d/%d Failure=%d%% Decay=%s", //
+				"TopCardIdx[%d], #New/Recent Words[%d/%d], FailureRate[%d%%] Decay[%s]", //
 				_topCardIndex, _maxNNewWords, _maxNRecentWords, _allowablePerCent,
 				_decayType.name());
 		return s;

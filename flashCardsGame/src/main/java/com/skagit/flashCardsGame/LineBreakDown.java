@@ -23,6 +23,8 @@ public class LineBreakDown {
 		 * NB:
 		 *     A.  An initial separator (followed by non-blank) creates an
 		 *         empty field, but a trailing separator is ignored.
+		 *         An initial separator that is not followed by a non-blank
+		 *         results in no fields at all.
 		 *     B.  Only the first field can be empty and then if and only if:
 		 *         There is a second, non-empty field, which will start with
 		 *         non-white-space.
@@ -138,7 +140,10 @@ public class LineBreakDown {
 	}
 
 	String getString() {
-		return String.format("A-Side|%s|, B-Side|%s|", _aSide, _bSide);
+		return String.format("A-Side|%s|, B-Side|%s| %s", _aSide, _bSide,
+				"" + (_nextLineIsContinuation
+						? FlashCardsGame._RtArrowChar2
+						: FlashCardsGame._SpadeSymbolChar));
 	}
 
 	@Override
@@ -148,6 +153,7 @@ public class LineBreakDown {
 
 	public static void main(final String[] args) {
 		final String[] lines = { //
+				"\t", //
 				"\t0\t\tX", //
 				"\t0\t\tX\tY", //
 				"0.\t\tX\tY", //
@@ -160,7 +166,7 @@ public class LineBreakDown {
 			final String line = lines[k];
 			final String line2 = line.replaceAll("\t", "\\\\t");
 			final LineBreakDown lbd = new LineBreakDown(line);
-			final String toPrint = String.format("%s|| %s", line2, lbd);
+			final String toPrint = String.format("line2[%s] %s", line2, lbd);
 			System.out.println(toPrint);
 		}
 	}

@@ -26,8 +26,18 @@ import com.skagit.flashCardsGame.enums.QuizDirection;
 
 public class FlashCardsGame {
 
+	/**
+	 * <pre>
+	 *  Good list of characters.
+	 *  http://xahlee.info/comp/unicode_arrows.html
+	 * </pre>
+	 */
 	final static char _LtArrowChar = '\u2190';
 	public final static char _RtArrowChar = '\u2192';
+	final static char _RtArrowChar2 = '\u21a0';
+	final static char _SpadeSymbolChar = '\u2660';
+	final static char _ClubSymbolChar = '\u2663';
+	final static char _DiamondSymbolChar = '\u2666';
 	final static char _EmptySetChar = '\u2205';
 	final static char _HeavyCheckChar = '\u2714';
 	final static char _TabSymbolChar = '\u2409';
@@ -39,14 +49,16 @@ public class FlashCardsGame {
 	final private static int _MaxLenForCardPart = 35;
 	final private static int _BlockSize = 10;
 
-	final private static String _Sep1 = "::";
-	final private static String _Sep2 = ": ";
+	final private static String _Sep1 = " " + _ClubSymbolChar;
+	final private static String _Sep2 = "" + _DiamondSymbolChar + " ";
 	final private static int _Sep1Len = _Sep1.length();
 	final private static int _Sep2Len = _Sep2.length();
+	final private static String _PrefaceForNewLine = _Indent + _Sep1;
+	final private static int _PrefaceForNewLineLen = _PrefaceForNewLine.length();
 	final private static int _RoomLen = 10;
 	final private static String _CountAsRight = "Count as Right? ";
 
-	final private static char _ReturnChar = '\u23CE';
+	final static char _ReturnChar = '\u23CE';
 	final private static char _HelpChar = 'H';
 	final private static char _QuitChar = '!';
 	final private static char _EditPropertiesChar = '@';
@@ -63,6 +75,25 @@ public class FlashCardsGame {
 	final private static String _FieldSeparator1 = "(\\s*\\t\\s*)+";
 	final private static String _PropertiesEnding = ".properties";
 	final static String _WhiteSpace = "\\s+";
+
+	static char[] _SpecialChars = { //
+			_LtArrowChar, //
+			_RtArrowChar, //
+			_RtArrowChar2, //
+			_SpadeSymbolChar, //
+			_ClubSymbolChar, //
+			_DiamondSymbolChar, //
+			_EmptySetChar, //
+			_HeavyCheckChar, //
+			_TabSymbolChar, //
+			_ReturnChar, //
+			_HelpChar, //
+			_QuitChar, //
+			_EditPropertiesChar, //
+			_RestartQuizChar, //
+			_YesChar, //
+			_NoChar //
+	};
 
 	final private static String _HelpString = String.format(
 			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, "
@@ -205,7 +236,7 @@ public class FlashCardsGame {
 
 	/**
 	 * <pre>
-	 * Interesting note on deleting remote repositories:
+	 * Interesting note on deleting remote repositories from within Eclipse:
 	 * https://stackoverflow.com/questions/8625406/how-to-delete-a-branch-in-the-remote-repository-using-egit
 	 * </pre>
 	 */
@@ -550,10 +581,10 @@ public class FlashCardsGame {
 	}
 
 	final String getString() {
-		return String.format("%s: %s%s RandomSeed[%d] \n%s", //
+		return String.format("%s: %s, %s, RandomSeed[%d] \n%s", //
 				getCoreFilePath(), //
 				_quizDirection._fancyString, //
-				" Diacritics: " + _diacriticsTreatment.name(), //
+				_diacriticsTreatment.name(), //
 				_randomSeed, _quizGenerator.getString());
 	}
 
@@ -635,26 +666,26 @@ public class FlashCardsGame {
 				boolean longQuestion = false;
 				if (len1 <= _MaxLineLen) {
 					System.out.printf("%s%s%s%s", typeIPrompt, _Sep1, clue, _Sep2);
-				} else if (len1 <= _MaxLineLen) {
-					System.out.printf("%s%s%s%s", typeIPrompt, _Sep1, clue, _Sep2);
 				} else {
 					System.out.println(typeIPrompt);
-					System.out.print(_Indent);
-					int nUsedOnCurrentLine = _IndentLen;
+					System.out.print(_PrefaceForNewLine);
+					int nUsedOnCurrentLine = _PrefaceForNewLineLen;
 					longQuestion = true;
 					/** Break up the clue. */
 					for (int k = 0; k < nClueFields; ++k) {
 						final String clueField = clueFields[k];
 						final int clueFieldLen = clueField.length();
-						if (nUsedOnCurrentLine > _IndentLen
-								&& (nUsedOnCurrentLine + 1 + clueFieldLen + _RoomLen >= _MaxLineLen)) {
+						final boolean justStartedLine = nUsedOnCurrentLine == (k == 0
+								? _PrefaceForNewLineLen
+								: _IndentLen);
+						if (justStartedLine) {
+							System.out.print(clueField);
+							nUsedOnCurrentLine += clueFieldLen;
+						} else if (nUsedOnCurrentLine + 1 + clueFieldLen + _RoomLen >= _MaxLineLen) {
 							System.out.println();
 							System.out.print(_Indent);
 							System.out.print(clueField);
 							nUsedOnCurrentLine = _IndentLen + clueFieldLen;
-						} else if (nUsedOnCurrentLine == _IndentLen) {
-							System.out.print(clueField);
-							nUsedOnCurrentLine += clueFieldLen;
 						} else {
 							System.out.printf(" %s", clueField);
 							nUsedOnCurrentLine += 1 + clueFieldLen;
@@ -857,6 +888,8 @@ public class FlashCardsGame {
 	}
 
 	public static void main(final String[] args) {
+		final String specialString = new String(_SpecialChars);
+		System.out.println(specialString);
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
 			flashCardsGame.mainLoop(sc);
