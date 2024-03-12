@@ -3,6 +3,7 @@ package com.skagit.flashCardsGame;
 public class LineBreakDown {
 	final String _aSide;
 	final String _bSide;
+	final String _comment;
 	final boolean _nextLineIsContinuation;
 
 	/**
@@ -12,6 +13,12 @@ public class LineBreakDown {
 	LineBreakDown(final String line) {
 		final int len = line == null ? 0 : line.length();
 		_nextLineIsContinuation = len < 1 ? false : line.charAt(len - 1) == '\t';
+		if (len > 0 && line.charAt(0) == FlashCardsGame._CommentChar) {
+			_comment = line.substring(1).trim();
+			_aSide = _bSide = null;
+			return;
+		}
+		_comment = null;
 
 		/**
 		 * <pre>

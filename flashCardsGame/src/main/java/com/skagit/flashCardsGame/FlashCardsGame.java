@@ -42,9 +42,11 @@ public class FlashCardsGame {
 	final static char _HeavyCheckChar = '\u2714';
 	final static char _TabSymbolChar = '\u2409';
 
+	final static char _CommentChar = '!';
+
 	final static String _Indent = "   ";
 	final static int _IndentLen = _Indent.length();
-	final private static int _MaxLineLen = 85;
+	final private static int _MaxLineLen = 65;
 
 	final private static int _MaxLenForCardPart = 35;
 	final private static int _BlockSize = 10;
@@ -63,6 +65,7 @@ public class FlashCardsGame {
 	final private static char _QuitChar = '!';
 	final private static char _EditPropertiesChar = '@';
 	final private static char _RestartQuizChar = '#';
+	final private static char _ReloadCardsChar = '$';
 	final private static char _YesChar = 'Y';
 	final private static char _NoChar = 'N';
 	final private static String _YesString = "Yes";
@@ -96,10 +99,10 @@ public class FlashCardsGame {
 	};
 
 	final private static String _HelpString = String.format(
-			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, "
+			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, %c=Reload Cards"
 					+ "%c=\"Show-and-ask,\" %s=Next Line is Continuation",
-			_HelpChar, _QuitChar, _EditPropertiesChar, _RestartQuizChar, _ReturnChar,
-			"" + _TabSymbolChar + _ReturnChar);
+			_HelpChar, _QuitChar, _EditPropertiesChar, _RestartQuizChar, _ReloadCardsChar,
+			_ReturnChar, "" + _TabSymbolChar + _ReturnChar);
 
 	/**
 	 * <pre>
@@ -157,7 +160,7 @@ public class FlashCardsGame {
 	final private DiacriticsTreatment _diacriticsTreatment;
 	final private Clumping _clumping;
 
-	final private Card[] _cards;
+	private Card[] _cards;
 	final private QuizGenerator _quizGenerator;
 	private QuizPlus _quizPlus;
 	private boolean _needLineFeed;
@@ -199,10 +202,7 @@ public class FlashCardsGame {
 		_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 		_clumping = Clumping.valueOf(clumpingString);
-		final TreeMap<Card, Card> cardMap = loadCardMap();
-		final int nCards = cardMap.size();
-		_cards = cardMap.keySet().toArray(new Card[nCards]);
-		Arrays.sort(_cards, Card._ByCardNumberOnly);
+		loadCards(/* announceCompleteDups= */true);
 		final int[] dupCounts = announceAndClumpDuplicates();
 		reWriteCardsFile();
 		final int nADups = dupCounts[1];
@@ -248,7 +248,7 @@ public class FlashCardsGame {
 	 * </pre>
 	 */
 
-	private TreeMap<Card, Card> loadCardMap() {
+	private TreeMap<Card, Card> loadCardMap(final boolean announceCompleteDups) {
 		final TreeMap<Card, Card> cardMap = new TreeMap<>(Card._ByAThenB);
 		final File cardsFile = getCardsFile();
 		try (final BufferedReader in = new BufferedReader(
@@ -271,22 +271,28 @@ public class FlashCardsGame {
 
 			String aSide = null;
 			String bSide = null;
+			final ArrayList<String> commentLinesList = new ArrayList<>();
 			try (final Scanner fileSc = new Scanner(in)) {
 				while (fileSc.hasNext()) {
 					final LineBreakDown lbd = new LineBreakDown(fileSc.nextLine());
-					if (aSide == null) {
-						aSide = lbd._aSide;
-						bSide = lbd._bSide;
+					if (lbd._comment != null) {
+						commentLinesList.add(lbd._comment);
 					} else {
-						aSide += " " + lbd._aSide;
-						bSide += " " + lbd._bSide;
+						if (aSide == null) {
+							aSide = lbd._aSide;
+							bSide = lbd._bSide;
+						} else {
+							aSide += " " + lbd._aSide;
+							bSide += " " + lbd._bSide;
+						}
 					}
 					if (!lbd._nextLineIsContinuation) {
-						wrapUp(cardMap, aSide, bSide);
+						wrapUp(cardMap, aSide, bSide, commentLinesList, announceCompleteDups);
 						aSide = bSide = null;
+						commentLinesList.clear();
 					}
 				}
-				wrapUp(cardMap, aSide, bSide);
+				wrapUp(cardMap, aSide, bSide, commentLinesList, announceCompleteDups);
 			} catch (final Exception e) {
 			}
 		} catch (final IOException e) {
@@ -295,11 +301,46 @@ public class FlashCardsGame {
 	}
 
 	private static void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
-			final String bSide) {
+			final String bSide, final ArrayList<String> commentLinesList,
+			final boolean announceCompleteDups) {
 		if (aSide != null && bSide != null && aSide.length() > 0 && bSide.length() > 0) {
-			final Card card = new Card(cardMap.size(), aSide, bSide);
-			cardMap.put(card, card);
+			final int nNewCommentLines = commentLinesList.size();
+			final String[] newCommentLines = commentLinesList
+					.toArray(new String[nNewCommentLines]);
+			final Card newCard = new Card(cardMap.size(), aSide, bSide, newCommentLines);
+			final Card oldCard = cardMap.get(newCard);
+			if (oldCard != null) {
+				if (announceCompleteDups) {
+					System.out.println(String.format("Merging Card #%d into #%d:",
+							newCard._cardNumber, oldCard._cardNumber));
+					System.out.println(oldCard.getString());
+					System.out.println(newCard.getString());
+				}
+				if (nNewCommentLines > 0) {
+					final String[] oldCommentLines = oldCard._commentLines;
+					final int nOldCommentLines = oldCommentLines == null
+							? 0
+							: oldCommentLines.length;
+					final int nAllCommentLines = nOldCommentLines + nNewCommentLines;
+					final String[] allCommentLines = new String[nAllCommentLines];
+					if (nOldCommentLines > 0) {
+						System.arraycopy(oldCommentLines, 0, allCommentLines, 0, nOldCommentLines);
+					}
+					System.arraycopy(newCommentLines, 0, allCommentLines, nOldCommentLines,
+							nNewCommentLines);
+					oldCard._commentLines = allCommentLines;
+					return;
+				}
+			}
+			cardMap.put(newCard, newCard);
 		}
+	}
+
+	private void loadCards(final boolean announceCompleteDups) {
+		final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
+		final int nCards = cardMap.size();
+		_cards = cardMap.keySet().toArray(new Card[nCards]);
+		Arrays.sort(_cards, Card._ByCardNumberOnly);
 	}
 
 	private int[] announceAndClumpDuplicates() {
@@ -309,6 +350,9 @@ public class FlashCardsGame {
 			final Comparator<Card> comparator = iPass == 0
 					? Card._ByASideOnly
 					: Card._ByBSideOnly;
+			final boolean makeSlave = iPass == 0
+					? (_clumping == Clumping.A)
+					: (_clumping == Clumping.B);
 			final String sideBeingChecked = iPass == 0 ? "A-Side" : "B-Side";
 			final TreeMap<Card, ArrayList<Card>> kingToSlaves = new TreeMap<>(comparator);
 			for (int k = 0; k < nCards; ++k) {
@@ -325,9 +369,6 @@ public class FlashCardsGame {
 					System.out.println(oldCard.getString());
 					System.out.println(card.getString());
 					_needLineFeed = true;
-					final boolean makeSlave = iPass == 0
-							? (_clumping == Clumping.A)
-							: (_clumping == Clumping.B);
 					if (makeSlave) {
 						slaves.add(card);
 						_cards[k] = null;
@@ -460,7 +501,7 @@ public class FlashCardsGame {
 					final String[] lines = comment.trim().split("\n");
 					final int nLines = lines.length;
 					for (int k1 = 0; k1 < nLines; ++k1) {
-						pw.printf("! %s", lines[k1]);
+						pw.print("" + FlashCardsGame._CommentChar + ' ' + lines[k1]);
 						pw.println();
 					}
 				}
@@ -609,7 +650,7 @@ public class FlashCardsGame {
 	);
 
 	void mainLoop(final Scanner sc) {
-		final int nCards = _cards.length;
+		int nCards = _cards.length;
 		long[] oldValues = storeValues();
 		_quizPlus = null;
 		boolean restarted = false;
@@ -744,6 +785,31 @@ public class FlashCardsGame {
 					} else if (char0Uc == _RestartQuizChar) {
 						_quizPlus.resetForFullMode();
 						restarted = true;
+						continue OUTSIDE_LOOP;
+					} else if (char0Uc == _ReloadCardsChar) {
+						final int oldTci = _quizGenerator._topCardIndex;
+						final Card topCard = _cards[oldTci];
+						final String keyString = _quizDirection == QuizDirection.A_TO_B
+								? topCard._fullASide
+								: topCard._fullBSide;
+						loadCards(/* announceCompleteDups= */false);
+						nCards = _cards.length;
+						int tci = -1;
+						for (int k = 0; k < nCards; ++k) {
+							final Card card1 = _cards[k];
+							if (_quizDirection == QuizDirection.A_TO_B) {
+								if (keyString.compareToIgnoreCase(card1._fullASide) == 0) {
+									tci = k;
+									break;
+								}
+							} else {
+								if (keyString.compareToIgnoreCase(card1._fullBSide) == 0) {
+									tci = k;
+									break;
+								}
+							}
+						}
+						_quizGenerator.reactToReloadOfCards(_cards.length, tci);
 						continue OUTSIDE_LOOP;
 					} else if (char0Uc == _HelpChar) {
 						System.out.println();

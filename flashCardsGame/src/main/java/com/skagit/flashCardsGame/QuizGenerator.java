@@ -11,7 +11,7 @@ import com.skagit.flashCardsGame.enums.PropertyPlus;
 public class QuizGenerator {
 	final private int _maxNNewWords;
 	final private int _maxNRecentWords;
-	private int _topCardIndex;
+	int _topCardIndex;
 
 	final private int _nRepeatsOfNew;
 	final private int _percentageForRecentsI;
@@ -94,6 +94,13 @@ public class QuizGenerator {
 
 	void correctQuizGeneratorProperties(final int nCards) {
 		_topCardIndex = Math.max(0, Math.min(_topCardIndex, nCards - 1));
+	}
+
+	void reactToReloadOfCards(final int nCards, final int tci) {
+		if (tci >= 0) {
+			_topCardIndex = tci;
+		}
+		correctQuizGeneratorProperties(nCards);
 	}
 
 	QuizPlus createNewQuizPlus(final int nCards) {

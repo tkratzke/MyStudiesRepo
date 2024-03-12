@@ -1,5 +1,8 @@
 package com.skagit.flashCardsGame;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -42,11 +45,14 @@ class Card {
 	int _cardNumber;
 	final String _fullASide;
 	final String _fullBSide;
+	String[] _commentLines;
 
-	Card(final int cardNumber, final String aSide, final String bSide) {
+	Card(final int cardNumber, final String aSide, final String bSide,
+			final String[] commentLines) {
 		_cardNumber = cardNumber;
 		_fullASide = aSide;
 		_fullBSide = bSide;
+		_commentLines = commentLines;
 	}
 
 	private static int NullCompare(final Card card0, final Card card1) {
@@ -125,7 +131,29 @@ class Card {
 	}
 
 	String getString() {
-		return String.format("%04d.\t%s:\t%s", _cardNumber, _fullASide, _fullBSide);
+		final int nCommentLines = _commentLines == null ? 0 : _commentLines.length;
+		String s = null;
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			final PrintStream ps = new PrintStream(baos);
+			final PrintStream old = System.out;
+			System.setOut(ps);
+			for (int k = 0; k < nCommentLines; ++k) {
+				if (k == 0) {
+					System.out.println();
+				}
+				System.out.print("! ");
+				System.out.println(_commentLines[k] + '\t');
+			}
+			if (nCommentLines > 0) {
+				System.out.println();
+			}
+			System.out.printf("%04d.\t%s:\t%s", _cardNumber, _fullASide, _fullBSide);
+			s = baos.toString();
+			System.out.flush();
+			System.setOut(old);
+		} catch (final IOException e) {
+		}
+		return s;
 	}
 
 	String getBrokenUpString(final boolean a, final int specMaxLen) {
