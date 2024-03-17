@@ -42,6 +42,42 @@ class Card {
 		}
 	}
 
+	class CommentParts extends ArrayList<String> {
+		private static final long serialVersionUID = 1L;
+		CommentParts(final String fullComment, final int maxLineLen) {
+			super();
+			if (fullComment == null || fullComment.isBlank()) {
+				return;
+			}
+			final String[] fields = fullComment.split(FlashCardsGame._WhiteSpace);
+			final int nFields = fields.length;
+			String currentPart = "!";
+			int currentLineLen = currentPart.length();
+			for (int k = 0; k < nFields; ++k) {
+				final boolean kIs0 = k == 0;
+				final String field = fields[k];
+				final int fieldLen = field.length();
+				if (fieldLen > 0) {
+					final boolean addToCurrentPart;
+					if (kIs0) {
+						addToCurrentPart = true;
+					} else {
+						addToCurrentPart = currentLineLen + 1 + fieldLen <= maxLineLen;
+					}
+					if (addToCurrentPart) {
+						currentPart += " " + field;
+						currentLineLen += 1 + fieldLen;
+					} else {
+						add(currentPart);
+						currentPart = "\t" + field;
+						currentLineLen = FlashCardsGame._NominalTabLen + fieldLen;
+					}
+				}
+			}
+			add(currentPart);
+		}
+	}
+
 	int _cardNumber;
 	final String _fullASide;
 	final String _fullBSide;
@@ -138,14 +174,7 @@ class Card {
 			final PrintStream old = System.out;
 			System.setOut(ps);
 			for (int k = 0; k < nCommentLines; ++k) {
-				if (k == 0) {
-					System.out.println();
-				}
-				System.out.print("! ");
-				System.out.println(_commentLines[k] + '\t');
-			}
-			if (nCommentLines > 0) {
-				System.out.println();
+				System.out.println(FlashCardsGame._CommentString + _commentLines[k]);
 			}
 			System.out.printf("%04d.\t%s:\t%s", _cardNumber, _fullASide, _fullBSide);
 			s = baos.toString();

@@ -43,6 +43,7 @@ public class FlashCardsGame {
 	final static char _TabSymbolChar = '\u2409';
 
 	final static char _CommentChar = '!';
+	final static String _CommentString = "" + _CommentChar + ' ';
 
 	final static String _Indent = "   ";
 	final static int _IndentLen = _Indent.length();
@@ -78,6 +79,7 @@ public class FlashCardsGame {
 	final private static String _FieldSeparator1 = "(\\s*\\t\\s*)+";
 	final private static String _PropertiesEnding = ".properties";
 	final static String _WhiteSpace = "\\s+";
+	final static int _NominalTabLen = 5;
 
 	static char[] _SpecialChars = { //
 			_LtArrowChar, //
@@ -171,12 +173,15 @@ public class FlashCardsGame {
 		if (propertiesFilePath.toLowerCase().endsWith(_PropertiesEnding)) {
 			_propertiesFile = new File(propertiesFilePath);
 		} else {
-			final int lastDotIndex = propertiesFilePath.lastIndexOf('.');
+			final File f = new File(propertiesFilePath);
+			final File p = f.getParentFile();
+			final String name = f.getName();
+			final int lastDotIndex = name.lastIndexOf('.');
 			if (lastDotIndex == -1) {
 				_propertiesFile = new File(propertiesFilePath + _PropertiesEnding);
 			} else {
-				_propertiesFile = new File(
-						propertiesFilePath.substring(0, lastDotIndex) + _PropertiesEnding);
+				_propertiesFile = new File(p,
+						name.substring(0, lastDotIndex) + _PropertiesEnding);
 			}
 		}
 		_properties = new Properties();
@@ -272,27 +277,60 @@ public class FlashCardsGame {
 			String aSide = null;
 			String bSide = null;
 			final ArrayList<String> commentLinesList = new ArrayList<>();
+			String comment = null;
 			try (final Scanner fileSc = new Scanner(in)) {
 				while (fileSc.hasNext()) {
-					final LineBreakDown lbd = new LineBreakDown(fileSc.nextLine());
-					if (lbd._comment != null) {
-						commentLinesList.add(lbd._comment);
-					} else {
-						if (aSide == null) {
-							aSide = lbd._aSide;
-							bSide = lbd._bSide;
-						} else {
-							aSide += " " + lbd._aSide;
-							bSide += " " + lbd._bSide;
+					final String nextLine = fileSc.nextLine();
+					final String trimmed = nextLine.trim();
+					if (trimmed.isBlank()) {
+						continue;
+					}
+					final boolean newComment = trimmed.charAt(0) == _CommentChar;
+					final boolean existingComment = comment != null;
+					if (newComment || existingComment) {
+						final boolean hasContinuation = nextLine
+								.charAt(nextLine.length() - 1) == '\t';
+						if (newComment) {
+							if (existingComment) {
+								commentLinesList.add(comment);
+							}
+							comment = trimmed.substring(1).trim();
+							if (!hasContinuation) {
+								commentLinesList.add(comment);
+								comment = null;
+							}
+							continue;
 						}
+						/** This is a continuation of an existing comment. */
+						comment += " " + trimmed;
+						if (!hasContinuation) {
+							commentLinesList.add(comment);
+							comment = null;
+						}
+						continue;
+					}
+
+					/** Not a comment and not part of a comment. */
+					final LineBreakDown lbd = new LineBreakDown(nextLine);
+					if (lbd._aSide == null && lbd._bSide == null) {
+						/** Essentially, nextLine is blank. */
+						continue;
+					}
+					if (aSide == null) {
+						aSide = lbd._aSide;
+						bSide = lbd._bSide;
+					} else {
+						aSide += " " + lbd._aSide;
+						bSide += " " + lbd._bSide;
 					}
 					if (!lbd._nextLineIsContinuation) {
-						wrapUp(cardMap, aSide, bSide, commentLinesList, announceCompleteDups);
-						aSide = bSide = null;
-						commentLinesList.clear();
+						wrapUp(cardMap, aSide, bSide, commentLinesList, comment,
+								announceCompleteDups);
+						aSide = bSide = comment = null;
 					}
 				}
-				wrapUp(cardMap, aSide, bSide, commentLinesList, announceCompleteDups);
+				wrapUp(cardMap, aSide, bSide, commentLinesList, comment, announceCompleteDups);
+				aSide = bSide = comment = null;
 			} catch (final Exception e) {
 			}
 		} catch (final IOException e) {
@@ -301,12 +339,14 @@ public class FlashCardsGame {
 	}
 
 	private static void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
-			final String bSide, final ArrayList<String> commentLinesList,
+			final String bSide, final ArrayList<String> commentList, final String strayComment,
 			final boolean announceCompleteDups) {
+		if (strayComment != null) {
+			commentList.add(strayComment);
+		}
 		if (aSide != null && bSide != null && aSide.length() > 0 && bSide.length() > 0) {
-			final int nNewCommentLines = commentLinesList.size();
-			final String[] newCommentLines = commentLinesList
-					.toArray(new String[nNewCommentLines]);
+			final int nNewCommentLines = commentList.size();
+			final String[] newCommentLines = commentList.toArray(new String[nNewCommentLines]);
 			final Card newCard = new Card(cardMap.size(), aSide, bSide, newCommentLines);
 			final Card oldCard = cardMap.get(newCard);
 			if (oldCard != null) {
@@ -329,10 +369,12 @@ public class FlashCardsGame {
 					System.arraycopy(newCommentLines, 0, allCommentLines, nOldCommentLines,
 							nNewCommentLines);
 					oldCard._commentLines = allCommentLines;
+					commentList.clear();
 					return;
 				}
 			}
 			cardMap.put(newCard, newCard);
+			commentList.clear();
 		}
 	}
 
@@ -431,12 +473,26 @@ public class FlashCardsGame {
 				final int nAParts = aParts.size();
 				final int nBParts = bParts.size();
 				final int nParts = Math.max(nAParts, nBParts);
+				final String[] commentLines = card._commentLines;
+				final int nCommentLines = commentLines == null ? 0 : commentLines.length;
+				final boolean isMultiLine = nCommentLines > 0 || nParts > 1;
 				if (k0 > 0) {
-					if ((nParts > 1 || recentWasMultiLine || (nPrinted % _BlockSize == 0))) {
+					if ((isMultiLine || recentWasMultiLine || (nPrinted % _BlockSize == 0))) {
 						pw.println();
 					}
 				}
-				recentWasMultiLine = nParts > 1;
+				recentWasMultiLine = isMultiLine;
+				for (int k1 = 0; k1 < nCommentLines; ++k1) {
+					final Card.CommentParts commentParts = card.new CommentParts(commentLines[k1],
+							_MaxLineLen);
+					for (int k2 = 0; k2 < commentParts.size(); ++k2) {
+						pw.print(commentParts.get(k2));
+						if (k2 < commentParts.size() - 1) {
+							pw.print('\t');
+						}
+						pw.println();
+					}
+				}
 				for (int k1 = 0; k1 < nParts; ++k1) {
 					final String aPart = k1 < nAParts ? aParts.get(k1) : "";
 					if (k1 == 0) {
@@ -501,7 +557,7 @@ public class FlashCardsGame {
 					final String[] lines = comment.trim().split("\n");
 					final int nLines = lines.length;
 					for (int k1 = 0; k1 < nLines; ++k1) {
-						pw.print("" + FlashCardsGame._CommentChar + ' ' + lines[k1]);
+						pw.print(FlashCardsGame._CommentString + lines[k1]);
 						pw.println();
 					}
 				}
@@ -622,8 +678,8 @@ public class FlashCardsGame {
 	}
 
 	final String getString() {
-		return String.format("%s: %s, %s, RandomSeed[%d] \n%s", //
-				getCoreFilePath(), //
+		return String.format("%s(w/ %d cards): %s, %s, RandomSeed[%d] \n%s", //
+				getCoreFilePath(), _cards.length, //
 				_quizDirection._fancyString, //
 				_diacriticsTreatment.name(), //
 				_randomSeed, _quizGenerator.getString());
@@ -954,8 +1010,7 @@ public class FlashCardsGame {
 	}
 
 	public static void main(final String[] args) {
-		final String specialString = new String(_SpecialChars);
-		System.out.println(specialString);
+		System.out.println(new String(_SpecialChars));
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
 			flashCardsGame.mainLoop(sc);
