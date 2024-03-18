@@ -20,7 +20,7 @@ class QuizPlus implements Serializable {
 	final private HashMap<Integer, NWrongsAndHits> _indexInCardsToNWrongsAndHits;
 	private int _firstWrongIndexInCards;
 
-	static class NWrongsAndHits implements Cloneable {
+	static class NWrongsAndHits {
 		int _nWrongs = 0;
 		int _nHits = 0;
 
@@ -31,7 +31,11 @@ class QuizPlus implements Serializable {
 
 		@Override
 		protected NWrongsAndHits clone() {
-			return new NWrongsAndHits(_nWrongs, _nHits);
+			try {
+				return (NWrongsAndHits) super.clone();
+			} catch (final CloneNotSupportedException e) {
+			}
+			return null;
 		}
 	}
 
@@ -65,7 +69,13 @@ class QuizPlus implements Serializable {
 	}
 
 	int getCurrentQuiz_CardIndex(final int k) {
-		return _fullQuiz[_criticalQuizIndicesOnly ? _criticalIndicesInQuiz[k] : k];
+		try {
+			return _fullQuiz[_criticalQuizIndicesOnly ? _criticalIndicesInQuiz[k] : k];
+		} catch (final Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	int getCurrentQuizLen() {
@@ -134,12 +144,12 @@ class QuizPlus implements Serializable {
 
 	boolean haveWon(final int failurePerCent) {
 		/**
-		 * We need a wrong rate that is <= failurePerCent / 2 even assuming that we'll get the
+		 * We need a wrong rate that is <= failurePerCent even assuming that we'll get the
 		 * rest of the critical quiz indices wrong.
 		 */
 		final int nCriticalQuizIndices = _criticalIndicesInQuiz.length;
 		final int nWrongs = nCriticalQuizIndices - _nRights;
-		return 200 * nWrongs <= failurePerCent * nCriticalQuizIndices;
+		return 100 * nWrongs <= failurePerCent * nCriticalQuizIndices;
 	}
 
 	boolean haveLost(final int failurePerCent) {

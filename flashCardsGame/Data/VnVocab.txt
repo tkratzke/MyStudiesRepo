@@ -42,12 +42,12 @@
  30.	Tôi sẽ đi bơi từ hai giờ đến ba giờ	I will go swimming from 2:00 until	
     	ba mươi                            	3:30 (tôi)
 
- 31.	làm việc                           	"do a job" or work
+ 31.	làm việc                           	"do a job" or work (l...)
 
  32.	Trưa nay tôi sẽ làm việc với G     	Today I will work with G in the	
     	                                   	afternoon (tôi)
 
- 33.	dậy                                	to wake up
+ 33.	dậy                                	to wake up (d ...)
 
  34.	Tôi sẽ nói chuyện bao giờ em dậy   	I will talk to you when you wake up	
     	                                   	(tôi, em)
