@@ -17,16 +17,15 @@ class QuizPlus implements Serializable {
 	private int _currentQuizIdx;
 	private int _nWrongs, _nRights;
 	boolean _criticalQuizIndicesOnly;
-	final private HashMap<Integer, NWrongsAndHits> _indexInCardsToNWrongsAndHits;
+	final private HashMap<Integer, NWrongsAndHits> _cardIdxToNWrongsAndHits;
 	private int _firstWrongIndexInCards;
 
-	static class NWrongsAndHits {
-		int _nWrongs = 0;
-		int _nHits = 0;
+	static class NWrongsAndHits implements Cloneable {
+		int _nWrongs;
+		int _nHits;
 
-		NWrongsAndHits(final int nWrongs, final int nHits) {
-			_nWrongs = nWrongs;
-			_nHits = nHits;
+		NWrongsAndHits() {
+			_nWrongs = _nHits = 0;
 		}
 
 		@Override
@@ -37,6 +36,15 @@ class QuizPlus implements Serializable {
 			}
 			return null;
 		}
+
+		public String getString() {
+			return String.format("(nWrongs,nHits)::(%d,%d)", _nWrongs, _nHits);
+		}
+
+		@Override
+		public String toString() {
+			return getString();
+		}
 	}
 
 	QuizPlus(final int[] fullQuiz, final int[] criticalQuizIndices) {
@@ -44,7 +52,7 @@ class QuizPlus implements Serializable {
 		_origFullQuiz = _fullQuiz.clone();
 		_criticalIndicesInQuiz = criticalQuizIndices;
 		Arrays.sort(_criticalIndicesInQuiz);
-		_indexInCardsToNWrongsAndHits = new HashMap<>();
+		_cardIdxToNWrongsAndHits = new HashMap<>();
 		resetForFullMode();
 	}
 
@@ -56,26 +64,20 @@ class QuizPlus implements Serializable {
 		_nWrongs = quizPlus._nWrongs;
 		_nRights = quizPlus._nRights;
 		_firstWrongIndexInCards = quizPlus._firstWrongIndexInCards;
-		_indexInCardsToNWrongsAndHits = new HashMap<>();
-		final Map<Integer, NWrongsAndHits> from = quizPlus._indexInCardsToNWrongsAndHits;
-		final Map<Integer, NWrongsAndHits> to = _indexInCardsToNWrongsAndHits;
+		_cardIdxToNWrongsAndHits = new HashMap<>();
+		final Map<Integer, NWrongsAndHits> from = quizPlus._cardIdxToNWrongsAndHits;
+		final Map<Integer, NWrongsAndHits> to = _cardIdxToNWrongsAndHits;
 		final Iterator<Map.Entry<Integer, NWrongsAndHits>> it = from.entrySet().iterator();
 		while (it.hasNext()) {
 			final Map.Entry<Integer, NWrongsAndHits> entry = it.next();
-			final int indexInCards = entry.getKey();
-			to.put(indexInCards, entry.getValue().clone());
+			final int cardIdx = entry.getKey();
+			to.put(cardIdx, entry.getValue().clone());
 		}
 		_criticalQuizIndicesOnly = quizPlus._criticalQuizIndicesOnly;
 	}
 
 	int getCurrentQuiz_CardIndex(final int k) {
-		try {
-			return _fullQuiz[_criticalQuizIndicesOnly ? _criticalIndicesInQuiz[k] : k];
-		} catch (final Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
+		return _fullQuiz[_criticalQuizIndicesOnly ? _criticalIndicesInQuiz[k] : k];
 	}
 
 	int getCurrentQuizLen() {
@@ -108,8 +110,7 @@ class QuizPlus implements Serializable {
 	void reactToRightResponse(final boolean wasWrongAtLeastOnce) {
 		if (isCriticalQuizIndex(_currentQuizIdx)) {
 			final int indexInCards = getCurrentQuiz_CardIndex(_currentQuizIdx);
-			final NWrongsAndHits nWrongsAndHits = _indexInCardsToNWrongsAndHits
-					.get(indexInCards);
+			final NWrongsAndHits nWrongsAndHits = _cardIdxToNWrongsAndHits.get(indexInCards);
 			++nWrongsAndHits._nHits;
 			if (wasWrongAtLeastOnce) {
 				++nWrongsAndHits._nWrongs;
@@ -127,13 +128,13 @@ class QuizPlus implements Serializable {
 	void resetForFullMode() {
 		/** Restore the full quiz. */
 		System.arraycopy(_origFullQuiz, 0, _fullQuiz, 0, _origFullQuiz.length);
-		_indexInCardsToNWrongsAndHits.clear();
+		_cardIdxToNWrongsAndHits.clear();
 		/** Temporarily set _criticalQuizIndicesOnly to true, to re-set nW_And_O. */
 		_criticalQuizIndicesOnly = true;
 		final int nCriticalQuizIndices = getCurrentQuizLen();
 		for (int k = 0; k < nCriticalQuizIndices; ++k) {
 			final int indexInCards = getCurrentQuiz_CardIndex(k);
-			_indexInCardsToNWrongsAndHits.put(indexInCards, new NWrongsAndHits(0, 0));
+			_cardIdxToNWrongsAndHits.put(indexInCards, new NWrongsAndHits());
 		}
 		/** Put it in FullMode. */
 		_criticalQuizIndicesOnly = false;
@@ -165,7 +166,7 @@ class QuizPlus implements Serializable {
 		int indexInCardsToReplace = -1;
 		double smallestRatio = Double.POSITIVE_INFINITY;
 		int mostHitsWithSmallestRatio = 0;
-		final Iterator<Map.Entry<Integer, NWrongsAndHits>> it = _indexInCardsToNWrongsAndHits
+		final Iterator<Map.Entry<Integer, NWrongsAndHits>> it = _cardIdxToNWrongsAndHits
 				.entrySet().iterator();
 		for (; it.hasNext();) {
 			final Map.Entry<Integer, NWrongsAndHits> entry = it.next();

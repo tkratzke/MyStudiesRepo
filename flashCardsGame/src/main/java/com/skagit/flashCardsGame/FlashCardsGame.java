@@ -44,6 +44,7 @@ public class FlashCardsGame {
 
 	final static char _CommentChar = '!';
 	final static String _CommentString = "" + _CommentChar + ' ';
+	final static String _EndCardsString = "$$";
 
 	final static String _Indent = "   ";
 	final static int _IndentLen = _Indent.length();
@@ -284,6 +285,9 @@ public class FlashCardsGame {
 					final String trimmed = nextLine.trim();
 					if (trimmed.isBlank()) {
 						continue;
+					}
+					if (trimmed.equalsIgnoreCase(_EndCardsString)) {
+						break;
 					}
 					final boolean newComment = trimmed.charAt(0) == _CommentChar;
 					final boolean existingComment = comment != null;
