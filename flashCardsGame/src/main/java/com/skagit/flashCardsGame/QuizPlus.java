@@ -38,7 +38,7 @@ class QuizPlus implements Serializable {
 		}
 
 		public String getString() {
-			return String.format("(nWrongs,nHits)::(%d,%d)", _nWrongs, _nHits);
+			return String.format("[nWrongs/nHits=%d/%d]", _nWrongs, _nHits);
 		}
 
 		@Override
@@ -145,12 +145,20 @@ class QuizPlus implements Serializable {
 
 	boolean haveWon(final int failurePerCent) {
 		/**
-		 * We need a wrong rate that is <= failurePerCent even assuming that we'll get the
-		 * rest of the critical quiz indices wrong.
+		 * If this is not the last critical quiz index, we need a wrong rate that is less than
+		 * 0.67 * the allowed failure rate, even assuming that we'll get the rest of the
+		 * critical quiz indices wrong.
 		 */
 		final int nCriticalQuizIndices = _criticalIndicesInQuiz.length;
-		final int nWrongs = nCriticalQuizIndices - _nRights;
-		return 100 * nWrongs <= failurePerCent * nCriticalQuizIndices;
+		if (_nWrongs + _nRights < nCriticalQuizIndices) {
+			final int nWrongs = nCriticalQuizIndices - _nRights;
+			return 150 * nWrongs <= failurePerCent * nCriticalQuizIndices;
+		}
+		/**
+		 * This is the last critical quiz index; we cannot afford to have both haveWon and
+		 * haveLost return false. At this point, exactly one of them must return true.
+		 */
+		return !haveLost(failurePerCent);
 	}
 
 	boolean haveLost(final int failurePerCent) {
