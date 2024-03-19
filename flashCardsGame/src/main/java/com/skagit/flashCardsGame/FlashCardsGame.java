@@ -837,6 +837,12 @@ public class FlashCardsGame {
 					 */
 					final char char0Uc = Character.toUpperCase(response.charAt(0));
 					if (char0Uc == _QuitChar) {
+						System.out.print(getFullYesNoPrompt("Reallly quit?", true));
+						final YesNoResponse yesNoResponse = new YesNoResponse(sc,
+								/* defaultYesNo= */true);
+						if (!yesNoResponse._yesValue) {
+							continue OUTSIDE_LOOP;
+						}
 						keepGoing = false;
 						return;
 					} else if (char0Uc == _EditPropertiesChar) {
