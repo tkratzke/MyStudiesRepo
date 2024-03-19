@@ -610,10 +610,12 @@ public class FlashCardsGame {
 		}
 	}
 
-	final private String getTypeIPrompt(final int cardIdx) {
+	final private String getTypeIPrompt(final int cardIdx,
+			final boolean currentQuestionWasWrongAtLeastOnce) {
 		String typeIPrompt = "";
 		final int currentIdxInQuiz = _quizPlus.getCurrentIdxInQuiz();
-		if (_quizPlus.isCriticalQuizIndex(currentIdxInQuiz)) {
+		final boolean criticalQuizIdx = _quizPlus.isCriticalQuizIndex(currentIdxInQuiz);
+		if (criticalQuizIdx) {
 			typeIPrompt += "*";
 		}
 		final int cardNumber = _cards[cardIdx]._cardNumber;
@@ -621,11 +623,15 @@ public class FlashCardsGame {
 		typeIPrompt += String.format("%d of %d(CrdIdx=%d,#%d)", currentIdxInQuiz + 1, quizLen,
 				cardIdx, cardNumber);
 		final int nRights = _quizPlus.getNRights();
-		final int nWrongs = _quizPlus.getNWrongs();
-		final int nTrials = nRights + nWrongs;
-		if (nTrials > 0) {
+		int nWrongs = _quizPlus.getNWrongs();
+		int nTrials = nRights + nWrongs;
+		if (criticalQuizIdx && currentQuestionWasWrongAtLeastOnce) {
+			++nWrongs;
+			++nTrials;
+		}
+		if (nRights > 0 || nWrongs > 0) {
 			final long successPerCent = Math.round((100d * nRights) / nTrials);
-			typeIPrompt += String.format(",(#Rt/Wr=%d/%d SccRt=%d%%)", nRights, nWrongs,
+			typeIPrompt += String.format(",(Rt:Wr=%d:%d SccRt=%d%%)", nRights, nWrongs,
 					successPerCent);
 		}
 		return typeIPrompt;
@@ -750,12 +756,12 @@ public class FlashCardsGame {
 			final String answer = CleanWhiteSpace(
 					_quizDirection == QuizDirection.A_TO_B ? card._fullBSide : card._fullASide);
 			final int answerLen = answer.length();
-			final String typeIPrompt = getTypeIPrompt(cardIdx);
-			final int typeIPromptLen = typeIPrompt.length();
 			boolean wasWrongAtLeastOnce = false;
-			final int len1 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len
-					+ Math.min(_RoomLen, answerLen);
 			for (boolean gotItRight = false; !gotItRight;) {
+				final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
+				final int typeIPromptLen = typeIPrompt.length();
+				final int len1 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len
+						+ Math.min(_RoomLen, answerLen);
 				final String[] clueFields = clue.split(_WhiteSpace);
 				final int nClueFields = clueFields.length;
 				final String[] answerFields = answer.split(_WhiteSpace);
