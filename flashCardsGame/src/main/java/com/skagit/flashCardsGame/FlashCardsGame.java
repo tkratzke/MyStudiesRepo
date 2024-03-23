@@ -498,17 +498,19 @@ public class FlashCardsGame {
 					}
 				}
 				for (int k1 = 0; k1 < nParts; ++k1) {
-					final String aPart = k1 < nAParts ? aParts.get(k1) : "";
+					final String aPart = k1 < nAParts ? aParts.get(k1) : null;
+					final String bPart = k1 < nBParts ? bParts.get(k1) : null;
 					if (k1 == 0) {
 						pw.printf(realNumberFormat, card._cardNumber);
 					} else {
 						pw.print(blankNumberString);
 					}
 					pw.print('\t');
-					pw.printf(aPartFormat, aPart);
-					if (k1 < nBParts) {
-						pw.print('\t');
-						pw.print(bParts.get(k1));
+					if (aPart != null) {
+						pw.printf(bPart != null ? aPartFormat : "%s", aPart);
+					}
+					if (bPart != null) {
+						pw.printf("\t%s", bPart);
 					}
 					if (k1 < nParts - 1) {
 						pw.print('\t');
@@ -584,11 +586,11 @@ public class FlashCardsGame {
 		while (Math.abs(r.nextLong()) < Long.MAX_VALUE / 5) {
 		}
 		final int nCards = cards.length;
-		for (int k = 0; k < nCards; ++k) {
-			final int kk = k + r.nextInt(nCards - k);
-			final Card card = cards[k];
-			cards[k] = cards[kk];
-			cards[kk] = card;
+		for (int k0 = 0; k0 < nCards; ++k0) {
+			final int k1 = k0 + r.nextInt(nCards - k0);
+			final Card card = cards[k0];
+			cards[k0] = cards[k1];
+			cards[k1] = card;
 		}
 	}
 
@@ -596,14 +598,14 @@ public class FlashCardsGame {
 	final private static int _MaxNFailsPerElement = 5;
 	static void shuffleArray(final int[] ints, final Random r, int lastValue) {
 		final int n = ints.length;
-		for (int k = 0; k < n; ++k) {
+		for (int k0 = 0; k0 < n; ++k0) {
 			for (int nFails = 0; nFails <= _MaxNFailsPerElement; ++nFails) {
-				final int vK = ints[k];
-				final int i = k + r.nextInt(n - k);
-				final int vI = ints[i];
-				if (vI != lastValue || nFails == _MaxNFailsPerElement) {
-					lastValue = ints[k] = vI;
-					ints[i] = vK;
+				final int vK0 = ints[k0];
+				final int k1 = k0 + r.nextInt(n - k0);
+				final int vK1 = ints[k1];
+				if (vK1 != lastValue || nFails == _MaxNFailsPerElement) {
+					lastValue = ints[k0] = vK1;
+					ints[k1] = vK0;
 					break;
 				}
 			}
@@ -722,7 +724,7 @@ public class FlashCardsGame {
 		boolean restarted = false;
 
 		OUTSIDE_LOOP : for (boolean keepGoing = true; keepGoing;) {
-			/** Check for a status change from _quizPlus. */
+			/** Check for a _status change from _quizPlus. */
 			final QuizPlusTransition quizPlusTransition = _quizGenerator.getStatusChange(nCards,
 					restarted, _quizPlus);
 			_quizPlus = quizPlusTransition._newQuizPlus;

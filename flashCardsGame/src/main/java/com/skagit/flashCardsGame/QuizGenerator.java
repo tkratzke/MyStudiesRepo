@@ -106,7 +106,7 @@ public class QuizGenerator {
 	QuizPlus createNewQuizPlus(final int nCards) {
 		correctQuizGeneratorProperties(nCards);
 		final int nAvail = _topCardIndex + 1;
-		final int nNewWordsInQuiz = Math.min(nAvail - 1, _maxNNewWords);
+		final int nNewWordsInQuiz = Math.min(nAvail, _maxNNewWords);
 		final int nRecentWordsInQuiz = Math.min(_maxNRecentWords, nAvail - nNewWordsInQuiz);
 		final int nDifferentWordsInQuiz = nNewWordsInQuiz + nRecentWordsInQuiz;
 		final int array1Len = nNewWordsInQuiz * _nRepeatsOfNew;
