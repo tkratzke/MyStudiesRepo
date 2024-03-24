@@ -14,10 +14,12 @@ package com.skagit;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -36,6 +38,40 @@ public class SimpleAudioPlayer {
 		_clip = AudioSystem.getClip();
 		_clip.open(_audioInputStream);
 		_clip.loop(Clip.LOOP_CONTINUOUSLY);
+	}
+
+	public static boolean validate(final File file, final boolean play) {
+		AudioInputStream audioInputStream;
+		try {
+			/**
+			 * If the file doesn't exist or is a bad audio file, we won't get past the next
+			 * line.
+			 */
+			audioInputStream = AudioSystem.getAudioInputStream(file.getAbsoluteFile());
+			if (!play) {
+				return true;
+			}
+			try (Clip clip = AudioSystem.getClip()) {
+				final CountDownLatch syncLatch = new CountDownLatch(1);
+				clip.addLineListener(e -> {
+					if (e.getType() == LineEvent.Type.STOP) {
+						syncLatch.countDown();
+					}
+				});
+				clip.open(audioInputStream);
+				clip.start();
+				try {
+					syncLatch.await(); //
+				} catch (final InterruptedException e1) {
+					return true;
+				}
+			} catch (final LineUnavailableException e) {
+			}
+			return true;
+		} catch (final UnsupportedAudioFileException e) {
+		} catch (final IOException e) {
+		}
+		return false;
 	}
 
 	private void goToChoice(final int c)
@@ -149,8 +185,8 @@ public class SimpleAudioPlayer {
 			} catch (final Exception ex) {
 				System.out.println("Error with playing sound.");
 				ex.printStackTrace();
-
 			}
 		}
 	}
+
 }

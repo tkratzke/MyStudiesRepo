@@ -9,7 +9,6 @@ public enum QuizDirection {
 	final public static QuizDirection[] _Values = values();
 
 	final public String _fancyString;
-
 	final public String _typableString;
 
 	QuizDirection(final String fancyString, final String typableString) {

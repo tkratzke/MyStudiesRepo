@@ -23,10 +23,17 @@ import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
 import com.skagit.flashCardsGame.enums.QuizDirection;
 
+/**
+ * <pre>
+ * Interesting note on deleting remote repositories from within Eclipse:
+ * https://stackoverflow.com/questions/8625406/how-to-delete-a-branch-in-the-remote-repository-using-egit
+ * </pre>
+ */
 public class FlashCardsGame {
 
 	/** Non-static fields. */
 	final private File _propertiesFile;
+	final private File _soundFilesDir;
 	final private Properties _properties;
 
 	final private long _randomSeed;
@@ -56,6 +63,7 @@ public class FlashCardsGame {
 						name.substring(0, lastDotIndex) + Statics._PropertiesEnding);
 			}
 		}
+		final File propertiesDir = _propertiesFile.getParentFile();
 		_properties = new Properties();
 		try (InputStreamReader isr = new InputStreamReader(
 				new FileInputStream(_propertiesFile), "UTF-8")) {
@@ -69,6 +77,16 @@ public class FlashCardsGame {
 				_properties.put(key, validatedString);
 			}
 		} catch (final IOException e) {
+		}
+		/** SOUND_FILES_DIR is kind of special. */
+		final PropertyPlus sfdPP = PropertyPlus.SOUND_FILES_DIR;
+		final String soundFilesString = sfdPP.getValidString(_properties);
+		if (soundFilesString.length() > 0) {
+			_soundFilesDir = propertiesDir;
+		} else {
+			final File dir = new File(soundFilesString);
+			_soundFilesDir = dir.isDirectory() ? dir : propertiesDir;
+			_properties.put(sfdPP._propertyName, _soundFilesDir.toString());
 		}
 		reWritePropertiesFile();
 
@@ -114,18 +132,10 @@ public class FlashCardsGame {
 
 	/**
 	 * <pre>
-	 * Interesting note on deleting remote repositories from within Eclipse:
-	 * https://stackoverflow.com/questions/8625406/how-to-delete-a-branch-in-the-remote-repository-using-egit
-	 * </pre>
-	 */
-
-	/**
-	 * <pre>
 	 * Interesting note on text files and the "right" way to do things:
 	 * https://stackoverflow.com/questions/17405165/first-character-of-the-reading-from-the-text-file-%C3%AF
 	 * </pre>
 	 */
-
 	private TreeMap<Card, Card> loadCardMap(final boolean announceCompleteDups) {
 		final TreeMap<Card, Card> cardMap = new TreeMap<>(Card._ByAThenB);
 		final File cardsFile = getCardsFile();
@@ -135,7 +145,7 @@ public class FlashCardsGame {
 			if (in.markSupported()) {
 				/**
 				 * Mark where we're at in the file (the beginning). The "1" is a "read ahead
-				 * limit, and does not mean "byte # 1."
+				 * limit."
 				 */
 				in.mark(1);
 				/**
@@ -215,10 +225,10 @@ public class FlashCardsGame {
 	}
 
 	private static void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
-			final String bSide, final ArrayList<String> commentList, final String strayComment,
+			final String bSide, final ArrayList<String> commentList, final String comment,
 			final boolean announceCompleteDups) {
-		if (strayComment != null) {
-			commentList.add(strayComment);
+		if (comment != null && comment.length() > 0) {
+			commentList.add(comment);
 		}
 		if (aSide != null && bSide != null && aSide.length() > 0 && bSide.length() > 0) {
 			final int nNewCommentLines = commentList.size();

@@ -33,6 +33,7 @@ public class Statics {
 	final static char _NoChar = 'N';
 	final static char _TabSymbolChar = '\u2409';
 	final static char _YesChar = 'Y';
+	final static char _FileDelimiter = '%';
 	static char[] _SpecialChars = { //
 			_LtArrowChar, //
 			_RtArrowChar, //
