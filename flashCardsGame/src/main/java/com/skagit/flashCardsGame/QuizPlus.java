@@ -210,7 +210,7 @@ class QuizPlus implements Serializable {
 			}
 		}
 		/** Shuffle newIndicesInCards and put them back into the criticalQuizIndices. */
-		FlashCardsGame.shuffleArray(newIndicesInCards, r, /* lastValue= */-1);
+		Statics.shuffleArray(newIndicesInCards, r, /* lastValue= */-1);
 		for (int k = 0; k < nCriticalQuizIndices; ++k) {
 			_fullQuiz[_criticalIndicesInQuiz[k]] = newIndicesInCards[k];
 		}
@@ -260,7 +260,7 @@ class QuizPlus implements Serializable {
 			}
 			final TreeMap<Integer, int[]> map = iPass == 0 ? mapofNonCriticals : mapOfCriticals;
 			final String mapString = mapToString(map);
-			if (mapString.indexOf(FlashCardsGame._EmptySetChar) >= 0) {
+			if (mapString.indexOf(Statics._EmptySetChar) >= 0) {
 				s += mapString;
 			} else {
 				// s += String.format("(%s)", mapString);
@@ -274,7 +274,7 @@ class QuizPlus implements Serializable {
 	private static final String mapToString(final TreeMap<Integer, int[]> map) {
 		final int nEntries = map.size();
 		if (nEntries == 0) {
-			return "" + FlashCardsGame._EmptySetChar;
+			return "" + Statics._EmptySetChar;
 		}
 		final int[][] indexInCardsAndCount = new int[nEntries][];
 		final Iterator<Map.Entry<Integer, int[]>> it = map.entrySet().iterator();
@@ -336,7 +336,7 @@ class QuizPlus implements Serializable {
 		if (nInStreak == 1) {
 			return String.format("%d%s", firstMemberOfStreak, countString);
 		}
-		return String.format("%d%c%d%s", firstMemberOfStreak, FlashCardsGame._RtArrowChar,
+		return String.format("%d%c%d%s", firstMemberOfStreak, Statics._RtArrowChar,
 				lastMemberOfStreak, countString);
 	}
 

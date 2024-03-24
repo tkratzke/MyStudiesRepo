@@ -116,10 +116,10 @@ public class QuizGenerator {
 			Arrays.fill(temp, _topCardIndex - k0);
 			System.arraycopy(temp, 0, array1, k0 * _nRepeatsOfNew, _nRepeatsOfNew);
 		}
-		FlashCardsGame.shuffleArray(array1, _r, /* lastValue= */-1);
+		Statics.shuffleArray(array1, _r, /* lastValue= */-1);
 		final int[] array2 = createArray2(nNewWordsInQuiz, nRecentWordsInQuiz);
 		final int lastValue = array1Len > 0 ? array1[array1Len - 1] : -1;
-		FlashCardsGame.shuffleArray(array2, _r, lastValue);
+		Statics.shuffleArray(array2, _r, lastValue);
 		final int fullQuizLen = array1Len + nDifferentWordsInQuiz;
 		final int[] quiz = new int[fullQuizLen];
 		System.arraycopy(array1, 0, quiz, 0, array1Len);

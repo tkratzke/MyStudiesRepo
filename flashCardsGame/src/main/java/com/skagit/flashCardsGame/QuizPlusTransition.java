@@ -17,14 +17,14 @@ class QuizPlusTransition {
 		_changeType = changeType;
 		final String oldSummaryString;
 		if (quizPlus == null) {
-			oldSummaryString = String.format("{%c|%c}", FlashCardsGame._EmptySetChar,
-					FlashCardsGame._EmptySetChar);
+			oldSummaryString = String.format("{%c|%c}", Statics._EmptySetChar,
+					Statics._EmptySetChar);
 		} else {
 			oldSummaryString = quizPlus.getSummaryString();
 		}
 		final String newSummaryString = _newQuizPlus.getSummaryString();
-		_transitionString = String.format("%s%c%s", oldSummaryString,
-				FlashCardsGame._RtArrowChar, newSummaryString);
+		_transitionString = String.format("%s%c%s", oldSummaryString, Statics._RtArrowChar,
+				newSummaryString);
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.skagit.flashCardsGame;
+package com.skagit;
 
 import java.util.HashMap;
 

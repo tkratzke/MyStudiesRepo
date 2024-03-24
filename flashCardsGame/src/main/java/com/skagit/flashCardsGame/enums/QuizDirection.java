@@ -1,10 +1,10 @@
 package com.skagit.flashCardsGame.enums;
 
-import com.skagit.flashCardsGame.FlashCardsGame;
+import com.skagit.flashCardsGame.Statics;
 
 public enum QuizDirection {
-	A_TO_B(String.format("A%cB", FlashCardsGame._RtArrowChar), "A->B"), //
-	B_TO_A(String.format("B%cA", FlashCardsGame._RtArrowChar), "B->A"); //
+	A_TO_B(String.format("A%cB", Statics._RtArrowChar), "A->B"), //
+	B_TO_A(String.format("B%cA", Statics._RtArrowChar), "B->A"); //
 
 	final public static QuizDirection[] _Values = values();
 

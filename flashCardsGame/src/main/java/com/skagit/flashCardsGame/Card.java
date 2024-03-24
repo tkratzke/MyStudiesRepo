@@ -3,91 +3,19 @@ package com.skagit.flashCardsGame;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Comparator;
 
 class Card {
-	class CardParts extends ArrayList<String> {
-		private static final long serialVersionUID = 1L;
-		int _maxLen;
-		CardParts(final boolean useASide, final int maxLen0) {
-			super();
-			String part = "";
-			final String fullSide = useASide ? _fullASide : _fullBSide;
-			int maxLen = 0;
-			final String[] fields = fullSide.split(FlashCardsGame._WhiteSpace);
-			final int nFields = fields.length;
-			for (int k = 0; k < nFields; ++k) {
-				final String field = fields[k];
-				final int fieldLen = field.length();
-				if (fieldLen > 0) {
-					final int partLen = part.length();
-					if (partLen + (partLen > 0 ? 1 : 0) + fieldLen > maxLen0) {
-						if (partLen > 0) {
-							add(part);
-							maxLen = Math.max(maxLen, partLen);
-						}
-						part = field;
-					} else {
-						part += (partLen > 0 ? " " : "") + field;
-					}
-				}
-			}
-			final int partLen = part.length();
-			if (partLen > 0) {
-				add(part);
-				maxLen = Math.max(maxLen, partLen);
-			}
-			_maxLen = maxLen;
-		}
-	}
-
-	class CommentParts extends ArrayList<String> {
-		private static final long serialVersionUID = 1L;
-		CommentParts(final String fullComment, final int maxLineLen) {
-			super();
-			if (fullComment == null || fullComment.isBlank()) {
-				return;
-			}
-			final String[] fields = fullComment.split(FlashCardsGame._WhiteSpace);
-			final int nFields = fields.length;
-			String currentPart = "!";
-			int currentLineLen = currentPart.length();
-			for (int k = 0; k < nFields; ++k) {
-				final boolean kIs0 = k == 0;
-				final String field = fields[k];
-				final int fieldLen = field.length();
-				if (fieldLen > 0) {
-					final boolean addToCurrentPart;
-					if (kIs0) {
-						addToCurrentPart = true;
-					} else {
-						addToCurrentPart = currentLineLen + 1 + fieldLen <= maxLineLen;
-					}
-					if (addToCurrentPart) {
-						currentPart += " " + field;
-						currentLineLen += 1 + fieldLen;
-					} else {
-						add(currentPart);
-						currentPart = "\t" + field;
-						currentLineLen = FlashCardsGame._NominalTabLen + fieldLen;
-					}
-				}
-			}
-			add(currentPart);
-		}
-	}
-
 	int _cardNumber;
-	final String _fullASide;
-	final String _fullBSide;
+	final String _aSideString;
+	final String _bSideString;
 	String[] _commentLines;
 
-	Card(final int cardNumber, final String aSide, final String bSide,
+	Card(final int cardNumber, final String aSideString, final String bSideString,
 			final String[] commentLines) {
 		_cardNumber = cardNumber;
-		_fullASide = aSide;
-		_fullBSide = bSide;
+		_aSideString = aSideString;
+		_bSideString = bSideString;
 		_commentLines = commentLines;
 	}
 
@@ -122,10 +50,10 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			final String a0 = card0._fullASide;
-			final String a1 = card1._fullASide;
-			final String a0a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(a0));
-			final String a1a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(a1));
+			final String a0 = card0._aSideString;
+			final String a1 = card1._aSideString;
+			final String a0a = Statics.CleanWhiteSpace(Statics.KillPunct(a0));
+			final String a1a = Statics.CleanWhiteSpace(Statics.KillPunct(a1));
 			return a0a.compareToIgnoreCase(a1a);
 		}
 	};
@@ -138,10 +66,10 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			final String b0 = card0._fullBSide;
-			final String b1 = card1._fullBSide;
-			final String b0a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(b0));
-			final String b1a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(b1));
+			final String b0 = card0._bSideString;
+			final String b1 = card1._bSideString;
+			final String b0a = Statics.CleanWhiteSpace(Statics.KillPunct(b0));
+			final String b1a = Statics.CleanWhiteSpace(Statics.KillPunct(b1));
 			return b0a.compareToIgnoreCase(b1a);
 		}
 	};
@@ -174,9 +102,9 @@ class Card {
 			final PrintStream old = System.out;
 			System.setOut(ps);
 			for (int k = 0; k < nCommentLines; ++k) {
-				System.out.println(FlashCardsGame._CommentString + _commentLines[k]);
+				System.out.println(Statics._CommentString + _commentLines[k]);
 			}
-			System.out.printf("%04d.\t%s:\t%s", _cardNumber, _fullASide, _fullBSide);
+			System.out.printf("%04d.\t%s:\t%s", _cardNumber, _aSideString, _bSideString);
 			s = baos.toString();
 			System.out.flush();
 			System.setOut(old);
@@ -185,16 +113,16 @@ class Card {
 		return s;
 	}
 
-	String getBrokenUpString(final boolean a, final int specMaxLen) {
-		final CardParts parts = new CardParts(a, specMaxLen);
+	String getBrokenUpString(final boolean aSide, final int maxLen) {
+		final CardParts parts = new CardParts(aSide ? _aSideString : _bSideString, maxLen);
 		final int nParts = parts.size();
-		String s = "" + FlashCardsGame._RtArrowChar;
+		String s = "" + Statics._RtArrowChar;
 		for (int k = 0; k < nParts; ++k) {
 			s += parts.get(k);
 			if (k < nParts - 1) {
 				s += "\n\t";
 			} else {
-				s += "" + FlashCardsGame._LtArrowChar;
+				s += "" + Statics._LtArrowChar;
 			}
 		}
 		return s;

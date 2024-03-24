@@ -11,13 +11,12 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import com.skagit.flashCardsGame.Statics.YesNoResponse;
 import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.Clumping;
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
@@ -25,134 +24,6 @@ import com.skagit.flashCardsGame.enums.PropertyPlus;
 import com.skagit.flashCardsGame.enums.QuizDirection;
 
 public class FlashCardsGame {
-
-	/**
-	 * <pre>
-	 *  Good list of characters.
-	 *  http://xahlee.info/comp/unicode_arrows.html
-	 * </pre>
-	 */
-	final static char _LtArrowChar = '\u2190';
-	public final static char _RtArrowChar = '\u2192';
-	final static char _RtArrowChar2 = '\u21a0';
-	final static char _SpadeSymbolChar = '\u2660';
-	final static char _ClubSymbolChar = '\u2663';
-	final static char _DiamondSymbolChar = '\u2666';
-	final static char _EmptySetChar = '\u2205';
-	final static char _HeavyCheckChar = '\u2714';
-	final static char _TabSymbolChar = '\u2409';
-
-	final static char _CommentChar = '!';
-	final static String _CommentString = "" + _CommentChar + ' ';
-	final static String _EndCardsString = "$$";
-
-	final static String _Indent = "   ";
-	final static int _IndentLen = _Indent.length();
-	final private static int _MaxLineLen = 65;
-
-	final private static int _MaxLenForCardPart = 35;
-	final private static int _BlockSize = 10;
-
-	final private static String _Sep1 = " " + _ClubSymbolChar;
-	final private static String _Sep2 = "" + _DiamondSymbolChar + " ";
-	final private static int _Sep1Len = _Sep1.length();
-	final private static int _Sep2Len = _Sep2.length();
-	final private static String _PrefaceForNewLine = _Indent + _Sep1;
-	final private static int _PrefaceForNewLineLen = _PrefaceForNewLine.length();
-	final private static int _RoomLen = 10;
-	final private static String _CountAsRight = "Count as Right? ";
-
-	final static char _ReturnChar = '\u23CE';
-	final private static char _HelpChar = 'H';
-	final private static char _QuitChar = '!';
-	final private static char _EditPropertiesChar = '@';
-	final private static char _RestartQuizChar = '#';
-	final private static char _ReloadCardsChar = '$';
-	final private static char _YesChar = 'Y';
-	final private static char _NoChar = 'N';
-	final private static String _YesString = "Yes";
-	final static String _NoString = "No";
-	final static String _RegExForPunct = "[,.;:?!]+";
-
-	/** Either of the following two FieldSeparators seems to work. */
-	final static String _FieldSeparator = "\\s*\\t\\s*";
-	@SuppressWarnings("unused")
-	final private static String _FieldSeparator1 = "(\\s*\\t\\s*)+";
-	final private static String _PropertiesEnding = ".properties";
-	final static String _WhiteSpace = "\\s+";
-	final static int _NominalTabLen = 5;
-
-	static char[] _SpecialChars = { //
-			_LtArrowChar, //
-			_RtArrowChar, //
-			_RtArrowChar2, //
-			_SpadeSymbolChar, //
-			_ClubSymbolChar, //
-			_DiamondSymbolChar, //
-			_EmptySetChar, //
-			_HeavyCheckChar, //
-			_TabSymbolChar, //
-			_ReturnChar, //
-			_HelpChar, //
-			_QuitChar, //
-			_EditPropertiesChar, //
-			_RestartQuizChar, //
-			_YesChar, //
-			_NoChar //
-	};
-
-	final private static String _HelpString = String.format(
-			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, %c=Reload Cards"
-					+ "%c=\"Show-and-ask,\" %s=Next Line is Continuation",
-			_HelpChar, _QuitChar, _EditPropertiesChar, _RestartQuizChar, _ReloadCardsChar,
-			_ReturnChar, "" + _TabSymbolChar + _ReturnChar);
-
-	/**
-	 * <pre>
-	 * Good article on dealing with VN diacritics.
-	 * https://namnguyen1202.hashnode.dev/removing-vietnamese-diacritic-in-java
-	 * </pre>
-	 */
-	static final HashMap<Character, Character> _VnToEngCharMap = new HashMap<>() {
-		private static final long serialVersionUID = 1L;
-		{
-			final String[][] mappings = { //
-					{"áàảãạâấầẩẫậăắằẳẵặ", "a"}, //
-					{"đ", "d"}, //
-					{"éèẻẽẹêếềểễệ", "e"}, //
-					{"íìỉĩị", "i"}, //
-					{"óòỏõọôốồổỗộơớờởỡợ", "o"}, //
-					{"úùủũụưứừửữự", "u"}, //
-					{"ýỳỷỹỵ", "y"}, //
-			};
-			final int nPairs = mappings.length;
-			for (int k0 = 0; k0 < nPairs; ++k0) {
-				final String[] pair = mappings[k0];
-				final char engChar = pair[1].charAt(0);
-				final char engCharUc = Character.toUpperCase(engChar);
-				final String vnChars = pair[0];
-				final int nVnChars = vnChars.length();
-				for (int k1 = 0; k1 < nVnChars; ++k1) {
-					final char vnChar = vnChars.charAt(k1);
-					final char vnCharUc = Character.toUpperCase(vnChar);
-					put(vnChar, engChar);
-					put(vnCharUc, engCharUc);
-				}
-			}
-		}
-	};
-
-	final static String StripVNDiacritics(final String s) {
-		final StringBuilder sb = new StringBuilder(s);
-		for (int k = 0; k < sb.length(); k++) {
-			final char c = sb.charAt(k);
-			final Character target = _VnToEngCharMap.get(c);
-			if (target != null) {
-				sb.setCharAt(k, target);
-			}
-		}
-		return sb.toString();
-	}
 
 	/** Non-static fields. */
 	final private File _propertiesFile;
@@ -171,7 +42,7 @@ public class FlashCardsGame {
 	FlashCardsGame(final Scanner sc, final String[] args) {
 		_needLineFeed = false;
 		final String propertiesFilePath = args[0];
-		if (propertiesFilePath.toLowerCase().endsWith(_PropertiesEnding)) {
+		if (propertiesFilePath.toLowerCase().endsWith(Statics._PropertiesEnding)) {
 			_propertiesFile = new File(propertiesFilePath);
 		} else {
 			final File f = new File(propertiesFilePath);
@@ -179,10 +50,10 @@ public class FlashCardsGame {
 			final String name = f.getName();
 			final int lastDotIndex = name.lastIndexOf('.');
 			if (lastDotIndex == -1) {
-				_propertiesFile = new File(propertiesFilePath + _PropertiesEnding);
+				_propertiesFile = new File(propertiesFilePath + Statics._PropertiesEnding);
 			} else {
 				_propertiesFile = new File(p,
-						name.substring(0, lastDotIndex) + _PropertiesEnding);
+						name.substring(0, lastDotIndex) + Statics._PropertiesEnding);
 			}
 		}
 		_properties = new Properties();
@@ -223,7 +94,7 @@ public class FlashCardsGame {
 		shuffleCards(_cards);
 		_quizPlus = null;
 		System.out.println();
-		System.out.print(_HelpString);
+		System.out.print(Statics._HelpString);
 		System.out.println();
 	}
 
@@ -231,13 +102,14 @@ public class FlashCardsGame {
 		final String propertiesFileName = _propertiesFile.getName();
 		final File parentFile = _propertiesFile.getParentFile();
 		final String cardsFileName = propertiesFileName.substring(0,
-				propertiesFileName.length() - _PropertiesEnding.length()) + ".txt";
+				propertiesFileName.length() - Statics._PropertiesEnding.length()) + ".txt";
 		return new File(parentFile, cardsFileName);
 	}
 
 	private String getCoreFilePath() {
 		final String inputPath = _propertiesFile.toString();
-		return inputPath.substring(0, inputPath.length() - _PropertiesEnding.length());
+		return inputPath.substring(0,
+				inputPath.length() - Statics._PropertiesEnding.length());
 	}
 
 	/**
@@ -286,10 +158,10 @@ public class FlashCardsGame {
 					if (trimmed.isBlank()) {
 						continue;
 					}
-					if (trimmed.equalsIgnoreCase(_EndCardsString)) {
+					if (trimmed.equalsIgnoreCase(Statics._EndCardsString)) {
 						break;
 					}
-					final boolean newComment = trimmed.charAt(0) == _CommentChar;
+					final boolean newComment = trimmed.charAt(0) == Statics._CommentChar;
 					final boolean existingComment = comment != null;
 					if (newComment || existingComment) {
 						final boolean hasContinuation = nextLine
@@ -460,8 +332,8 @@ public class FlashCardsGame {
 		{
 			int max = 0;
 			for (final Card card : _cards) {
-				final Card.CardParts aParts = card.new CardParts(/* a= */true,
-						_MaxLenForCardPart);
+				final CardParts aParts = new CardParts(card._aSideString,
+						Statics._MaxLenForCardPart);
 				max = Math.max(max, aParts._maxLen);
 			}
 			aPartFormat = String.format("%%-%ds", max);
@@ -472,8 +344,10 @@ public class FlashCardsGame {
 			boolean recentWasMultiLine = false;
 			for (int k0 = 0, nPrinted = 0; k0 < nCards; ++k0) {
 				final Card card = _cards[k0];
-				final Card.CardParts aParts = card.new CardParts(true, _MaxLenForCardPart);
-				final Card.CardParts bParts = card.new CardParts(false, _MaxLenForCardPart);
+				final CardParts aParts = new CardParts(card._aSideString,
+						Statics._MaxLenForCardPart);
+				final CardParts bParts = new CardParts(card._bSideString,
+						Statics._MaxLenForCardPart);
 				final int nAParts = aParts.size();
 				final int nBParts = bParts.size();
 				final int nParts = Math.max(nAParts, nBParts);
@@ -481,14 +355,15 @@ public class FlashCardsGame {
 				final int nCommentLines = commentLines == null ? 0 : commentLines.length;
 				final boolean isMultiLine = nCommentLines > 0 || nParts > 1;
 				if (k0 > 0) {
-					if ((isMultiLine || recentWasMultiLine || (nPrinted % _BlockSize == 0))) {
+					if ((isMultiLine || recentWasMultiLine
+							|| (nPrinted % Statics._BlockSize == 0))) {
 						pw.println();
 					}
 				}
 				recentWasMultiLine = isMultiLine;
 				for (int k1 = 0; k1 < nCommentLines; ++k1) {
-					final Card.CommentParts commentParts = card.new CommentParts(commentLines[k1],
-							_MaxLineLen);
+					final CommentParts commentParts = new CommentParts(commentLines[k1],
+							Statics._MaxLineLen);
 					for (int k2 = 0; k2 < commentParts.size(); ++k2) {
 						pw.print(commentParts.get(k2));
 						if (k2 < commentParts.size() - 1) {
@@ -563,7 +438,7 @@ public class FlashCardsGame {
 					final String[] lines = comment.trim().split("\n");
 					final int nLines = lines.length;
 					for (int k1 = 0; k1 < nLines; ++k1) {
-						pw.print(FlashCardsGame._CommentString + lines[k1]);
+						pw.print(Statics._CommentString + lines[k1]);
 						pw.println();
 					}
 				}
@@ -591,24 +466,6 @@ public class FlashCardsGame {
 			final Card card = cards[k0];
 			cards[k0] = cards[k1];
 			cards[k1] = card;
-		}
-	}
-
-	/** Avoids having the same value consecutively. */
-	final private static int _MaxNFailsPerElement = 5;
-	static void shuffleArray(final int[] ints, final Random r, int lastValue) {
-		final int n = ints.length;
-		for (int k0 = 0; k0 < n; ++k0) {
-			for (int nFails = 0; nFails <= _MaxNFailsPerElement; ++nFails) {
-				final int vK0 = ints[k0];
-				final int k1 = k0 + r.nextInt(n - k0);
-				final int vK1 = ints[k1];
-				if (vK1 != lastValue || nFails == _MaxNFailsPerElement) {
-					lastValue = ints[k0] = vK1;
-					ints[k1] = vK0;
-					break;
-				}
-			}
 		}
 	}
 
@@ -640,7 +497,7 @@ public class FlashCardsGame {
 	}
 
 	final private String getTypeIIPrompt() {
-		final String prompt = String.format("Enter: %c=Done", _ReturnChar);
+		final String prompt = String.format("Enter: %c=Done", Statics._ReturnChar);
 		return prompt + _quizGenerator.getTypeIIPrompt();
 	}
 
@@ -658,7 +515,7 @@ public class FlashCardsGame {
 			if (myLine.length() == 0) {
 				return;
 			}
-			final String[] fields = myLine.split(_WhiteSpace);
+			final String[] fields = myLine.split(Statics._WhiteSpace);
 			/**
 			 * Currently, we have no properties of our own to edit, so we immediately turn it
 			 * over to _quizGenerator.
@@ -702,21 +559,6 @@ public class FlashCardsGame {
 		return getString();
 	}
 
-	final static private EnumSet<ChangeType> _NewQuizSet = EnumSet.of(//
-			ChangeType.CRITICAL_ONLY_WIN, //
-			ChangeType.MOVE_ON_WIN, //
-			ChangeType.LOSS, //
-			ChangeType.NOTHING_TO_SOMETHING, //
-			ChangeType.PARAMETERS_CHANGED, //
-			ChangeType.RESTART//
-	);
-
-	final static private EnumSet<ChangeType> _ReallyNewQuizSet = EnumSet.of(//
-			ChangeType.MOVE_ON_WIN, //
-			ChangeType.NOTHING_TO_SOMETHING, //
-			ChangeType.PARAMETERS_CHANGED //
-	);
-
 	void mainLoop(final Scanner sc) {
 		int nCards = _cards.length;
 		long[] oldValues = storeValues();
@@ -730,12 +572,12 @@ public class FlashCardsGame {
 			_quizPlus = quizPlusTransition._newQuizPlus;
 			restarted = false;
 			final ChangeType changeType = quizPlusTransition._changeType;
-			if (_NewQuizSet.contains(changeType)) {
+			if (Statics._NewQuizSet.contains(changeType)) {
 				System.out.println();
 				if (_needLineFeed) {
 					System.out.println();
 				}
-				if (_ReallyNewQuizSet.contains(changeType)) {
+				if (Statics._ReallyNewQuizSet.contains(changeType)) {
 					/** For a really new one, add another lineFeed. */
 					System.out.println();
 					System.out.println(getString());
@@ -752,55 +594,56 @@ public class FlashCardsGame {
 
 			final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
 			final Card card = _cards[cardIdx];
-			final String clue = CleanWhiteSpace(
-					_quizDirection == QuizDirection.A_TO_B ? card._fullASide : card._fullBSide);
+			final String clue = Statics.CleanWhiteSpace(
+					_quizDirection == QuizDirection.A_TO_B ? card._aSideString : card._bSideString);
 			final int clueLen = clue.length();
-			final String answer = CleanWhiteSpace(
-					_quizDirection == QuizDirection.A_TO_B ? card._fullBSide : card._fullASide);
+			final String answer = Statics.CleanWhiteSpace(
+					_quizDirection == QuizDirection.A_TO_B ? card._bSideString : card._aSideString);
 			final int answerLen = answer.length();
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
 				final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 				final int typeIPromptLen = typeIPrompt.length();
-				final int len1 = typeIPromptLen + _Sep1Len + clueLen + _Sep2Len
-						+ Math.min(_RoomLen, answerLen);
-				final String[] clueFields = clue.split(_WhiteSpace);
+				final int len1 = typeIPromptLen + Statics._Sep1Len + clueLen + Statics._Sep2Len
+						+ Math.min(Statics._RoomLen, answerLen);
+				final String[] clueFields = clue.split(Statics._WhiteSpace);
 				final int nClueFields = clueFields.length;
-				final String[] answerFields = answer.split(_WhiteSpace);
+				final String[] answerFields = answer.split(Statics._WhiteSpace);
 				final int nAnswerFields = answerFields.length;
-				_needLineFeed = _needLineFeed || len1 > _MaxLineLen;
+				_needLineFeed = _needLineFeed || len1 > Statics._MaxLineLen;
 				if (_needLineFeed) {
 					System.out.println();
 				}
 				boolean longQuestion = false;
-				if (len1 <= _MaxLineLen) {
-					System.out.printf("%s%s%s%s", typeIPrompt, _Sep1, clue, _Sep2);
+				if (len1 <= Statics._MaxLineLen) {
+					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clue, Statics._Sep2);
 				} else {
 					System.out.println(typeIPrompt);
-					System.out.print(_PrefaceForNewLine);
-					int nUsedOnCurrentLine = _PrefaceForNewLineLen;
+					System.out.print(Statics._PrefaceForNewLine);
+					int nUsedOnCurrentLine = Statics._PrefaceForNewLineLen;
 					longQuestion = true;
 					/** Break up the clue. */
 					for (int k = 0; k < nClueFields; ++k) {
 						final String clueField = clueFields[k];
 						final int clueFieldLen = clueField.length();
 						final boolean justStartedLine = nUsedOnCurrentLine == (k == 0
-								? _PrefaceForNewLineLen
-								: _IndentLen);
+								? Statics._PrefaceForNewLineLen
+								: Statics._IndentLen);
 						if (justStartedLine) {
 							System.out.print(clueField);
 							nUsedOnCurrentLine += clueFieldLen;
-						} else if (nUsedOnCurrentLine + 1 + clueFieldLen + _RoomLen >= _MaxLineLen) {
+						} else if (nUsedOnCurrentLine + 1 + clueFieldLen
+								+ Statics._RoomLen >= Statics._MaxLineLen) {
 							System.out.println();
-							System.out.print(_Indent);
+							System.out.print(Statics._IndentString);
 							System.out.print(clueField);
-							nUsedOnCurrentLine = _IndentLen + clueFieldLen;
+							nUsedOnCurrentLine = Statics._IndentLen + clueFieldLen;
 						} else {
 							System.out.printf(" %s", clueField);
 							nUsedOnCurrentLine += 1 + clueFieldLen;
 						}
 					}
-					System.out.print(_Sep2);
+					System.out.print(Statics._Sep2);
 				}
 				final InputString inputString = new InputString(sc);
 				longQuestion = longQuestion || inputString._nLinesOfResponse > 1;
@@ -812,10 +655,10 @@ public class FlashCardsGame {
 						final String answerField = answerFields[k];
 						final int answerFieldLen = answerField.length();
 						if (nUsedOnCurrentLine == 0) {
-							System.out.printf("%s%s", _Indent, answerField);
-							nUsedOnCurrentLine = _IndentLen + answerFieldLen;
+							System.out.printf("%s%s", Statics._IndentString, answerField);
+							nUsedOnCurrentLine = Statics._IndentLen + answerFieldLen;
 							++k;
-						} else if (nUsedOnCurrentLine + 1 + answerFieldLen > _MaxLineLen) {
+						} else if (nUsedOnCurrentLine + 1 + answerFieldLen > Statics._MaxLineLen) {
 							System.out.println();
 							nUsedOnCurrentLine = 0;
 						} else {
@@ -824,13 +667,15 @@ public class FlashCardsGame {
 						}
 					}
 					final boolean defaultYesValue = true;
-					final String prompt = getFullYesNoPrompt(_CountAsRight, defaultYesValue);
+					final String prompt = Statics.getFullYesNoPrompt(Statics._CountAsRightString,
+							defaultYesValue);
 					final int promptLen = prompt.length();
-					if (nUsedOnCurrentLine + _Sep2Len + promptLen + _RoomLen <= _MaxLineLen) {
-						System.out.printf("%s%s", _Sep2, prompt);
+					if (nUsedOnCurrentLine + Statics._Sep2Len + promptLen
+							+ Statics._RoomLen <= Statics._MaxLineLen) {
+						System.out.printf("%s%s", Statics._Sep2, prompt);
 					} else {
 						System.out.println();
-						System.out.printf("%s%s%", _Indent, prompt);
+						System.out.printf("%s%s%", Statics._IndentString, prompt);
 					}
 					final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
 					gotItRight = yesNoResponse._yesValue;
@@ -844,8 +689,8 @@ public class FlashCardsGame {
 					 * fide response (such as ở).
 					 */
 					final char char0Uc = Character.toUpperCase(response.charAt(0));
-					if (char0Uc == _QuitChar) {
-						System.out.print(getFullYesNoPrompt("Reallly quit?", true));
+					if (char0Uc == Statics._QuitChar) {
+						System.out.print(Statics.getFullYesNoPrompt("Reallly quit?", true));
 						final YesNoResponse yesNoResponse = new YesNoResponse(sc,
 								/* defaultYesNo= */true);
 						if (!yesNoResponse._yesValue) {
@@ -853,31 +698,31 @@ public class FlashCardsGame {
 						}
 						keepGoing = false;
 						return;
-					} else if (char0Uc == _EditPropertiesChar) {
+					} else if (char0Uc == Statics._EditPropertiesChar) {
 						modifyProperties(sc);
 						continue OUTSIDE_LOOP;
-					} else if (char0Uc == _RestartQuizChar) {
+					} else if (char0Uc == Statics._RestartQuizChar) {
 						_quizPlus.resetForFullMode();
 						restarted = true;
 						continue OUTSIDE_LOOP;
-					} else if (char0Uc == _ReloadCardsChar) {
+					} else if (char0Uc == Statics._ReloadCardsChar) {
 						final int oldTci = _quizGenerator._topCardIndex;
 						final Card topCard = _cards[oldTci];
 						final String keyString = _quizDirection == QuizDirection.A_TO_B
-								? topCard._fullASide
-								: topCard._fullBSide;
+								? topCard._aSideString
+								: topCard._bSideString;
 						loadCards(/* announceCompleteDups= */false);
 						nCards = _cards.length;
 						int tci = -1;
 						for (int k = 0; k < nCards; ++k) {
 							final Card card1 = _cards[k];
 							if (_quizDirection == QuizDirection.A_TO_B) {
-								if (keyString.compareToIgnoreCase(card1._fullASide) == 0) {
+								if (keyString.compareToIgnoreCase(card1._aSideString) == 0) {
 									tci = k;
 									break;
 								}
 							} else {
-								if (keyString.compareToIgnoreCase(card1._fullBSide) == 0) {
+								if (keyString.compareToIgnoreCase(card1._bSideString) == 0) {
 									tci = k;
 									break;
 								}
@@ -885,9 +730,9 @@ public class FlashCardsGame {
 						}
 						_quizGenerator.reactToReloadOfCards(_cards.length, tci);
 						continue OUTSIDE_LOOP;
-					} else if (char0Uc == _HelpChar) {
+					} else if (char0Uc == Statics._HelpChar) {
 						System.out.println();
-						System.out.print(_HelpString);
+						System.out.print(Statics._HelpString);
 						System.out.println();
 						continue OUTSIDE_LOOP;
 					}
@@ -903,16 +748,17 @@ public class FlashCardsGame {
 						final String answerField;
 						if (gotItRight && k == 0) {
 							/** Combine the first answer field with a Heavy Check Mark. */
-							answerField = String.format("%c %s", _HeavyCheckChar, answerFields[0]);
+							answerField = String.format("%c %s", Statics._HeavyCheckChar,
+									answerFields[0]);
 						} else {
 							answerField = answerFields[k];
 						}
 						final int answerFieldLen = answerField.length();
 						if (nUsedOnCurrentLine == 0) {
-							System.out.printf("%s%s", _Indent, answerField);
-							nUsedOnCurrentLine = _IndentLen + answerFieldLen;
+							System.out.printf("%s%s", Statics._IndentString, answerField);
+							nUsedOnCurrentLine = Statics._IndentLen + answerFieldLen;
 							++k;
-						} else if (nUsedOnCurrentLine + 1 + answerFieldLen > _MaxLineLen) {
+						} else if (nUsedOnCurrentLine + 1 + answerFieldLen > Statics._MaxLineLen) {
 							System.out.println();
 							nUsedOnCurrentLine = 0;
 						} else {
@@ -929,15 +775,17 @@ public class FlashCardsGame {
 					final int fullDiffStringLen = fullDiffString.length();
 					final String fullYesNoPrompt;
 					if (gotItRight) {
-						fullYesNoPrompt = getFullYesNoPrompt(_CountAsRight, true);
+						fullYesNoPrompt = Statics.getFullYesNoPrompt(Statics._CountAsRightString,
+								true);
 					} else {
-						fullYesNoPrompt = getFullYesNoPrompt(_CountAsRight, false);
+						fullYesNoPrompt = Statics.getFullYesNoPrompt(Statics._CountAsRightString,
+								false);
 					}
 					final int fullYesNoPromptLen = fullYesNoPrompt.length();
 					/** Put diffString and the prompt onto the current line if there's room. */
-					if (nUsedOnCurrentLine + 1 + fullDiffStringLen + _Sep2Len + fullYesNoPromptLen
-							+ _RoomLen <= _MaxLineLen) {
-						System.out.printf(" %s%s%s", fullDiffString, _Sep2, fullYesNoPrompt);
+					if (nUsedOnCurrentLine + 1 + fullDiffStringLen + Statics._Sep2Len
+							+ fullYesNoPromptLen + Statics._RoomLen <= Statics._MaxLineLen) {
+						System.out.printf(" %s%s%s", fullDiffString, Statics._Sep2, fullYesNoPrompt);
 					} else {
 						/**
 						 * Need a new line, but put diffString and the prompt onto a single line if
@@ -945,17 +793,17 @@ public class FlashCardsGame {
 						 */
 						System.out.println();
 						if ( //
-						_IndentLen + fullDiffStringLen + _Sep2Len + //
-								fullYesNoPromptLen + _RoomLen <= //
-								_MaxLineLen //
+						Statics._IndentLen + fullDiffStringLen + Statics._Sep2Len + //
+								fullYesNoPromptLen + Statics._RoomLen <= //
+								Statics._MaxLineLen //
 						) {
-							System.out.printf("%s%s%s%s", _Indent, fullDiffString, _Sep2,
-									fullYesNoPrompt);
+							System.out.printf("%s%s%s%s", Statics._IndentString, fullDiffString,
+									Statics._Sep2, fullYesNoPrompt);
 						} else {
 							/** Otherwise, separate the diffString and the prompt string. */
-							System.out.printf("%s%s", _Indent, fullDiffString);
+							System.out.printf("%s%s", Statics._IndentString, fullDiffString);
 							System.out.println();
-							System.out.printf("%s%s", _Indent, fullYesNoPrompt);
+							System.out.printf("%s%s", Statics._IndentString, fullYesNoPrompt);
 						}
 					}
 					final YesNoResponse yesNoResponse = new YesNoResponse(sc, gotItRight);
@@ -970,65 +818,8 @@ public class FlashCardsGame {
 		}
 	}
 
-	private static String getFullYesNoPrompt(final String prompt,
-			final boolean defaultYesValue) {
-		final char otherChar = defaultYesValue ? _NoChar : _YesChar;
-		final String defaultString = defaultYesValue ? _YesString : _NoString;
-		final String otherString = defaultYesValue ? _NoString : _YesString;
-		return String.format("%s %c=%s,%c=%s: ", prompt, _ReturnChar, defaultString,
-				otherChar, otherString);
-	}
-
-	private static class YesNoResponse {
-		private final boolean _yesValue, _lastLineWasBlank;
-
-		private YesNoResponse(final Scanner sc, final boolean defaultYesValue) {
-			final char otherChar = defaultYesValue ? _NoChar : _YesChar;
-			final InputString inputString = new InputString(sc);
-			final String response = inputString._inputString;
-			final boolean lastLineWasBlank = inputString._lastLineWasBlank;
-			if (response.length() == 0) {
-				_yesValue = defaultYesValue;
-			} else {
-				_yesValue = Character.toUpperCase(response.charAt(0)) == otherChar
-						? !defaultYesValue
-						: defaultYesValue;
-			}
-			_lastLineWasBlank = lastLineWasBlank;
-		}
-	}
-
-	static String CleanWhiteSpace(final String s) {
-		if (s == null) {
-			return "";
-		}
-		return s.trim().replaceAll(_WhiteSpace, " ");
-	}
-
-	static String KillPunct(final String field) {
-		if (field == null) {
-			return "";
-		}
-		return field.replaceAll(_RegExForPunct, "");
-	}
-
-	public static boolean StringEquals(final String s0, final String s1) {
-		final byte[] bytes0 = s0.getBytes();
-		final byte[] bytes1 = s1.getBytes();
-		final int n0 = bytes0.length, n1 = bytes1.length;
-		if (n0 != n1) {
-			return false;
-		}
-		for (int k = 0; k < n0; ++k) {
-			if (bytes0[k] != bytes1[k]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public static void main(final String[] args) {
-		System.out.println(new String(_SpecialChars));
+		System.out.println(new String(Statics._SpecialChars));
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
 			flashCardsGame.mainLoop(sc);

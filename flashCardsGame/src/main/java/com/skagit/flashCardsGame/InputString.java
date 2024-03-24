@@ -24,10 +24,10 @@ class InputString {
 				break;
 			}
 			/** The next line has indented input. */
-			System.out.print(FlashCardsGame._Indent);
+			System.out.print(Statics._IndentString);
 			++nLinesOfResponse;
 		}
-		_inputString = FlashCardsGame.CleanWhiteSpace(s);
+		_inputString = Statics.CleanWhiteSpace(s);
 		_lastLineWasBlank = lastLineWasBlank;
 		_nLinesOfResponse = nLinesOfResponse;
 	}

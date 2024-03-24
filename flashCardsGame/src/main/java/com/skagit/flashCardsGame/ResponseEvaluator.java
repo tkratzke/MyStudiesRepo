@@ -28,8 +28,8 @@ public class ResponseEvaluator {
 		 */
 		_gotItRight = almostRight && diacriticsTreatment == DiacriticsTreatment.LENIENT;
 
-		final String[] answerFields = rawAnswer.split(FlashCardsGame._WhiteSpace);
-		final String[] responseFields = rawResponse.split(FlashCardsGame._WhiteSpace);
+		final String[] answerFields = rawAnswer.split(Statics._WhiteSpace);
+		final String[] responseFields = rawResponse.split(Statics._WhiteSpace);
 		final int nAnswerFields = answerFields.length;
 		final int nResponseFields = responseFields.length;
 
@@ -88,13 +88,13 @@ public class ResponseEvaluator {
 	}
 
 	private static MatchType getMatchType(final String s0, final String s1) {
-		final String s0a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(s0));
-		final String s1a = FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(s1));
+		final String s0a = Statics.CleanWhiteSpace(Statics.KillPunct(s0));
+		final String s1a = Statics.CleanWhiteSpace(Statics.KillPunct(s1));
 		if (s0a.equalsIgnoreCase(s1a)) {
 			return MatchType.MATCHED_INCLUDING_DIACRITICS;
 		}
-		final String s0b = FlashCardsGame.StripVNDiacritics(s0a);
-		final String s1b = FlashCardsGame.StripVNDiacritics(s1a);
+		final String s0b = Statics.StripVNDiacritics(s0a);
+		final String s1b = Statics.StripVNDiacritics(s1a);
 		if (s0b.equalsIgnoreCase(s1b)) {
 			return MatchType.MATCHED_EXCEPT_DIACRITICS_ARE_WRONG;
 		}

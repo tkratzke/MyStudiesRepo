@@ -36,7 +36,7 @@ public class LineBreakDown {
 		 *         Either way, we consider it a blank line and ignore it.
 		 * </pre>
 		 */
-		final String[] fields = nextLine.split(FlashCardsGame._FieldSeparator);
+		final String[] fields = nextLine.split(Statics._FieldSeparator);
 		final int nFields = fields.length;
 		/** Check for blank or only one non-blank which is an integer. */
 		boolean seenInteger = false;
@@ -134,7 +134,7 @@ public class LineBreakDown {
 
 	private static boolean isInteger(final String s) {
 		try {
-			Integer.parseInt(FlashCardsGame.CleanWhiteSpace(FlashCardsGame.KillPunct(s)));
+			Integer.parseInt(Statics.CleanWhiteSpace(Statics.KillPunct(s)));
 			return true;
 		} catch (final NumberFormatException e) {
 		}
@@ -159,10 +159,8 @@ public class LineBreakDown {
 	}
 
 	String getString() {
-		return String.format("A-Side|%s|, B-Side|%s| %s", _aSide, _bSide,
-				"" + (_nextLineIsContinuation
-						? FlashCardsGame._RtArrowChar2
-						: FlashCardsGame._SpadeSymbolChar));
+		return String.format("A-Side|%s|, B-Side|%s| %s", _aSide, _bSide, ""
+				+ (_nextLineIsContinuation ? Statics._RtArrowChar2 : Statics._SpadeSymbolChar));
 	}
 
 	@Override
