@@ -122,11 +122,11 @@ class Card {
 	}
 
 	public String getBSideStringPart() {
-		return _aSide.getStringPart();
+		return _bSide.getStringPart();
 	}
 
 	public String getBSideFullString() {
-		return _aSide.reconstructFullString();
+		return _bSide.reconstructFullString();
 	}
 
 	@Override
