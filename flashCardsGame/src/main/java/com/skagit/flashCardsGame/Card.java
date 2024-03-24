@@ -1,39 +1,30 @@
 package com.skagit.flashCardsGame;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Comparator;
 
 class Card {
 	int _cardNumber;
-	final String _aSideString;
-	final String _bSideString;
+	final private FullSide _aSide;
+	final private FullSide _bSide;
 	String[] _commentLines;
 
-	Card(final int cardNumber, final String aSideString, final String bSideString,
-			final String[] commentLines) {
+	Card(final File soundFilesDir, final int cardNumber, final String aSideString,
+			final String bSideString, final String[] commentLines) {
 		_cardNumber = cardNumber;
-		_aSideString = aSideString;
-		_bSideString = bSideString;
+		_aSide = new FullSide(aSideString, soundFilesDir);
+		_bSide = new FullSide(bSideString, soundFilesDir);
 		_commentLines = commentLines;
-	}
-
-	private static int NullCompare(final Card card0, final Card card1) {
-		if ((card0 == null) != (card1 == null)) {
-			return card0 == null ? -1 : 1;
-		}
-		if (card0 == null) {
-			return 0;
-		}
-		return 2;
 	}
 
 	static final Comparator<Card> _ByCardNumberOnly = new Comparator<>() {
 
 		@Override
 		public int compare(final Card card0, final Card card1) {
-			final int compareValue = NullCompare(card0, card1);
+			final int compareValue = Statics.NullCompare(card0, card1);
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
@@ -46,15 +37,11 @@ class Card {
 
 		@Override
 		public int compare(final Card card0, final Card card1) {
-			final int compareValue = NullCompare(card0, card1);
+			final int compareValue = Statics.NullCompare(card0, card1);
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			final String a0 = card0._aSideString;
-			final String a1 = card1._aSideString;
-			final String a0a = Statics.CleanWhiteSpace(Statics.KillPunct(a0));
-			final String a1a = Statics.CleanWhiteSpace(Statics.KillPunct(a1));
-			return a0a.compareToIgnoreCase(a1a);
+			return card0._aSide.compareTo(card1._aSide);
 		}
 	};
 
@@ -62,15 +49,11 @@ class Card {
 
 		@Override
 		public int compare(final Card card0, final Card card1) {
-			final int compareValue = NullCompare(card0, card1);
+			final int compareValue = Statics.NullCompare(card0, card1);
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			final String b0 = card0._bSideString;
-			final String b1 = card1._bSideString;
-			final String b0a = Statics.CleanWhiteSpace(Statics.KillPunct(b0));
-			final String b1a = Statics.CleanWhiteSpace(Statics.KillPunct(b1));
-			return b0a.compareToIgnoreCase(b1a);
+			return card0._bSide.compareTo(card1._bSide);
 		}
 	};
 
@@ -104,7 +87,8 @@ class Card {
 			for (int k = 0; k < nCommentLines; ++k) {
 				System.out.println(Statics._CommentString + _commentLines[k]);
 			}
-			System.out.printf("%04d.\t%s:\t%s", _cardNumber, _aSideString, _bSideString);
+			System.out.printf("%04d.\t%s:\t%s", _cardNumber, _aSide.getString(),
+					_bSide.getString());
 			s = baos.toString();
 			System.out.flush();
 			System.setOut(old);
@@ -113,8 +97,9 @@ class Card {
 		return s;
 	}
 
-	String getBrokenUpString(final boolean aSide, final int maxLen) {
-		final CardParts parts = new CardParts(aSide ? _aSideString : _bSideString, maxLen);
+	String getBrokenUpString(final boolean a, final int maxLen) {
+		final CardParts parts = new CardParts(a ? getASideStringPart() : getBSideStringPart(),
+				maxLen);
 		final int nParts = parts.size();
 		String s = "" + Statics._RtArrowChar;
 		for (int k = 0; k < nParts; ++k) {
@@ -126,6 +111,22 @@ class Card {
 			}
 		}
 		return s;
+	}
+
+	public String getASideStringPart() {
+		return _aSide.getStringPart();
+	}
+
+	public String getASideFullString() {
+		return _aSide.reconstructFullString();
+	}
+
+	public String getBSideStringPart() {
+		return _aSide.getStringPart();
+	}
+
+	public String getBSideFullString() {
+		return _aSide.reconstructFullString();
 	}
 
 	@Override

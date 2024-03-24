@@ -224,7 +224,7 @@ public class FlashCardsGame {
 		return cardMap;
 	}
 
-	private static void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
+	private void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
 			final String bSide, final ArrayList<String> commentList, final String comment,
 			final boolean announceCompleteDups) {
 		if (comment != null && comment.length() > 0) {
@@ -233,7 +233,8 @@ public class FlashCardsGame {
 		if (aSide != null && bSide != null && aSide.length() > 0 && bSide.length() > 0) {
 			final int nNewCommentLines = commentList.size();
 			final String[] newCommentLines = commentList.toArray(new String[nNewCommentLines]);
-			final Card newCard = new Card(cardMap.size(), aSide, bSide, newCommentLines);
+			final Card newCard = new Card(_soundFilesDir, cardMap.size(), aSide, bSide,
+					newCommentLines);
 			final Card oldCard = cardMap.get(newCard);
 			if (oldCard != null) {
 				if (announceCompleteDups) {
@@ -342,7 +343,8 @@ public class FlashCardsGame {
 		{
 			int max = 0;
 			for (final Card card : _cards) {
-				final CardParts aParts = new CardParts(card._aSideString,
+				card.getASideFullString();
+				final CardParts aParts = new CardParts(card.getASideFullString(),
 						Statics._MaxLenForCardPart);
 				max = Math.max(max, aParts._maxLen);
 			}
@@ -354,9 +356,9 @@ public class FlashCardsGame {
 			boolean recentWasMultiLine = false;
 			for (int k0 = 0, nPrinted = 0; k0 < nCards; ++k0) {
 				final Card card = _cards[k0];
-				final CardParts aParts = new CardParts(card._aSideString,
+				final CardParts aParts = new CardParts(card.getASideFullString(),
 						Statics._MaxLenForCardPart);
-				final CardParts bParts = new CardParts(card._bSideString,
+				final CardParts bParts = new CardParts(card.getBSideFullString(),
 						Statics._MaxLenForCardPart);
 				final int nAParts = aParts.size();
 				final int nBParts = bParts.size();
@@ -604,21 +606,25 @@ public class FlashCardsGame {
 
 			final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
 			final Card card = _cards[cardIdx];
-			final String clue = Statics.CleanWhiteSpace(
-					_quizDirection == QuizDirection.A_TO_B ? card._aSideString : card._bSideString);
-			final int clueLen = clue.length();
-			final String answer = Statics.CleanWhiteSpace(
-					_quizDirection == QuizDirection.A_TO_B ? card._bSideString : card._aSideString);
-			final int answerLen = answer.length();
+			final String clueString = Statics
+					.CleanWhiteSpace(_quizDirection == QuizDirection.A_TO_B
+							? card.getASideStringPart()
+							: card.getBSideStringPart());
+			final int clueStringLen = clueString.length();
+			final String answerString = Statics
+					.CleanWhiteSpace(_quizDirection == QuizDirection.A_TO_B
+							? card.getBSideStringPart()
+							: card.getASideStringPart());
+			final int answerStringLen = answerString.length();
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
 				final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 				final int typeIPromptLen = typeIPrompt.length();
-				final int len1 = typeIPromptLen + Statics._Sep1Len + clueLen + Statics._Sep2Len
-						+ Math.min(Statics._RoomLen, answerLen);
-				final String[] clueFields = clue.split(Statics._WhiteSpace);
+				final int len1 = typeIPromptLen + Statics._Sep1Len + clueStringLen
+						+ Statics._Sep2Len + Math.min(Statics._RoomLen, answerStringLen);
+				final String[] clueFields = clueString.split(Statics._WhiteSpace);
 				final int nClueFields = clueFields.length;
-				final String[] answerFields = answer.split(Statics._WhiteSpace);
+				final String[] answerFields = answerString.split(Statics._WhiteSpace);
 				final int nAnswerFields = answerFields.length;
 				_needLineFeed = _needLineFeed || len1 > Statics._MaxLineLen;
 				if (_needLineFeed) {
@@ -626,7 +632,8 @@ public class FlashCardsGame {
 				}
 				boolean longQuestion = false;
 				if (len1 <= Statics._MaxLineLen) {
-					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clue, Statics._Sep2);
+					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueString,
+							Statics._Sep2);
 				} else {
 					System.out.println(typeIPrompt);
 					System.out.print(Statics._PrefaceForNewLine);
@@ -719,20 +726,20 @@ public class FlashCardsGame {
 						final int oldTci = _quizGenerator._topCardIndex;
 						final Card topCard = _cards[oldTci];
 						final String keyString = _quizDirection == QuizDirection.A_TO_B
-								? topCard._aSideString
-								: topCard._bSideString;
+								? topCard.getASideFullString()
+								: topCard.getBSideFullString();
 						loadCards(/* announceCompleteDups= */false);
 						nCards = _cards.length;
 						int tci = -1;
 						for (int k = 0; k < nCards; ++k) {
 							final Card card1 = _cards[k];
 							if (_quizDirection == QuizDirection.A_TO_B) {
-								if (keyString.compareToIgnoreCase(card1._aSideString) == 0) {
+								if (keyString.compareToIgnoreCase(card1.getASideFullString()) == 0) {
 									tci = k;
 									break;
 								}
 							} else {
-								if (keyString.compareToIgnoreCase(card1._bSideString) == 0) {
+								if (keyString.compareToIgnoreCase(card1.getBSideFullString()) == 0) {
 									tci = k;
 									break;
 								}
@@ -748,7 +755,7 @@ public class FlashCardsGame {
 					}
 				}
 				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc,
-						_diacriticsTreatment, answer, response);
+						_diacriticsTreatment, answerString, response);
 				final String[] diffStrings = responseEvaluator._diffStrings;
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffStrings != null) {

@@ -207,4 +207,18 @@ public class Statics {
 		}
 	}
 
+	/**
+	 * Returns 0 if both null, 2 if neither is null, 1 if o0 is not null, and -1 if o1 is
+	 * not null.
+	 */
+	public static int NullCompare(final Object o0, final Object o1) {
+		if ((o0 == null) != (o1 == null)) {
+			return o0 == null ? -1 : 1;
+		}
+		if (o0 == null) {
+			return 0;
+		}
+		return 2;
+	}
+
 }
