@@ -1,4 +1,4 @@
-  0.	mùa đong                           	winter
+  0.	%TestAudioFile.aiff% mùa đong      	winter
   1.	mùa xuân                           	spring (season)
   2.	mùa hè                             	summer
   3.	mùa thu                            	autumn

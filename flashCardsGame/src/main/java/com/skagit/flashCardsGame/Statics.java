@@ -1,5 +1,6 @@
 package com.skagit.flashCardsGame;
 
+import java.io.File;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Random;
@@ -15,26 +16,26 @@ public class Statics {
 	 *  http://xahlee.info/comp/unicode_arrows.html
 	 * </pre>
 	 */
-	final static char _ClubSymbolChar = '\u2663';
-	final static char _CommentChar = '!';
-	final static char _DiamondSymbolChar = '\u2666';
-	final static char _EditPropertiesChar = '@';
-	final static char _EmptySetChar = '\u2205';
-	final static char _HeavyCheckChar = '\u2714';
-	final static char _HelpChar = 'H';
-	final static char _QuitChar = '!';
-	final static char _ReloadCardsChar = '$';
-	final static char _RestartQuizChar = '#';
-	final static char _ReturnChar = '\u23CE';
+	final public static char _ClubSymbolChar = '\u2663';
+	final public static char _CommentChar = '!';
+	final public static char _DiamondSymbolChar = '\u2666';
+	final public static char _EditPropertiesChar = '@';
+	final public static char _EmptySetChar = '\u2205';
+	final public static char _HeavyCheckChar = '\u2714';
+	final public static char _HelpChar = 'H';
+	final public static char _QuitChar = '!';
+	final public static char _ReloadCardsChar = '$';
+	final public static char _RestartQuizChar = '#';
+	final public static char _ReturnChar = '\u23CE';
 	final public static char _RtArrowChar = '\u2192';
-	final static char _RtArrowChar2 = '\u21a0';
-	final static char _SpadeSymbolChar = '\u2660';
-	final static char _LtArrowChar = '\u2190';
-	final static char _NoChar = 'N';
-	final static char _TabSymbolChar = '\u2409';
-	final static char _YesChar = 'Y';
-	final static char _FileDelimiter = '%';
-	static char[] _SpecialChars = { //
+	final public static char _RtArrowChar2 = '\u21a0';
+	final public static char _SpadeSymbolChar = '\u2660';
+	final public static char _LtArrowChar = '\u2190';
+	final public static char _NoChar = 'N';
+	final public static char _TabSymbolChar = '\u2409';
+	final public static char _YesChar = 'Y';
+	final public static char _FileDelimiter = '%';
+	public static char[] _SpecialChars = { //
 			_LtArrowChar, //
 			_RtArrowChar, //
 			_RtArrowChar2, //
@@ -53,42 +54,42 @@ public class Statics {
 			_NoChar //
 	};
 
-	final static int _BlockSize = 10;
-	final static int _RoomLen = 10;
-	final static int _MaxLenForCardPart = 35;
-	final static int _MaxLineLen = 65;
-	final static int _MaxNFailsPerElement = 5;
-	final static int _NominalTabLen = 8;
+	final public static int _BlockSize = 10;
+	final public static int _RoomLen = 10;
+	final public static int _MaxLenForCardPart = 35;
+	final public static int _MaxLineLen = 65;
+	final public static int _MaxNFailsPerElement = 5;
+	final public static int _NominalTabLen = 8;
 
-	final static String _CommentString = "" + _CommentChar + ' ';
-	final static String _CountAsRightString = "Count as Right? ";
-	final static String _EndCardsString = "$$";
+	final public static String _CommentString = "" + _CommentChar + ' ';
+	final public static String _CountAsRightString = "Count as Right? ";
+	final public static String _EndCardsString = "$$";
 	/** Either of the following two FieldSeparators seems to work. */
-	final static String _FieldSeparator = "\\s*\\t\\s*";
-	final static String _FieldSeparator1 = "(\\s*\\t\\s*)+";
-	final static String _RegExForPunct = "[,.;:?!]+";
-	final static String _Sep1 = " " + _ClubSymbolChar;
-	final static String _Sep2 = "" + _DiamondSymbolChar + " ";
-	final static String _HelpString = String.format(
+	final public static String _FieldSeparator = "\\s*\\t\\s*";
+	final public static String _FieldSeparator1 = "(\\s*\\t\\s*)+";
+	final public static String _RegExForPunct = "[,.;:?!]+";
+	final public static String _Sep1 = " " + _ClubSymbolChar;
+	final public static String _Sep2 = "" + _DiamondSymbolChar + " ";
+	final public static String _HelpString = String.format(
 			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, %c=Reload Cards"
 					+ "%c=\"Show-and-ask,\" %s=Next Line is Continuation",
 			_HelpChar, _QuitChar, _EditPropertiesChar, _RestartQuizChar, _ReloadCardsChar,
 			_ReturnChar, "" + _TabSymbolChar + _ReturnChar);
-	final static String _IndentString = String
+	final public static String _IndentString = String
 			.format(String.format("%%-%ds", _NominalTabLen), "");
-	final static String _NoString = "No";
-	final static String _PrefaceForNewLine = _IndentString + _Sep1;
-	final static int _PrefaceForNewLineLen = _PrefaceForNewLine.length();
-	final static String _PropertiesEnding = ".properties";
-	final static String _WhiteSpace = "\\s+";
-	final static String _YesString = "Yes";
+	final public static String _NoString = "No";
+	final public static String _PrefaceForNewLine = _IndentString + _Sep1;
+	final public static int _PrefaceForNewLineLen = _PrefaceForNewLine.length();
+	final public static String _PropertiesEnding = ".properties";
+	final public static String _WhiteSpace = "\\s+";
+	final public static String _YesString = "Yes";
 
 	/** Derived ints. */
-	final static int _Sep1Len = _Sep1.length();
-	final static int _Sep2Len = _Sep2.length();
-	final static int _IndentLen = _IndentString.length();
+	final public static int _Sep1Len = _Sep1.length();
+	final public static int _Sep2Len = _Sep2.length();
+	final public static int _IndentLen = _IndentString.length();
 
-	static class YesNoResponse {
+	public static class YesNoResponse {
 		final boolean _yesValue, _lastLineWasBlank;
 
 		YesNoResponse(final Scanner sc, final boolean defaultYesValue) {
@@ -107,7 +108,7 @@ public class Statics {
 		}
 	}
 
-	final static EnumSet<ChangeType> _NewQuizSet = EnumSet.of(//
+	final public static EnumSet<ChangeType> _NewQuizSet = EnumSet.of(//
 			ChangeType.CRITICAL_ONLY_WIN, //
 			ChangeType.MOVE_ON_WIN, //
 			ChangeType.LOSS, //
@@ -116,7 +117,7 @@ public class Statics {
 			ChangeType.RESTART//
 	);
 
-	final static EnumSet<ChangeType> _ReallyNewQuizSet = EnumSet.of(//
+	final public static EnumSet<ChangeType> _ReallyNewQuizSet = EnumSet.of(//
 			ChangeType.MOVE_ON_WIN, //
 			ChangeType.NOTHING_TO_SOMETHING, //
 			ChangeType.PARAMETERS_CHANGED //
@@ -128,7 +129,7 @@ public class Statics {
 	 * https://namnguyen1202.hashnode.dev/removing-vietnamese-diacritic-in-java
 	 * </pre>
 	 */
-	static final HashMap<Character, Character> _VnToEngCharMap = new HashMap<>() {
+	public static final HashMap<Character, Character> _VnToEngCharMap = new HashMap<>() {
 		private static final long serialVersionUID = 1L;
 		{
 			final String[][] mappings = { //
@@ -156,7 +157,7 @@ public class Statics {
 			}
 		}
 	};
-	final static String StripVNDiacritics(final String s) {
+	final public static String StripVNDiacritics(final String s) {
 		final StringBuilder sb = new StringBuilder(s);
 		for (int k = 0; k < sb.length(); k++) {
 			final char c = sb.charAt(k);
@@ -168,21 +169,22 @@ public class Statics {
 		return sb.toString();
 	}
 
-	static String CleanWhiteSpace(final String s) {
+	public static String CleanWhiteSpace(final String s) {
 		if (s == null) {
 			return "";
 		}
 		return s.trim().replaceAll(_WhiteSpace, " ");
 	}
 
-	static String KillPunct(final String field) {
+	public static String KillPunct(final String field) {
 		if (field == null) {
 			return "";
 		}
 		return field.replaceAll(_RegExForPunct, "");
 	}
 
-	static String getFullYesNoPrompt(final String prompt, final boolean defaultYesValue) {
+	public static String getFullYesNoPrompt(final String prompt,
+			final boolean defaultYesValue) {
 		final char otherChar = defaultYesValue ? _NoChar : _YesChar;
 		final String defaultString = defaultYesValue ? _YesString : _NoString;
 		final String otherString = defaultYesValue ? _NoString : _YesString;
@@ -191,7 +193,7 @@ public class Statics {
 	}
 
 	/** Avoids having the same value consecutively. */
-	static void shuffleArray(final int[] ints, final Random r, int lastValue) {
+	public static void shuffleArray(final int[] ints, final Random r, int lastValue) {
 		final int n = ints.length;
 		for (int k0 = 0; k0 < n; ++k0) {
 			for (int nFails = 0; nFails <= _MaxNFailsPerElement; ++nFails) {
@@ -219,6 +221,19 @@ public class Statics {
 			return 0;
 		}
 		return 2;
+	}
+
+	public static File getSoundFilesDir(final File propertiesDir,
+			final String soundFilesString) {
+		final File soundFilesDir0 = new File(propertiesDir, soundFilesString);
+		if (soundFilesDir0.isDirectory()) {
+			return soundFilesDir0;
+		}
+		final File soundFilesDir1 = new File(soundFilesString);
+		if (soundFilesDir1.isDirectory()) {
+			return soundFilesDir1;
+		}
+		return propertiesDir;
 	}
 
 }

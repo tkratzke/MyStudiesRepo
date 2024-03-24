@@ -41,6 +41,9 @@ public class SimpleAudioPlayer {
 	}
 
 	public static boolean validate(final File file, final boolean play) {
+		if (file == null || !file.isFile()) {
+			return false;
+		}
 		AudioInputStream audioInputStream;
 		try {
 			/**

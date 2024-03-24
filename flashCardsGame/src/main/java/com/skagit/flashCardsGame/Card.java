@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Comparator;
 
+import com.skagit.SimpleAudioPlayer;
+
 class Card {
 	int _cardNumber;
 	final private FullSide _aSide;
@@ -121,12 +123,20 @@ class Card {
 		return _aSide.reconstructFullString();
 	}
 
+	public void playASideSoundFile() {
+		SimpleAudioPlayer.validate(_aSide._soundFile, /* play= */true);
+	}
+
 	public String getBSideStringPart() {
 		return _bSide.getStringPart();
 	}
 
 	public String getBSideFullString() {
 		return _bSide.reconstructFullString();
+	}
+
+	public void playBSideSoundFile() {
+		SimpleAudioPlayer.validate(_bSide._soundFile, /* play= */true);
 	}
 
 	@Override

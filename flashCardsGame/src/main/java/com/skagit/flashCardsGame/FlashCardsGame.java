@@ -81,12 +81,11 @@ public class FlashCardsGame {
 		/** SOUND_FILES_DIR is kind of special. */
 		final PropertyPlus sfdPP = PropertyPlus.SOUND_FILES_DIR;
 		final String soundFilesString = sfdPP.getValidString(_properties);
-		if (soundFilesString.length() > 0) {
-			_soundFilesDir = propertiesDir;
+		_soundFilesDir = Statics.getSoundFilesDir(propertiesDir, soundFilesString);
+		if (_soundFilesDir != propertiesDir) {
+			_properties.put(sfdPP._propertyName, soundFilesString);
 		} else {
-			final File dir = new File(soundFilesString);
-			_soundFilesDir = dir.isDirectory() ? dir : propertiesDir;
-			_properties.put(sfdPP._propertyName, _soundFilesDir.toString());
+			_properties.put(sfdPP._propertyName, "");
 		}
 		reWritePropertiesFile();
 
@@ -631,6 +630,12 @@ public class FlashCardsGame {
 					System.out.println();
 				}
 				boolean longQuestion = false;
+				/** "Print out" the clue. */
+				if (_quizDirection == QuizDirection.A_TO_B) {
+					card.playASideSoundFile();
+				} else {
+					card.playBSideSoundFile();
+				}
 				if (len1 <= Statics._MaxLineLen) {
 					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueString,
 							Statics._Sep2);
@@ -665,41 +670,6 @@ public class FlashCardsGame {
 				final InputString inputString = new InputString(sc);
 				longQuestion = longQuestion || inputString._nLinesOfResponse > 1;
 				final String response = inputString._inputString;
-				if (response.length() == 0) {
-					int nUsedOnCurrentLine = 0;
-					/** User just wants a check so we have to print out the answer. Break it up. */
-					for (int k = 0; k < nAnswerFields;) {
-						final String answerField = answerFields[k];
-						final int answerFieldLen = answerField.length();
-						if (nUsedOnCurrentLine == 0) {
-							System.out.printf("%s%s", Statics._IndentString, answerField);
-							nUsedOnCurrentLine = Statics._IndentLen + answerFieldLen;
-							++k;
-						} else if (nUsedOnCurrentLine + 1 + answerFieldLen > Statics._MaxLineLen) {
-							System.out.println();
-							nUsedOnCurrentLine = 0;
-						} else {
-							System.out.printf(" %s", answerField);
-							++k;
-						}
-					}
-					final boolean defaultYesValue = true;
-					final String prompt = Statics.getFullYesNoPrompt(Statics._CountAsRightString,
-							defaultYesValue);
-					final int promptLen = prompt.length();
-					if (nUsedOnCurrentLine + Statics._Sep2Len + promptLen
-							+ Statics._RoomLen <= Statics._MaxLineLen) {
-						System.out.printf("%s%s", Statics._Sep2, prompt);
-					} else {
-						System.out.println();
-						System.out.printf("%s%s%", Statics._IndentString, prompt);
-					}
-					final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
-					gotItRight = yesNoResponse._yesValue;
-					_needLineFeed = !yesNoResponse._lastLineWasBlank;
-					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
-					continue;
-				}
 				if (response.length() == 1) {
 					/**
 					 * quit, restart, edit the properties, or fall through, letting this be a bona
@@ -754,6 +724,52 @@ public class FlashCardsGame {
 						continue OUTSIDE_LOOP;
 					}
 				}
+
+				/**
+				 * Must process a response to a question. Start by playing the answer sound if
+				 * any.
+				 */
+				if (_quizDirection == QuizDirection.A_TO_B) {
+					card.playBSideSoundFile();
+				} else {
+					card.playASideSoundFile();
+				}
+				if (response.length() == 0) {
+					int nUsedOnCurrentLine = 0;
+					/** User just wants a check so we have to print out the answer. Break it up. */
+					for (int k = 0; k < nAnswerFields;) {
+						final String answerField = answerFields[k];
+						final int answerFieldLen = answerField.length();
+						if (nUsedOnCurrentLine == 0) {
+							System.out.printf("%s%s", Statics._IndentString, answerField);
+							nUsedOnCurrentLine = Statics._IndentLen + answerFieldLen;
+							++k;
+						} else if (nUsedOnCurrentLine + 1 + answerFieldLen > Statics._MaxLineLen) {
+							System.out.println();
+							nUsedOnCurrentLine = 0;
+						} else {
+							System.out.printf(" %s", answerField);
+							++k;
+						}
+					}
+					final boolean defaultYesValue = true;
+					final String prompt = Statics.getFullYesNoPrompt(Statics._CountAsRightString,
+							defaultYesValue);
+					final int promptLen = prompt.length();
+					if (nUsedOnCurrentLine + Statics._Sep2Len + promptLen
+							+ Statics._RoomLen <= Statics._MaxLineLen) {
+						System.out.printf("%s%s", Statics._Sep2, prompt);
+					} else {
+						System.out.println();
+						System.out.printf("%s%s%", Statics._IndentString, prompt);
+					}
+					final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
+					gotItRight = yesNoResponse._yesValue;
+					_needLineFeed = !yesNoResponse._lastLineWasBlank;
+					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
+					continue;
+				}
+				/** User tried to type something in. */
 				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc,
 						_diacriticsTreatment, answerString, response);
 				final String[] diffStrings = responseEvaluator._diffStrings;
