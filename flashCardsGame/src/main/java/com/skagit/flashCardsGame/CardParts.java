@@ -5,11 +5,11 @@ import java.util.ArrayList;
 public class CardParts extends ArrayList<String> {
 	private static final long serialVersionUID = 1L;
 	int _maxLen;
-	CardParts(final String fullSide, final int maxLen0) {
+	CardParts(final String fullSideString, final int maxLen0) {
 		super();
 		String part = "";
 		int maxLen = 0;
-		final String[] fields = fullSide.split(Statics._WhiteSpace);
+		final String[] fields = fullSideString.split(Statics._WhiteSpace);
 		final int nFields = fields.length;
 		for (int k = 0; k < nFields; ++k) {
 			final String field = fields[k];

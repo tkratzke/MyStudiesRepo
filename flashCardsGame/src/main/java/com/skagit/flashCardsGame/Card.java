@@ -99,9 +99,8 @@ class Card {
 		return s;
 	}
 
-	String getBrokenUpString(final boolean a, final int maxLen) {
-		final CardParts parts = new CardParts(a ? getASideStringPart() : getBSideStringPart(),
-				maxLen);
+	String getBrokenUpString(final boolean aSide, final int maxLen) {
+		final CardParts parts = new CardParts(getStringPart(aSide), maxLen);
 		final int nParts = parts.size();
 		String s = "" + Statics._RtArrowChar;
 		for (int k = 0; k < nParts; ++k) {
@@ -115,28 +114,17 @@ class Card {
 		return s;
 	}
 
-	public String getASideStringPart() {
-		return _aSide.getStringPart();
+	public String getStringPart(final boolean aSide) {
+		return (aSide ? _aSide : _bSide).getStringPart();
 	}
 
-	public String getASideFullString() {
-		return _aSide.reconstructFullString();
+	public String getFullString(final boolean aSide) {
+		return (aSide ? _aSide : _bSide).reconstructFullString();
 	}
 
-	public void playASideSoundFile() {
-		SimpleAudioPlayer.validate(_aSide._soundFile, /* play= */true);
-	}
-
-	public String getBSideStringPart() {
-		return _bSide.getStringPart();
-	}
-
-	public String getBSideFullString() {
-		return _bSide.reconstructFullString();
-	}
-
-	public void playBSideSoundFile() {
-		SimpleAudioPlayer.validate(_bSide._soundFile, /* play= */true);
+	public boolean playSoundFile(final boolean aSide) {
+		return SimpleAudioPlayer.validate((aSide ? _aSide : _bSide)._soundFile,
+				/* play= */true);
 	}
 
 	@Override

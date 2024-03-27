@@ -1,8 +1,14 @@
 package com.skagit;
 
-/** <pre>
+/**
+ * <pre>
  * From: https://www.geeksforgeeks.org/play-audio-file-using-java/
- * Use Audacity to convert the voice memo's m4a files to aiff files as follows:
+ * Java class to play an Audio file using Clip Object.
+ * </pre>
+ * */
+
+/** <pre>
+ * Use Audacity to convert iphone's voice memo's m4a files to aiff files as follows:
  * 1. Open Audacity
  * 2. Open the m4a file.
  * 3. File/Export Audio
@@ -24,57 +30,22 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SimpleAudioPlayer {
+
 	Long _currentFrame;
 	Clip _clip;
 	String _status;
 	AudioInputStream _audioInputStream;
-	final String _filePath;
+	String _filePath;
 
 	public SimpleAudioPlayer(final String filePath)
 			throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		_filePath = filePath;
 		_audioInputStream = AudioSystem
 				.getAudioInputStream(new File(_filePath).getAbsoluteFile());
+		/** Create _clip reference. */
 		_clip = AudioSystem.getClip();
 		_clip.open(_audioInputStream);
 		_clip.loop(Clip.LOOP_CONTINUOUSLY);
-	}
-
-	public static boolean validate(final File file, final boolean play) {
-		if (file == null || !file.isFile()) {
-			return false;
-		}
-		AudioInputStream audioInputStream;
-		try {
-			/**
-			 * If the file doesn't exist or is a bad audio file, we won't get past the next
-			 * line.
-			 */
-			audioInputStream = AudioSystem.getAudioInputStream(file.getAbsoluteFile());
-			if (!play) {
-				return true;
-			}
-			try (Clip clip = AudioSystem.getClip()) {
-				final CountDownLatch syncLatch = new CountDownLatch(1);
-				clip.addLineListener(e -> {
-					if (e.getType() == LineEvent.Type.STOP) {
-						syncLatch.countDown();
-					}
-				});
-				clip.open(audioInputStream);
-				clip.start();
-				try {
-					syncLatch.await(); //
-				} catch (final InterruptedException e1) {
-					return true;
-				}
-			} catch (final LineUnavailableException e) {
-			}
-			return true;
-		} catch (final UnsupportedAudioFileException e) {
-		} catch (final IOException e) {
-		}
-		return false;
 	}
 
 	private void goToChoice(final int c)
@@ -166,7 +137,37 @@ public class SimpleAudioPlayer {
 		_clip.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 
-	public static void main(final String[] args) {
+	public static boolean validate(final File f, final boolean play) {
+		if (f == null || !f.isFile()) {
+			return false;
+		}
+		final CountDownLatch syncLatch = new CountDownLatch(1);
+		try (//
+				AudioInputStream ais = AudioSystem.getAudioInputStream(f.getAbsoluteFile());
+				Clip clip = AudioSystem.getClip() //
+		) {
+			if (!play) {
+				return true;
+			}
+			clip.addLineListener(e -> {
+				if (e.getType() == LineEvent.Type.STOP) {
+					syncLatch.countDown();
+				}
+			});
+			clip.open(ais);
+			clip.start();
+			try {
+				syncLatch.await();
+			} catch (final InterruptedException e1) {
+				return false;
+			}
+		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+			return false;
+		}
+		return syncLatch.getCount() == 0;
+	}
+
+	public static void mainx(final String[] args) {
 		final String filePath = "Your path for the file";
 		try (Scanner sc = new Scanner(System.in)) {
 			try {
@@ -184,10 +185,9 @@ public class SimpleAudioPlayer {
 						break;
 					}
 				}
-				sc.close();
-			} catch (final Exception ex) {
+			} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 				System.out.println("Error with playing sound.");
-				ex.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 	}

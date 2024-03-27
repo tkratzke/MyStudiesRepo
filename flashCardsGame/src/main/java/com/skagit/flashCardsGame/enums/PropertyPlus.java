@@ -1,6 +1,5 @@
 package com.skagit.flashCardsGame.enums;
 
-import java.io.File;
 import java.util.Properties;
 
 public enum PropertyPlus {
@@ -34,10 +33,7 @@ public enum PropertyPlus {
 					+ "Any Negative #: Use SuperRandom"), //
 
 	ALLOWABLE_MISS_PERCENTAGE(String.valueOf(10) + "%",
-			"Determines if each quiz is \"passed\" or not"), //
-
-	SOUND_FILES_DIR("", "Directory of Sound Files") //
-	;
+			"Determines if each quiz is \"passed\" or not");
 
 	final public static PropertyPlus[] _Values = values();
 
@@ -111,7 +107,6 @@ public enum PropertyPlus {
 						case DECAY_TYPE :
 						case DIACRITICS_TREATMENT :
 						case QUIZ_DIRECTION :
-						case SOUND_FILES_DIR :
 					}
 				} catch (final NumberFormatException e) {
 					return _defaultStringValue;
@@ -137,12 +132,6 @@ public enum PropertyPlus {
 					if (quizDirection._typableString.equalsIgnoreCase(s)) {
 						return s;
 					}
-				}
-				return _defaultStringValue;
-			case SOUND_FILES_DIR :
-				final File dirFile = new File(s);
-				if (dirFile.exists() && dirFile.isDirectory()) {
-					return s;
 				}
 				return _defaultStringValue;
 		}

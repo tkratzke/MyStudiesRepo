@@ -48,7 +48,10 @@ public class FlashCardsGame {
 
 	FlashCardsGame(final Scanner sc, final String[] args) {
 		_needLineFeed = false;
-		final String propertiesFilePath = args[0];
+		final int nArgs = args.length;
+		int iArg = 0;
+		final String propertiesFilePath = args[iArg++];
+		final String soundFilesDirString = iArg < nArgs ? args[iArg++] : null;
 		if (propertiesFilePath.toLowerCase().endsWith(Statics._PropertiesEnding)) {
 			_propertiesFile = new File(propertiesFilePath);
 		} else {
@@ -78,16 +81,9 @@ public class FlashCardsGame {
 			}
 		} catch (final IOException e) {
 		}
-		/** SOUND_FILES_DIR is kind of special. */
-		final PropertyPlus sfdPP = PropertyPlus.SOUND_FILES_DIR;
-		final String soundFilesString = sfdPP.getValidString(_properties);
-		_soundFilesDir = Statics.getSoundFilesDir(propertiesDir, soundFilesString);
-		if (_soundFilesDir != propertiesDir) {
-			_properties.put(sfdPP._propertyName, soundFilesString);
-		} else {
-			_properties.put(sfdPP._propertyName, "");
-		}
 		reWritePropertiesFile();
+
+		_soundFilesDir = Statics.getSoundFilesDir(propertiesDir, soundFilesDirString);
 
 		final String typableString = PropertyPlus.QUIZ_DIRECTION.getValidString(_properties);
 		_quizDirection = QuizDirection.get(typableString);
@@ -197,16 +193,22 @@ public class FlashCardsGame {
 
 					/** Not a comment and not part of a comment. */
 					final LineBreakDown lbd = new LineBreakDown(nextLine);
-					if (lbd._aSide == null && lbd._bSide == null) {
+					final String lbdASide = lbd._aSide;
+					final String lbdBSide = lbd._bSide;
+					if (lbdASide == null && lbdBSide == null) {
 						/** Essentially, nextLine is blank. */
 						continue;
 					}
 					if (aSide == null) {
-						aSide = lbd._aSide;
-						bSide = lbd._bSide;
+						aSide = lbdASide;
+						bSide = lbdBSide;
 					} else {
-						aSide += " " + lbd._aSide;
-						bSide += " " + lbd._bSide;
+						if (lbdASide.length() > 0) {
+							aSide += " " + lbdASide;
+						}
+						if (lbdBSide.length() > 0) {
+							bSide += " " + lbdBSide;
+						}
 					}
 					if (!lbd._nextLineIsContinuation) {
 						wrapUp(cardMap, aSide, bSide, commentLinesList, comment,
@@ -335,70 +337,67 @@ public class FlashCardsGame {
 			return;
 		}
 		final int nDigits = (int) (Math.log10(nCards) + 1d);
-		final String realNumberFormat = String.format("%%%dd.", nDigits);
-		final String blankNumberFormat = String.format("%%-%ds ", nDigits);
-		final String blankNumberString = String.format(blankNumberFormat, "");
+		final String intFormat = String.format("%%%dd.", nDigits);
+		final String blankIntFormat = String.format("%%-%ds ", nDigits);
+		final String blankIntString = String.format(blankIntFormat, "");
 		final String aPartFormat;
 		{
-			int max = 0;
+			int maxAPartLen = 0;
 			for (final Card card : _cards) {
-				card.getASideFullString();
-				final CardParts aParts = new CardParts(card.getASideFullString(),
+				final CardParts aParts = new CardParts(card.getFullString(/* aSide= */true),
 						Statics._MaxLenForCardPart);
-				max = Math.max(max, aParts._maxLen);
+				maxAPartLen = Math.max(maxAPartLen, aParts._maxLen);
 			}
-			aPartFormat = String.format("%%-%ds", max);
+			aPartFormat = String.format("%%-%ds", maxAPartLen);
 		}
 
 		final File cardsFile = getCardsFile();
 		try (PrintWriter pw = new PrintWriter(cardsFile)) {
 			boolean recentWasMultiLine = false;
-			for (int k0 = 0, nPrinted = 0; k0 < nCards; ++k0) {
-				final Card card = _cards[k0];
-				final CardParts aParts = new CardParts(card.getASideFullString(),
+			for (int kCard = 0, nPrinted = 0; kCard < nCards; ++kCard) {
+				final Card card = _cards[kCard];
+				final CardParts aParts = new CardParts(card.getFullString(/* aSide= */true),
 						Statics._MaxLenForCardPart);
-				final CardParts bParts = new CardParts(card.getBSideFullString(),
+				final CardParts bParts = new CardParts(card.getFullString(/* aSide= */false),
 						Statics._MaxLenForCardPart);
 				final int nAParts = aParts.size();
 				final int nBParts = bParts.size();
-				final int nParts = Math.max(nAParts, nBParts);
+				final int nDataParts = Math.max(nAParts, nBParts);
 				final String[] commentLines = card._commentLines;
 				final int nCommentLines = commentLines == null ? 0 : commentLines.length;
-				final boolean isMultiLine = nCommentLines > 0 || nParts > 1;
-				if (k0 > 0) {
+				final boolean isMultiLine = nCommentLines > 0 || nDataParts > 1;
+				if (kCard > 0) {
 					if ((isMultiLine || recentWasMultiLine
 							|| (nPrinted % Statics._BlockSize == 0))) {
 						pw.println();
 					}
 				}
 				recentWasMultiLine = isMultiLine;
-				for (int k1 = 0; k1 < nCommentLines; ++k1) {
-					final CommentParts commentParts = new CommentParts(commentLines[k1],
+				for (int kComment = 0; kComment < nCommentLines; ++kComment) {
+					final CommentParts commentParts = new CommentParts(commentLines[kComment],
 							Statics._MaxLineLen);
-					for (int k2 = 0; k2 < commentParts.size(); ++k2) {
-						pw.print(commentParts.get(k2));
-						if (k2 < commentParts.size() - 1) {
+					for (int kCommentPart = 0; kCommentPart < commentParts.size(); ++kCommentPart) {
+						pw.print(commentParts.get(kCommentPart));
+						if (kCommentPart < commentParts.size() - 1) {
 							pw.print('\t');
 						}
 						pw.println();
 					}
 				}
-				for (int k1 = 0; k1 < nParts; ++k1) {
-					final String aPart = k1 < nAParts ? aParts.get(k1) : null;
-					final String bPart = k1 < nBParts ? bParts.get(k1) : null;
-					if (k1 == 0) {
-						pw.printf(realNumberFormat, card._cardNumber);
+				for (int kDataPart = 0; kDataPart < nDataParts; ++kDataPart) {
+					final String aPart = kDataPart < nAParts ? aParts.get(kDataPart) : null;
+					final String bPart = kDataPart < nBParts ? bParts.get(kDataPart) : null;
+					if (kDataPart == 0) {
+						pw.printf(intFormat, card._cardNumber);
 					} else {
-						pw.print(blankNumberString);
+						pw.print(blankIntString);
 					}
 					pw.print('\t');
-					if (aPart != null) {
-						pw.printf(bPart != null ? aPartFormat : "%s", aPart);
-					}
+					pw.printf(bPart != null ? aPartFormat : "%s", aPart != null ? aPart : "");
 					if (bPart != null) {
 						pw.printf("\t%s", bPart);
 					}
-					if (k1 < nParts - 1) {
+					if (kDataPart < nDataParts - 1) {
 						pw.print('\t');
 					}
 					pw.println();
@@ -605,39 +604,37 @@ public class FlashCardsGame {
 
 			final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
 			final Card card = _cards[cardIdx];
-			final String clueString = Statics
-					.CleanWhiteSpace(_quizDirection == QuizDirection.A_TO_B
-							? card.getASideStringPart()
-							: card.getBSideStringPart());
-			final int clueStringLen = clueString.length();
-			final String answerString = Statics
-					.CleanWhiteSpace(_quizDirection == QuizDirection.A_TO_B
-							? card.getBSideStringPart()
-							: card.getASideStringPart());
-			final int answerStringLen = answerString.length();
+			final String clueStringPart = Statics.CleanWhiteSpace(
+					card.getStringPart(/* aSide= */_quizDirection == QuizDirection.A_TO_B));
+			final int clueStringPartLen = clueStringPart.length();
+			final String answerStringPart = Statics.CleanWhiteSpace(
+					card.getStringPart(/* aSide= */_quizDirection != QuizDirection.A_TO_B));
+			final int answerStringPartLen = answerStringPart.length();
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
 				final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 				final int typeIPromptLen = typeIPrompt.length();
-				final int len1 = typeIPromptLen + Statics._Sep1Len + clueStringLen
-						+ Statics._Sep2Len + Math.min(Statics._RoomLen, answerStringLen);
-				final String[] clueFields = clueString.split(Statics._WhiteSpace);
+				final int len1 = typeIPromptLen + Statics._Sep1Len + clueStringPartLen
+						+ Statics._Sep2Len + Math.min(Statics._RoomLen, answerStringPartLen);
+				final String[] clueFields = clueStringPart.split(Statics._WhiteSpace);
 				final int nClueFields = clueFields.length;
-				final String[] answerFields = answerString.split(Statics._WhiteSpace);
+				final String[] answerFields;
+				if (answerStringPart.length() == 0) {
+					answerFields = new String[0];
+				} else {
+					answerFields = answerStringPart.split(Statics._WhiteSpace);
+				}
 				final int nAnswerFields = answerFields.length;
 				_needLineFeed = _needLineFeed || len1 > Statics._MaxLineLen;
 				if (_needLineFeed) {
 					System.out.println();
 				}
 				boolean longQuestion = false;
-				/** "Print out" the clue. */
-				if (_quizDirection == QuizDirection.A_TO_B) {
-					card.playASideSoundFile();
-				} else {
-					card.playBSideSoundFile();
-				}
+
+				/** Expose the clue. */
+				card.playSoundFile(/* aSide= */_quizDirection == QuizDirection.A_TO_B);
 				if (len1 <= Statics._MaxLineLen) {
-					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueString,
+					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueStringPart,
 							Statics._Sep2);
 				} else {
 					System.out.println(typeIPrompt);
@@ -667,15 +664,19 @@ public class FlashCardsGame {
 					}
 					System.out.print(Statics._Sep2);
 				}
+				/** Get the response. */
 				final InputString inputString = new InputString(sc);
 				longQuestion = longQuestion || inputString._nLinesOfResponse > 1;
-				final String response = inputString._inputString;
-				if (response.length() == 1) {
+				final String responseStringPart = inputString._inputString;
+				if (responseStringPart.length() == 1) {
 					/**
-					 * quit, restart, edit the properties, or fall through, letting this be a bona
-					 * fide response (such as ở).
+					 * <pre>
+					 * The response is a command.
+					 * quit, restart, edit the properties, or fall through,
+					 * letting this be a bona fide response (such as ở).
+					 * </pre>
 					 */
-					final char char0Uc = Character.toUpperCase(response.charAt(0));
+					final char char0Uc = Character.toUpperCase(responseStringPart.charAt(0));
 					if (char0Uc == Statics._QuitChar) {
 						System.out.print(Statics.getFullYesNoPrompt("Reallly quit?", true));
 						final YesNoResponse yesNoResponse = new YesNoResponse(sc,
@@ -695,24 +696,16 @@ public class FlashCardsGame {
 					} else if (char0Uc == Statics._ReloadCardsChar) {
 						final int oldTci = _quizGenerator._topCardIndex;
 						final Card topCard = _cards[oldTci];
-						final String keyString = _quizDirection == QuizDirection.A_TO_B
-								? topCard.getASideFullString()
-								: topCard.getBSideFullString();
+						final boolean aSide = _quizDirection == QuizDirection.A_TO_B;
+						final String keyString = topCard.getFullString(aSide);
 						loadCards(/* announceCompleteDups= */false);
 						nCards = _cards.length;
 						int tci = -1;
-						for (int k = 0; k < nCards; ++k) {
-							final Card card1 = _cards[k];
-							if (_quizDirection == QuizDirection.A_TO_B) {
-								if (keyString.compareToIgnoreCase(card1.getASideFullString()) == 0) {
-									tci = k;
-									break;
-								}
-							} else {
-								if (keyString.compareToIgnoreCase(card1.getBSideFullString()) == 0) {
-									tci = k;
-									break;
-								}
+						for (int kCard = 0; kCard < nCards; ++kCard) {
+							final Card card1 = _cards[kCard];
+							if (keyString.compareToIgnoreCase(card1.getFullString(aSide)) == 0) {
+								tci = kCard;
+								break;
 							}
 						}
 						_quizGenerator.reactToReloadOfCards(_cards.length, tci);
@@ -729,14 +722,14 @@ public class FlashCardsGame {
 				 * Must process a response to a question. Start by playing the answer sound if
 				 * any.
 				 */
-				if (_quizDirection == QuizDirection.A_TO_B) {
-					card.playBSideSoundFile();
-				} else {
-					card.playASideSoundFile();
-				}
-				if (response.length() == 0) {
+				final boolean hasAnswerSound = card
+						.playSoundFile(/* aSide= */_quizDirection != QuizDirection.A_TO_B);
+				if (responseStringPart.length() == 0) {
 					int nUsedOnCurrentLine = 0;
-					/** User just wants a check so we have to print out the answer. Break it up. */
+					/**
+					 * User just wants a check so we have to print out the String part of the
+					 * answer. Break it up.
+					 */
 					for (int k = 0; k < nAnswerFields;) {
 						final String answerField = answerFields[k];
 						final int answerFieldLen = answerField.length();
@@ -769,9 +762,9 @@ public class FlashCardsGame {
 					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 					continue;
 				}
-				/** User tried to type something in. */
+				/** User typed something in. */
 				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc,
-						_diacriticsTreatment, answerString, response);
+						_diacriticsTreatment, answerStringPart, responseStringPart);
 				final String[] diffStrings = responseEvaluator._diffStrings;
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffStrings != null) {
@@ -843,7 +836,17 @@ public class FlashCardsGame {
 					gotItRight = yesNoResponse._yesValue;
 					_needLineFeed = !yesNoResponse._lastLineWasBlank;
 				} else {
+					/** diffStrings == null. Check for acceptable sound. */
 					_needLineFeed = longQuestion;
+					if (hasAnswerSound) {
+						final boolean defaultYesValue = true;
+						final String fullPrompt = Statics
+								.getFullYesNoPrompt("Strings Match.  Sound OK?", defaultYesValue);
+						System.out.print(fullPrompt);
+						final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
+						gotItRight = yesNoResponse._yesValue;
+						_needLineFeed = true;
+					}
 				}
 				wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 			}
@@ -852,7 +855,8 @@ public class FlashCardsGame {
 	}
 
 	public static void main(final String[] args) {
-		System.out.println(new String(Statics._SpecialChars));
+		System.out.println("Special Chars = " + new String(Statics._SpecialChars)
+				+ ". IndentString =\"" + Statics._IndentString + "\"\n");
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
 			flashCardsGame.mainLoop(sc);

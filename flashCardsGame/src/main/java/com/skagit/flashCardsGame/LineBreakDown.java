@@ -40,7 +40,7 @@ public class LineBreakDown {
 		final int nFields = fields.length;
 		/** Check for blank or only one non-blank which is an integer. */
 		boolean seenInteger = false;
-		boolean haveSomething = false;
+		boolean haveData = false;
 		for (int k = 0; k < nFields; ++k) {
 			final String field = fields[k];
 			if (field.isBlank()) {
@@ -48,35 +48,36 @@ public class LineBreakDown {
 			}
 			if (isInteger(field)) {
 				if (seenInteger) {
-					haveSomething = true;
+					haveData = true;
 					break;
 				}
 				seenInteger = true;
 				continue;
 			}
-			haveSomething = true;
+			haveData = true;
 			break;
 		}
-		if (!haveSomething) {
+		if (!haveData) {
 			_aSide = _bSide = null;
 			return;
 		}
 
-		final String field0 = nFields >= 1 ? fields[0] : null;
+		final String field0 = fields[0];
 		final String field1 = nFields >= 2 ? fields[1] : null;
 		final String field2 = nFields >= 3 ? fields[2] : null;
 		final String field3 = nFields >= 4 ? fields[3] : null;
 
 		if (field0.length() == 0) {
 			/**
-			 * First field is blank; third example. There is a tab before the non-blank field.
-			 * Start by checking if field1 is a number or not.
+			 * First field is blank; third example. There is a tab before the first non-blank
+			 * field. Start by checking if field1 is a number or not.
 			 */
 			if (isInteger(field1)) {
 				if (field3 == null) {
 					/**
 					 * There is exactly one field past the number. There must be at least one tab in
-					 * the separator. If there are two or more, this is b-side.
+					 * the separator between the number and the field. If there are two or more,
+					 * this is b-side.
 					 */
 					final int nTabs = countTabs(nextLine, field1);
 					_aSide = nTabs >= 2 ? "" : field2;
@@ -88,17 +89,15 @@ public class LineBreakDown {
 				_bSide = field3;
 				return;
 			}
+
 			/**
-			 * There is a tab before the first non-blank field, which is not an integer. But it
-			 * does exist. 1 or 2 tabs in the initial separator gets you to the a-side.
+			 * There is a tab before the first non-blank field, which exists and is not an
+			 * integer. If there is only one field, then it is ASide if the initial separator
+			 * has 0 or 1 tabs, and BSide otherwise.
 			 */
 			if (field2 == null) {
-				/**
-				 * There is only one field. There must be at least one tab in the initial
-				 * separator. If there are two or more, this is b-side.
-				 */
 				final int nTabs = countTabs(nextLine, "");
-				_aSide = nTabs >= 2 ? "" : field1;
+				_aSide = nTabs < 2 ? field1 : "";
 				_bSide = nTabs >= 2 ? field1 : "";
 				return;
 			}
@@ -107,7 +106,8 @@ public class LineBreakDown {
 			_bSide = field2;
 			return;
 		}
-		/** First field is not blank. */
+
+		/** First field is not blank; there is no tab in the initial separator. */
 		if (isInteger(field0)) {
 			if (field2 == null) {
 				/**
@@ -115,7 +115,7 @@ public class LineBreakDown {
 				 * the separator. If there are two or more, this is b-side.
 				 */
 				final int nTabs = countTabs(nextLine, field0);
-				_aSide = nTabs >= 2 ? "" : field1;
+				_aSide = nTabs < 2 ? field1 : "";
 				_bSide = nTabs >= 2 ? field1 : "";
 				return;
 			}
@@ -124,6 +124,7 @@ public class LineBreakDown {
 			_bSide = field2;
 			return;
 		}
+
 		/**
 		 * First field is not blank and not an integer. Hence, there are no tabs before the
 		 * first non-white space, and the first field is _aSide.

@@ -11,9 +11,9 @@ public class ResponseEvaluator {
 	final String[] _diffStrings;
 
 	ResponseEvaluator(final Scanner sc, final DiacriticsTreatment diacriticsTreatment,
-			final String rawAnswer, final String rawResponse) {
+			final String answerStringPart, final String responseStringPart) {
 
-		final MatchType matchType = getMatchType(rawAnswer, rawResponse);
+		final MatchType matchType = getMatchType(answerStringPart, responseStringPart);
 		final boolean almostRight = matchType == MatchType.MATCHED_EXCEPT_DIACRITICS_ARE_WRONG;
 		if (matchType == MatchType.MATCHED_INCLUDING_DIACRITICS
 				|| (diacriticsTreatment == DiacriticsTreatment.RELAXED && almostRight)) {
@@ -28,8 +28,8 @@ public class ResponseEvaluator {
 		 */
 		_gotItRight = almostRight && diacriticsTreatment == DiacriticsTreatment.LENIENT;
 
-		final String[] answerFields = rawAnswer.split(Statics._WhiteSpace);
-		final String[] responseFields = rawResponse.split(Statics._WhiteSpace);
+		final String[] answerFields = answerStringPart.split(Statics._WhiteSpace);
+		final String[] responseFields = responseStringPart.split(Statics._WhiteSpace);
 		final int nAnswerFields = answerFields.length;
 		final int nResponseFields = responseFields.length;
 

@@ -36,23 +36,10 @@ public class Statics {
 	final public static char _YesChar = 'Y';
 	final public static char _FileDelimiter = '%';
 	public static char[] _SpecialChars = { //
-			_LtArrowChar, //
-			_RtArrowChar, //
-			_RtArrowChar2, //
-			_SpadeSymbolChar, //
-			_ClubSymbolChar, //
-			_DiamondSymbolChar, //
-			_EmptySetChar, //
-			_HeavyCheckChar, //
-			_TabSymbolChar, //
-			_ReturnChar, //
-			_HelpChar, //
-			_QuitChar, //
-			_EditPropertiesChar, //
-			_RestartQuizChar, //
-			_YesChar, //
-			_NoChar //
-	};
+			_ClubSymbolChar, _CommentChar, _DiamondSymbolChar, _EditPropertiesChar,
+			_EmptySetChar, _HeavyCheckChar, _HelpChar, _QuitChar, _ReloadCardsChar,
+			_RestartQuizChar, _ReturnChar, _RtArrowChar, _RtArrowChar2, _SpadeSymbolChar,
+			_LtArrowChar, _NoChar, _TabSymbolChar, _YesChar, _FileDelimiter};
 
 	final public static int _BlockSize = 10;
 	final public static int _RoomLen = 10;
@@ -127,9 +114,10 @@ public class Statics {
 	 * <pre>
 	 * Good article on dealing with VN diacritics.
 	 * https://namnguyen1202.hashnode.dev/removing-vietnamese-diacritic-in-java
+	 * Note the use of a default ctor in an anonymous inherited class.
 	 * </pre>
 	 */
-	public static final HashMap<Character, Character> _VnToEngCharMap = new HashMap<>() {
+	private static final HashMap<Character, Character> _VnToEngCharMap = new HashMap<>() {
 		private static final long serialVersionUID = 1L;
 		{
 			final String[][] mappings = { //
@@ -157,30 +145,35 @@ public class Statics {
 			}
 		}
 	};
+
 	final public static String StripVNDiacritics(final String s) {
 		final StringBuilder sb = new StringBuilder(s);
+		boolean didSomething = false;
 		for (int k = 0; k < sb.length(); k++) {
 			final char c = sb.charAt(k);
 			final Character target = _VnToEngCharMap.get(c);
-			if (target != null) {
+			if (target != null && c != target) {
 				sb.setCharAt(k, target);
+				didSomething = true;
 			}
 		}
-		return sb.toString();
+		return didSomething ? sb.toString() : s;
 	}
 
 	public static String CleanWhiteSpace(final String s) {
 		if (s == null) {
 			return "";
 		}
-		return s.trim().replaceAll(_WhiteSpace, " ");
+		final String ss = s.trim().replaceAll(_WhiteSpace, " ");
+		return ss.length() == s.length() ? s : ss;
 	}
 
-	public static String KillPunct(final String field) {
-		if (field == null) {
+	public static String KillPunct(final String s) {
+		if (s == null) {
 			return "";
 		}
-		return field.replaceAll(_RegExForPunct, "");
+		final String ss = s.replaceAll(_RegExForPunct, "");
+		return ss.length() == s.length() ? s : ss;
 	}
 
 	public static String getFullYesNoPrompt(final String prompt,
@@ -225,6 +218,9 @@ public class Statics {
 
 	public static File getSoundFilesDir(final File propertiesDir,
 			final String soundFilesString) {
+		if (soundFilesString == null) {
+			return null;
+		}
 		final File soundFilesDir0 = new File(propertiesDir, soundFilesString);
 		if (soundFilesDir0.isDirectory()) {
 			return soundFilesDir0;

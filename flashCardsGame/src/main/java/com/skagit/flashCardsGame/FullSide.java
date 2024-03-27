@@ -21,25 +21,31 @@ public class FullSide implements Comparable<FullSide> {
 		/** Do we have a putative file? */
 		final int len = _trimmedInputString.length();
 		final int idx0 = _trimmedInputString.indexOf(Statics._FileDelimiter);
+		String fileStringWithDelimiters = null;
 		final int idx1 = (0 <= idx0 && idx0 < len)
 				? _trimmedInputString.indexOf(Statics._FileDelimiter, idx0 + 1)
 				: -1;
 		if (idx1 == -1 || idx1 < idx0 + 3) {
 			_stringPart = Statics.CleanWhiteSpace(_trimmedInputString);
+			fileStringWithDelimiters = null;
 			_fileString = null;
 			_soundFile = null;
 			return;
 		}
-		_fileString = _trimmedInputString.substring(idx0, idx1 + 1);
-		final File f = new File(soundFilesDir,
-				_fileString.substring(1, _fileString.length() - 1));
+		fileStringWithDelimiters = _trimmedInputString.substring(idx0, idx1 + 1);
+		final String fileString = fileStringWithDelimiters.substring(1,
+				fileStringWithDelimiters.length() - 1);
+
+		final File f = new File(soundFilesDir, fileString);
 		if (SimpleAudioPlayer.validate(f, /* play= */false)) {
 			_soundFile = f;
-			_stringPart = Statics
-					.CleanWhiteSpace(_trimmedInputString.replaceFirst(_fileString, ""));
+			_fileString = fileString;
+			_stringPart = Statics.CleanWhiteSpace(
+					_trimmedInputString.replaceFirst(fileStringWithDelimiters, ""));
 			return;
 		}
 		_stringPart = Statics.CleanWhiteSpace(_trimmedInputString);
+		_fileString = null;
 		_soundFile = null;
 	}
 
@@ -58,7 +64,8 @@ public class FullSide implements Comparable<FullSide> {
 		if (_soundFile == null) {
 			return _stringPart;
 		}
-		return String.format("%s %s", _fileString, _stringPart);
+		return String.format("%c%s%c %s", Statics._FileDelimiter, _fileString,
+				Statics._FileDelimiter, _stringPart);
 	}
 
 	@Override
@@ -73,12 +80,6 @@ public class FullSide implements Comparable<FullSide> {
 			return compareValue;
 		}
 		return _trimmedInputString.compareToIgnoreCase(fullSide._trimmedInputString);
-	}
-
-	public static void main(final String[] args) {
-		final FullSide fullSide = new FullSide("%junk.aiff% more strings",
-				new File("Data/SoundFiles"));
-		System.out.println(fullSide.getString());
 	}
 
 }

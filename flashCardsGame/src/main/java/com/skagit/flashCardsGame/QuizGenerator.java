@@ -79,7 +79,6 @@ public class QuizGenerator {
 					break;
 				case QUIZ_DIRECTION :
 				case RANDOM_SEED :
-				case SOUND_FILES_DIR :
 					break;
 				case TOP_CARD_INDEX :
 					properties.put(propertyPlus._propertyName, Integer.toString(_topCardIndex));
@@ -340,7 +339,6 @@ public class QuizGenerator {
 			case QUIZ_DIRECTION :
 			case RANDOM_SEED :
 			case CLUMPING :
-			case SOUND_FILES_DIR :
 		}
 	}
 
