@@ -2,6 +2,7 @@ package com.skagit.flashCardsGame;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,7 +16,10 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.skagit.SimpleAudioPlayer;
 import com.skagit.flashCardsGame.Statics.YesNoResponse;
 import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.Clumping;
@@ -32,10 +36,11 @@ import com.skagit.flashCardsGame.enums.QuizDirection;
 public class FlashCardsGame {
 
 	/** Non-static fields. */
-	final private File _propertiesFile;
-	final private File _soundFilesDir;
-	final private Properties _properties;
+	final private File _gameDir;
 
+	final private TreeMap<String, File> _allSoundFiles;
+
+	final private Properties _properties;
 	final private long _randomSeed;
 	final private QuizDirection _quizDirection;
 	final private DiacriticsTreatment _diacriticsTreatment;
@@ -46,30 +51,12 @@ public class FlashCardsGame {
 	private QuizPlus _quizPlus;
 	private boolean _needLineFeed;
 
-	FlashCardsGame(final Scanner sc, final String[] args) {
+	FlashCardsGame(final Scanner sc, final File gameDir) {
 		_needLineFeed = false;
-		final int nArgs = args.length;
-		int iArg = 0;
-		final String propertiesFilePath = args[iArg++];
-		final String soundFilesDirString = iArg < nArgs ? args[iArg++] : null;
-		if (propertiesFilePath.toLowerCase().endsWith(Statics._PropertiesEnding)) {
-			_propertiesFile = new File(propertiesFilePath);
-		} else {
-			final File f = new File(propertiesFilePath);
-			final File p = f.getParentFile();
-			final String name = f.getName();
-			final int lastDotIndex = name.lastIndexOf('.');
-			if (lastDotIndex == -1) {
-				_propertiesFile = new File(propertiesFilePath + Statics._PropertiesEnding);
-			} else {
-				_propertiesFile = new File(p,
-						name.substring(0, lastDotIndex) + Statics._PropertiesEnding);
-			}
-		}
-		final File propertiesDir = _propertiesFile.getParentFile();
+		_gameDir = gameDir;
 		_properties = new Properties();
 		try (InputStreamReader isr = new InputStreamReader(
-				new FileInputStream(_propertiesFile), "UTF-8")) {
+				new FileInputStream(getPropertiesFile()), "UTF-8")) {
 			final Properties properties = new Properties();
 			properties.load(isr);
 			final int nPropertyPluses = PropertyPlus._Values.length;
@@ -83,8 +70,6 @@ public class FlashCardsGame {
 		}
 		reWritePropertiesFile();
 
-		_soundFilesDir = Statics.getSoundFilesDir(propertiesDir, soundFilesDirString);
-
 		final String typableString = PropertyPlus.QUIZ_DIRECTION.getValidString(_properties);
 		_quizDirection = QuizDirection.get(typableString);
 		_diacriticsTreatment = DiacriticsTreatment
@@ -92,9 +77,14 @@ public class FlashCardsGame {
 		_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 		_clumping = Clumping.valueOf(clumpingString);
+		_allSoundFiles = new TreeMap<>();
 		loadCards(/* announceCompleteDups= */true);
 		final int[] dupCounts = announceAndClumpDuplicates();
 		reWriteCardsFile();
+		if (Statics._SwitchSides) {
+			_quizGenerator = null;
+			return;
+		}
 		final int nADups = dupCounts[1];
 		final int nBDups = dupCounts[0];
 		if (nADups > 0 || nBDups > 0) {
@@ -111,18 +101,78 @@ public class FlashCardsGame {
 		System.out.println();
 	}
 
-	private File getCardsFile() {
-		final String propertiesFileName = _propertiesFile.getName();
-		final File parentFile = _propertiesFile.getParentFile();
-		final String cardsFileName = propertiesFileName.substring(0,
-				propertiesFileName.length() - Statics._PropertiesEnding.length()) + ".txt";
-		return new File(parentFile, cardsFileName);
-	}
+	private static void addToSoundFiles(final TreeMap<String, File> allSoundFiles,
+			final File mainDir) {
+		/** Add sub-directories' soundFiles. */
+		final File[] subDirs = mainDir.listFiles(new FileFilter() {
 
-	private String getCoreFilePath() {
-		final String inputPath = _propertiesFile.toString();
-		return inputPath.substring(0,
-				inputPath.length() - Statics._PropertiesEnding.length());
+			@Override
+			public boolean accept(final File f) {
+				return f.isDirectory();
+			}
+		});
+		for (final File subDir : subDirs) {
+			addToSoundFiles(allSoundFiles, subDir);
+		}
+		/** Add mainDir's own sound files. */
+		final File[] mainDirSoundFiles = mainDir.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(final File f) {
+				return SimpleAudioPlayer.validate(f, /* play= */false);
+			}
+		});
+		for (final File f : mainDirSoundFiles) {
+			File parent = f.getParentFile();
+			final String fNameOrig = f.getName();
+			/** Strip the extension. */
+			final String fName0;
+			final int lastDot = fNameOrig.lastIndexOf('.');
+			if (lastDot >= 0) {
+				fName0 = fNameOrig.substring(0, lastDot);
+			} else {
+				fName0 = fNameOrig;
+			}
+			final Matcher matcher = Pattern.compile("^\\d+\\-").matcher(fName0);
+			final String[] fNames;
+			if (matcher.find()) {
+				final int fName0Len = fName0.length();
+				final int start = matcher.start();
+				final int end = matcher.end();
+				final String fName1 = fName0.substring(start, end - 1);
+				if (end < fName0Len) {
+					final String fName2 = fName0.substring(end, fName0Len);
+					fNames = new String[]{fName0, fName1, fName2};
+				} else {
+					fNames = new String[]{fName0, fName1};
+				}
+			} else {
+				fNames = new String[]{fName0};
+			}
+			final int nFNames = fNames.length;
+			for (;;) {
+				final String parentNamePlus = parent.getName() + File.separator;
+				boolean allDone = true;
+				for (int k = 0; k < nFNames; ++k) {
+					final String thisFName = fNames[k];
+					if (thisFName == null) {
+						continue;
+					}
+					final File oldFile = allSoundFiles.get(thisFName);
+					if (oldFile == null) {
+						allSoundFiles.put(thisFName, f);
+						fNames[k] = null;
+					} else {
+						fNames[k] = parentNamePlus + thisFName;
+						allDone = false;
+					}
+				}
+				if (allDone) {
+					break;
+				}
+				parent = parent.getParentFile();
+			}
+		}
 	}
 
 	/**
@@ -234,7 +284,7 @@ public class FlashCardsGame {
 		if (aSide != null && bSide != null && aSide.length() > 0 && bSide.length() > 0) {
 			final int nNewCommentLines = commentList.size();
 			final String[] newCommentLines = commentList.toArray(new String[nNewCommentLines]);
-			final Card newCard = new Card(_soundFilesDir, cardMap.size(), aSide, bSide,
+			final Card newCard = new Card(_allSoundFiles, cardMap.size(), aSide, bSide,
 					newCommentLines);
 			final Card oldCard = cardMap.get(newCard);
 			if (oldCard != null) {
@@ -266,7 +316,21 @@ public class FlashCardsGame {
 		}
 	}
 
+	private File getPropertiesFile() {
+		return new File(_gameDir, _gameDir.getName() + Statics._PropertiesEnding);
+	}
+
+	private File getCardsFile() {
+		return new File(_gameDir, _gameDir.getName() + Statics._CardsEnding);
+	}
+
+	private File getSoundFilesDir() {
+		return new File(_gameDir, _gameDir.getName() + Statics._SoundFilesEnding);
+	}
+
 	private void loadCards(final boolean announceCompleteDups) {
+		_allSoundFiles.clear();
+		addToSoundFiles(_allSoundFiles, getSoundFilesDir());
 		final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
 		final int nCards = cardMap.size();
 		_cards = cardMap.keySet().toArray(new Card[nCards]);
@@ -436,7 +500,7 @@ public class FlashCardsGame {
 		} else {
 			properties = _properties;
 		}
-		try (PrintWriter pw = new PrintWriter(new FileOutputStream(_propertiesFile))) {
+		try (PrintWriter pw = new PrintWriter(new FileOutputStream(getPropertiesFile()))) {
 			final int nPropertyPluses = PropertyPlus._Values.length;
 			for (int k0 = 0; k0 < nPropertyPluses; ++k0) {
 				final PropertyPlus propertyPlus = PropertyPlus._Values[k0];
@@ -558,7 +622,7 @@ public class FlashCardsGame {
 
 	final String getString() {
 		return String.format("%s(w/ %d cards): %s, %s, RandomSeed[%d] \n%s", //
-				getCoreFilePath(), _cards.length, //
+				_gameDir, _cards.length, //
 				_quizDirection._fancyString, //
 				_diacriticsTreatment.name(), //
 				_randomSeed, _quizGenerator.getString());
@@ -857,9 +921,17 @@ public class FlashCardsGame {
 	public static void main(final String[] args) {
 		System.out.println("Special Chars = " + new String(Statics._SpecialChars)
 				+ ". IndentString =\"" + Statics._IndentString + "\"\n");
+		System.out.println("User Dir = " + System.getProperty("user.dir"));
+		final File gameDir = new File(Statics._TopGamesDir, args[0]);
+		try {
+			System.out.println("gameDir = " + gameDir.getCanonicalPath());
+		} catch (final IOException e) {
+		}
 		try (Scanner sc = new Scanner(System.in)) {
-			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, args);
-			flashCardsGame.mainLoop(sc);
+			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, gameDir);
+			if (!Statics._SwitchSides) {
+				flashCardsGame.mainLoop(sc);
+			}
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

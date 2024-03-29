@@ -1,8 +1,9 @@
 package com.skagit.flashCardsGame;
 
 import java.io.File;
-
-import com.skagit.SimpleAudioPlayer;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FullSide implements Comparable<FullSide> {
 
@@ -10,14 +11,9 @@ public class FullSide implements Comparable<FullSide> {
 	final String _stringPart;
 	final String _fileString;
 	final File _soundFile;
-	public FullSide(final String inputString, final File soundFilesDir) {
+
+	public FullSide(final TreeMap<String, File> allSoundFiles, final String inputString) {
 		_trimmedInputString = inputString.trim();
-		if (soundFilesDir == null || !soundFilesDir.isDirectory()) {
-			_stringPart = Statics.CleanWhiteSpace(_trimmedInputString);
-			_fileString = null;
-			_soundFile = null;
-			return;
-		}
 		/** Do we have a putative file? */
 		final int len = _trimmedInputString.length();
 		final int idx0 = _trimmedInputString.indexOf(Statics._FileDelimiter);
@@ -36,17 +32,16 @@ public class FullSide implements Comparable<FullSide> {
 		final String fileString = fileStringWithDelimiters.substring(1,
 				fileStringWithDelimiters.length() - 1);
 
-		final File f = new File(soundFilesDir, fileString);
-		if (SimpleAudioPlayer.validate(f, /* play= */false)) {
-			_soundFile = f;
-			_fileString = fileString;
-			_stringPart = Statics.CleanWhiteSpace(
-					_trimmedInputString.replaceFirst(fileStringWithDelimiters, ""));
+		_soundFile = allSoundFiles.get(fileString);
+		if (_soundFile == null) {
+			_stringPart = Statics.CleanWhiteSpace(_trimmedInputString);
+			_fileString = null;
 			return;
 		}
-		_stringPart = Statics.CleanWhiteSpace(_trimmedInputString);
-		_fileString = null;
-		_soundFile = null;
+		_fileString = fileString;
+		final String stringPart0 = _trimmedInputString.replaceFirst(
+				Pattern.quote(fileStringWithDelimiters), Matcher.quoteReplacement(""));
+		_stringPart = Statics.CleanWhiteSpace(stringPart0);
 	}
 
 	public String getStringPart() {

@@ -10,6 +10,8 @@ import com.skagit.flashCardsGame.enums.ChangeType;
 
 public class Statics {
 
+	final public static boolean _SwitchSides = false;
+
 	/**
 	 * <pre>
 	 *  Good list of characters.
@@ -43,11 +45,12 @@ public class Statics {
 
 	final public static int _BlockSize = 10;
 	final public static int _RoomLen = 10;
-	final public static int _MaxLenForCardPart = 35;
-	final public static int _MaxLineLen = 65;
+	final public static int _MaxLenForCardPart = 45;
+	final public static int _MaxLineLen = 80;
 	final public static int _MaxNFailsPerElement = 5;
 	final public static int _NominalTabLen = 8;
 
+	final public static String _RelativeGamesDir = "Data/Games";
 	final public static String _CommentString = "" + _CommentChar + ' ';
 	final public static String _CountAsRightString = "Count as Right? ";
 	final public static String _EndCardsString = "$$";
@@ -67,7 +70,11 @@ public class Statics {
 	final public static String _NoString = "No";
 	final public static String _PrefaceForNewLine = _IndentString + _Sep1;
 	final public static int _PrefaceForNewLineLen = _PrefaceForNewLine.length();
+	final public static File _TopGamesDir = new File(System.getProperty("user.dir"),
+			"Data" + File.separator + "Games");
 	final public static String _PropertiesEnding = ".properties";
+	final public static String _CardsEnding = ".txt";
+	final public static String _SoundFilesEnding = ".SoundFiles";
 	final public static String _WhiteSpace = "\\s+";
 	final public static String _YesString = "Yes";
 
@@ -214,22 +221,6 @@ public class Statics {
 			return 0;
 		}
 		return 2;
-	}
-
-	public static File getSoundFilesDir(final File propertiesDir,
-			final String soundFilesString) {
-		if (soundFilesString == null) {
-			return null;
-		}
-		final File soundFilesDir0 = new File(propertiesDir, soundFilesString);
-		if (soundFilesDir0.isDirectory()) {
-			return soundFilesDir0;
-		}
-		final File soundFilesDir1 = new File(soundFilesString);
-		if (soundFilesDir1.isDirectory()) {
-			return soundFilesDir1;
-		}
-		return propertiesDir;
 	}
 
 }

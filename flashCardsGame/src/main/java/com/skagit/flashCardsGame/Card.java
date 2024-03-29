@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Comparator;
+import java.util.TreeMap;
 
 import com.skagit.SimpleAudioPlayer;
 
@@ -14,11 +15,13 @@ class Card {
 	final private FullSide _bSide;
 	String[] _commentLines;
 
-	Card(final File soundFilesDir, final int cardNumber, final String aSideString,
-			final String bSideString, final String[] commentLines) {
+	Card(final TreeMap<String, File> allSoundFiles, final int cardNumber,
+			final String aSideString, final String bSideString, final String[] commentLines) {
 		_cardNumber = cardNumber;
-		_aSide = new FullSide(aSideString, soundFilesDir);
-		_bSide = new FullSide(bSideString, soundFilesDir);
+		_aSide = new FullSide(allSoundFiles,
+				Statics._SwitchSides ? bSideString : aSideString);
+		_bSide = new FullSide(allSoundFiles,
+				Statics._SwitchSides ? aSideString : bSideString);
 		_commentLines = commentLines;
 	}
 
