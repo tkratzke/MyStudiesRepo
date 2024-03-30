@@ -29,7 +29,7 @@ import com.skagit.flashCardsGame.enums.QuizDirection;
 
 /**
  * <pre>
- * Interesting note on deleting remote repositories from within Eclipse:
+ * Interesting note on deleting remote branches from within Eclipse:
  * https://stackoverflow.com/questions/8625406/how-to-delete-a-branch-in-the-remote-repository-using-egit
  * </pre>
  */
@@ -77,7 +77,8 @@ public class FlashCardsGame {
 		_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 		_clumping = Clumping.valueOf(clumpingString);
-		_allSoundFiles = new TreeMap<>();
+		final File soundFilesDir = getSoundFilesDir();
+		_allSoundFiles = soundFilesDir.isDirectory() ? new TreeMap<>() : null;
 		loadCards(/* announceCompleteDups= */true);
 		final int[] dupCounts = announceAndClumpDuplicates();
 		reWriteCardsFile();
@@ -123,55 +124,44 @@ public class FlashCardsGame {
 			}
 		});
 		for (final File f : mainDirSoundFiles) {
-			File parent = f.getParentFile();
-			final String fNameOrig = f.getName();
-			/** Strip the extension. */
-			final String fName0;
-			final int lastDot = fNameOrig.lastIndexOf('.');
-			if (lastDot >= 0) {
-				fName0 = fNameOrig.substring(0, lastDot);
-			} else {
-				fName0 = fNameOrig;
+			final String fName = f.getName();
+			final ArrayList<String> keyList = new ArrayList<>();
+			/** fName is a valid key. */
+			keyList.add(fName);
+			/** Strip the extension from fName to make stem, which is a valid key. */
+			final int lastDot = fName.lastIndexOf('.');
+			final String stem = lastDot >= 0 ? fName.substring(0, lastDot) : fName;
+			if (stem != fName) {
+				keyList.add(stem);
 			}
-			final Matcher matcher = Pattern.compile("^\\d+\\-").matcher(fName0);
-			final String[] fNames;
+			final Matcher matcher = Pattern.compile("^\\d+\\-").matcher(stem);
 			if (matcher.find()) {
-				final int fName0Len = fName0.length();
+				final int stemLen = stem.length();
 				final int start = matcher.start();
 				final int end = matcher.end();
-				final String fName1 = fName0.substring(start, end - 1);
-				if (end < fName0Len) {
-					final String fName2 = fName0.substring(end, fName0Len);
-					fNames = new String[]{fName0, fName1, fName2};
+				/** The digits make up a valid key. */
+				keyList.add(stem.substring(start, end - 1));
+				if (end < stemLen) {
+					/** Everything in stem beyond the dash make up a valid key. */
+					keyList.add(stem.substring(end, stemLen));
+				}
+			}
+			File parent = f.getParentFile();
+			String parentNamePlus = parent.getName() + File.separator;
+			for (int k = 0; !keyList.isEmpty();) {
+				k %= keyList.size();
+				final String thisKey = keyList.get(k);
+				final File oldFile = allSoundFiles.get(thisKey);
+				if (oldFile == null) {
+					allSoundFiles.put(thisKey, f);
+					keyList.remove(k);
 				} else {
-					fNames = new String[]{fName0, fName1};
+					keyList.set(k, parentNamePlus + thisKey);
+					++k;
 				}
-			} else {
-				fNames = new String[]{fName0};
 			}
-			final int nFNames = fNames.length;
-			for (;;) {
-				final String parentNamePlus = parent.getName() + File.separator;
-				boolean allDone = true;
-				for (int k = 0; k < nFNames; ++k) {
-					final String thisFName = fNames[k];
-					if (thisFName == null) {
-						continue;
-					}
-					final File oldFile = allSoundFiles.get(thisFName);
-					if (oldFile == null) {
-						allSoundFiles.put(thisFName, f);
-						fNames[k] = null;
-					} else {
-						fNames[k] = parentNamePlus + thisFName;
-						allDone = false;
-					}
-				}
-				if (allDone) {
-					break;
-				}
-				parent = parent.getParentFile();
-			}
+			parent = parent.getParentFile();
+			parentNamePlus = parent.getName() + File.separator + parentNamePlus;
 		}
 	}
 
@@ -329,8 +319,10 @@ public class FlashCardsGame {
 	}
 
 	private void loadCards(final boolean announceCompleteDups) {
-		_allSoundFiles.clear();
-		addToSoundFiles(_allSoundFiles, getSoundFilesDir());
+		if (_allSoundFiles != null) {
+			_allSoundFiles.clear();
+			addToSoundFiles(_allSoundFiles, getSoundFilesDir());
+		}
 		final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
 		final int nCards = cardMap.size();
 		_cards = cardMap.keySet().toArray(new Card[nCards]);
@@ -920,13 +912,15 @@ public class FlashCardsGame {
 
 	public static void main(final String[] args) {
 		System.out.println("Special Chars = " + new String(Statics._SpecialChars)
-				+ ". IndentString =\"" + Statics._IndentString + "\"\n");
+				+ ". IndentString =\"" + Statics._IndentString + "\"");
 		System.out.println("User Dir = " + System.getProperty("user.dir"));
 		final File gameDir = new File(Statics._TopGamesDir, args[0]);
 		try {
+			System.out.println("topGamesDir = " + Statics._TopGamesDir.getCanonicalPath());
 			System.out.println("gameDir = " + gameDir.getCanonicalPath());
 		} catch (final IOException e) {
 		}
+		System.out.println();
 		try (Scanner sc = new Scanner(System.in)) {
 			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, gameDir);
 			if (!Statics._SwitchSides) {

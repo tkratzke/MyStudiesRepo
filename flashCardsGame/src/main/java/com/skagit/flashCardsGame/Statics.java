@@ -50,7 +50,6 @@ public class Statics {
 	final public static int _MaxNFailsPerElement = 5;
 	final public static int _NominalTabLen = 8;
 
-	final public static String _RelativeGamesDir = "Data/Games";
 	final public static String _CommentString = "" + _CommentChar + ' ';
 	final public static String _CountAsRightString = "Count as Right? ";
 	final public static String _EndCardsString = "$$";
@@ -61,8 +60,8 @@ public class Statics {
 	final public static String _Sep1 = " " + _ClubSymbolChar;
 	final public static String _Sep2 = "" + _DiamondSymbolChar + " ";
 	final public static String _HelpString = String.format(
-			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, %c=Reload Cards"
-					+ "%c=\"Show-and-ask,\" %s=Next Line is Continuation",
+			"%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, " //
+					+ "%c=Reload Cards, %c=\"Show-and-ask,\" %s=Next Line is Continuation",
 			_HelpChar, _QuitChar, _EditPropertiesChar, _RestartQuizChar, _ReloadCardsChar,
 			_ReturnChar, "" + _TabSymbolChar + _ReturnChar);
 	final public static String _IndentString = String
