@@ -1,0 +1,19 @@
+! Given the English Text, think the Vietnamese sound and check	
+	against the "answer sound."
+0.	Test 1 (think the sound)        	%Test 1.aiff%
+
+! Given the Vietnamese sound, type the Vietnamese text.
+1.	%Test 2.aiff% (type the text)   	VN Test 2
+
+! Given the English text, think the Vietnamese sound and type the	
+	Vietnamese text, checking both.
+2.	Test 3 (think the sound and type	%Test 3.aiff% VN Test 3	
+  	the text)
+
+! Given the Vietnamese sound and English text, type the	
+	Vietnamese text.
+3.	%Test 4.aiff% Test 4 (type the  	VN Test 4	
+  	text)
+
+! Given the English text, type the Vietnamese text (normal).
+4.	Test 4                          	VN Test 4

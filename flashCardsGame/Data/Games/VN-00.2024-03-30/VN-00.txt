@@ -1,92 +1,89 @@
 ! Tran-00:
- 37.	winter                                      	%winter% mùa đong
+  0.	winter                                      	%winter% mùa đong
 
- 38.	spring (season)                             	%001% mùa xuân
- 39.	summer                                      	%002-summer% mùa hè
+  1.	spring (season)                             	%001% mùa xuân
+  2.	summer                                      	%002-summer% mùa hè
+  3.	autumn                                      	%003-autumn% mùa thu
+  4.	north                                       	%004-north% bắc
+  5.	south                                       	%005-south% nam
+  6.	Hanoi                                       	%006-Hanoi% Hà Nội
+  7.	Ho Chi Minh City                            	%007-HoChiMinhCity% thành phố Hồ Chí Minh
+  8.	cloudy                                      	%008-cloudy% âm u
+  9.	sunny                                       	%009-sunny% nắng
 
- 40.	autumn                                      	%003-autumn% mùa thu
- 41.	north                                       	%004-north% bắc
- 42.	south                                       	%005-south% nam
- 43.	Hanoi                                       	%006-Hanoi% Hà Nội
- 44.	Ho Chi Minh City                            	%007-HoChiMinhCity% thành phố Hồ Chí Minh
- 45.	cloudy                                      	%008-cloudy% âm u
- 46.	sunny                                       	%009-sunny% nắng
- 47.	cold                                        	%010-cold% mát
- 48.	cool                                        	%011-cool% ấm
- 49.	warm                                        	lạnh
+ 10.	cold                                        	%010-cold% lạnh
+ 11.	warm                                        	%011-warm% ấm
+ 12.	cool                                        	%010-cool% mát
+ 13.	hot                                         	%012-hot% nóng
+ 14.	Which season do you like?                   	%013-WhichSeason% Bạn thích mùa nào?
 
- 50.	hot                                         	%012-hot% nóng
- 51.	Which season do you like?                   	%013-WhichSeason% Bạn thích mùa nào?
-
- 52.	South Vietnam does not have winter.         	%014-SouthVNDoesNot% Miền nam Việt Nam không	
+ 15.	South Vietnam does not have winter.         	%014-SouthVNDoesNot% Miền nam Việt Nam không	
     	                                            	có mùa đông.
 
- 53.	It will be sunny tomorrow.                  	%015-ItWillBe% Ngày mai trời nắng.
- 54.	the moon                                    	%016-moon% mặt trăng
- 55.	the sun                                     	%017-sun% mặt trời
- 56.	the earth                                   	%018-earth% trái đất
- 57.	a star                                      	%019-star% sao
- 58.	There were stars last night.                	%020-ThereWereStars% Tối qua có sao.
+ 16.	It will be sunny tomorrow.                  	%015-ItWillBe% Ngày mai trời nắng.
+ 17.	the moon                                    	%016-moon% mặt trăng
+ 18.	the sun                                     	%017-sun% mặt trời
+ 19.	the earth                                   	%018-earth% trái đất
 
- 61.	after                                       	%021-after% sau đó
- 62.	before                                      	%before% trước
- 63.	The moon is white.                          	%023% Mặt trăng màu trắng.
- 64.	rain                                        	%024-rain% mưa
- 65.	snow                                        	%025-snow% tuyết
+ 20.	a star                                      	%019-star% sao
+ 21.	There were stars last night.                	%020-ThereWereStars% Tối qua có sao.
+ 22.	after                                       	%021-after% sau đó
+ 23.	before                                      	%before% trước
+ 24.	The moon is white.                          	%023% Mặt trăng màu trắng.
+ 25.	rain                                        	%024-rain% mưa
+ 26.	snow                                        	%025-snow% tuyết
 
 ! Tran-01
- 59.	The earth is blue.                          	%034-TheEarthIsBlue% Trái đất màu xanh da	
+ 27.	The earth is blue.                          	%034-TheEarthIsBlue% Trái đất màu xanh da	
     	                                            	trời.
 
- 60.	The sun is red.                             	%035-SunIsRed% Mặt trời màu đỏ.
+ 28.	The sun is red.                             	%035-SunIsRed% Mặt trời màu đỏ.
+
 ! Single Vowels:
-  0.	a                                           	F(a)ther
+ 29.	a                                           	F(a)ther
 
-  1.	â                                           	B(u)n
-  2.	ă                                           	(a)t
-  3.	e                                           	L(e)t
-  4.	ê                                           	St(ay)
-  5.	i                                           	B(ee)
-  6.	ô                                           	oh
-  7.	o                                           	(aw)e
-  8.	ơ                                           	uh
-  9.	u                                           	C(oo)l
-
- 10.	ư                                           	uhoo
+ 30.	â                                           	B(u)n
+ 31.	ă                                           	(a)t
+ 32.	e                                           	L(e)t
+ 33.	ê                                           	St(ay)
+ 34.	i                                           	B(ee)
+ 35.	ô                                           	oh
+ 36.	o                                           	(aw)e
+ 37.	ơ                                           	uh
+ 38.	u                                           	C(oo)l
+ 39.	ư                                           	uhoo
 
 ! Diphthongs and Triphthongs:
- 11.	ai                                          	I or eye
+ 40.	ai                                          	I or eye
 
- 12.	au                                          	(ow)l (more focus on u than with ao)
- 13.	ao                                          	(ou)ch (more focus on a than with au)
- 14.	ay                                          	IE aye-ee
- 15.	âu                                          	oh
- 16.	ây                                          	St(ay)
- 17.	eo                                          	(e)gg + (o)uch
- 18.	êu                                          	(e)gg + (oo)ps
- 19.	ia                                          	ee-uh
+ 41.	au                                          	(ow)l (more focus on u than with ao)
+ 42.	ao                                          	(ou)ch (more focus on a than with au)
+ 43.	ay                                          	IE aye-ee
+ 44.	âu                                          	oh
+ 45.	ây                                          	St(ay)
+ 46.	eo                                          	(e)gg + (o)uch
+ 47.	êu                                          	(e)gg + (oo)ps
+ 48.	ia                                          	ee-uh
+ 49.	iê                                          	ee-(e)gg
 
- 20.	iê                                          	ee-(e)gg
- 21.	iêu                                         	ee-o(h)
- 22.	oa                                          	(aw)e-I
- 23.	oe                                          	(aw)e-a(hhh)
- 24.	oi                                          	B(oy)
- 25.	ôi                                          	Ann(oyi)ng
- 26.	ơi                                          	(u)gl(y)
- 27.	oai                                         	(aw)e-I-ee
- 28.	uô                                          	C(oo)l-oh
- 29.	ươ                                          	(u)gh-uh
+ 50.	iêu                                         	ee-o(h)
+ 51.	oa                                          	(aw)e-I
+ 52.	oe                                          	(aw)e-a(hhh)
+ 53.	oi                                          	B(oy)
+ 54.	ôi                                          	Ann(oyi)ng
+ 55.	ơi                                          	(u)gl(y)
+ 56.	oai                                         	(aw)e-I-ee
+ 57.	uô                                          	C(oo)l-oh
+ 58.	ươ                                          	(u)gh-uh
+ 59.	ua                                          	C(oo)l-uh
 
- 30.	ua                                          	C(oo)l-uh
- 31.	ưa                                          	(u)gh-uh
- 32.	uê                                          	C(oo)l-e(gg)
- 33.	uy                                          	C(oo)l-S(ee)d
- 34.	ui                                          	(ooey) gooey
- 35.	uôi                                         	C(oo)l-Oh-S(ee)d
- 36.	ươi                                         	(u)gh-uhh-S(ee)d
-
+ 60.	ưa                                          	(u)gh-uh
+ 61.	uê                                          	C(oo)l-e(gg)
+ 62.	uy                                          	C(oo)l-S(ee)d
+ 63.	ui                                          	(ooey) gooey
+ 64.	uôi                                         	C(oo)l-Oh-S(ee)d
+ 65.	ươi                                         	(u)gh-uhh-S(ee)d
  66.	a strawberry                                	dâu tây
-
  67.	a watermelon                                	dưa hấu
  68.	on, on top of, or above                     	trên
  69.	under                                       	dưới
