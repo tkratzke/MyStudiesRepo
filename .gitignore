@@ -4,6 +4,4 @@ target/
 .classpath
 .project
 
-**/*-Backup/
-**/* - Backup/
-**/* - Copy/
+**/*-Backups/

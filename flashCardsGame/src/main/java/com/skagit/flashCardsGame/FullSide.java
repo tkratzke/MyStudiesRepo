@@ -44,6 +44,12 @@ public class FullSide implements Comparable<FullSide> {
 		_stringPart = Statics.CleanWhiteSpace(stringPart0);
 	}
 
+	public boolean hasSoundFile() {
+		return _soundFile != null;
+	}
+	public boolean hasStringPart() {
+		return _stringPart != null && _stringPart.length() > 0;
+	}
 	public String getStringPart() {
 		return _stringPart;
 	}

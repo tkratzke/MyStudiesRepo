@@ -33,7 +33,13 @@ public enum PropertyPlus {
 					+ "Any Negative #: Use SuperRandom"), //
 
 	ALLOWABLE_MISS_PERCENTAGE(String.valueOf(10) + "%",
-			"Determines if each quiz is \"passed\" or not");
+			"Determines if each quiz is \"passed\" or not"), //
+
+	MODE(Mode.NORMAL.name(), //
+			Mode.NORMAL._explanation + //
+					"\n" + Mode.SWITCH._explanation + //
+					"\n" + Mode.STEP._explanation //
+	);
 
 	final public static PropertyPlus[] _Values = values();
 
@@ -107,6 +113,7 @@ public enum PropertyPlus {
 						case DECAY_TYPE :
 						case DIACRITICS_TREATMENT :
 						case QUIZ_DIRECTION :
+						case MODE :
 					}
 				} catch (final NumberFormatException e) {
 					return _defaultStringValue;
@@ -115,6 +122,7 @@ public enum PropertyPlus {
 			case CLUMPING :
 			case DECAY_TYPE :
 			case DIACRITICS_TREATMENT :
+			case MODE :
 				try {
 					if (this == DECAY_TYPE) {
 						DecayType.valueOf(s);
@@ -122,6 +130,8 @@ public enum PropertyPlus {
 						DiacriticsTreatment.valueOf(s);
 					} else if (this == CLUMPING) {
 						Clumping.valueOf(s);
+					} else if (this == MODE) {
+						Mode.valueOf(s);
 					}
 				} catch (final IllegalArgumentException e) {
 					return _defaultStringValue;
@@ -134,6 +144,7 @@ public enum PropertyPlus {
 					}
 				}
 				return _defaultStringValue;
+
 		}
 		/** To keep the compiler happy: */
 		return null;

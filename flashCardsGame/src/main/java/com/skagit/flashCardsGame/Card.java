@@ -15,13 +15,12 @@ class Card {
 	final private FullSide _bSide;
 	String[] _commentLines;
 
-	Card(final TreeMap<String, File> allSoundFiles, final int cardNumber,
-			final String aSideString, final String bSideString, final String[] commentLines) {
+	Card(final boolean switchSides, final TreeMap<String, File> allSoundFiles,
+			final int cardNumber, final String aSideString, final String bSideString,
+			final String[] commentLines) {
 		_cardNumber = cardNumber;
-		_aSide = new FullSide(allSoundFiles,
-				Statics._SwitchSides ? bSideString : aSideString);
-		_bSide = new FullSide(allSoundFiles,
-				Statics._SwitchSides ? aSideString : bSideString);
+		_aSide = new FullSide(allSoundFiles, switchSides ? bSideString : aSideString);
+		_bSide = new FullSide(allSoundFiles, switchSides ? aSideString : bSideString);
 		_commentLines = commentLines;
 	}
 
@@ -102,21 +101,12 @@ class Card {
 		return s;
 	}
 
-	String getBrokenUpString(final boolean aSide, final int maxLen) {
-		final CardParts parts = new CardParts(getStringPart(aSide), maxLen);
-		final int nParts = parts.size();
-		String s = "" + Statics._RtArrowChar;
-		for (int k = 0; k < nParts; ++k) {
-			s += parts.get(k);
-			if (k < nParts - 1) {
-				s += "\n\t";
-			} else {
-				s += "" + Statics._LtArrowChar;
-			}
-		}
-		return s;
+	public boolean hasSoundFile(final boolean aSide) {
+		return (aSide ? _aSide : _bSide).hasSoundFile();
 	}
-
+	public boolean hasStringPart(final boolean aSide) {
+		return (aSide ? _aSide : _bSide).hasStringPart();
+	}
 	public String getStringPart(final boolean aSide) {
 		return (aSide ? _aSide : _bSide).getStringPart();
 	}
@@ -134,4 +124,5 @@ class Card {
 	public String toString() {
 		return getString();
 	}
+
 }

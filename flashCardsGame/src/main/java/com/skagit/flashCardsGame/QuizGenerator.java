@@ -6,9 +6,11 @@ import java.util.Random;
 
 import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.DecayType;
+import com.skagit.flashCardsGame.enums.Mode;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
 
 public class QuizGenerator {
+	final private Mode _mode;
 	final private int _maxNNewWords;
 	final private int _maxNRecentWords;
 	int _topCardIndex;
@@ -23,7 +25,9 @@ public class QuizGenerator {
 
 	private boolean _changedQuizGeneratorParameters;
 
-	QuizGenerator(final Properties properties, final int nCards, final long seed) {
+	QuizGenerator(final Mode mode, final Properties properties, final int nCards,
+			final long seed) {
+		_mode = mode;
 		_topCardIndex = Integer
 				.parseInt(PropertyPlus.TOP_CARD_INDEX.getValidString(properties));
 		_maxNNewWords = Integer
@@ -63,6 +67,7 @@ public class QuizGenerator {
 					properties.put(propertyPlus._propertyName, _decayType.name());
 					break;
 				case DIACRITICS_TREATMENT :
+				case MODE :
 					break;
 				case NUMBER_OF_NEW_WORDS :
 					properties.put(propertyPlus._propertyName, Integer.toString(_maxNNewWords));
@@ -104,6 +109,15 @@ public class QuizGenerator {
 
 	QuizPlus createNewQuizPlus(final int nCards) {
 		correctQuizGeneratorProperties(nCards);
+		if (_mode == Mode.STEP) {
+			final int nInQuiz = nCards - _topCardIndex;
+			final int[] quiz = new int[nInQuiz];
+			for (int k = _topCardIndex; k < nCards; ++k) {
+				quiz[k - _topCardIndex] = k;
+			}
+			final int[] criticalCardIndices = new int[0];
+			return new QuizPlus(quiz, criticalCardIndices);
+		}
 		final int nAvail = _topCardIndex + 1;
 		final int nNewWordsInQuiz = Math.min(nAvail, _maxNNewWords);
 		final int nRecentWordsInQuiz = Math.min(_maxNRecentWords, nAvail - nNewWordsInQuiz);
@@ -331,6 +345,7 @@ public class QuizGenerator {
 				return;
 			case ALLOWABLE_MISS_PERCENTAGE :
 			case DIACRITICS_TREATMENT :
+			case MODE :
 			case DECAY_TYPE :
 			case NUMBER_OF_NEW_WORDS :
 			case NUMBER_OF_RECENT_WORDS :
@@ -342,8 +357,8 @@ public class QuizGenerator {
 		}
 	}
 
-	QuizPlusTransition getStatusChange(final int nCards, final boolean restarted,
-			final QuizPlus quizPlus) {
+	QuizPlusTransition getStatusChange(final Mode mode, final int nCards,
+			final boolean restarted, final QuizPlus quizPlus) {
 		if (restarted) {
 			final QuizPlus newQuizPlus = quizPlus;
 			newQuizPlus.resetForFullMode();
@@ -358,6 +373,9 @@ public class QuizGenerator {
 			final QuizPlus newQuizPlus = createNewQuizPlus(nCards);
 			_changedQuizGeneratorParameters = false;
 			return new QuizPlusTransition(quizPlus, newQuizPlus, ChangeType.PARAMETERS_CHANGED);
+		}
+		if (mode == Mode.STEP) {
+			return new QuizPlusTransition(quizPlus, quizPlus, ChangeType.NO_CHANGE);
 		}
 		if (quizPlus.haveWon(_allowablePerCent)) {
 			final QuizPlus newQuizPlus;

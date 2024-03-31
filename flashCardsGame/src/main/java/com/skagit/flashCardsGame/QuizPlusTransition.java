@@ -7,10 +7,7 @@ class QuizPlusTransition {
 	final ChangeType _changeType;
 	final String _transitionString;
 
-	/**
-	 * Converts an input QuizPlus to a "transitioned" QuizPlus, and specifies the reason for
-	 * doing so, along with two Strings that are useful for printouts.
-	 */
+	/** Constructs a String useful for printing out. */
 	QuizPlusTransition(final QuizPlus quizPlus, final QuizPlus newQuizPlus,
 			final ChangeType changeType) {
 		_newQuizPlus = newQuizPlus;

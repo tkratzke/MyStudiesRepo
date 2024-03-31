@@ -1,6 +1,7 @@
 package com.skagit.flashCardsGame;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Random;
@@ -10,14 +11,13 @@ import com.skagit.flashCardsGame.enums.ChangeType;
 
 public class Statics {
 
-	final public static boolean _SwitchSides = false;
-
 	/**
 	 * <pre>
 	 *  Good list of characters.
 	 *  http://xahlee.info/comp/unicode_arrows.html
 	 * </pre>
 	 */
+	final public static char _keyboardSymbol = '\u2328';
 	final public static char _ClubSymbolChar = '\u2663';
 	final public static char _CommentChar = '!';
 	final public static char _DiamondSymbolChar = '\u2666';
@@ -38,10 +38,10 @@ public class Statics {
 	final public static char _YesChar = 'Y';
 	final public static char _FileDelimiter = '%';
 	public static char[] _SpecialChars = { //
-			_ClubSymbolChar, _CommentChar, _DiamondSymbolChar, _EditPropertiesChar,
-			_EmptySetChar, _HeavyCheckChar, _HelpChar, _QuitChar, _ReloadCardsChar,
-			_RestartQuizChar, _ReturnChar, _RtArrowChar, _RtArrowChar2, _SpadeSymbolChar,
-			_LtArrowChar, _NoChar, _TabSymbolChar, _YesChar, _FileDelimiter};
+			_keyboardSymbol, _ClubSymbolChar, _CommentChar, _DiamondSymbolChar,
+			_EditPropertiesChar, _EmptySetChar, _HeavyCheckChar, _HelpChar, _QuitChar,
+			_ReloadCardsChar, _RestartQuizChar, _ReturnChar, _RtArrowChar, _RtArrowChar2,
+			_SpadeSymbolChar, _LtArrowChar, _NoChar, _TabSymbolChar, _YesChar, _FileDelimiter};
 
 	final public static int _BlockSize = 10;
 	final public static int _RoomLen = 10;
@@ -50,6 +50,15 @@ public class Statics {
 	final public static int _MaxNFailsPerElement = 5;
 	final public static int _NominalTabLen = 8;
 
+	final public static String _SoundString, _PenString;
+	static {
+		final byte[] soundBytes = new byte[]{(byte) 0xF0, (byte) 0x9F, (byte) 0x94,
+				(byte) 0x8A};
+		_SoundString = new String(soundBytes, StandardCharsets.UTF_8);
+		final byte[] penBytes = new byte[]{(byte) 0xF0, (byte) 0x9F, (byte) 0x96,
+				(byte) 0x8A};
+		_PenString = new String(penBytes, StandardCharsets.UTF_8);
+	}
 	final public static String _CommentString = "" + _CommentChar + ' ';
 	final public static String _CountAsRightString = "Count as Right? ";
 	final public static String _EndCardsString = "$$";
@@ -70,7 +79,7 @@ public class Statics {
 	final public static String _PrefaceForNewLine = _IndentString + _Sep1;
 	final public static int _PrefaceForNewLineLen = _PrefaceForNewLine.length();
 	final public static File _TopGamesDir = new File(System.getProperty("user.dir"),
-			"Data" + File.separator + "Games");
+			"Games");
 	final public static String _PropertiesEnding = ".properties";
 	final public static String _CardsEnding = ".txt";
 	final public static String _SoundFilesEnding = ".SoundFiles";

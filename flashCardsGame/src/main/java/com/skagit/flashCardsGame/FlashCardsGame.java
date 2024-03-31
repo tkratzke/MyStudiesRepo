@@ -24,6 +24,7 @@ import com.skagit.flashCardsGame.Statics.YesNoResponse;
 import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.Clumping;
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
+import com.skagit.flashCardsGame.enums.Mode;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
 import com.skagit.flashCardsGame.enums.QuizDirection;
 
@@ -43,6 +44,7 @@ public class FlashCardsGame {
 	final private Properties _properties;
 	final private long _randomSeed;
 	final private QuizDirection _quizDirection;
+	final private Mode _mode;
 	final private DiacriticsTreatment _diacriticsTreatment;
 	final private Clumping _clumping;
 
@@ -51,7 +53,7 @@ public class FlashCardsGame {
 	private QuizPlus _quizPlus;
 	private boolean _needLineFeed;
 
-	FlashCardsGame(final Scanner sc, final File gameDir) {
+	FlashCardsGame(final File gameDir) {
 		_needLineFeed = false;
 		_gameDir = gameDir;
 		_properties = new Properties();
@@ -74,6 +76,7 @@ public class FlashCardsGame {
 		_quizDirection = QuizDirection.get(typableString);
 		_diacriticsTreatment = DiacriticsTreatment
 				.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
+		_mode = Mode.valueOf(PropertyPlus.MODE.getValidString(_properties));
 		_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 		_clumping = Clumping.valueOf(clumpingString);
@@ -82,7 +85,7 @@ public class FlashCardsGame {
 		loadCards(/* announceCompleteDups= */true);
 		final int[] dupCounts = announceAndClumpDuplicates();
 		reWriteCardsFile();
-		if (Statics._SwitchSides) {
+		if (_mode == Mode.SWITCH) {
 			_quizGenerator = null;
 			return;
 		}
@@ -94,7 +97,7 @@ public class FlashCardsGame {
 			}
 			System.out.println(String.format("nADups=%d nBDups = %d.", nADups, nBDups));
 		}
-		_quizGenerator = new QuizGenerator(_properties, _cards.length, _randomSeed);
+		_quizGenerator = new QuizGenerator(_mode, _properties, _cards.length, _randomSeed);
 		shuffleCards(_cards);
 		_quizPlus = null;
 		System.out.println();
@@ -271,11 +274,12 @@ public class FlashCardsGame {
 		if (comment != null && comment.length() > 0) {
 			commentList.add(comment);
 		}
+		final boolean switchSides = _mode == Mode.SWITCH;
 		if (aSide != null && bSide != null && aSide.length() > 0 && bSide.length() > 0) {
 			final int nNewCommentLines = commentList.size();
 			final String[] newCommentLines = commentList.toArray(new String[nNewCommentLines]);
-			final Card newCard = new Card(_allSoundFiles, cardMap.size(), aSide, bSide,
-					newCommentLines);
+			final Card newCard = new Card(switchSides, _allSoundFiles, cardMap.size(), aSide,
+					bSide, newCommentLines);
 			final Card oldCard = cardMap.get(newCard);
 			if (oldCard != null) {
 				if (announceCompleteDups) {
@@ -537,14 +541,17 @@ public class FlashCardsGame {
 
 	final private String getTypeIPrompt(final int cardIdx,
 			final boolean currentQuestionWasWrongAtLeastOnce) {
+		final int cardNumber = _cards[cardIdx]._cardNumber;
+		final int quizLen = _quizPlus.getCurrentQuizLen();
+		if (_mode == Mode.STEP) {
+			return String.format("CrdIdx=%d,#%d", cardIdx, cardNumber);
+		}
 		String typeIPrompt = "";
 		final int currentIdxInQuiz = _quizPlus.getCurrentIdxInQuiz();
 		final boolean criticalQuizIdx = _quizPlus.isCriticalQuizIndex(currentIdxInQuiz);
 		if (criticalQuizIdx) {
 			typeIPrompt += "*";
 		}
-		final int cardNumber = _cards[cardIdx]._cardNumber;
-		final int quizLen = _quizPlus.getCurrentQuizLen();
 		typeIPrompt += String.format("%d of %d(CrdIdx=%d,#%d)", currentIdxInQuiz + 1, quizLen,
 				cardIdx, cardNumber);
 		final int nRights = _quizPlus.getNRights();
@@ -633,8 +640,8 @@ public class FlashCardsGame {
 
 		OUTSIDE_LOOP : for (boolean keepGoing = true; keepGoing;) {
 			/** Check for a _status change from _quizPlus. */
-			final QuizPlusTransition quizPlusTransition = _quizGenerator.getStatusChange(nCards,
-					restarted, _quizPlus);
+			final QuizPlusTransition quizPlusTransition = _quizGenerator.getStatusChange(_mode,
+					nCards, restarted, _quizPlus);
 			_quizPlus = quizPlusTransition._newQuizPlus;
 			restarted = false;
 			final ChangeType changeType = quizPlusTransition._changeType;
@@ -660,25 +667,43 @@ public class FlashCardsGame {
 
 			final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
 			final Card card = _cards[cardIdx];
-			final String clueStringPart = Statics.CleanWhiteSpace(
+			final String clueString = Statics.CleanWhiteSpace(
 					card.getStringPart(/* aSide= */_quizDirection == QuizDirection.A_TO_B));
-			final int clueStringPartLen = clueStringPart.length();
-			final String answerStringPart = Statics.CleanWhiteSpace(
-					card.getStringPart(/* aSide= */_quizDirection != QuizDirection.A_TO_B));
-			final int answerStringPartLen = answerStringPart.length();
+			final int clueStringLen = clueString.length();
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
+				final boolean clueHasSoundFile = card
+						.hasSoundFile(/* aSide= */_quizDirection == QuizDirection.A_TO_B);
+				final boolean answerHasSoundFile = card
+						.hasSoundFile(/* aSide= */_quizDirection != QuizDirection.A_TO_B);
+				final boolean answerHasStringPart = card
+						.hasStringPart(/* aSide= */_quizDirection != QuizDirection.A_TO_B);
 				final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 				final int typeIPromptLen = typeIPrompt.length();
-				final int len1 = typeIPromptLen + Statics._Sep1Len + clueStringPartLen
-						+ Statics._Sep2Len + Math.min(Statics._RoomLen, answerStringPartLen);
-				final String[] clueFields = clueStringPart.split(Statics._WhiteSpace);
+				final String terminalString;
+				if (answerHasSoundFile && answerHasStringPart) {
+					terminalString = String.format("%s%s%c", Statics._Sep2, Statics._SoundString,
+							Statics._keyboardSymbol);
+				} else if (answerHasSoundFile) {
+					terminalString = String.format("%s%s", Statics._Sep2, Statics._SoundString);
+				} else if (answerHasStringPart) {
+					terminalString = String.format("%s%c", Statics._Sep2, Statics._keyboardSymbol);
+				} else {
+					terminalString = null;
+				}
+				final int terminalStringLen = terminalString.length();
+				final String answerString = Statics.CleanWhiteSpace(
+						card.getStringPart(/* aSide= */_quizDirection != QuizDirection.A_TO_B));
+				final int answerStringPartLen = answerString.length();
+				final int len1 = typeIPromptLen + Statics._Sep1Len + clueStringLen
+						+ terminalStringLen + Math.min(Statics._RoomLen, answerStringPartLen);
+				final String[] clueFields = clueString.split(Statics._WhiteSpace);
 				final int nClueFields = clueFields.length;
 				final String[] answerFields;
-				if (answerStringPart.length() == 0) {
+				if (answerString.length() == 0) {
 					answerFields = new String[0];
 				} else {
-					answerFields = answerStringPart.split(Statics._WhiteSpace);
+					answerFields = answerString.split(Statics._WhiteSpace);
 				}
 				final int nAnswerFields = answerFields.length;
 				_needLineFeed = _needLineFeed || len1 > Statics._MaxLineLen;
@@ -688,10 +713,12 @@ public class FlashCardsGame {
 				boolean longQuestion = false;
 
 				/** Expose the clue. */
-				card.playSoundFile(/* aSide= */_quizDirection == QuizDirection.A_TO_B);
+				if (clueHasSoundFile) {
+					card.playSoundFile(/* aSide= */_quizDirection == QuizDirection.A_TO_B);
+				}
 				if (len1 <= Statics._MaxLineLen) {
-					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueStringPart,
-							Statics._Sep2);
+					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueString,
+							terminalString);
 				} else {
 					System.out.println(typeIPrompt);
 					System.out.print(Statics._PrefaceForNewLine);
@@ -718,7 +745,7 @@ public class FlashCardsGame {
 							nUsedOnCurrentLine += 1 + clueFieldLen;
 						}
 					}
-					System.out.print(Statics._Sep2);
+					System.out.print(terminalString);
 				}
 				/** Get the response. */
 				final InputString inputString = new InputString(sc);
@@ -778,8 +805,9 @@ public class FlashCardsGame {
 				 * Must process a response to a question. Start by playing the answer sound if
 				 * any.
 				 */
-				final boolean hasAnswerSound = card
-						.playSoundFile(/* aSide= */_quizDirection != QuizDirection.A_TO_B);
+				if (answerHasSoundFile) {
+					card.playSoundFile(/* aSide= */_quizDirection != QuizDirection.A_TO_B);
+				}
 				if (responseStringPart.length() == 0) {
 					int nUsedOnCurrentLine = 0;
 					/**
@@ -801,26 +829,31 @@ public class FlashCardsGame {
 							++k;
 						}
 					}
-					final boolean defaultYesValue = true;
-					final String prompt = Statics.getFullYesNoPrompt(Statics._CountAsRightString,
-							defaultYesValue);
-					final int promptLen = prompt.length();
-					if (nUsedOnCurrentLine + Statics._Sep2Len + promptLen
-							+ Statics._RoomLen <= Statics._MaxLineLen) {
-						System.out.printf("%s%s", Statics._Sep2, prompt);
+					if (_mode == Mode.STEP) {
+						gotItRight = true;
+						_needLineFeed = true;
 					} else {
-						System.out.println();
-						System.out.printf("%s%s%", Statics._IndentString, prompt);
+						final boolean defaultYesValue = true;
+						final String prompt = Statics.getFullYesNoPrompt(Statics._CountAsRightString,
+								defaultYesValue);
+						final int promptLen = prompt.length();
+						if (nUsedOnCurrentLine + Statics._Sep2Len + promptLen
+								+ Statics._RoomLen <= Statics._MaxLineLen) {
+							System.out.printf("%s%s", Statics._Sep2, prompt);
+						} else {
+							System.out.println();
+							System.out.printf("%s%s%", Statics._IndentString, prompt);
+						}
+						final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
+						gotItRight = yesNoResponse._yesValue;
+						_needLineFeed = !yesNoResponse._lastLineWasBlank;
+						wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 					}
-					final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
-					gotItRight = yesNoResponse._yesValue;
-					_needLineFeed = !yesNoResponse._lastLineWasBlank;
-					wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
 					continue;
 				}
 				/** User typed something in. */
 				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc,
-						_diacriticsTreatment, answerStringPart, responseStringPart);
+						_diacriticsTreatment, answerString, responseStringPart);
 				final String[] diffStrings = responseEvaluator._diffStrings;
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffStrings != null) {
@@ -888,13 +921,20 @@ public class FlashCardsGame {
 							System.out.printf("%s%s", Statics._IndentString, fullYesNoPrompt);
 						}
 					}
-					final YesNoResponse yesNoResponse = new YesNoResponse(sc, gotItRight);
-					gotItRight = yesNoResponse._yesValue;
-					_needLineFeed = !yesNoResponse._lastLineWasBlank;
+					if (_mode == Mode.STEP) {
+						gotItRight = true;
+						_needLineFeed = true;
+					} else {
+						final YesNoResponse yesNoResponse = new YesNoResponse(sc, gotItRight);
+						gotItRight = yesNoResponse._yesValue;
+						_needLineFeed = !yesNoResponse._lastLineWasBlank;
+					}
 				} else {
 					/** diffStrings == null. Check for acceptable sound. */
 					_needLineFeed = longQuestion;
-					if (hasAnswerSound) {
+					if (_mode == Mode.STEP) {
+						gotItRight = true;
+					} else if (answerHasSoundFile) {
 						final boolean defaultYesValue = true;
 						final String fullPrompt = Statics
 								.getFullYesNoPrompt("Strings Match.  Sound OK?", defaultYesValue);
@@ -911,8 +951,11 @@ public class FlashCardsGame {
 	}
 
 	public static void main(final String[] args) {
-		System.out.println("Special Chars = " + new String(Statics._SpecialChars)
-				+ ". IndentString =\"" + Statics._IndentString + "\"");
+		System.out.printf("SoundString=%s, PenString=%s\n", Statics._SoundString,
+				Statics._PenString);
+		System.out.println(
+				"Special Chars = " + new String(Statics._SpecialChars) + ", IndentString=\""
+						+ Statics._IndentString + "\", SoundString=" + Statics._SoundString);
 		System.out.println("User Dir = " + System.getProperty("user.dir"));
 		final File gameDir = new File(Statics._TopGamesDir, args[0]);
 		try {
@@ -920,14 +963,14 @@ public class FlashCardsGame {
 			System.out.println("gameDir = " + gameDir.getCanonicalPath());
 		} catch (final IOException e) {
 		}
-		System.out.println();
-		try (Scanner sc = new Scanner(System.in)) {
-			final FlashCardsGame flashCardsGame = new FlashCardsGame(sc, gameDir);
-			if (!Statics._SwitchSides) {
+		final FlashCardsGame flashCardsGame = new FlashCardsGame(gameDir);
+		if (flashCardsGame._mode != Mode.SWITCH) {
+			System.out.println();
+			try (Scanner sc = new Scanner(System.in)) {
 				flashCardsGame.mainLoop(sc);
+			} catch (final Exception e) {
+				e.printStackTrace();
 			}
-		} catch (final Exception e) {
-			e.printStackTrace();
 		}
 	}
 
