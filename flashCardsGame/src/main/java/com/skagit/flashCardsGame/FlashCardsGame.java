@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.skagit.SimpleAudioPlayer;
+import com.skagit.DirsTracker.DirsTracker;
 import com.skagit.flashCardsGame.Statics.YesNoResponse;
 import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.Clumping;
@@ -36,8 +37,10 @@ import com.skagit.flashCardsGame.enums.QuizDirection;
  */
 public class FlashCardsGame {
 
-	/** Non-static fields. */
 	final private File _gameDir;
+	final private File _gameFile;
+	final private File _cardsFile;
+	final private File _soundFilesDir;
 
 	final private TreeMap<String, File> _allSoundFiles;
 
@@ -47,30 +50,60 @@ public class FlashCardsGame {
 	final private Mode _mode;
 	final private DiacriticsTreatment _diacriticsTreatment;
 	final private Clumping _clumping;
+	final private QuizGenerator _quizGenerator;
 
 	private Card[] _cards;
-	final private QuizGenerator _quizGenerator;
 	private QuizPlus _quizPlus;
 	private boolean _needLineFeed;
 
-	FlashCardsGame(final File gameDir) {
+	FlashCardsGame(final String gameDirString) {
 		_needLineFeed = false;
-		_gameDir = gameDir;
+		_gameDir = Statics.getGameDir(gameDirString);
+		_gameFile = Statics.getGameFileFromDirFile(_gameDir);
+		if (_gameFile == null) {
+			_cardsFile = _soundFilesDir = null;
+			_allSoundFiles = null;
+			_properties = null;
+			_randomSeed = 0;
+			_quizDirection = null;
+			_mode = null;
+			_diacriticsTreatment = null;
+			_clumping = null;
+			_quizGenerator = null;
+			return;
+		}
+
 		_properties = new Properties();
-		try (InputStreamReader isr = new InputStreamReader(
-				new FileInputStream(getPropertiesFile()), "UTF-8")) {
+		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(_gameFile),
+				"UTF-8")) {
 			final Properties properties = new Properties();
 			properties.load(isr);
 			final int nPropertyPluses = PropertyPlus._Values.length;
 			for (int k = 0; k < nPropertyPluses; ++k) {
 				final PropertyPlus propertyPlus = PropertyPlus._Values[k];
 				final String key = propertyPlus._propertyName;
-				final String validatedString = propertyPlus.getValidString(properties.get(key));
+				final String validatedString = propertyPlus.getValidString(properties);
 				_properties.put(key, validatedString);
 			}
 		} catch (final IOException e) {
 		}
-		reWritePropertiesFile();
+		final String cardsFileString = PropertyPlus.CARDS_FILE.getValidString(_properties);
+		_cardsFile = Statics.getCardsFile(_gameDir, cardsFileString);
+		final String soundFilesDirString = PropertyPlus.SOUND_FILES_DIR
+				.getValidString(_properties);
+		_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
+		if (true) {
+		} else {
+			_quizDirection = null;
+			_diacriticsTreatment = null;
+			_mode = null;
+			_randomSeed = -1;
+			_clumping = null;
+			_allSoundFiles = null;
+			_quizGenerator = null;
+			return;
+		}
+		reWriteGameFile();
 
 		final String typableString = PropertyPlus.QUIZ_DIRECTION.getValidString(_properties);
 		_quizDirection = QuizDirection.get(typableString);
@@ -80,15 +113,11 @@ public class FlashCardsGame {
 		_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 		_clumping = Clumping.valueOf(clumpingString);
-		final File soundFilesDir = getSoundFilesDir();
-		_allSoundFiles = soundFilesDir.isDirectory() ? new TreeMap<>() : null;
+
+		_allSoundFiles = new TreeMap<>();
 		loadCards(/* announceCompleteDups= */true);
 		final int[] dupCounts = announceAndClumpDuplicates();
 		reWriteCardsFile();
-		if (_mode == Mode.SWITCH) {
-			_quizGenerator = null;
-			return;
-		}
 		final int nADups = dupCounts[1];
 		final int nBDups = dupCounts[0];
 		if (nADups > 0 || nBDups > 0) {
@@ -97,9 +126,15 @@ public class FlashCardsGame {
 			}
 			System.out.println(String.format("nADups=%d nBDups = %d.", nADups, nBDups));
 		}
+		if (_mode == Mode.SWITCH) {
+			_quizGenerator = null;
+			return;
+		}
+
 		_quizGenerator = new QuizGenerator(_mode, _properties, _cards.length, _randomSeed);
 		shuffleCards(_cards);
 		_quizPlus = null;
+
 		System.out.println();
 		System.out.print(Statics._HelpString);
 		System.out.println();
@@ -168,6 +203,15 @@ public class FlashCardsGame {
 		}
 	}
 
+	private void loadCards(final boolean announceCompleteDups) {
+		_allSoundFiles.clear();
+		addToSoundFiles(_allSoundFiles, _soundFilesDir);
+		final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
+		final int nCards = cardMap.size();
+		_cards = cardMap.keySet().toArray(new Card[nCards]);
+		Arrays.sort(_cards, Card._ByCardNumberOnly);
+	}
+
 	/**
 	 * <pre>
 	 * Interesting note on text files and the "right" way to do things:
@@ -176,9 +220,8 @@ public class FlashCardsGame {
 	 */
 	private TreeMap<Card, Card> loadCardMap(final boolean announceCompleteDups) {
 		final TreeMap<Card, Card> cardMap = new TreeMap<>(Card._ByAThenB);
-		final File cardsFile = getCardsFile();
 		try (final BufferedReader in = new BufferedReader(
-				new InputStreamReader(new FileInputStream(cardsFile), "UTF-8"))) {
+				new InputStreamReader(new FileInputStream(_cardsFile), "UTF-8"))) {
 			/** Mark the stream at the beginning of the file. */
 			if (in.markSupported()) {
 				/**
@@ -310,29 +353,6 @@ public class FlashCardsGame {
 		}
 	}
 
-	private File getPropertiesFile() {
-		return new File(_gameDir, _gameDir.getName() + Statics._PropertiesEnding);
-	}
-
-	private File getCardsFile() {
-		return new File(_gameDir, _gameDir.getName() + Statics._CardsEnding);
-	}
-
-	private File getSoundFilesDir() {
-		return new File(_gameDir, _gameDir.getName() + Statics._SoundFilesEnding);
-	}
-
-	private void loadCards(final boolean announceCompleteDups) {
-		if (_allSoundFiles != null) {
-			_allSoundFiles.clear();
-			addToSoundFiles(_allSoundFiles, getSoundFilesDir());
-		}
-		final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
-		final int nCards = cardMap.size();
-		_cards = cardMap.keySet().toArray(new Card[nCards]);
-		Arrays.sort(_cards, Card._ByCardNumberOnly);
-	}
-
 	private int[] announceAndClumpDuplicates() {
 		final int nCards = _cards.length;
 		final int[] dupCounts = new int[]{0, 0};
@@ -411,8 +431,7 @@ public class FlashCardsGame {
 			aPartFormat = String.format("%%-%ds", maxAPartLen);
 		}
 
-		final File cardsFile = getCardsFile();
-		try (PrintWriter pw = new PrintWriter(cardsFile)) {
+		try (PrintWriter pw = new PrintWriter(_cardsFile)) {
 			boolean recentWasMultiLine = false;
 			for (int kCard = 0, nPrinted = 0; kCard < nCards; ++kCard) {
 				final Card card = _cards[kCard];
@@ -477,7 +496,7 @@ public class FlashCardsGame {
 		_quizGenerator.updateProperties(_properties);
 	}
 
-	void reWritePropertiesFile() {
+	void reWriteGameFile() {
 		final Properties properties;
 		final long seed = Long
 				.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
@@ -496,7 +515,7 @@ public class FlashCardsGame {
 		} else {
 			properties = _properties;
 		}
-		try (PrintWriter pw = new PrintWriter(new FileOutputStream(getPropertiesFile()))) {
+		try (PrintWriter pw = new PrintWriter(new FileOutputStream(_gameFile))) {
 			final int nPropertyPluses = PropertyPlus._Values.length;
 			for (int k0 = 0; k0 < nPropertyPluses; ++k0) {
 				final PropertyPlus propertyPlus = PropertyPlus._Values[k0];
@@ -620,11 +639,26 @@ public class FlashCardsGame {
 	}
 
 	final String getString() {
-		return String.format("%s(w/ %d cards): %s, %s, RandomSeed[%d] \n%s", //
-				_gameDir, _cards.length, //
-				_quizDirection._fancyString, //
-				_diacriticsTreatment.name(), //
-				_randomSeed, _quizGenerator.getString());
+		final String s0 = String.format(//
+				"GameFile     : %s\n" //
+						+ "GameDir      : %s\n" //
+						+ "CardsFile    : %s\n" //
+						+ "SoundFilesDir: %s", //
+				_gameFile == null ? "NULL" : _gameFile, //
+				_gameDir == null ? "NULL" : _gameDir, //
+				_cardsFile == null ? "NULL" : _cardsFile, //
+				_soundFilesDir == null ? "NULL" : _soundFilesDir //
+		);
+		final String s1 = getString0();
+		return s0 + "\n" + s1;
+	}
+
+	final String getString0() {
+		return String.format("%s %s %s RandomSeed[%d] \n%s", //
+				_cards != null ? String.format("(w/ %d cards)", _cards.length) : "", //
+				_quizDirection != null ? _quizDirection._fancyString : "", //
+				_diacriticsTreatment != null ? _diacriticsTreatment.name() : "", //
+				_randomSeed, _quizGenerator != null ? _quizGenerator.getString() : "");
 	}
 
 	@Override
@@ -645,12 +679,12 @@ public class FlashCardsGame {
 			_quizPlus = quizPlusTransition._newQuizPlus;
 			restarted = false;
 			final ChangeType changeType = quizPlusTransition._changeType;
-			if (Statics._NewQuizSet.contains(changeType)) {
+			if (ChangeType._NewQuizSet.contains(changeType)) {
 				System.out.println();
 				if (_needLineFeed) {
 					System.out.println();
 				}
-				if (Statics._ReallyNewQuizSet.contains(changeType)) {
+				if (ChangeType._ReallyNewQuizSet.contains(changeType)) {
 					/** For a really new one, add another lineFeed. */
 					System.out.println();
 					System.out.println(getString());
@@ -661,7 +695,7 @@ public class FlashCardsGame {
 			}
 			if (madeChangesFrom(oldValues)) {
 				updateProperties();
-				reWritePropertiesFile();
+				reWriteGameFile();
 				oldValues = storeValues();
 			}
 
@@ -956,14 +990,9 @@ public class FlashCardsGame {
 		System.out.println(
 				"Special Chars = " + new String(Statics._SpecialChars) + ", IndentString=\""
 						+ Statics._IndentString + "\", SoundString=" + Statics._SoundString);
-		System.out.println("User Dir = " + System.getProperty("user.dir"));
-		final File gameDir = new File(Statics._TopGamesDir, args[0]);
-		try {
-			System.out.println("topGamesDir = " + Statics._TopGamesDir.getCanonicalPath());
-			System.out.println("gameDir = " + gameDir.getCanonicalPath());
-		} catch (final IOException e) {
-		}
-		final FlashCardsGame flashCardsGame = new FlashCardsGame(gameDir);
+		System.out.println(DirsTracker.getDirCasesFinderDirsString());
+		final FlashCardsGame flashCardsGame = new FlashCardsGame(args[0]);
+		System.out.println(flashCardsGame.getString());
 		if (flashCardsGame._mode != Mode.SWITCH) {
 			System.out.println();
 			try (Scanner sc = new Scanner(System.in)) {

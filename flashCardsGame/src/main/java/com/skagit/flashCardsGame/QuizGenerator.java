@@ -68,6 +68,8 @@ public class QuizGenerator {
 					break;
 				case DIACRITICS_TREATMENT :
 				case MODE :
+				case CARDS_FILE :
+				case SOUND_FILES_DIR :
 					break;
 				case NUMBER_OF_NEW_WORDS :
 					properties.put(propertyPlus._propertyName, Integer.toString(_maxNNewWords));
@@ -354,6 +356,9 @@ public class QuizGenerator {
 			case QUIZ_DIRECTION :
 			case RANDOM_SEED :
 			case CLUMPING :
+			case CARDS_FILE :
+			case SOUND_FILES_DIR :
+				break;
 		}
 	}
 

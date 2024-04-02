@@ -1,9 +1,9 @@
 ! The following seven entries illustrate different types of clues.
-  0.	%001%                                       	mùa xuân
+  0.	%001% (VN)                                  	mùa xuân
 
-  1.	%001%                                       	spring
+  1.	%001% (Eng)                                 	spring
   2.	mùa xuân                                    	%001%
-  3.	mùa xuân                                    	spring
+  3.	mùa xuân (Eng)                                 	spring
   4.	spring                                      	%001%
   5.	spring                                      	mùa xuân
   6.	spring                                      	%001% mùa xuân

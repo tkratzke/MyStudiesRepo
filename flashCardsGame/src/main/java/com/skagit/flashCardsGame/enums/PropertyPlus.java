@@ -39,7 +39,12 @@ public enum PropertyPlus {
 			Mode.NORMAL._explanation + //
 					"\n" + Mode.SWITCH._explanation + //
 					"\n" + Mode.STEP._explanation //
-	);
+	), //
+	CARDS_FILE("", //
+			"A String indicating where to find the Cards File."), //
+	SOUND_FILES_DIR("", //
+			"A String indicating where to find the directory of Sound Files.") //
+	; //
 
 	final public static PropertyPlus[] _Values = values();
 
@@ -82,6 +87,9 @@ public enum PropertyPlus {
 		final String s = (String) o;
 		String stringToParseForAnInt = s;
 		switch (this) {
+			case CARDS_FILE :
+			case SOUND_FILES_DIR :
+				return s;
 			case ALLOWABLE_MISS_PERCENTAGE :
 			case PERCENTAGE_FOR_RECENT_WORDS :
 				final int len = s == null ? 0 : s.length();
@@ -109,6 +117,8 @@ public enum PropertyPlus {
 						case RANDOM_SEED :
 							return s;
 						/** No need for a break; Cannot get to the following: */
+						case CARDS_FILE :
+						case SOUND_FILES_DIR :
 						case CLUMPING :
 						case DECAY_TYPE :
 						case DIACRITICS_TREATMENT :

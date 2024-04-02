@@ -1,13 +1,17 @@
 package com.skagit.flashCardsGame;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.EnumSet;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.skagit.flashCardsGame.enums.ChangeType;
+import com.skagit.DirsTracker.DirsTracker;
 
 public class Statics {
 
@@ -17,6 +21,7 @@ public class Statics {
 	 *  http://xahlee.info/comp/unicode_arrows.html
 	 * </pre>
 	 */
+	final public static String _SpaceProxy = "%Sp%";
 	final public static char _keyboardSymbol = '\u2328';
 	final public static char _ClubSymbolChar = '\u2663';
 	final public static char _CommentChar = '!';
@@ -59,6 +64,10 @@ public class Statics {
 				(byte) 0x8A};
 		_PenString = new String(penBytes, StandardCharsets.UTF_8);
 	}
+	final public static String _GameFileEndingLc = "-fcg.properties";
+	final public static String _CardsFileExtensionLc = "txt";
+	final public static String _CardsFileEndingLc = "." + _CardsFileExtensionLc;
+	final public static String _SoundFilesDirEndingLc = "sound.files";
 	final public static String _CommentString = "" + _CommentChar + ' ';
 	final public static String _CountAsRightString = "Count as Right? ";
 	final public static String _EndCardsString = "$$";
@@ -78,11 +87,6 @@ public class Statics {
 	final public static String _NoString = "No";
 	final public static String _PrefaceForNewLine = _IndentString + _Sep1;
 	final public static int _PrefaceForNewLineLen = _PrefaceForNewLine.length();
-	final public static File _TopGamesDir = new File(System.getProperty("user.dir"),
-			"Games");
-	final public static String _PropertiesEnding = ".properties";
-	final public static String _CardsEnding = ".txt";
-	final public static String _SoundFilesEnding = ".SoundFiles";
 	final public static String _WhiteSpace = "\\s+";
 	final public static String _YesString = "Yes";
 
@@ -109,21 +113,6 @@ public class Statics {
 			_lastLineWasBlank = lastLineWasBlank;
 		}
 	}
-
-	final public static EnumSet<ChangeType> _NewQuizSet = EnumSet.of(//
-			ChangeType.CRITICAL_ONLY_WIN, //
-			ChangeType.MOVE_ON_WIN, //
-			ChangeType.LOSS, //
-			ChangeType.NOTHING_TO_SOMETHING, //
-			ChangeType.PARAMETERS_CHANGED, //
-			ChangeType.RESTART//
-	);
-
-	final public static EnumSet<ChangeType> _ReallyNewQuizSet = EnumSet.of(//
-			ChangeType.MOVE_ON_WIN, //
-			ChangeType.NOTHING_TO_SOMETHING, //
-			ChangeType.PARAMETERS_CHANGED //
-	);
 
 	/**
 	 * <pre>
@@ -229,6 +218,309 @@ public class Statics {
 			return 0;
 		}
 		return 2;
+	}
+
+	public static String getSystemProperty(final String propertyName,
+			final boolean useSpaceProxy) {
+		final String rawProperty = System.getProperty(propertyName);
+		if (rawProperty == null || !useSpaceProxy) {
+			return rawProperty;
+		}
+		final String replaced = rawProperty.replaceAll(_SpaceProxy, " ");
+		return replaced;
+	}
+
+	public static String formatNow() {
+		final String nowString = new SimpleDateFormat("M/d/yy h:mm:ss a")
+				.format(new Date(System.currentTimeMillis()));
+		return nowString;
+	}
+
+	public static String getCanonicalPath(final File f) {
+		try {
+			return f.getCanonicalPath();
+		} catch (final IOException e) {
+		} catch (final NullPointerException e) {
+		}
+		return null;
+	}
+
+	private static String turnSlashesAround(final String path0) {
+		/** Turn all slashes to File.separator. */
+		final String path1 = path0.replaceAll(Pattern.quote("/"),
+				Matcher.quoteReplacement(File.separator));
+		return path1.replaceAll(Pattern.quote("\\"),
+				Matcher.quoteReplacement(File.separator));
+	}
+
+	/**
+	 * <pre>
+	 * 1. a/b/c.txt -> c
+	 * 2. a.txt     -> a
+	 * 3. a/b/c     -> c
+	 * 4. a/b/c/    -> ""
+	 * 5. a/b.c/d   -> d
+	 * 6. abcd      -> abcd
+	 * </pre>
+	 */
+	public static String getBaseName(final String path0) {
+		final int len0 = path0 == null ? 0 : path0.length();
+		if (len0 == 0) {
+			return null;
+		}
+		/** Turn all slashes to File.separator. */
+		final String path = turnSlashesAround(path0);
+		final int len = path == null ? 0 : path.length();
+		if (path.charAt(len - 1) == File.separatorChar) {
+			/** Case 4 above. */
+			return "";
+		}
+		final int lastSep = path.lastIndexOf(File.separatorChar);
+		final int lastDot = path.lastIndexOf('.');
+		if (lastSep >= 0 && lastDot >= 0) {
+			if (lastDot < lastSep) {
+				/** Case 5 above */
+				return path.substring(lastSep + 1, len);
+			} else {
+				/** Cannot have lastDot == lastSep, so lastDot > lastSep, and we have Case 1. */
+				return path.substring(lastSep + 1, lastDot);
+			}
+		} else if (lastDot >= 0) {
+			/** Case 2. */
+			return path.substring(0, lastDot);
+		} else if (lastSep >= 0) {
+			/** Case 3. */
+			return path.substring(lastSep + 1, len);
+		}
+		/** No separators or dots. */
+		return path;
+	}
+
+	public static File getGameDir(final String gameDirString) {
+		/**
+		 * We try interpreting gameDirString as a directory by checking for it under,
+		 * GamesDir, user.dir, and by itself.
+		 */
+		final File f0 = new File(DirsTracker.getGamesDir(), gameDirString);
+		if (f0.isDirectory() && dirHasGameFile(f0)) {
+			return f0;
+		}
+		final File f1 = new File(DirsTracker.getUserDir(), gameDirString);
+		if (f1.isDirectory() && dirHasGameFile(f1)) {
+			return f1;
+		}
+		final File f2 = new File(gameDirString);
+		if (f2.isDirectory() && dirHasGameFile(f2)) {
+			return f2;
+		}
+		/**
+		 * Could not interpret it as a directory. Try as a file. Files must end in
+		 * _GameFileEndingLc
+		 */
+		if (gameDirString.toLowerCase().endsWith(_GameFileEndingLc)) {
+			final File f = new File(gameDirString);
+			final String fName0 = f.getName();
+			final String fName1 = fName0.substring(0,
+					fName0.length() - _GameFileEndingLc.length());
+			final File parentDir = new File(gameDirString).getParentFile();
+			if (fName1.equalsIgnoreCase(parentDir.getName())) {
+				return parentDir;
+			}
+		}
+		return null;
+	}
+
+	private static boolean dirHasGameFile(final File dir) {
+		return getGameFileFromDirFile(dir) != null;
+	}
+
+	public static File getGameFileFromDirFile(final File dir) {
+		if (dir == null) {
+			return null;
+		}
+		final String dName = dir.getName();
+		final File gameFile = new File(dir, dName + _GameFileEndingLc);
+		return gameFile.isFile() ? gameFile : null;
+	}
+
+	/**
+	 * <pre>
+	 * 1. a/b/c.txt -> a/b/c.txt
+	 * 2. a.txt     -> a.txt
+	 * 3. a/b/c     -> a/b/c.txt
+	 * 4. a/b/c/    -> .txt
+	 * 5. a/b.c/d   -> a/b.c/d.txt
+	 * 6. abcd      -> abcd.txt
+	 * </pre>
+	 */
+	public static String forceExtension(final String path0, final String extension) {
+		final String withDot = "." + extension;
+		final int len0 = path0 == null ? 0 : path0.length();
+		if (len0 == 0) {
+			return withDot;
+		}
+		/** Turn all slashes to File.separator. */
+		final String path1 = path0.replaceAll(Pattern.quote("/"),
+				Matcher.quoteReplacement(File.separator));
+		final String path = path1.replaceAll(Pattern.quote("\\"),
+				Matcher.quoteReplacement(File.separator));
+		final int len = path.length();
+		final int lastSep = path.lastIndexOf(File.separatorChar);
+		if (lastSep == len - 1) {
+			return path + withDot;
+		}
+		final int lastDot = path.lastIndexOf('.');
+		if (lastDot < 0) {
+			/** No dot. Tack on withDot. */
+			return path + withDot;
+		}
+		if (lastSep < lastDot) {
+			/** No Separator after lastDot. Tack on withDot after removing the extension. */
+			return path.substring(0, lastDot) + withDot;
+		}
+		/** Separator after last dot. Tack on withDot. */
+		return path + withDot;
+	}
+
+	public static File getCardsFile(final File gameDir, final String cardsFileString0) {
+		final int len = cardsFileString0 == null ? 0 : cardsFileString0.length();
+		final String cardsFileString1;
+		if (len == 0) {
+			cardsFileString1 = gameDir.getName() + "-Cards.txt";
+		} else {
+			cardsFileString1 = cardsFileString0;
+		}
+		final String cardsFileString2 = turnSlashesAround(cardsFileString1);
+
+		final File[] dirsToTry = new File[]{gameDir, DirsTracker.getCardFilesDir(),
+				DirsTracker.getUserDir(), DirsTracker.getGamesDir()};
+		/**
+		 * <pre>
+		 * Try:
+		 * 1. as-is, if it ends with -cards.txt.
+		 * 2. Strip the extension and the dot, and add -cards.txt
+		 * 3. Add -cards.txt to it.
+		 * </pre>
+		 */
+		for (int iPass = 0; iPass < 3; ++iPass) {
+			final String cardsFileString3;
+			if (iPass == 0) {
+				if (cardsFileString2.toLowerCase().endsWith("-cards.txt")) {
+					cardsFileString3 = cardsFileString2;
+				} else {
+					continue;
+				}
+			} else if (iPass == 1) {
+				final int lastDot = cardsFileString2.lastIndexOf('.');
+				final int lastSlash = cardsFileString2.lastIndexOf(File.separatorChar);
+				if (lastDot < 0 || lastDot < lastSlash) {
+					/** No extension to strip. */
+					continue;
+				}
+				cardsFileString3 = cardsFileString2.substring(0, lastDot - 1) + "-Cards.txt";
+			} else {
+				cardsFileString3 = cardsFileString2 + "-Cards.txt";
+			}
+			for (final File dir : dirsToTry) {
+				final File f = new File(dir, cardsFileString3);
+				if (f.isFile()) {
+					return f;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static File getSoundFilesDir(final File gameDir,
+			final String soundFilesString0) {
+		final int len = soundFilesString0 == null ? 0 : soundFilesString0.length();
+		final String soundFilesString1;
+		if (len == 0) {
+			soundFilesString1 = gameDir.getName() + "-SoundFiles";
+		} else {
+			soundFilesString1 = soundFilesString0;
+		}
+		final String soundFilesString2 = turnSlashesAround(soundFilesString1);
+
+		final File[] dirsToTry = new File[]{gameDir, DirsTracker.getSoundFilesDirsDir(),
+				DirsTracker.getUserDir(), DirsTracker.getGamesDir()};
+		/**
+		 * <pre>
+		 * Try:
+		 * 1. as-is, if it ends with -SoundFiles.
+		 * 2. Strip the extension and the dot, and add -cards.txt
+		 * 3. Add -cards.txt to it.
+		 * </pre>
+		 */
+		for (int iPass = 0; iPass < 2; ++iPass) {
+			final String soundFilesString3;
+			if (iPass == 0) {
+				if (soundFilesString2.toLowerCase().endsWith("-soundfiles")) {
+					soundFilesString3 = soundFilesString2;
+				} else {
+					continue;
+				}
+			} else {
+				soundFilesString3 = soundFilesString2 + "-SoundFiles";
+			}
+			for (final File dir : dirsToTry) {
+				final File f = new File(dir, soundFilesString3);
+				if (f.isDirectory()) {
+					return f;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static void mainx(final String[] args) {
+		if (false) {
+			final String[][] examples = { //
+					{"a/b/c/", ""}, //
+					{"a/b/c.txt", "c"}, //
+					{"a/b/c", "c"}, //
+					{"a/b.c/d", "d"}, //
+					{"a\\b\\c\\", ""}, //
+					{"a\\b\\c.txt", "c"}, //
+					{"a\\b\\c", "c"}, //
+					{"a\\b.c\\d", "d"}, //
+					{"a.txt", "a"}, //
+					{"abcd", "abcd"} //
+			};
+			final int nExamples = examples.length;
+			for (int k = 0; k < nExamples; ++k) {
+				final String s0 = examples[k][0];
+				final String s1 = examples[k][1];
+				final String s2 = getBaseName(s0);
+				System.out.printf("\n%b %s %s %s", s1.equals(s2), s0, s1, s2);
+			}
+		} else if (false) {
+			/**
+			 * <pre>
+			 * 1. a/b/c.txt -> a/b/c.txt
+			 * 2. a.txt     -> a.txt
+			 * 3. a/b/c     -> a/b/c.txt
+			 * 4. a/b/c/    -> .txt
+			 * 5. a/b.c/d   -> a/b.c/d.txt
+			 * 6. abcd      -> abcd.txt
+			 * </pre>
+			 */
+			final String[][] examples = { //
+					{"a/b/c/", "a\\b\\c\\.xxx"}, //
+					{"a/b/c.txt", "a\\b\\c.xxx"}, //
+					{"a.txt", "a.xxx"}, //
+					{"a/b/c", "a\\b\\c.xxx"}, //
+					{"a/b.c/d", "a\\b.c\\d.xxx"}, //
+					{"abcd", "abcd.xxx"} //
+			};
+			final int nExamples = examples.length;
+			for (int k = 0; k < nExamples; ++k) {
+				final String s0 = examples[k][0];
+				final String s1 = examples[k][1];
+				final String s2 = forceExtension(s0, "xxx");
+				System.out.printf("\n%b %s %s %s", s1.equals(s2), s0, s1, s2);
+			}
+		}
 	}
 
 }
