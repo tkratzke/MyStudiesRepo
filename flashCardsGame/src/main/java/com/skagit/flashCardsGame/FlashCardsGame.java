@@ -707,12 +707,13 @@ public class FlashCardsGame {
 				final int typeIPromptLen = typeIPrompt.length();
 				final String terminalString;
 				if (answerHasSoundFile && answerHasStringPart) {
-					terminalString = String.format("%s%s%c", Statics._Sep2, Statics._SoundString,
+					terminalString = String.format("%s%s%c   ", Statics._Sep2, Statics._SoundString,
 							Statics._keyboardSymbol);
 				} else if (answerHasSoundFile) {
-					terminalString = String.format("%s%s", Statics._Sep2, Statics._SoundString);
+					terminalString = String.format("%s%s  ", Statics._Sep2, Statics._SoundString);
 				} else if (answerHasStringPart) {
-					terminalString = String.format("%s%c", Statics._Sep2, Statics._keyboardSymbol);
+					terminalString = String.format("%s%c  ", Statics._Sep2,
+							Statics._keyboardSymbol);
 				} else {
 					terminalString = null;
 				}

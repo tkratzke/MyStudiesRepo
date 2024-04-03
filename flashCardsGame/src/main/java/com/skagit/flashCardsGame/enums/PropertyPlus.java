@@ -3,13 +3,11 @@ package com.skagit.flashCardsGame.enums;
 import java.util.Properties;
 
 public enum PropertyPlus {
-	NUMBER_OF_NEW_WORDS(String.valueOf(1), //
-			"*=Non-QuizGenerator Property\n" + //
-					"Specification of Window:"), //
+	NUMBER_OF_NEW_WORDS(String.valueOf(1), "Specification of Window:"), //
 	NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
-	TOP_CARD_INDEX(String.valueOf(3), ""), //
+	TOP_CARD_INDEX(String.valueOf(0), ""), //
 
-	CLUMPING("A", //
+	CLUMPING("NONE", //
 			"A: Clump Duplicate As\n" //
 					+ "B: Clump Duplicate Bs\n" //
 					+ "NONE: No clumping"), //
