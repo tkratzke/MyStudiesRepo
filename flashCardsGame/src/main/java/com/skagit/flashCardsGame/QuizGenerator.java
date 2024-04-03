@@ -84,7 +84,6 @@ public class QuizGenerator {
 					properties.put(propertyPlus._propertyName,
 							Integer.toString(_percentageForRecentsI) + '%');
 					break;
-				case QUIZ_DIRECTION :
 				case RANDOM_SEED :
 					break;
 				case TOP_CARD_INDEX :
@@ -353,7 +352,6 @@ public class QuizGenerator {
 			case NUMBER_OF_RECENT_WORDS :
 			case NUMBER_OF_TIMES_FOR_NEW_WORDS :
 			case PERCENTAGE_FOR_RECENT_WORDS :
-			case QUIZ_DIRECTION :
 			case RANDOM_SEED :
 			case CLUMPING :
 			case CARDS_FILE :

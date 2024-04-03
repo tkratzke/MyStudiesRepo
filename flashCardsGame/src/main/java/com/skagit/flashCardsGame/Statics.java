@@ -11,8 +11,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.skagit.DirsTracker.DirsTracker;
-
 public class Statics {
 
 	/**

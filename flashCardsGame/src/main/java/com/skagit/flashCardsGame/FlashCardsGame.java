@@ -20,14 +20,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.skagit.SimpleAudioPlayer;
-import com.skagit.DirsTracker.DirsTracker;
 import com.skagit.flashCardsGame.Statics.YesNoResponse;
 import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.Clumping;
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
 import com.skagit.flashCardsGame.enums.Mode;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
-import com.skagit.flashCardsGame.enums.QuizDirection;
 
 /**
  * <pre>
@@ -46,7 +44,6 @@ public class FlashCardsGame {
 
 	final private Properties _properties;
 	final private long _randomSeed;
-	final private QuizDirection _quizDirection;
 	final private Mode _mode;
 	final private DiacriticsTreatment _diacriticsTreatment;
 	final private Clumping _clumping;
@@ -65,7 +62,6 @@ public class FlashCardsGame {
 			_allSoundFiles = null;
 			_properties = null;
 			_randomSeed = 0;
-			_quizDirection = null;
 			_mode = null;
 			_diacriticsTreatment = null;
 			_clumping = null;
@@ -94,7 +90,6 @@ public class FlashCardsGame {
 		_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
 		if (true) {
 		} else {
-			_quizDirection = null;
 			_diacriticsTreatment = null;
 			_mode = null;
 			_randomSeed = -1;
@@ -105,8 +100,6 @@ public class FlashCardsGame {
 		}
 		reWriteGameFile();
 
-		final String typableString = PropertyPlus.QUIZ_DIRECTION.getValidString(_properties);
-		_quizDirection = QuizDirection.get(typableString);
 		_diacriticsTreatment = DiacriticsTreatment
 				.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
 		_mode = Mode.valueOf(PropertyPlus.MODE.getValidString(_properties));
@@ -489,8 +482,6 @@ public class FlashCardsGame {
 
 	void updateProperties() {
 		_properties.put(PropertyPlus.RANDOM_SEED._propertyName, Long.toString(_randomSeed));
-		_properties.put(PropertyPlus.QUIZ_DIRECTION._propertyName,
-				_quizDirection._typableString);
 		_properties.put(PropertyPlus.DIACRITICS_TREATMENT._propertyName,
 				_diacriticsTreatment.name());
 		_quizGenerator.updateProperties(_properties);
@@ -654,11 +645,14 @@ public class FlashCardsGame {
 	}
 
 	final String getString0() {
-		return String.format("%s %s %s RandomSeed[%d] \n%s", //
+		String s = String.format("%s %s RandomSeed[%d]", //
 				_cards != null ? String.format("(w/ %d cards)", _cards.length) : "", //
-				_quizDirection != null ? _quizDirection._fancyString : "", //
 				_diacriticsTreatment != null ? _diacriticsTreatment.name() : "", //
-				_randomSeed, _quizGenerator != null ? _quizGenerator.getString() : "");
+				_randomSeed);
+		if (_quizGenerator != null) {
+			s += "\n " + _quizGenerator.getString();
+		}
+		return s;
 	}
 
 	@Override
@@ -701,17 +695,14 @@ public class FlashCardsGame {
 
 			final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
 			final Card card = _cards[cardIdx];
-			final String clueString = Statics.CleanWhiteSpace(
-					card.getStringPart(/* aSide= */_quizDirection == QuizDirection.A_TO_B));
+			final String clueString = Statics
+					.CleanWhiteSpace(card.getStringPart(/* aSide= */true));
 			final int clueStringLen = clueString.length();
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
-				final boolean clueHasSoundFile = card
-						.hasSoundFile(/* aSide= */_quizDirection == QuizDirection.A_TO_B);
-				final boolean answerHasSoundFile = card
-						.hasSoundFile(/* aSide= */_quizDirection != QuizDirection.A_TO_B);
-				final boolean answerHasStringPart = card
-						.hasStringPart(/* aSide= */_quizDirection != QuizDirection.A_TO_B);
+				final boolean clueHasSoundFile = card.hasSoundFile(/* aSide= */true);
+				final boolean answerHasSoundFile = card.hasSoundFile(/* aSide= */false);
+				final boolean answerHasStringPart = card.hasStringPart(/* aSide= */false);
 				final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 				final int typeIPromptLen = typeIPrompt.length();
 				final String terminalString;
@@ -726,8 +717,8 @@ public class FlashCardsGame {
 					terminalString = null;
 				}
 				final int terminalStringLen = terminalString.length();
-				final String answerString = Statics.CleanWhiteSpace(
-						card.getStringPart(/* aSide= */_quizDirection != QuizDirection.A_TO_B));
+				final String answerString = Statics
+						.CleanWhiteSpace(card.getStringPart(/* aSide= */false));
 				final int answerStringPartLen = answerString.length();
 				final int len1 = typeIPromptLen + Statics._Sep1Len + clueStringLen
 						+ terminalStringLen + Math.min(Statics._RoomLen, answerStringPartLen);
@@ -748,7 +739,7 @@ public class FlashCardsGame {
 
 				/** Expose the clue. */
 				if (clueHasSoundFile) {
-					card.playSoundFile(/* aSide= */_quizDirection == QuizDirection.A_TO_B);
+					card.playSoundFile(/* aSide= */true);
 				}
 				if (len1 <= Statics._MaxLineLen) {
 					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueString,
@@ -813,14 +804,13 @@ public class FlashCardsGame {
 					} else if (char0Uc == Statics._ReloadCardsChar) {
 						final int oldTci = _quizGenerator._topCardIndex;
 						final Card topCard = _cards[oldTci];
-						final boolean aSide = _quizDirection == QuizDirection.A_TO_B;
-						final String keyString = topCard.getFullString(aSide);
+						final String keyString = topCard.getFullString(/* aSide= */true);
 						loadCards(/* announceCompleteDups= */false);
 						nCards = _cards.length;
 						int tci = -1;
 						for (int kCard = 0; kCard < nCards; ++kCard) {
 							final Card card1 = _cards[kCard];
-							if (keyString.compareToIgnoreCase(card1.getFullString(aSide)) == 0) {
+							if (keyString.compareToIgnoreCase(card1.getFullString(true)) == 0) {
 								tci = kCard;
 								break;
 							}
@@ -840,7 +830,7 @@ public class FlashCardsGame {
 				 * any.
 				 */
 				if (answerHasSoundFile) {
-					card.playSoundFile(/* aSide= */_quizDirection != QuizDirection.A_TO_B);
+					card.playSoundFile(/* aSide= */false);
 				}
 				if (responseStringPart.length() == 0) {
 					int nUsedOnCurrentLine = 0;

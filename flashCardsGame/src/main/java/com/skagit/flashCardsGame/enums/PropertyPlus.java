@@ -9,7 +9,6 @@ public enum PropertyPlus {
 	NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
 	TOP_CARD_INDEX(String.valueOf(3), ""), //
 
-	QUIZ_DIRECTION("A->B", "\"A->B\" or \"B->A\":"), //
 	CLUMPING("A", //
 			"A: Clump Duplicate As\n" //
 					+ "B: Clump Duplicate Bs\n" //
@@ -122,7 +121,6 @@ public enum PropertyPlus {
 						case CLUMPING :
 						case DECAY_TYPE :
 						case DIACRITICS_TREATMENT :
-						case QUIZ_DIRECTION :
 						case MODE :
 					}
 				} catch (final NumberFormatException e) {
@@ -147,14 +145,6 @@ public enum PropertyPlus {
 					return _defaultStringValue;
 				}
 				return s;
-			case QUIZ_DIRECTION :
-				for (final QuizDirection quizDirection : QuizDirection._Values) {
-					if (quizDirection._typableString.equalsIgnoreCase(s)) {
-						return s;
-					}
-				}
-				return _defaultStringValue;
-
 		}
 		/** To keep the compiler happy: */
 		return null;
