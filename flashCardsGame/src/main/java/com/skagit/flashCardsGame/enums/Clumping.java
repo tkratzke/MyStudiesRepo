@@ -1,5 +1,5 @@
 package com.skagit.flashCardsGame.enums;
 
 public enum Clumping {
-	A, B, NONE
+	BY_CLUE, BY_ANSWER, NO_CLUMPING
 }

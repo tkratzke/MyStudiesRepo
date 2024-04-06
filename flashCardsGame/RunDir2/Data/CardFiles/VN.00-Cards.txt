@@ -1,13 +1,13 @@
 ! The following seven entries illustrate different types of clues.
-  0.	spring                                      	%001-spring% mùa xuân
+  0.	spring                                      	%001% mùa xuân
 
-  1.	%001-spring%                                	mùa xuân
-  2.	mùa xuân                                    	%001-spring%
-  3.	spring                                      	%001-spring%
+  1.	%001%                                       	mùa xuân
+  2.	mùa xuân                                    	%001%
+  3.	spring                                      	%001%
   4.	spring                                      	mùa xuân
-  5.	%001-spring% (to Eng)                       	spring
-  6.	mùa xuân (to Eng)                           	spring
-  7.	winter                                      	%000-winter% mùa đong
+  5.	%001% (Eng)                                 	spring
+  6.	mùa xuân (Eng)                              	spring
+  7.	winter                                      	%winter% mùa đong
   8.	summer                                      	%002-summer% mùa hè
   9.	autumn                                      	%003-autumn% mùa thu
 
@@ -34,9 +34,9 @@
  26.	a star                                      	%019-star% sao
  27.	There were stars last night.                	%020-ThereWereStars% Tối qua có sao.
  28.	after                                       	%021-after% sau đó
- 29.	before                                      	%022-before% trước
+ 29.	before                                      	%before% trước
 
- 30.	The moon is white.                          	%023-TheMoon% Mặt trăng màu trắng.
+ 30.	The moon is white.                          	%023% Mặt trăng màu trắng.
  31.	rain                                        	%024-rain% mưa
  32.	snow                                        	%025-snow% tuyết
 

@@ -9,69 +9,59 @@ public class FullSide implements Comparable<FullSide> {
 
 	final String _trimmedInputString;
 	final String _stringPart;
-	final String _fileString;
 	final File _soundFile;
 
-	public FullSide(final TreeMap<String, File> allSoundFiles, final String inputString) {
-		_trimmedInputString = inputString.trim();
+	public FullSide(final TreeMap<String, File> allSoundFiles,
+			final TreeMap<String, String> partToStem, final String inputString) {
+		final String trimmedInputString = inputString.trim();
 		/** Do we have a putative file? */
-		final int len = _trimmedInputString.length();
-		final int idx0 = _trimmedInputString.indexOf(Statics._FileDelimiter);
-		String fileStringWithDelimiters = null;
-		final int idx1 = (0 <= idx0 && idx0 < len)
-				? _trimmedInputString.indexOf(Statics._FileDelimiter, idx0 + 1)
-				: -1;
-		if (idx1 == -1 || idx1 < idx0 + 3) {
-			_stringPart = Statics.CleanWhiteSpace(_trimmedInputString);
-			fileStringWithDelimiters = null;
-			_fileString = null;
+		final int len = trimmedInputString.length();
+		final int idx0 = trimmedInputString.indexOf(Statics._FileDelimiter);
+		if (idx0 == -1) {
+			_stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
 			_soundFile = null;
 			return;
 		}
-		fileStringWithDelimiters = _trimmedInputString.substring(idx0, idx1 + 1);
-		final String fileString = fileStringWithDelimiters.substring(1,
-				fileStringWithDelimiters.length() - 1);
-
-		_soundFile = allSoundFiles.get(fileString);
-		if (_soundFile == null) {
-			_stringPart = Statics.CleanWhiteSpace(_trimmedInputString);
-			_fileString = null;
+		final int idx1 = (0 <= idx0 && idx0 < len)
+				? trimmedInputString.indexOf(Statics._FileDelimiter, idx0 + 1)
+				: -1;
+		if (idx1 == -1) {
+			_stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
+			_soundFile = null;
 			return;
 		}
-		_fileString = fileString;
-		final String stringPart0 = _trimmedInputString.replaceFirst(
-				Pattern.quote(fileStringWithDelimiters), Matcher.quoteReplacement(""));
-		_stringPart = Statics.CleanWhiteSpace(stringPart0);
+		if (idx1 < idx0 + 3) {
+			_stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
+			_soundFile = null;
+			return;
+		}
+		String fileStringPart = trimmedInputString.substring(idx0, idx1 + 1);
+		_stringPart = trimmedInputString.replaceFirst(Pattern.quote(fileStringPart),
+				Matcher.quoteReplacement(""));
+		final String fileString = fileStringPart.substring(1, fileStringPart.length() - 1);
+		final String stem = partToStem.get(fileString);
+		if (stem != null) {
+			fileStringPart = "" + Statics._FileDelimiter + stem + Statics._FileDelimiter;
+		}
+		_trimmedInputString = fileStringPart + " " + _stringPart;
+		_soundFile = allSoundFiles.get(fileString);
 	}
 
-	public boolean hasSoundFile() {
-		return _soundFile != null;
-	}
-	public boolean hasStringPart() {
-		return _stringPart != null && _stringPart.length() > 0;
-	}
 	public String getStringPart() {
 		return _stringPart;
 	}
 
-	public String getString() {
-		if (_soundFile == null) {
-			return _stringPart;
-		}
-		return String.format("File[%s], %s", _fileString, _stringPart);
+	public File getSoundFile() {
+		return _soundFile;
 	}
 
-	public String reconstructFullString() {
-		if (_soundFile == null) {
-			return _stringPart;
-		}
-		return String.format("%c%s%c %s", Statics._FileDelimiter, _fileString,
-				Statics._FileDelimiter, _stringPart);
+	public String getFullString() {
+		return _trimmedInputString;
 	}
 
 	@Override
 	public String toString() {
-		return getString();
+		return getFullString();
 	}
 
 	@Override

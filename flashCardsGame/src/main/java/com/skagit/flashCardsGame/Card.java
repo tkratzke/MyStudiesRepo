@@ -11,16 +11,19 @@ import com.skagit.SimpleAudioPlayer;
 
 class Card {
 	int _cardNumber;
-	final private FullSide _aSide;
-	final private FullSide _bSide;
+	final private FullSide _clueSide;
+	final private FullSide _answerSide;
 	String[] _commentLines;
 
 	Card(final boolean switchSides, final TreeMap<String, File> allSoundFiles,
-			final int cardNumber, final String aSideString, final String bSideString,
+			final TreeMap<String, String> partToStem, final int cardNumber,
+			final String clueSideString, final String answerSideString,
 			final String[] commentLines) {
 		_cardNumber = cardNumber;
-		_aSide = new FullSide(allSoundFiles, switchSides ? bSideString : aSideString);
-		_bSide = new FullSide(allSoundFiles, switchSides ? aSideString : bSideString);
+		_clueSide = new FullSide(allSoundFiles, partToStem,
+				switchSides ? answerSideString : clueSideString);
+		_answerSide = new FullSide(allSoundFiles, partToStem,
+				switchSides ? clueSideString : answerSideString);
 		_commentLines = commentLines;
 	}
 
@@ -37,7 +40,7 @@ class Card {
 		}
 	};
 
-	static final Comparator<Card> _ByASideOnly = new Comparator<>() {
+	static final Comparator<Card> _ByClueSideOnly = new Comparator<>() {
 
 		@Override
 		public int compare(final Card card0, final Card card1) {
@@ -45,11 +48,11 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			return card0._aSide.compareTo(card1._aSide);
+			return card0._clueSide.compareTo(card1._clueSide);
 		}
 	};
 
-	static final Comparator<Card> _ByBSideOnly = new Comparator<>() {
+	static final Comparator<Card> _ByAnswerSideOnly = new Comparator<>() {
 
 		@Override
 		public int compare(final Card card0, final Card card1) {
@@ -57,19 +60,19 @@ class Card {
 			if (-1 <= compareValue && compareValue <= 1) {
 				return compareValue;
 			}
-			return card0._bSide.compareTo(card1._bSide);
+			return card0._answerSide.compareTo(card1._answerSide);
 		}
 	};
 
-	static final Comparator<Card> _ByAThenB = new Comparator<>() {
+	static final Comparator<Card> _ByClueThenAnswer = new Comparator<>() {
 
 		@Override
 		public int compare(final Card card0, final Card card1) {
-			final int compareValue = _ByASideOnly.compare(card0, card1);
+			final int compareValue = _ByClueSideOnly.compare(card0, card1);
 			if (compareValue != 0) {
 				return compareValue;
 			}
-			return _ByBSideOnly.compare(card0, card1);
+			return _ByAnswerSideOnly.compare(card0, card1);
 		}
 	};
 
@@ -78,7 +81,7 @@ class Card {
 		if (o == null || !(o instanceof Card)) {
 			return false;
 		}
-		return _ByAThenB.compare(this, (Card) o) == 0;
+		return _ByClueThenAnswer.compare(this, (Card) o) == 0;
 	}
 
 	String getString() {
@@ -91,8 +94,8 @@ class Card {
 			for (int k = 0; k < nCommentLines; ++k) {
 				System.out.println(Statics._CommentString + _commentLines[k]);
 			}
-			System.out.printf("%04d.\t%s:\t%s", _cardNumber, _aSide.getString(),
-					_bSide.getString());
+			System.out.printf("%04d.\t%s:\t%s", _cardNumber, _clueSide.getFullString(),
+					_answerSide.getFullString());
 			s = baos.toString();
 			System.out.flush();
 			System.setOut(old);
@@ -101,23 +104,23 @@ class Card {
 		return s;
 	}
 
-	public boolean hasSoundFile(final boolean aSide) {
-		return (aSide ? _aSide : _bSide).hasSoundFile();
-	}
-	public boolean hasStringPart(final boolean aSide) {
-		return (aSide ? _aSide : _bSide).hasStringPart();
-	}
-	public String getStringPart(final boolean aSide) {
-		return (aSide ? _aSide : _bSide).getStringPart();
+	public String getStringPart(final boolean forClue) {
+		return (forClue ? _clueSide : _answerSide).getStringPart();
 	}
 
-	public String getFullString(final boolean aSide) {
-		return (aSide ? _aSide : _bSide).reconstructFullString();
+	public File getSoundFile(final boolean forClue) {
+		return (forClue ? _clueSide : _answerSide).getSoundFile();
 	}
 
-	public boolean playSoundFile(final boolean aSide) {
-		return SimpleAudioPlayer.validate((aSide ? _aSide : _bSide)._soundFile,
-				/* play= */true);
+	public String getFullString(final boolean forClue) {
+		return (forClue ? _clueSide : _answerSide).getFullString();
+	}
+
+	public void playSoundFileIfPossible(final boolean silentMode, final boolean forClue) {
+		if (!silentMode) {
+			SimpleAudioPlayer //
+					.playSoundFileIfPossible((forClue ? _clueSide : _answerSide)._soundFile);
+		}
 	}
 
 	@Override

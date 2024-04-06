@@ -8,7 +8,7 @@ public class LineBreakDown {
 	/**
 	 * Assumes that nextLine is not blank. Furthermore, it is not a comment nor a part of a
 	 * comment. If the 1st non-blank field is a number, it takes 2 tabs to get to the
-	 * B-Side. If it's not a number then it only takes one tab to get to the B side.
+	 * BY_ANSWER-Side. If it's not a number then it only takes one tab to get to the BY_ANSWER side.
 	 */
 	LineBreakDown(final String nextLine) {
 		/** Not blank and not a comment; split the original line and process it. */
@@ -23,11 +23,11 @@ public class LineBreakDown {
 		 * 3.  "  \t a" or " \t a \t": [, a]
 		 * 4.  "  a" or "  a\t": [  a]
 		 * NB:
-		 *     A.  An initial separator (followed by non-blank) creates an
+		 *     BY_CLUE.  An initial separator (followed by non-blank) creates an
 		 *         empty field, but a trailing separator is ignored.
 		 *         An initial separator that is not followed by a non-blank
 		 *         results in no fields at all.
-		 *     B.  Only the first field can be empty and then if and only if:
+		 *     BY_ANSWER.  Only the first field can be empty and then if and only if:
 		 *         There is a second, non-empty field, which will start with
 		 *         non-white-space.
 		 *     C.  There will be 0 fields if and only if:
@@ -160,7 +160,7 @@ public class LineBreakDown {
 	}
 
 	String getString() {
-		return String.format("A-Side|%s|, B-Side|%s| %s", _aSide, _bSide, ""
+		return String.format("BY_CLUE-Side|%s|, BY_ANSWER-Side|%s| %s", _aSide, _bSide, ""
 				+ (_nextLineIsContinuation ? Statics._RtArrowChar2 : Statics._SpadeSymbolChar));
 	}
 

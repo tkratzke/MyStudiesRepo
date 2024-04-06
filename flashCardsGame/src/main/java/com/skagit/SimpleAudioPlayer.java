@@ -137,18 +137,29 @@ public class SimpleAudioPlayer {
 		_clip.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 
-	public static boolean validate(final File f, final boolean play) {
+	public static boolean validate(final File f) {
 		if (f == null || !f.isFile()) {
 			return false;
+		}
+		try (//
+				AudioInputStream ais = AudioSystem.getAudioInputStream(f.getAbsoluteFile());
+				Clip clip = AudioSystem.getClip() //
+		) {
+			return true;
+		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+		}
+		return false;
+	}
+
+	public static void playSoundFileIfPossible(final File f) {
+		if (f == null || !f.isFile()) {
+			return;
 		}
 		final CountDownLatch syncLatch = new CountDownLatch(1);
 		try (//
 				AudioInputStream ais = AudioSystem.getAudioInputStream(f.getAbsoluteFile());
 				Clip clip = AudioSystem.getClip() //
 		) {
-			if (!play) {
-				return true;
-			}
 			clip.addLineListener(e -> {
 				if (e.getType() == LineEvent.Type.STOP) {
 					syncLatch.countDown();
@@ -159,12 +170,9 @@ public class SimpleAudioPlayer {
 			try {
 				syncLatch.await();
 			} catch (final InterruptedException e1) {
-				return false;
 			}
 		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-			return false;
 		}
-		return syncLatch.getCount() == 0;
 	}
 
 	public static void mainx(final String[] args) {

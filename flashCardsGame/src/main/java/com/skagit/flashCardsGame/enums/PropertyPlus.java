@@ -7,10 +7,10 @@ public enum PropertyPlus {
 	NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
 	TOP_CARD_INDEX(String.valueOf(0), ""), //
 
-	CLUMPING("NONE", //
-			"A: Clump Duplicate As\n" //
-					+ "B: Clump Duplicate Bs\n" //
-					+ "NONE: No clumping"), //
+	CLUMPING("NO_CLUMPING", //
+			"BY_CLUE: Clump Duplicate As\n" //
+					+ "BY_ANSWER: Clump Duplicate Bs\n" //
+					+ "NO_CLUMPING: No clumping"), //
 
 	DIACRITICS_TREATMENT( //
 			DiacriticsTreatment.STRICT.name(), //
@@ -38,10 +38,11 @@ public enum PropertyPlus {
 					"\n" + Mode.STEP._explanation //
 	), //
 	CARDS_FILE("", //
-			"A String indicating where to find the Cards File."), //
+			"BY_CLUE String indicating where to find the Cards File."), //
 	SOUND_FILES_DIR("", //
-			"A String indicating where to find the directory of Sound Files.") //
-	; //
+			"BY_CLUE String indicating where to find the directory of Sound Files."), //
+	SILENT_MODE(Boolean.FALSE.toString(), "Indicates whether to play the sounds or not.") //
+	;
 
 	final public static PropertyPlus[] _Values = values();
 
@@ -113,18 +114,13 @@ public enum PropertyPlus {
 							return i >= 0 ? s : _defaultStringValue;
 						case RANDOM_SEED :
 							return s;
-						/** No need for a break; Cannot get to the following: */
-						case CARDS_FILE :
-						case SOUND_FILES_DIR :
-						case CLUMPING :
-						case DECAY_TYPE :
-						case DIACRITICS_TREATMENT :
-						case MODE :
+						default :
+							/** Cannot get to the following: */
+							return null;
 					}
 				} catch (final NumberFormatException e) {
 					return _defaultStringValue;
 				}
-				/** No need for a break; Cannot get here. */
 			case CLUMPING :
 			case DECAY_TYPE :
 			case DIACRITICS_TREATMENT :
@@ -143,6 +139,8 @@ public enum PropertyPlus {
 					return _defaultStringValue;
 				}
 				return s;
+			case SILENT_MODE :
+				return String.valueOf(Boolean.valueOf(s));
 		}
 		/** To keep the compiler happy: */
 		return null;

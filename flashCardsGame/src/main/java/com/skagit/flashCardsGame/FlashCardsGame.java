@@ -41,10 +41,12 @@ public class FlashCardsGame {
 	final private File _soundFilesDir;
 
 	final private TreeMap<String, File> _allSoundFiles;
+	final private TreeMap<String, String> _partToStem;
 
 	final private Properties _properties;
 	final private long _randomSeed;
 	final private Mode _mode;
+	final private boolean _silentMode;
 	final private DiacriticsTreatment _diacriticsTreatment;
 	final private Clumping _clumping;
 	final private QuizGenerator _quizGenerator;
@@ -60,12 +62,14 @@ public class FlashCardsGame {
 		if (_gameFile == null) {
 			_cardsFile = _soundFilesDir = null;
 			_allSoundFiles = null;
+			_partToStem = null;
 			_properties = null;
 			_randomSeed = 0;
 			_mode = null;
 			_diacriticsTreatment = null;
 			_clumping = null;
 			_quizGenerator = null;
+			_silentMode = false;
 			return;
 		}
 
@@ -88,17 +92,7 @@ public class FlashCardsGame {
 		final String soundFilesDirString = PropertyPlus.SOUND_FILES_DIR
 				.getValidString(_properties);
 		_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
-		if (true) {
-		} else {
-			_diacriticsTreatment = null;
-			_mode = null;
-			_randomSeed = -1;
-			_clumping = null;
-			_allSoundFiles = null;
-			_quizGenerator = null;
-			return;
-		}
-		reWriteGameFile();
+		reWritePropertiesFile();
 
 		_diacriticsTreatment = DiacriticsTreatment
 				.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
@@ -106,19 +100,23 @@ public class FlashCardsGame {
 		_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 		final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 		_clumping = Clumping.valueOf(clumpingString);
+		_silentMode = Boolean.valueOf(PropertyPlus.SILENT_MODE.getValidString(_properties));
 
 		_allSoundFiles = new TreeMap<>();
+		_partToStem = new TreeMap<>();
 		loadCards(/* announceCompleteDups= */true);
-		final int[] dupCounts = announceAndClumpDuplicates();
-		reWriteCardsFile();
-		final int nADups = dupCounts[1];
-		final int nBDups = dupCounts[0];
-		if (nADups > 0 || nBDups > 0) {
-			if (_needLineFeed) {
-				System.out.println();
+		if (_clumping != Clumping.NO_CLUMPING) {
+			final int nDups = announceAndClumpDuplicates();
+			if (nDups > 0) {
+				if (_needLineFeed) {
+					System.out.println();
+				}
+				final String dupType = "Dup "
+						+ (_clumping == Clumping.BY_CLUE ? "Clues" : "Answers");
+				System.out.println(String.format("n%s=%d.", dupType, nDups));
 			}
-			System.out.println(String.format("nADups=%d nBDups = %d.", nADups, nBDups));
 		}
+		reWriteCardsFile();
 		if (_mode == Mode.SWITCH) {
 			_quizGenerator = null;
 			return;
@@ -133,8 +131,7 @@ public class FlashCardsGame {
 		System.out.println();
 	}
 
-	private static void addToSoundFiles(final TreeMap<String, File> allSoundFiles,
-			final File mainDir) {
+	private void addToSoundFiles(final File mainDir) {
 		/** Add sub-directories' soundFiles. */
 		final File[] subDirs = mainDir.listFiles(new FileFilter() {
 
@@ -144,14 +141,14 @@ public class FlashCardsGame {
 			}
 		});
 		for (final File subDir : subDirs) {
-			addToSoundFiles(allSoundFiles, subDir);
+			addToSoundFiles(subDir);
 		}
 		/** Add mainDir's own sound files. */
 		final File[] mainDirSoundFiles = mainDir.listFiles(new FileFilter() {
 
 			@Override
 			public boolean accept(final File f) {
-				return SimpleAudioPlayer.validate(f, /* play= */false);
+				return SimpleAudioPlayer.validate(f);
 			}
 		});
 		for (final File f : mainDirSoundFiles) {
@@ -171,10 +168,14 @@ public class FlashCardsGame {
 				final int start = matcher.start();
 				final int end = matcher.end();
 				/** The digits make up a valid key. */
-				keyList.add(stem.substring(start, end - 1));
+				final String digitsString = stem.substring(start, end - 1);
+				keyList.add(digitsString);
+				_partToStem.put(digitsString, stem);
 				if (end < stemLen) {
 					/** Everything in stem beyond the dash make up a valid key. */
-					keyList.add(stem.substring(end, stemLen));
+					final String beyondDashString = stem.substring(end, stemLen);
+					keyList.add(beyondDashString);
+					_partToStem.put(beyondDashString, stem);
 				}
 			}
 			File parent = f.getParentFile();
@@ -182,9 +183,9 @@ public class FlashCardsGame {
 			for (int k = 0; !keyList.isEmpty();) {
 				k %= keyList.size();
 				final String thisKey = keyList.get(k);
-				final File oldFile = allSoundFiles.get(thisKey);
+				final File oldFile = _allSoundFiles.get(thisKey);
 				if (oldFile == null) {
-					allSoundFiles.put(thisKey, f);
+					_allSoundFiles.put(thisKey, f);
 					keyList.remove(k);
 				} else {
 					keyList.set(k, parentNamePlus + thisKey);
@@ -198,7 +199,7 @@ public class FlashCardsGame {
 
 	private void loadCards(final boolean announceCompleteDups) {
 		_allSoundFiles.clear();
-		addToSoundFiles(_allSoundFiles, _soundFilesDir);
+		addToSoundFiles(_soundFilesDir);
 		final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
 		final int nCards = cardMap.size();
 		_cards = cardMap.keySet().toArray(new Card[nCards]);
@@ -212,7 +213,7 @@ public class FlashCardsGame {
 	 * </pre>
 	 */
 	private TreeMap<Card, Card> loadCardMap(final boolean announceCompleteDups) {
-		final TreeMap<Card, Card> cardMap = new TreeMap<>(Card._ByAThenB);
+		final TreeMap<Card, Card> cardMap = new TreeMap<>(Card._ByClueThenAnswer);
 		try (final BufferedReader in = new BufferedReader(
 				new InputStreamReader(new FileInputStream(_cardsFile), "UTF-8"))) {
 			/** Mark the stream at the beginning of the file. */
@@ -304,18 +305,19 @@ public class FlashCardsGame {
 		return cardMap;
 	}
 
-	private void wrapUp(final TreeMap<Card, Card> cardMap, final String aSide,
-			final String bSide, final ArrayList<String> commentList, final String comment,
+	private void wrapUp(final TreeMap<Card, Card> cardMap, final String clueSide,
+			final String answerSide, final ArrayList<String> commentList, final String comment,
 			final boolean announceCompleteDups) {
 		if (comment != null && comment.length() > 0) {
 			commentList.add(comment);
 		}
 		final boolean switchSides = _mode == Mode.SWITCH;
-		if (aSide != null && bSide != null && aSide.length() > 0 && bSide.length() > 0) {
+		if (clueSide != null && answerSide != null && clueSide.length() > 0
+				&& answerSide.length() > 0) {
 			final int nNewCommentLines = commentList.size();
 			final String[] newCommentLines = commentList.toArray(new String[nNewCommentLines]);
-			final Card newCard = new Card(switchSides, _allSoundFiles, cardMap.size(), aSide,
-					bSide, newCommentLines);
+			final Card newCard = new Card(switchSides, _allSoundFiles, _partToStem,
+					cardMap.size(), clueSide, answerSide, newCommentLines);
 			final Card oldCard = cardMap.get(newCard);
 			if (oldCard != null) {
 				if (announceCompleteDups) {
@@ -346,62 +348,56 @@ public class FlashCardsGame {
 		}
 	}
 
-	private int[] announceAndClumpDuplicates() {
-		final int nCards = _cards.length;
-		final int[] dupCounts = new int[]{0, 0};
-		for (int iPass = 0; iPass < 2; ++iPass) {
-			final Comparator<Card> comparator = iPass == 0
-					? Card._ByASideOnly
-					: Card._ByBSideOnly;
-			final boolean makeSlave = iPass == 0
-					? (_clumping == Clumping.A)
-					: (_clumping == Clumping.B);
-			final String sideBeingChecked = iPass == 0 ? "A-Side" : "B-Side";
-			final TreeMap<Card, ArrayList<Card>> kingToSlaves = new TreeMap<>(comparator);
-			for (int k = 0; k < nCards; ++k) {
-				final Card card = _cards[k];
-				final ArrayList<Card> slaves = kingToSlaves.get(card);
-				if (slaves != null) {
-					/** card has an existing king. */
-					final Card oldCard = kingToSlaves.ceilingKey(card);
-					if (_needLineFeed) {
-						System.out.println();
-					}
-					System.out.println(String.format("Duplicate %s #%d:", sideBeingChecked,
-							dupCounts[1 - iPass]++));
-					System.out.println(oldCard.getString());
-					System.out.println(card.getString());
-					_needLineFeed = true;
-					if (makeSlave) {
-						slaves.add(card);
-						_cards[k] = null;
-					}
-				} else {
-					kingToSlaves.put(card, new ArrayList<>());
-				}
-			}
-			final Card[] newCards = new Card[nCards];
-			for (int k0 = 0, k1 = 0; k0 < nCards; ++k0) {
-				final Card card = _cards[k0];
-				if (card == null) {
-					/** The card formerly at k0 is now somebody's slave. */
-					continue;
-				}
-				card._cardNumber = k1;
-				newCards[k1] = card;
-				++k1;
-				final ArrayList<Card> slaves = kingToSlaves.get(card);
-				final int nSlaves = slaves.size();
-				for (int k2 = 0; k2 < nSlaves; ++k2) {
-					final Card slave = slaves.get(k2);
-					slave._cardNumber = k1;
-					newCards[k1] = slave;
-					++k1;
-				}
-			}
-			System.arraycopy(newCards, 0, _cards, 0, nCards);
+	private int announceAndClumpDuplicates() {
+		if (_clumping != Clumping.BY_CLUE && _clumping != Clumping.BY_ANSWER) {
+			return 0;
 		}
-		return dupCounts;
+		final boolean byClue = _clumping == Clumping.BY_CLUE;
+		final Comparator<Card> comparator = byClue
+				? Card._ByClueSideOnly
+				: Card._ByAnswerSideOnly;
+		final int nCards = _cards.length;
+		int nDups = 0;
+		final String sideBeingChecked = byClue ? "Clue Side" : "Answer Side";
+		final TreeMap<Card, ArrayList<Card>> kingToSlaves = new TreeMap<>(comparator);
+		for (int k = 0; k < nCards; ++k) {
+			final Card card = _cards[k];
+			final ArrayList<Card> slaves = kingToSlaves.get(card);
+			if (slaves != null) {
+				/** card has an existing king. */
+				final Card oldCard = kingToSlaves.ceilingKey(card);
+				if (_needLineFeed) {
+					System.out.println();
+				}
+				System.out.println(String.format("Duplicate %s #%d:", sideBeingChecked, nDups++));
+				System.out.println(oldCard.getString());
+				System.out.println(card.getString());
+				_needLineFeed = true;
+				slaves.add(card);
+				_cards[k] = null;
+			} else {
+				kingToSlaves.put(card, new ArrayList<>());
+			}
+		}
+		final Card[] newCards = new Card[nCards];
+		for (int k0 = 0, k1 = 0; k0 < nCards; ++k0) {
+			final Card card = _cards[k0];
+			if (card == null) {
+				/** The card formerly at k0 is now somebody's slave. */
+				continue;
+			}
+			card._cardNumber = k1;
+			newCards[k1++] = card;
+			final ArrayList<Card> slaves = kingToSlaves.get(card);
+			final int nSlaves = slaves.size();
+			for (int k2 = 0; k2 < nSlaves; ++k2) {
+				final Card slave = slaves.get(k2);
+				slave._cardNumber = k1;
+				newCards[k1++] = slave;
+			}
+		}
+		System.arraycopy(newCards, 0, _cards, 0, nCards);
+		return nDups;
 	}
 
 	private void reWriteCardsFile() {
@@ -413,28 +409,28 @@ public class FlashCardsGame {
 		final String intFormat = String.format("%%%dd.", nDigits);
 		final String blankIntFormat = String.format("%%-%ds ", nDigits);
 		final String blankIntString = String.format(blankIntFormat, "");
-		final String aPartFormat;
+		final String cluePartFormat;
 		{
-			int maxAPartLen = 0;
+			int maxCluePartLen = 0;
 			for (final Card card : _cards) {
-				final CardParts aParts = new CardParts(card.getFullString(/* aSide= */true),
+				final CardParts aParts = new CardParts(card.getFullString(/* clueSide= */true),
 						Statics._MaxLenForCardPart);
-				maxAPartLen = Math.max(maxAPartLen, aParts._maxLen);
+				maxCluePartLen = Math.max(maxCluePartLen, aParts._maxLen);
 			}
-			aPartFormat = String.format("%%-%ds", maxAPartLen);
+			cluePartFormat = String.format("%%-%ds", maxCluePartLen);
 		}
 
 		try (PrintWriter pw = new PrintWriter(_cardsFile)) {
 			boolean recentWasMultiLine = false;
 			for (int kCard = 0, nPrinted = 0; kCard < nCards; ++kCard) {
 				final Card card = _cards[kCard];
-				final CardParts aParts = new CardParts(card.getFullString(/* aSide= */true),
+				final CardParts clueParts = new CardParts(card.getFullString(/* clueSide= */true),
 						Statics._MaxLenForCardPart);
-				final CardParts bParts = new CardParts(card.getFullString(/* aSide= */false),
-						Statics._MaxLenForCardPart);
-				final int nAParts = aParts.size();
-				final int nBParts = bParts.size();
-				final int nDataParts = Math.max(nAParts, nBParts);
+				final CardParts answerParts = new CardParts(
+						card.getFullString(/* clueSide= */false), Statics._MaxLenForCardPart);
+				final int nClueParts = clueParts.size();
+				final int nAnswerParts = answerParts.size();
+				final int nDataParts = Math.max(nClueParts, nAnswerParts);
 				final String[] commentLines = card._commentLines;
 				final int nCommentLines = commentLines == null ? 0 : commentLines.length;
 				final boolean isMultiLine = nCommentLines > 0 || nDataParts > 1;
@@ -457,17 +453,22 @@ public class FlashCardsGame {
 					}
 				}
 				for (int kDataPart = 0; kDataPart < nDataParts; ++kDataPart) {
-					final String aPart = kDataPart < nAParts ? aParts.get(kDataPart) : null;
-					final String bPart = kDataPart < nBParts ? bParts.get(kDataPart) : null;
+					final String cluePart = kDataPart < nClueParts
+							? clueParts.get(kDataPart)
+							: null;
+					final String answerPart = kDataPart < nAnswerParts
+							? answerParts.get(kDataPart)
+							: null;
 					if (kDataPart == 0) {
 						pw.printf(intFormat, card._cardNumber);
 					} else {
 						pw.print(blankIntString);
 					}
 					pw.print('\t');
-					pw.printf(bPart != null ? aPartFormat : "%s", aPart != null ? aPart : "");
-					if (bPart != null) {
-						pw.printf("\t%s", bPart);
+					pw.printf(answerPart != null ? cluePartFormat : "%s",
+							cluePart != null ? cluePart : "");
+					if (answerPart != null) {
+						pw.printf("\t%s", answerPart);
 					}
 					if (kDataPart < nDataParts - 1) {
 						pw.print('\t');
@@ -482,12 +483,10 @@ public class FlashCardsGame {
 
 	void updateProperties() {
 		_properties.put(PropertyPlus.RANDOM_SEED._propertyName, Long.toString(_randomSeed));
-		_properties.put(PropertyPlus.DIACRITICS_TREATMENT._propertyName,
-				_diacriticsTreatment.name());
 		_quizGenerator.updateProperties(_properties);
 	}
 
-	void reWriteGameFile() {
+	void reWritePropertiesFile() {
 		final Properties properties;
 		final long seed = Long
 				.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
@@ -645,9 +644,8 @@ public class FlashCardsGame {
 	}
 
 	final String getString0() {
-		String s = String.format("%s %s RandomSeed[%d]", //
+		String s = String.format("%s RandomSeed[%d]", //
 				_cards != null ? String.format("(w/ %d cards)", _cards.length) : "", //
-				_diacriticsTreatment != null ? _diacriticsTreatment.name() : "", //
 				_randomSeed);
 		if (_quizGenerator != null) {
 			s += "\n " + _quizGenerator.getString();
@@ -689,20 +687,22 @@ public class FlashCardsGame {
 			}
 			if (madeChangesFrom(oldValues)) {
 				updateProperties();
-				reWriteGameFile();
+				reWritePropertiesFile();
 				oldValues = storeValues();
 			}
 
 			final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
 			final Card card = _cards[cardIdx];
-			final String clueString = Statics
-					.CleanWhiteSpace(card.getStringPart(/* aSide= */true));
-			final int clueStringLen = clueString.length();
+			final String clueStringPart = card.getStringPart(/* clueSide= */true);
+			final int clueStringPartLen = clueStringPart.length();
+			final boolean clueHasStringPart = clueStringPartLen > 0;
+			final String answerStringPart = card.getStringPart(/* clueSide= */false);
+			final int answerStringPartLen = answerStringPart.length();
+			final boolean answerHasStringPart = answerStringPartLen > 0;
+			final File answerSoundFile = card.getSoundFile(/* clueSide= */false);
+			final boolean answerHasSoundFile = answerSoundFile != null;
 			boolean wasWrongAtLeastOnce = false;
 			for (boolean gotItRight = false; !gotItRight;) {
-				final boolean clueHasSoundFile = card.hasSoundFile(/* aSide= */true);
-				final boolean answerHasSoundFile = card.hasSoundFile(/* aSide= */false);
-				final boolean answerHasStringPart = card.hasStringPart(/* aSide= */false);
 				final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 				final int typeIPromptLen = typeIPrompt.length();
 				final String terminalString;
@@ -718,18 +718,15 @@ public class FlashCardsGame {
 					terminalString = null;
 				}
 				final int terminalStringLen = terminalString.length();
-				final String answerString = Statics
-						.CleanWhiteSpace(card.getStringPart(/* aSide= */false));
-				final int answerStringPartLen = answerString.length();
-				final int len1 = typeIPromptLen + Statics._Sep1Len + clueStringLen
+				final int len1 = typeIPromptLen + Statics._Sep1Len + clueStringPartLen
 						+ terminalStringLen + Math.min(Statics._RoomLen, answerStringPartLen);
-				final String[] clueFields = clueString.split(Statics._WhiteSpace);
+				final String[] clueFields = clueStringPart.split(Statics._WhiteSpace);
 				final int nClueFields = clueFields.length;
 				final String[] answerFields;
-				if (answerString.length() == 0) {
+				if (!answerHasStringPart) {
 					answerFields = new String[0];
 				} else {
-					answerFields = answerString.split(Statics._WhiteSpace);
+					answerFields = answerStringPart.split(Statics._WhiteSpace);
 				}
 				final int nAnswerFields = answerFields.length;
 				_needLineFeed = _needLineFeed || len1 > Statics._MaxLineLen;
@@ -739,11 +736,9 @@ public class FlashCardsGame {
 				boolean longQuestion = false;
 
 				/** Expose the clue. */
-				if (clueHasSoundFile) {
-					card.playSoundFile(/* aSide= */true);
-				}
+				card.playSoundFileIfPossible(_silentMode, /* clueSide= */true);
 				if (len1 <= Statics._MaxLineLen) {
-					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueString,
+					System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueStringPart,
 							terminalString);
 				} else {
 					System.out.println(typeIPrompt);
@@ -777,7 +772,8 @@ public class FlashCardsGame {
 				final InputString inputString = new InputString(sc);
 				longQuestion = longQuestion || inputString._nLinesOfResponse > 1;
 				final String responseStringPart = inputString._inputString;
-				if (responseStringPart.length() == 1) {
+				final int responseStringPartLen = responseStringPart.length();
+				if (responseStringPartLen == 1) {
 					/**
 					 * <pre>
 					 * The response is a command.
@@ -805,7 +801,7 @@ public class FlashCardsGame {
 					} else if (char0Uc == Statics._ReloadCardsChar) {
 						final int oldTci = _quizGenerator._topCardIndex;
 						final Card topCard = _cards[oldTci];
-						final String keyString = topCard.getFullString(/* aSide= */true);
+						final String keyString = topCard.getFullString(/* clueSide= */true);
 						loadCards(/* announceCompleteDups= */false);
 						nCards = _cards.length;
 						int tci = -1;
@@ -826,14 +822,16 @@ public class FlashCardsGame {
 					}
 				}
 
-				/**
-				 * Must process a response to a question. Start by playing the answer sound if
-				 * any.
-				 */
-				if (answerHasSoundFile) {
-					card.playSoundFile(/* aSide= */false);
+				if (_silentMode && (!clueHasStringPart || !answerHasStringPart)) {
+					System.out.println(
+							"*** In Silent Mode, both Clue and Answer must have String Parts.  Automatically right. ***");
+					_needLineFeed = true;
+					gotItRight = true;
+					continue;
 				}
-				if (responseStringPart.length() == 0) {
+				/** Must process a response to the clue. */
+				card.playSoundFileIfPossible(_silentMode, /* clueSide= */false);
+				if (responseStringPartLen == 0) {
 					int nUsedOnCurrentLine = 0;
 					/**
 					 * User just wants a check so we have to print out the String part of the
@@ -854,6 +852,7 @@ public class FlashCardsGame {
 							++k;
 						}
 					}
+
 					if (_mode == Mode.STEP) {
 						gotItRight = true;
 						_needLineFeed = true;
@@ -876,9 +875,9 @@ public class FlashCardsGame {
 					}
 					continue;
 				}
-				/** User typed something in. */
+				/** User typed in a non-trivial response with at least two characters. */
 				final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc,
-						_diacriticsTreatment, answerString, responseStringPart);
+						_diacriticsTreatment, answerStringPart, responseStringPart);
 				final String[] diffStrings = responseEvaluator._diffStrings;
 				gotItRight = responseEvaluator._gotItRight;
 				if (diffStrings != null) {
