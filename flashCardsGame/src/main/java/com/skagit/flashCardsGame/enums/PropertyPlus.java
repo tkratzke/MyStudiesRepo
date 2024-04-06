@@ -3,14 +3,26 @@ package com.skagit.flashCardsGame.enums;
 import java.util.Properties;
 
 public enum PropertyPlus {
-	NUMBER_OF_NEW_WORDS(String.valueOf(1), "Specification of Window:"), //
-	NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
-	TOP_CARD_INDEX(String.valueOf(0), ""), //
+	CARDS_FILE("", //
+			"Strings that indicate where to find the Cards File," //
+					+ "\nthe directory of sound files, and" //
+					+ "\nwhether or not to play the sounds."), //
+	SOUND_FILES_DIR("", ""), //
+	SILENT_MODE(Boolean.FALSE.toString(), ""), //
 
-	CLUMPING("NO_CLUMPING", //
-			"BY_CLUE: Clump Duplicate As\n" //
-					+ "BY_ANSWER: Clump Duplicate Bs\n" //
-					+ "NO_CLUMPING: No clumping"), //
+	TOP_CARD_INDEX(String.valueOf(0), "Highest card index in first quiz,"
+			+ "\nplus 5 lines that specify normal quiz generation."), //
+	NUMBER_OF_NEW_WORDS(String.valueOf(1), ""), //
+	NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
+	NUMBER_OF_TIMES_FOR_NEW_WORDS(String.valueOf(1), ""), //
+	PERCENTAGE_FOR_RECENT_WORDS(String.valueOf(75) + "%", ""), //
+	DECAY_TYPE("LINEAR", ""), //
+
+	CLUMPING(Clumping.NO_CLUMPING.name(), //
+			Clumping.BY_CLUE._explanation + //
+					"\n" + Clumping.BY_ANSWER._explanation + //
+					"\n" + Clumping.NO_CLUMPING._explanation //
+	),
 
 	DIACRITICS_TREATMENT( //
 			DiacriticsTreatment.STRICT.name(), //
@@ -19,30 +31,19 @@ public enum PropertyPlus {
 					"\n" + DiacriticsTreatment.RELAXED._explanation //
 	),
 
-	NUMBER_OF_TIMES_FOR_NEW_WORDS(String.valueOf(1), //
-			"Parameters for Generating Quizzes for a particular window:"), //
-	PERCENTAGE_FOR_RECENT_WORDS(String.valueOf(75) + "%", ""), //
-	DECAY_TYPE("LINEAR", ""), //
-
 	RANDOM_SEED(String.valueOf(0), //
-			"0: Cards Retain their Order\n" //
-					+ "Positive #: Use that for the Random Seed\n" //
-					+ "Any Negative #: Use SuperRandom"), //
+			"0: Cards Retain their Order.\n" //
+					+ "Positive #: Use that for the Random Seed.\n" //
+					+ "Any Negative #: Use SuperRandom."), //
 
 	ALLOWABLE_MISS_PERCENTAGE(String.valueOf(10) + "%",
-			"Determines if each quiz is \"passed\" or not"), //
+			"Determines if each quiz is \"passed\" or not."), //
 
 	MODE(Mode.NORMAL.name(), //
 			Mode.NORMAL._explanation + //
 					"\n" + Mode.SWITCH._explanation + //
 					"\n" + Mode.STEP._explanation //
-	), //
-	CARDS_FILE("", //
-			"BY_CLUE String indicating where to find the Cards File."), //
-	SOUND_FILES_DIR("", //
-			"BY_CLUE String indicating where to find the directory of Sound Files."), //
-	SILENT_MODE(Boolean.FALSE.toString(), "Indicates whether to play the sounds or not.") //
-	;
+	);
 
 	final public static PropertyPlus[] _Values = values();
 
@@ -121,9 +122,9 @@ public enum PropertyPlus {
 				} catch (final NumberFormatException e) {
 					return _defaultStringValue;
 				}
-			case CLUMPING :
 			case DECAY_TYPE :
 			case DIACRITICS_TREATMENT :
+			case CLUMPING :
 			case MODE :
 				try {
 					if (this == DECAY_TYPE) {

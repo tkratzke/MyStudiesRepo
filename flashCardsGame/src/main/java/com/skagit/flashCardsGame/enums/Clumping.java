@@ -1,5 +1,13 @@
 package com.skagit.flashCardsGame.enums;
 
 public enum Clumping {
-	BY_CLUE, BY_ANSWER, NO_CLUMPING
-}
+	BY_CLUE("Cards are grouped by Clue."), //
+	BY_ANSWER("Cards are grouped by Answer."), //
+	NO_CLUMPING("Cards are not re-ordered.");
+	final public static Clumping[] _Values = values();
+
+	final String _explanation;
+	Clumping(final String explanation) {
+		_explanation = String.format("%s: %s", name(), explanation);
+	}
+};

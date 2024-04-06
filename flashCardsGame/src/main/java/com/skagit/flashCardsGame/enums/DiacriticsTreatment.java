@@ -1,9 +1,9 @@
 package com.skagit.flashCardsGame.enums;
 
 public enum DiacriticsTreatment {
-	STRICT("Diacritics Must be Correct"), //
-	LENIENT("Inaccurate Diacritics are Pointed Out"), //
-	RELAXED("Inaccurate Diacritics are Ignored");
+	STRICT("Diacritics Must be Correct."), //
+	LENIENT("Inaccurate Diacritics are Pointed Out."), //
+	RELAXED("Inaccurate Diacritics are Ignored.");
 
 	final public static DiacriticsTreatment[] _Values = values();
 
