@@ -7,58 +7,58 @@ import com.skagit.util.StringUtils;
 
 public class Euler0131 {
 
-	public static void main(final String[] args) {
-		final int maxP = 1000000 - 1;
-		int[] maxLengths = null;
-		for (int iPass = 0; iPass < 2; ++iPass) {
-			int n = 0;
-			for (int seed = 1;; ++seed) {
-				final int diffToNextCube = 3 * (seed * (seed + 1)) + 1;
-				if (diffToNextCube > maxP) {
-					break;
-				}
-				if (Eratosthenes.isPrime(diffToNextCube)) {
-					final int p = diffToNextCube;
-					final int seedSq = seed * seed;
-					final int lowCubeRoot = seedSq * seed;
-					final int highCubeRoot = seedSq * (int) Math.round(Math.cbrt(lowCubeRoot + p));
-					final String[] strings = getStrings(++n, seed, lowCubeRoot, p, highCubeRoot);
-					if (iPass == 0) {
-						maxLengths = updateMaxLengths(strings, maxLengths);
-					} else {
-						System.out.printf(n == 1 ? "" : (n % 10 == 1 ? "\n\n" : "\n"));
-						for (int k = 0; k < strings.length; ++k) {
-							System.out.printf("%s%s", //
-									k == 0 ? "" : " ", StringUtils.padRight(strings[k], maxLengths[k]));
-						}
-					}
-				}
+    public static void main(final String[] args) {
+	final int maxP = 1000000 - 1;
+	int[] maxLengths = null;
+	for (int iPass = 0; iPass < 2; ++iPass) {
+	    int n = 0;
+	    for (int seed = 1;; ++seed) {
+		final int diffToNextCube = 3 * (seed * (seed + 1)) + 1;
+		if (diffToNextCube > maxP) {
+		    break;
+		}
+		if (Eratosthenes.isPrime(diffToNextCube)) {
+		    final int p = diffToNextCube;
+		    final int seedSq = seed * seed;
+		    final int lowCubeRoot = seedSq * seed;
+		    final int highCubeRoot = seedSq * (int) Math.round(Math.cbrt(lowCubeRoot + p));
+		    final String[] strings = getStrings(++n, seed, lowCubeRoot, p, highCubeRoot);
+		    if (iPass == 0) {
+			maxLengths = updateMaxLengths(strings, maxLengths);
+		    } else {
+			System.out.printf(n == 1 ? "" : (n % 10 == 1 ? "\n\n" : "\n"));
+			for (int k = 0; k < strings.length; ++k) {
+			    System.out.printf("%s%s", //
+				    k == 0 ? "" : " ", StringUtils.padRight(strings[k], maxLengths[k]));
 			}
+		    }
 		}
+	    }
 	}
+    }
 
-	private static int[] updateMaxLengths(final String[] strings, int[] maxLengths) {
-		final int nStrings = strings.length;
-		if (maxLengths == null) {
-			maxLengths = new int[nStrings];
-			Arrays.fill(maxLengths, 0);
-		}
-		for (int k = 0; k < nStrings; ++k) {
-			maxLengths[k] = Math.max(maxLengths[k], strings[k].length());
-		}
-		return maxLengths;
+    private static int[] updateMaxLengths(final String[] strings, int[] maxLengths) {
+	final int nStrings = strings.length;
+	if (maxLengths == null) {
+	    maxLengths = new int[nStrings];
+	    Arrays.fill(maxLengths, 0);
 	}
+	for (int k = 0; k < nStrings; ++k) {
+	    maxLengths[k] = Math.max(maxLengths[k], strings[k].length());
+	}
+	return maxLengths;
+    }
 
-	private static String[] getStrings(final int nPrimes, final int seed,
-			final int lowCubeRoot, final int prime, final int highCubeRoot) {
-		return new String[]{//
-				String.format("%d.", nPrimes), //
-				String.format("seed[%d]", seed), //
-				String.format("lowCubeRoot[%d]", lowCubeRoot), //
-				String.format("prime[%d]", prime), //
-				String.format("highCubeRoot[%d]", highCubeRoot) //
-		};
-	}
+    private static String[] getStrings(final int nPrimes, final int seed, final int lowCubeRoot, final int prime,
+	    final int highCubeRoot) {
+	return new String[] { //
+		String.format("%d.", nPrimes), //
+		String.format("seed[%d]", seed), //
+		String.format("lowCubeRoot[%d]", lowCubeRoot), //
+		String.format("prime[%d]", prime), //
+		String.format("highCubeRoot[%d]", highCubeRoot) //
+	};
+    }
 }
 
 /**

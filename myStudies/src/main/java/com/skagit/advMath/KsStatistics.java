@@ -11,130 +11,130 @@ import jsc.distributions.Uniform;
 import jsc.goodnessfit.KolmogorovTest;
 
 public class KsStatistics {
-	final public boolean _uniform;
-	final public int _n;
-	final public double _d;
-	final public double _tailProb;
-	final public double _positiveD;
-	final public double _negativeD;
-	final public double _testStatistic;
-	final public double _sp;
-	final public double _xOfD;
-	final public double _xOfPositiveD;
-	final public double _xOfNegativeD;
+    final public boolean _uniform;
+    final public int _n;
+    final public double _d;
+    final public double _tailProb;
+    final public double _positiveD;
+    final public double _negativeD;
+    final public double _testStatistic;
+    final public double _sp;
+    final public double _xOfD;
+    final public double _xOfPositiveD;
+    final public double _xOfNegativeD;
 
-	public KsStatistics(final double[] data, final boolean uniform) {
-		_uniform = uniform;
-		final double[] dataClone;
-		if (uniform) {
-			dataClone = data;
-		} else {
-			dataClone = Randomx.statisticallyStandardize(data);
-		}
-		final KolmogorovTest kolmogorovTest = new KolmogorovTest(dataClone, uniform ? new Uniform() : new Normal());
-		_n = kolmogorovTest.getN();
-		_d = kolmogorovTest.getD();
-		_tailProb = KolmogorovTest.exactUpperTailProb(_n, _d);
-		_positiveD = kolmogorovTest.getPositiveD();
-		_negativeD = kolmogorovTest.getNegativeD();
-		_testStatistic = kolmogorovTest.getTestStatistic();
-		_sp = kolmogorovTest.getSP();
-		_xOfD = kolmogorovTest.xOfD();
-		_xOfPositiveD = kolmogorovTest.xOfPositiveD();
-		_xOfNegativeD = kolmogorovTest.xOfNegativeD();
+    public KsStatistics(final double[] data, final boolean uniform) {
+	_uniform = uniform;
+	final double[] dataClone;
+	if (uniform) {
+	    dataClone = data;
+	} else {
+	    dataClone = Randomx.statisticallyStandardize(data);
 	}
+	final KolmogorovTest kolmogorovTest = new KolmogorovTest(dataClone, uniform ? new Uniform() : new Normal());
+	_n = kolmogorovTest.getN();
+	_d = kolmogorovTest.getD();
+	_tailProb = KolmogorovTest.exactUpperTailProb(_n, _d);
+	_positiveD = kolmogorovTest.getPositiveD();
+	_negativeD = kolmogorovTest.getNegativeD();
+	_testStatistic = kolmogorovTest.getTestStatistic();
+	_sp = kolmogorovTest.getSP();
+	_xOfD = kolmogorovTest.xOfD();
+	_xOfPositiveD = kolmogorovTest.xOfPositiveD();
+	_xOfNegativeD = kolmogorovTest.xOfNegativeD();
+    }
 
-	/**
-	 * The following does just a manual computation and hence returns a simple
-	 * double array.
-	 */
-	private static double[] getKsTypeStatistics1(final double[] data, final boolean uniform) {
-		final int n = data.length;
-		final double[] dataClone;
-		if (uniform) {
-			dataClone = data.clone();
-		} else {
-			dataClone = Randomx.statisticallyStandardize(data);
-		}
-		Arrays.sort(dataClone);
-		if (!uniform) {
-			for (int k = 0; k < n; ++k) {
-				dataClone[k] = Randomx._NormalDistribution.cumulativeProbability(dataClone[k]);
-			}
-		}
-		double ks = 0;
-		double xOfD = -1;
-		for (int k = 0; k < n; ++k) {
-			final double emp = ((double) k) / n;
-			final double theo = dataClone[k];
-			final double thisKs = Math.abs(emp - theo);
-			if (thisKs > ks) {
-				ks = thisKs;
-				xOfD = k;
-			}
-		}
-		final double upperTail = KolmogorovTest.exactUpperTailProb(n, ks);
-		return new double[] { ks, upperTail, xOfD };
+    /**
+     * The following does just a manual computation and hence returns a simple
+     * double array.
+     */
+    private static double[] getKsTypeStatistics1(final double[] data, final boolean uniform) {
+	final int n = data.length;
+	final double[] dataClone;
+	if (uniform) {
+	    dataClone = data.clone();
+	} else {
+	    dataClone = Randomx.statisticallyStandardize(data);
 	}
+	Arrays.sort(dataClone);
+	if (!uniform) {
+	    for (int k = 0; k < n; ++k) {
+		dataClone[k] = Randomx._NormalDistribution.cumulativeProbability(dataClone[k]);
+	    }
+	}
+	double ks = 0;
+	double xOfD = -1;
+	for (int k = 0; k < n; ++k) {
+	    final double emp = ((double) k) / n;
+	    final double theo = dataClone[k];
+	    final double thisKs = Math.abs(emp - theo);
+	    if (thisKs > ks) {
+		ks = thisKs;
+		xOfD = k;
+	    }
+	}
+	final double upperTail = KolmogorovTest.exactUpperTailProb(n, ks);
+	return new double[] { ks, upperTail, xOfD };
+    }
 
-	public String getString() {
-		return String.format(
-				"N[%d] D[%.3f] +D[%.3f] -D[%.3f], TestStat[%.3f] " + "SP[%.3f] XOfD[%.3f] XOf+D[%.3f] XOf-D[%.3f]", //
-				_n, _d, _positiveD, _negativeD, _testStatistic, _sp, _xOfD, _xOfPositiveD, _xOfNegativeD);
-	}
+    public String getString() {
+	return String.format(
+		"N[%d] D[%.3f] +D[%.3f] -D[%.3f], TestStat[%.3f] " + "SP[%.3f] XOfD[%.3f] XOf+D[%.3f] XOf-D[%.3f]", //
+		_n, _d, _positiveD, _negativeD, _testStatistic, _sp, _xOfD, _xOfPositiveD, _xOfNegativeD);
+    }
 
-	@Override
-	public String toString() {
-		return getString();
-	}
+    @Override
+    public String toString() {
+	return getString();
+    }
 
-	public static void main(final String[] args) {
-		for (int n = 5; n < 30; n += 5) {
-			final double[] data = new double[n];
-			for (int k = 0; k < n; ++k) {
-				data[k] = ((double) k) / n;
-			}
-			final boolean uniform = false;
-			final double[] d1 = getKsTypeStatistics1(data, uniform);
-			final KsStatistics ksStatistics = new KsStatistics(data, uniform);
-			System.out.println(NumericalRoutines.getString(data) + "\n" + NumericalRoutines.getString(d1) + "\n"
-					+ ksStatistics.getString());
-			System.exit(41);
-		}
-		final Randomx r = new Randomx(/* useCurrentTimeMs= */false);
-		r.nextBytes(null);
-		for (int k = 0; k < 100; ++k) {
-			final long longDraw = r.nextLong();
-			MyLogger.out(/* logger= */null, String.format("k[%d] draw[%d]", k, longDraw));
-		}
-		System.exit(34);
-		for (int k = 0; k < 100; ++k) {
-			final double w = r.getWeibullDraw(1.0, 1.5);
-			MyLogger.out(/* logger= */null, String.format("%f", w));
-		}
-		System.exit(35);
-		final int nCells = 816, nTrialsPerRun = 10000, nRuns = 100;
-		final int high = 18;
-		double total = 0.0, totalSquared = 0.0;
-		for (int iRun = 0; iRun < nRuns; ++iRun) {
-			final int[] cellCounts = new int[nCells];
-			for (int trial = 0; trial < nTrialsPerRun; ++trial) {
-				++cellCounts[r.nextInt(nCells)];
-			}
-			int nHigh = 0;
-			for (final int cellCount : cellCounts) {
-				if (cellCount >= high) {
-					++nHigh;
-				}
-			}
-			total += nHigh;
-			totalSquared += nHigh * nHigh;
-		}
-		final double nHighBar = total / nRuns;
-		final double nHighVariance = (totalSquared - nRuns * nHighBar * nHighBar) / nRuns;
-		Math.sqrt(nHighVariance);
-		Math.sqrt(nHighVariance);
+    public static void main(final String[] args) {
+	for (int n = 5; n < 30; n += 5) {
+	    final double[] data = new double[n];
+	    for (int k = 0; k < n; ++k) {
+		data[k] = ((double) k) / n;
+	    }
+	    final boolean uniform = false;
+	    final double[] d1 = getKsTypeStatistics1(data, uniform);
+	    final KsStatistics ksStatistics = new KsStatistics(data, uniform);
+	    System.out.println(NumericalRoutines.getString(data) + "\n" + NumericalRoutines.getString(d1) + "\n"
+		    + ksStatistics.getString());
+	    System.exit(41);
 	}
+	final Randomx r = new Randomx(/* useCurrentTimeMs= */false);
+	r.nextBytes(null);
+	for (int k = 0; k < 100; ++k) {
+	    final long longDraw = r.nextLong();
+	    MyLogger.out(/* logger= */null, String.format("k[%d] draw[%d]", k, longDraw));
+	}
+	System.exit(34);
+	for (int k = 0; k < 100; ++k) {
+	    final double w = r.getWeibullDraw(1.0, 1.5);
+	    MyLogger.out(/* logger= */null, String.format("%f", w));
+	}
+	System.exit(35);
+	final int nCells = 816, nTrialsPerRun = 10000, nRuns = 100;
+	final int high = 18;
+	double total = 0.0, totalSquared = 0.0;
+	for (int iRun = 0; iRun < nRuns; ++iRun) {
+	    final int[] cellCounts = new int[nCells];
+	    for (int trial = 0; trial < nTrialsPerRun; ++trial) {
+		++cellCounts[r.nextInt(nCells)];
+	    }
+	    int nHigh = 0;
+	    for (final int cellCount : cellCounts) {
+		if (cellCount >= high) {
+		    ++nHigh;
+		}
+	    }
+	    total += nHigh;
+	    totalSquared += nHigh * nHigh;
+	}
+	final double nHighBar = total / nRuns;
+	final double nHighVariance = (totalSquared - nRuns * nHighBar * nHighBar) / nRuns;
+	Math.sqrt(nHighVariance);
+	Math.sqrt(nHighVariance);
+    }
 }
 /**
  * <pre>
