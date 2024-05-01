@@ -11,18 +11,12 @@ public enum PropertyPlus {
     SILENT_MODE(Boolean.FALSE.toString(), ""), //
 
     TOP_CARD_INDEX(String.valueOf(0),
-	    "Highest card index in first quiz," + "\nplus 5 lines that specify normal quiz generation."), //
+	    "Highest card index in first quiz," + "\nplus 4 lines that specify normal quiz generation."), //
     NUMBER_OF_NEW_WORDS(String.valueOf(1), ""), //
     NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
     NUMBER_OF_TIMES_FOR_NEW_WORDS(String.valueOf(1), ""), //
     PERCENTAGE_FOR_RECENT_WORDS(String.valueOf(75) + "%", ""), //
     DECAY_TYPE("LINEAR", ""), //
-
-    CLUMPING(Clumping.NO_CLUMPING.name(), //
-	    Clumping.BY_CLUE._explanation + //
-		    "\n" + Clumping.BY_ANSWER._explanation + //
-		    "\n" + Clumping.NO_CLUMPING._explanation //
-    ),
 
     DIACRITICS_TREATMENT( //
 	    DiacriticsTreatment.STRICT.name(), //
@@ -31,18 +25,26 @@ public enum PropertyPlus {
 		    "\n" + DiacriticsTreatment.RELAXED._explanation //
     ),
 
-    RANDOM_SEED(String.valueOf(0), //
-	    "0: Cards Retain their Order.\n" //
-		    + "Positive #: Use that for the Random Seed.\n" //
-		    + "Any Negative #: Use SuperRandom."), //
-
-    ALLOWABLE_MISS_PERCENTAGE(String.valueOf(10) + "%", "Determines if each quiz is \"passed\" or not."), //
-
     MODE(Mode.NORMAL.name(), //
 	    Mode.NORMAL._explanation + //
 		    "\n" + Mode.SWITCH._explanation + //
 		    "\n" + Mode.STEP._explanation //
-    );
+    ),
+
+    RANDOM_SEED(String.valueOf(0), //
+	    "0: Cards Retain their Order.\n" //
+		    + "Positive #: Use that for the Random Seed.\n" //
+		    + "Any Negative #: Use SuperRandom." //
+    ),
+
+    ALLOWABLE_MISS_PERCENTAGE(String.valueOf(10) + "%", "Determines if each quiz is \"passed\" or not." //
+    ),
+
+    CLUMPING(Clumping.NO_CLUMPING.name(), //
+	    Clumping.BY_CLUE._explanation + //
+		    "\n" + Clumping.BY_ANSWER._explanation + //
+		    "\n" + Clumping.NO_CLUMPING._explanation //
+    ),;
 
     final public static PropertyPlus[] _Values = values();
 

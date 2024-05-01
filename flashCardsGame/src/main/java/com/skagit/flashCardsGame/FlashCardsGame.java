@@ -791,8 +791,9 @@ public class FlashCardsGame {
 		}
 
 		if (_silentMode && (!clueHasStringPart || !answerHasStringPart)) {
-		    System.out.println(
-			    "*** In Silent Mode, both Clue and Answer must have String Parts.  Automatically right. ***");
+		    System.out.println(Statics._Sep1
+			    + "In Silent Mode, both Clue and Answer must have String Parts.  Automatically right."
+			    + Statics._Sep2);
 		    _needLineFeed = true;
 		    gotItRight = true;
 		    continue;
@@ -939,9 +940,9 @@ public class FlashCardsGame {
     }
 
     public static void main(final String[] args) {
-	System.out.printf("SoundString=%s, PenString=%s\n", Statics._SoundString, Statics._PenString);
-	System.out.println("Special Chars = " + new String(Statics._SpecialChars) + ", IndentString=\""
-		+ Statics._IndentString + "\", SoundString=" + Statics._SoundString);
+	System.out.printf("SoundString=%s, PenString=%s, IndentString=\"%s\", SpecialChars=\"%s\"",
+		Statics._SoundString, Statics._PenString, Statics._IndentString, new String(Statics._SpecialChars));
+	System.out.println();
 	System.out.println(DirsTracker.getDirCasesFinderDirsString());
 	final FlashCardsGame flashCardsGame = new FlashCardsGame(args[0]);
 	System.out.println(flashCardsGame.getString());

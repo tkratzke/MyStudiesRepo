@@ -34,7 +34,8 @@ public class FullSide implements Comparable<FullSide> {
 	    return;
 	}
 	String fileStringPart = trimmedInputString.substring(idx0, idx1 + 1);
-	_stringPart = trimmedInputString.replaceFirst(Pattern.quote(fileStringPart), Matcher.quoteReplacement(""));
+	_stringPart = Statics.CleanWhiteSpace(
+		trimmedInputString.replaceFirst(Pattern.quote(fileStringPart), Matcher.quoteReplacement("")));
 	final String fileString = fileStringPart.substring(1, fileStringPart.length() - 1);
 	final String stem = partToStem.get(fileString);
 	if (stem != null) {
