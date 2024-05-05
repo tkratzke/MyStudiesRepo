@@ -376,7 +376,7 @@ public class StephenPool {
 	}
     }
 
-    final public static String _ExcelFilePath = "StephenPoolSpreadsheets/StephenPool - Bowls.xlsx";
+    final public static String _ExcelFilePath = "StephenPoolSpreadsheets/YearSheet - Bowls.xlsx";
 
     public static void main(final String[] args) {
 	final File f = new File(_ExcelFilePath);
