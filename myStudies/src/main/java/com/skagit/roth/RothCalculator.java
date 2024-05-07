@@ -2,6 +2,7 @@ package com.skagit.roth;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class RothCalculator {
 
+    final public static String[] _SheetNames = { "Statics", "Brackets First Year", "Fidelity" };
     final public static SimpleDateFormat _SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     final public static SimpleDateFormat _YearOnlySimpleDateFormat = new SimpleDateFormat("yyyy");
 
@@ -24,29 +26,45 @@ public class RothCalculator {
 
 	public class Ira implements Comparable<Ira> {
 
-	    public final String _iraName;
-	    public final int _age;
-	    public final double _divisor;
-	    public final double _amount;
+	    public final String _name;
+	    public final int _ageOfRmd;
+	    public final int _firstYear;
+	    public final double _currentDivisor;
+	    public final double _balance0;
+	    public final double _currentBalance;
 
-	    public Ira(final String iraName, final int age, final double divisor, final double amount) {
-		_iraName = iraName;
-		_age = age;
-		_divisor = divisor;
-		_amount = amount;
+	    public Ira(final String iraName) {
+		_name = iraName;
+		final Line forLookUp = new Line(_name);
+		final Line[] ageBlockLines = getBlock(0, "IRA Age of RMD")._lines;
+		final int idx0 = Arrays.binarySearch(ageBlockLines, forLookUp);
+		_ageOfRmd = idx0 < 0 ? 0 : (int) Math.round(ageBlockLines[idx0]._data._d);
+		final Line[] firstYearLines = getBlock(0, "IRA First Year")._lines;
+		final int idx1 = Arrays.binarySearch(firstYearLines, forLookUp);
+		_firstYear = idx1 < 0 ? 0 : (int) Math.round(firstYearLines[idx1]._data._d);
+		final Line[] divisorLines = getBlock(0, "IRA Divisor First Year")._lines;
+		final int idx2 = Arrays.binarySearch(divisorLines, forLookUp);
+		_currentDivisor = idx2 < 0 ? Double.NaN : divisorLines[idx2]._data._d;
+		final Line[] balance0Lines = getBlock(0, "IRA Balance First Year")._lines;
+		final int idx3 = Arrays.binarySearch(balance0Lines, forLookUp);
+		_balance0 = balance0Lines[idx3]._data._d;
+		final Line[] balance1Lines = getBlock(0, "IRA Current Balance")._lines;
+		final int idx4 = Arrays.binarySearch(balance1Lines, forLookUp);
+		_currentBalance = balance1Lines[idx4]._data._d;
 	    }
 
 	    @Override
 	    public int compareTo(final Ira ira) {
-		return _iraName.compareTo(ira._iraName);
+		return _name.compareTo(ira._name);
 	    }
 
 	    public String getString() {
-		String s = String.format("IRA[%s], $%.2f", _iraName, _amount);
-		if (_age > 0) {
-		    s += String.format(", RMD Age[%d]", _age);
+		String s = String.format("IRA[%s], Balance0[$%.2f] CurrentBalance[$%.2f]", _name, _balance0,
+			_currentBalance);
+		if (_ageOfRmd > 0) {
+		    s += String.format(", Age of RMD[%d]", _ageOfRmd);
 		} else {
-		    s += String.format(", RMD Divisor[%.1f]", _divisor);
+		    s += String.format(", FirstYear[%d] DivisorForFirstYear[%.1f]", _firstYear, _currentDivisor);
 		}
 		return s;
 	    }
@@ -58,14 +76,47 @@ public class RothCalculator {
 
 	}
 
+	public class OutsideIncome implements Comparable<OutsideIncome> {
+
+	    public final String _name;
+	    public final double _amountFirstYear;
+
+	    public OutsideIncome(final String oiName) {
+		_name = oiName;
+		final Line forLookUp = new Line(_name);
+		final Line[] oiBlockLines = getBlock(0, "Outside Income First Year")._lines;
+		final int idx0 = Arrays.binarySearch(oiBlockLines, forLookUp);
+		_amountFirstYear = oiBlockLines[idx0]._data._d;
+	    }
+
+	    @Override
+	    public int compareTo(final OutsideIncome outsideIncome) {
+		return _name.compareTo(outsideIncome._name);
+	    }
+
+	    public String getString() {
+		return String.format("Outside Income[%s], Amount First Year[$%.2f]", _name, _amountFirstYear);
+	    }
+
+	    @Override
+	    public String toString() {
+		return getString();
+	    }
+	}
+
 	public final String _taxPayerName;
 	public final Date _dateOfBirth;
+	public final double _firstYearSsa;
 	public final Ira[] _iras;
+	public final OutsideIncome[] _outsideIncomes;
 
-	public TaxPayer(final String taxPayerName, final Date dateOfBirth) {
-	    _taxPayerName = taxPayerName;
-	    _dateOfBirth = dateOfBirth;
-	    final Line[] iraDefnLines = getIraDefns();
+	public TaxPayer(final Line line) {
+	    _taxPayerName = line._header._s;
+	    _dateOfBirth = line._data._date;
+	    final Line[] ssaLines = getBlock(0, "SSA First Year")._lines;
+	    final int idx = Arrays.binarySearch(ssaLines, new Line(_taxPayerName));
+	    _firstYearSsa = idx < 0 ? 0d : ssaLines[idx]._data._d;
+	    final Line[] iraDefnLines = getBlock(0, "IRA")._lines;
 	    final int nIraDefns = iraDefnLines.length;
 	    final ArrayList<Ira> iraList = new ArrayList<>();
 	    for (int k = 0; k < nIraDefns; ++k) {
@@ -73,22 +124,63 @@ public class RothCalculator {
 		final Field iraDefnLineData = iraDefnLine._data;
 		if (iraDefnLineData._s.equals(_taxPayerName)) {
 		    final String iraName = iraDefnLine._header._s;
-		    final int age = getIraAge(iraName);
-		    final double divisor = getIraDivisor(iraName);
-		    final double amount = getIraAmount(iraName);
-		    iraList.add(new Ira(iraName, age, divisor, amount));
+		    iraList.add(new Ira(iraName));
 		}
 	    }
 	    _iras = iraList.toArray(new Ira[iraList.size()]);
+	    final Line[] outsideIncomeDefnLines = getBlock(0, "Outside Income")._lines;
+	    final int nOidls = outsideIncomeDefnLines.length;
+	    final ArrayList<OutsideIncome> oiList = new ArrayList<>();
+	    for (int k = 0; k < nOidls; ++k) {
+		final Line oiLine = outsideIncomeDefnLines[k];
+		final Field oiData = oiLine._data;
+		if (oiData._s.equals(_taxPayerName)) {
+		    final String oiName = oiLine._header._s;
+		    oiList.add(new OutsideIncome(oiName));
+		}
+	    }
+	    _outsideIncomes = oiList.toArray(new OutsideIncome[oiList.size()]);
 	}
 
 	public String getString() {
 	    String s = String.format("TaxPayer[%s], DateOfBirth[%s]", _taxPayerName, FormatDate(_dateOfBirth));
+	    if (_firstYearSsa > 0d) {
+		s += String.format(" FirstYearSSA[$%.2f]", _firstYearSsa);
+	    }
 	    final int nIras = _iras.length;
 	    for (int k = 0; k < nIras; ++k) {
 		s += "\n\t" + _iras[k].getString();
 	    }
+	    final int nOutsideIncomes = _outsideIncomes.length;
+	    for (int k = 0; k < nOutsideIncomes; ++k) {
+		s += "\n\t" + _outsideIncomes[k].getString();
+	    }
 	    return s;
+	}
+
+	@Override
+	public String toString() {
+	    return getString();
+	}
+    }
+
+    public class CapitalGain implements Comparable<CapitalGain> {
+
+	public final String _name;
+	public final double _carryOverFirstYear;
+
+	public CapitalGain(final Line cgLine) {
+	    _name = cgLine._header._s;
+	    _carryOverFirstYear = cgLine._data._d;
+	}
+
+	@Override
+	public int compareTo(final CapitalGain capitalGain) {
+	    return _name.compareTo(capitalGain._name);
+	}
+
+	public String getString() {
+	    return String.format("Capital Gain[%s], Carryover First Year[$%.2f]", _name, _carryOverFirstYear);
 	}
 
 	@Override
@@ -100,34 +192,49 @@ public class RothCalculator {
     /** Poi concepts: */
     final public XSSFWorkbook _workBook;
     final public FormulaEvaluator _formulaEvaluator;
-    final public XSSFSheet _staticSheet;
-    final public XSSFSheet _firstYearSheet;
+    final public XSSFSheet[] _sheets;
     /** Blocks of data: */
-    final public Block[] _staticBlocks;
-    final public Block[] _firstYearBlocks;
+    final public Block[][] _blocksS;
     /** Class representation: */
     public final Date _firstEndOfYear;
     public final Date _lastEndOfYear;
+    public final Date _currentDate;
+    public final double _standardDeductionFirstYear;
     public final TaxPayer[] _taxPayers;
+    public final CapitalGain[] _capitalGains;
 
-    public RothCalculator(final XSSFWorkbook workBook, final String staticSheetName, final String firstYearSheetName) {
+    public RothCalculator(final XSSFWorkbook workBook) {
 	_workBook = workBook;
 	_formulaEvaluator = _workBook.getCreationHelper().createFormulaEvaluator();
-	_staticSheet = _workBook.getSheet(staticSheetName);
-	_firstYearSheet = _workBook.getSheet(firstYearSheetName);
 	/** Read Sheets into Blocks. */
-	_staticBlocks = sheetToBlocks(_staticSheet);
-	_firstYearBlocks = sheetToBlocks(_firstYearSheet);
-	/** Convert Blocks to class representation. */
-	_firstEndOfYear = getFirstYear();
-	_lastEndOfYear = getLastYear();
-	final Block taxPayersBlock = getTaxPayersBlock();
-	final Line[] lines = taxPayersBlock._lines;
-	final int nLines = lines.length;
-	_taxPayers = new TaxPayer[nLines];
-	for (int k = 0; k < nLines; ++k) {
-	    final Line line = lines[k];
-	    _taxPayers[k] = new TaxPayer(line._header._s, line._data._date);
+	final int nSheets = _SheetNames.length;
+	_sheets = new XSSFSheet[nSheets];
+	_blocksS = new Block[nSheets][];
+	for (int k = 0; k < nSheets; ++k) {
+	    _sheets[k] = _workBook.getSheet(_SheetNames[k]);
+	    _blocksS[k] = sheetToBlocks(_sheets[k]);
+	}
+	_firstEndOfYear = getBlock(0, "First Year")._lines[0]._header._date;
+	_lastEndOfYear = getBlock(0, "Last Year")._lines[0]._header._date;
+	_standardDeductionFirstYear = getBlock(0, "Standard Deduction First Year")._lines[0]._data._d;
+	Date currentDate = null;
+	try {
+	    currentDate = _SimpleDateFormat.parse(_SimpleDateFormat.format(new Date())); //
+	} catch (final ParseException e) {
+	}
+	_currentDate = currentDate;
+
+	final Line[] taxPayerLines = getBlock(0, "Tax Payer")._lines;
+	final int nLines0 = taxPayerLines.length;
+	_taxPayers = new TaxPayer[nLines0];
+	for (int k = 0; k < nLines0; ++k) {
+	    _taxPayers[k] = new TaxPayer(taxPayerLines[k]);
+	}
+	final Line[] capitalGainsCarryOverFirstYearLines = getBlock(0, "Capital Gains Carryover First Year")._lines;
+	final int nLines1 = capitalGainsCarryOverFirstYearLines.length;
+	_capitalGains = new CapitalGain[nLines1];
+	for (int k = 0; k < nLines1; ++k) {
+	    _capitalGains[k] = new CapitalGain(capitalGainsCarryOverFirstYearLines[k]);
 	}
     }
 
@@ -188,34 +295,21 @@ public class RothCalculator {
     }
 
     public String getString() {
-	String s = String.format("From %s to %s.\nTax Payers:", _YearOnlySimpleDateFormat.format(_firstEndOfYear),
-		_YearOnlySimpleDateFormat.format(_lastEndOfYear));
+	final String firstYearString = _YearOnlySimpleDateFormat.format(_firstEndOfYear);
+	final String currentDateString = _SimpleDateFormat.format(new Date(System.currentTimeMillis()));
+	final String lastYearString = _YearOnlySimpleDateFormat.format(_lastEndOfYear);
+	String s = String.format("First Year[%s], Current Date[%s], Last Year[%s]\nStandard Deduction First Year[%.2f]",
+		firstYearString, currentDateString, lastYearString, _standardDeductionFirstYear);
 	final int nTaxPayers = _taxPayers.length;
 	for (int k = 0; k < nTaxPayers; ++k) {
-	    if (k > 0) {
-		s += "\n";
-	    }
-	    s += String.format("\n%d. %s", k, _taxPayers[k].getString());
+	    s += String.format("\n\n%d. %s", k, _taxPayers[k].getString());
 	}
-	return s;
-    }
-
-    public String poiGetString() {
-	String s = "Static Blocks:";
-	final int nStaticBlocks = _staticBlocks.length;
-	for (int k = 0; k < nStaticBlocks; ++k) {
-	    if (k > 0) {
+	final int nCapitalGains = _capitalGains.length;
+	for (int k = 0; k < nCapitalGains; ++k) {
+	    if (k == 0) {
 		s += "\n";
 	    }
-	    s += String.format("\n%d. %s", k, _staticBlocks[k]);
-	}
-	s += "\n\nFirst Year Blocks:";
-	final int nFirstYearBlocks = _firstYearBlocks.length;
-	for (int k = 0; k < nFirstYearBlocks; ++k) {
-	    if (k > 0) {
-		s += "\n";
-	    }
-	    s += String.format("\n%d. %s", k, _firstYearBlocks[k]);
+	    s += String.format("\n%d. %s", k, _capitalGains[k].getString());
 	}
 	return s;
     }
@@ -229,59 +323,15 @@ public class RothCalculator {
 	return _SimpleDateFormat.format(date);
     }
 
-    private Date getFirstYear() {
-	return getStaticBlock("First Year")._lines[0]._header._date;
-    }
-
-    private Date getLastYear() {
-	return getStaticBlock("Last Year")._lines[0]._header._date;
-    }
-
-    public Block getTaxPayersBlock() {
-	return getStaticBlock("Tax Payers");
-    }
-
-    public Line[] getIraDefns() {
-	return getStaticBlock("IRAs")._lines;
-    }
-
-    public int getIraAge(final String iraName) {
-	final Line[] lines = getStaticBlock("IRA RMD Ages")._lines;
-	final int idx = Arrays.binarySearch(lines, new Line(iraName));
-	if (idx < 0) {
-	    return -1;
-	}
-	return (int) Math.round(lines[idx]._data._d);
-    }
-
-    public double getIraDivisor(final String iraName) {
-	final Line[] lines = getStaticBlock("IRA RMD Divisors")._lines;
-	final int idx = Arrays.binarySearch(lines, new Line(iraName));
-	if (idx < 0) {
-	    return Double.NaN;
-	}
-	return lines[idx]._data._d;
-    }
-
-    public double getIraAmount(final String iraName) {
-	final Line[] lines = getStaticBlock("IRA Amounts")._lines;
-	final int idx = Arrays.binarySearch(lines, new Line(iraName));
-	if (idx < 0) {
-	    return Double.NaN;
-	}
-	return lines[idx]._data._d;
-    }
-
-    private Block getStaticBlock(final String s) {
-	return _staticBlocks[Arrays.binarySearch(_staticBlocks, new Block(s))];
+    private Block getBlock(final int idx, final String blockName) {
+	final Block[] theseBlocks = _blocksS[idx];
+	return theseBlocks[Arrays.binarySearch(theseBlocks, new Block(blockName))];
     }
 
     public static void main(final String[] args) {
 	final String filePath = args[0] + ".xlsx";
-	final String staticSheetName = args[1];
-	final String firstYearSheetName = args[2];
 	try (XSSFWorkbook workBook = new XSSFWorkbook(new FileInputStream(filePath))) {
-	    final RothCalculator rothCalculator = new RothCalculator(workBook, staticSheetName, firstYearSheetName);
+	    final RothCalculator rothCalculator = new RothCalculator(workBook);
 	    System.out.print(rothCalculator.getString());
 	} catch (final IOException e) {
 	    e.printStackTrace();
