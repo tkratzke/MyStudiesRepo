@@ -21,6 +21,12 @@ public class RothCalculator {
     final public static String[] _SheetNames = { "Statics", "Brackets First Year", "Fidelity" };
     final public static SimpleDateFormat _SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     final public static SimpleDateFormat _YearOnlySimpleDateFormat = new SimpleDateFormat("yyyy");
+    final public static String[] _BracketsNames = { //
+	    "Tax Brackets First Year", //
+	    "Long Term Rate First Year", //
+	    "Social Security First Year", //
+	    "IRMAA Multipliers First Year" //
+    };
 
     public class TaxPayer {
 
@@ -197,11 +203,13 @@ public class RothCalculator {
     final public Block[][] _blocksS;
     /** Class representation: */
     public final Date _firstEndOfYear;
-    public final Date _lastEndOfYear;
+    public final Date _finalEndOfYear;
     public final Date _currentDate;
     public final double _standardDeductionFirstYear;
+    public final double _medicarePartBStandardPremiumFirstYear;
     public final TaxPayer[] _taxPayers;
     public final CapitalGain[] _capitalGains;
+    public final Brackets[] _bracketsS;
 
     public RothCalculator(final XSSFWorkbook workBook) {
 	_workBook = workBook;
@@ -215,8 +223,10 @@ public class RothCalculator {
 	    _blocksS[k] = sheetToBlocks(_sheets[k]);
 	}
 	_firstEndOfYear = getBlock(0, "First Year")._lines[0]._header._date;
-	_lastEndOfYear = getBlock(0, "Last Year")._lines[0]._header._date;
+	_finalEndOfYear = getBlock(0, "Final Year")._lines[0]._header._date;
 	_standardDeductionFirstYear = getBlock(0, "Standard Deduction First Year")._lines[0]._data._d;
+	_medicarePartBStandardPremiumFirstYear = getBlock(0,
+		"Medicare Part B Standard Premium First Year")._lines[0]._data._d;
 	Date currentDate = null;
 	try {
 	    currentDate = _SimpleDateFormat.parse(_SimpleDateFormat.format(new Date())); //
@@ -235,6 +245,11 @@ public class RothCalculator {
 	_capitalGains = new CapitalGain[nLines1];
 	for (int k = 0; k < nLines1; ++k) {
 	    _capitalGains[k] = new CapitalGain(capitalGainsCarryOverFirstYearLines[k]);
+	}
+	final int nBracketsS = _BracketsNames.length;
+	_bracketsS = new Brackets[nBracketsS];
+	for (int k = 0; k < nBracketsS; ++k) {
+	    _bracketsS[k] = new Brackets(this, _BracketsNames[k]);
 	}
     }
 
@@ -297,9 +312,13 @@ public class RothCalculator {
     public String getString() {
 	final String firstYearString = _YearOnlySimpleDateFormat.format(_firstEndOfYear);
 	final String currentDateString = _SimpleDateFormat.format(new Date(System.currentTimeMillis()));
-	final String lastYearString = _YearOnlySimpleDateFormat.format(_lastEndOfYear);
-	String s = String.format("First Year[%s], Current Date[%s], Last Year[%s]\nStandard Deduction First Year[%.2f]",
-		firstYearString, currentDateString, lastYearString, _standardDeductionFirstYear);
+	final String finalYearString = _YearOnlySimpleDateFormat.format(_finalEndOfYear);
+	String s = String.format("First Year[%s], Current Date[%s], Final Year[%s]", //
+		firstYearString, currentDateString, finalYearString);
+	s += String.format(//
+		"\nStandard Deduction First Year[$%.2f], Medicare-B Standard Premium First year[$%.2f]", //
+		_standardDeductionFirstYear, _medicarePartBStandardPremiumFirstYear //
+	);
 	final int nTaxPayers = _taxPayers.length;
 	for (int k = 0; k < nTaxPayers; ++k) {
 	    s += String.format("\n\n%d. %s", k, _taxPayers[k].getString());
@@ -310,6 +329,10 @@ public class RothCalculator {
 		s += "\n";
 	    }
 	    s += String.format("\n%d. %s", k, _capitalGains[k].getString());
+	}
+	final int nBracketsS = _BracketsNames.length;
+	for (int k = 0; k < nBracketsS; ++k) {
+	    s += String.format("\n\n%s", _bracketsS[k]);
 	}
 	return s;
     }
@@ -323,8 +346,8 @@ public class RothCalculator {
 	return _SimpleDateFormat.format(date);
     }
 
-    private Block getBlock(final int idx, final String blockName) {
-	final Block[] theseBlocks = _blocksS[idx];
+    public Block getBlock(final int sheetIdx, final String blockName) {
+	final Block[] theseBlocks = _blocksS[sheetIdx];
 	return theseBlocks[Arrays.binarySearch(theseBlocks, new Block(blockName))];
     }
 
