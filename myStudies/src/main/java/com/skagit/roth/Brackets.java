@@ -27,7 +27,8 @@ public class Brackets {
 
     public Brackets(final RothCalculator rothCalculator, final String bracketsName) {
 	_name = bracketsName;
-	final Line[] lines = rothCalculator.getBlock(/* sheetIdx= */1, bracketsName)._lines;
+	final String bracketsSheetName = RothCalculator.getSheetName(RothCalculator._BracketsIdx);
+	final Line[] lines = rothCalculator.getBlock(bracketsSheetName, bracketsName)._lines;
 	final int nLines = lines.length;
 	_perCentCeilings = new PerCentCeiling[nLines];
 	for (int k = 0; k < nLines; ++k) {

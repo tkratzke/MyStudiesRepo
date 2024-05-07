@@ -5,18 +5,22 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 public class Line implements Comparable<Line> {
 
+    public final boolean _fidelity;
     public Field _header;
     public Field _data;
 
     /** For looking things up. */
     public Line(final String s) {
+	_fidelity = false;
 	_header = new Field(s);
 	_data = null;
     }
 
-    public Line(final RothCalculator rothCalculator, final XSSFSheet sheet, final int kRow) {
-	_header = new Field(rothCalculator, sheet.getRow(kRow).getCell(0));
-	_data = new Field(rothCalculator, sheet.getRow(kRow).getCell(1));
+    public Line(final RothCalculator.SheetAndBlocks sheetAndBlocks, final int kRow) {
+	_fidelity = sheetAndBlocks._fidelity;
+	final XSSFSheet sheet = sheetAndBlocks._sheet;
+	_header = new Field(sheetAndBlocks, sheet.getRow(kRow).getCell(0));
+	_data = new Field(sheetAndBlocks, sheet.getRow(kRow).getCell(1));
     }
 
     public boolean isValid() {

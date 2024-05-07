@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.skagit.util.StringUtils;
 
@@ -21,9 +20,10 @@ public class Field {
     public final double _d;
     public final String _s;
     public final Date _date;
+    public final boolean _fidelity;
 
-    public Field(final RothCalculator rothCalculator, final XSSFSheet sheet, final int kRow, final int kClmn) {
-	this(rothCalculator, sheet.getRow(kRow).getCell(kClmn));
+    public Field(final RothCalculator.SheetAndBlocks sheetAndBlocks, final int kRow, final int kClmn) {
+	this(sheetAndBlocks, sheetAndBlocks._sheet.getRow(kRow).getCell(kClmn));
     }
 
     public static Comparator<Field> ByString = new Comparator<Field>() {
@@ -55,9 +55,11 @@ public class Field {
 	_s = StringUtils.CleanWhiteSpace(s);
 	_date = null;
 	_cellType = CellType.STRING;
+	_fidelity = false;
     }
 
-    public Field(final RothCalculator rothCalculator, final XSSFCell cell) {
+    public Field(final RothCalculator.SheetAndBlocks sheetAndBlocks, final XSSFCell cell) {
+	_fidelity = sheetAndBlocks._fidelity;
 	if (cell == null) {
 	    _b = null;
 	    _d = Double.NaN;
@@ -66,6 +68,7 @@ public class Field {
 	    _cellType = null;
 	    return;
 	}
+	final RothCalculator rothCalculator = sheetAndBlocks.getRothCalculator();
 	final CellType cellType = cell.getCellType();
 	final FormulaEvaluator formulaEvaluator = rothCalculator._formulaEvaluator;
 	switch (cellType) {
@@ -157,7 +160,7 @@ public class Field {
 	if (_b != null) {
 	    return _b.toString();
 	} else if (Double.isFinite(_d)) {
-	    return String.format("%.2f", _d);
+	    return String.format(_fidelity ? "$%.2f" : "%.2f", _d);
 	} else if (_s != null) {
 	    return _s.length() == 0 ? _EmptySetString : _s;
 	} else if (_date != null) {

@@ -11,18 +11,21 @@ import com.skagit.util.StringUtils;
 
 public class Block implements Comparable<Block> {
 
+    final boolean _fidelityBlock;
     final String _nameOfBlock;
     final Line[] _lines;
 
-    public Block(final RothCalculator rothCalculator, final XSSFSheet sheet, final CellRangeAddress start,
-	    final CellRangeAddress end) {
+    public Block(final RothCalculator.SheetAndBlocks sheetAndBlocks, final CellRangeAddress start,
+	    final CellRangeAddress end, final boolean fidelityBlock) {
+	_fidelityBlock = fidelityBlock;
 	final int firstRow = start.getFirstRow();
 	final int dataRowStop = end.getFirstRow();
+	final XSSFSheet sheet = sheetAndBlocks._sheet;
 	final XSSFCell nameCell = sheet.getRow(firstRow).getCell(start.getFirstColumn());
 	_nameOfBlock = StringUtils.CleanWhiteSpace(nameCell.getStringCellValue());
 	final ArrayList<Line> lineList = new ArrayList<>();
 	for (int kRow = firstRow + 1; kRow < dataRowStop; ++kRow) {
-	    final Line line = new Line(rothCalculator, sheet, kRow);
+	    final Line line = new Line(sheetAndBlocks, kRow);
 	    if (line.isValid()) {
 		lineList.add(line);
 	    }
@@ -34,6 +37,7 @@ public class Block implements Comparable<Block> {
 
     /** For looking up a Block. */
     public Block(final String s) {
+	_fidelityBlock = false;
 	_nameOfBlock = s;
 	_lines = null;
     }
@@ -57,7 +61,7 @@ public class Block implements Comparable<Block> {
 	if (block == null) {
 	    return 1;
 	}
-	return _nameOfBlock.toLowerCase().compareTo(block._nameOfBlock.toLowerCase());
+	return _nameOfBlock.compareTo(block._nameOfBlock);
     }
 
     public Field getData(final String s) {
