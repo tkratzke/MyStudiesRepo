@@ -9,6 +9,8 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
+import com.skagit.util.StringUtils;
+
 public class Field {
 
     final public static char _EmptySetChar = '\u2205';
@@ -50,7 +52,7 @@ public class Field {
     public Field(final String s) {
 	_b = null;
 	_d = Double.NaN;
-	_s = s;
+	_s = StringUtils.CleanWhiteSpace(s);
 	_date = null;
 	_cellType = CellType.STRING;
     }
@@ -107,7 +109,7 @@ public class Field {
 	    case STRING:
 		_b = null;
 		_d = Double.NaN;
-		_s = formulaEvaluator.evaluate(cell).getStringValue();
+		_s = StringUtils.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
 		_date = null;
 		_cellType = CellType.STRING;
 		return;
@@ -135,7 +137,7 @@ public class Field {
 	case STRING:
 	    _b = null;
 	    _d = Double.NaN;
-	    _s = cell.getStringCellValue();
+	    _s = StringUtils.CleanWhiteSpace(cell.getStringCellValue());
 	    _date = null;
 	    _cellType = cellType;
 	    return;
@@ -159,7 +161,7 @@ public class Field {
 	} else if (_s != null) {
 	    return _s.length() == 0 ? _EmptySetString : _s;
 	} else if (_date != null) {
-	    return RothCalculator.FormatDate(_date);
+	    return StringUtils.formatDateOnly(_date);
 	}
 	return "NULL";
     }

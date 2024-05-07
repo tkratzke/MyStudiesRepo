@@ -2,8 +2,6 @@ package com.skagit.roth;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,11 +14,11 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.skagit.util.StringUtils;
+
 public class RothCalculator {
 
     final public static String[] _SheetNames = { "Statics", "Brackets First Year", "Fidelity" };
-    final public static SimpleDateFormat _SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    final public static SimpleDateFormat _YearOnlySimpleDateFormat = new SimpleDateFormat("yyyy");
     final public static String[] _BracketsNames = { //
 	    "Tax Brackets First Year", //
 	    "Long Term Rate First Year", //
@@ -149,7 +147,8 @@ public class RothCalculator {
 	}
 
 	public String getString() {
-	    String s = String.format("TaxPayer[%s], DateOfBirth[%s]", _taxPayerName, FormatDate(_dateOfBirth));
+	    String s = String.format("TaxPayer[%s], DateOfBirth[%s]", _taxPayerName,
+		    StringUtils.formatDateOnly(_dateOfBirth));
 	    if (_firstYearSsa > 0d) {
 		s += String.format(" FirstYearSSA[$%.2f]", _firstYearSsa);
 	    }
@@ -227,12 +226,7 @@ public class RothCalculator {
 	_standardDeductionFirstYear = getBlock(0, "Standard Deduction First Year")._lines[0]._data._d;
 	_medicarePartBStandardPremiumFirstYear = getBlock(0,
 		"Medicare Part B Standard Premium First Year")._lines[0]._data._d;
-	Date currentDate = null;
-	try {
-	    currentDate = _SimpleDateFormat.parse(_SimpleDateFormat.format(new Date())); //
-	} catch (final ParseException e) {
-	}
-	_currentDate = currentDate;
+	_currentDate = StringUtils.getDateOnly(new Date());
 
 	final Line[] taxPayerLines = getBlock(0, "Tax Payer")._lines;
 	final int nLines0 = taxPayerLines.length;
@@ -310,9 +304,9 @@ public class RothCalculator {
     }
 
     public String getString() {
-	final String firstYearString = _YearOnlySimpleDateFormat.format(_firstEndOfYear);
-	final String currentDateString = _SimpleDateFormat.format(new Date(System.currentTimeMillis()));
-	final String finalYearString = _YearOnlySimpleDateFormat.format(_finalEndOfYear);
+	final String firstYearString = StringUtils.formatYearOnly(_firstEndOfYear);
+	final String currentDateString = StringUtils.formatDateOnly(new Date(System.currentTimeMillis()));
+	final String finalYearString = StringUtils.formatYearOnly(_finalEndOfYear);
 	String s = String.format("First Year[%s], Current Date[%s], Final Year[%s]", //
 		firstYearString, currentDateString, finalYearString);
 	s += String.format(//
@@ -340,10 +334,6 @@ public class RothCalculator {
     @Override
     public String toString() {
 	return getString();
-    }
-
-    public static String FormatDate(final Date date) {
-	return _SimpleDateFormat.format(date);
     }
 
     public Block getBlock(final int sheetIdx, final String blockName) {

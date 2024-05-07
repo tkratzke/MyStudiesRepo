@@ -7,6 +7,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
+import com.skagit.util.StringUtils;
+
 public class Block implements Comparable<Block> {
 
     final String _nameOfBlock;
@@ -17,7 +19,7 @@ public class Block implements Comparable<Block> {
 	final int firstRow = start.getFirstRow();
 	final int dataRowStop = end.getFirstRow();
 	final XSSFCell nameCell = sheet.getRow(firstRow).getCell(start.getFirstColumn());
-	_nameOfBlock = nameCell.getStringCellValue();
+	_nameOfBlock = StringUtils.CleanWhiteSpace(nameCell.getStringCellValue());
 	final ArrayList<Line> lineList = new ArrayList<>();
 	for (int kRow = firstRow + 1; kRow < dataRowStop; ++kRow) {
 	    final Line line = new Line(rothCalculator, sheet, kRow);
@@ -31,8 +33,8 @@ public class Block implements Comparable<Block> {
     }
 
     /** For looking up a Block. */
-    public Block(final String string) {
-	_nameOfBlock = string;
+    public Block(final String s) {
+	_nameOfBlock = s;
 	_lines = null;
     }
 
