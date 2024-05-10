@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 
+import com.skagit.util.DateUtils;
 import com.skagit.util.StringUtils;
 
 public class Field {
@@ -164,7 +165,7 @@ public class Field {
 	} else if (_s != null) {
 	    return _s.length() == 0 ? _EmptySetString : _s;
 	} else if (_date != null) {
-	    return StringUtils.formatDateOnly(_date);
+	    return DateUtils.formatDateOnly(_date);
 	}
 	return "NULL";
     }

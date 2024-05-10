@@ -41,7 +41,7 @@ public class Line implements Comparable<Line> {
     }
 
     public String getString() {
-	return String.format("Hdr[%s] Dta[%s]", _header.getString(), _data.getString());
+	return String.format("%s: %s", _header.getString(), _data.getString());
     }
 
     @Override

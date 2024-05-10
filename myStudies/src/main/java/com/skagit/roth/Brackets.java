@@ -2,13 +2,22 @@ package com.skagit.roth;
 
 public class Brackets {
 
-    public static class PerCentCeiling {
-	public final double _perCent;
-	public final double _ceiling;
+    public static class PerCentCeiling implements Cloneable {
+	public double _perCent;
+	public double _ceiling;
 
 	public PerCentCeiling(final double perCent, final double ceiling) {
 	    _perCent = perCent;
 	    _ceiling = ceiling;
+	}
+
+	@Override
+	public PerCentCeiling clone() {
+	    try {
+		return (PerCentCeiling) super.clone();
+	    } catch (final CloneNotSupportedException e) {
+	    }
+	    return null;
 	}
 
 	public String getString() {
@@ -19,7 +28,16 @@ public class Brackets {
 	public String toString() {
 	    return getString();
 	}
+    }
 
+    public Brackets(final Brackets brackets) {
+	_name = brackets._name;
+	final PerCentCeiling[] perCentCeilings = brackets._perCentCeilings;
+	final int n = perCentCeilings.length;
+	_perCentCeilings = new PerCentCeiling[n];
+	for (int k = 0; k < n; ++k) {
+	    _perCentCeilings[k] = perCentCeilings[k].clone();
+	}
     }
 
     public final String _name;

@@ -2,11 +2,14 @@ package com.skagit.roth;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -14,13 +17,14 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.skagit.util.DateUtils;
 import com.skagit.util.StringUtils;
 
 public class RothCalculator {
 
     final public static String[] _SheetNames = { //
 	    "Statics", //
-	    "Brackets First Year", //
+	    "Brackets", //
 	    "Fidelity" //
     };
     final public static int _StaticsIdx = 0;
@@ -28,11 +32,18 @@ public class RothCalculator {
     final public static int _FidelityIdx = 2;
 
     final public static String[] _BracketsNames = { //
-	    "Tax Brackets First Year", //
-	    "Long Term Rate First Year", //
-	    "Social Security First Year", //
-	    "IRMAA Multipliers First Year" //
+	    "Tax Brackets", //
+	    "Long Term Tax Rates", //
+	    "Social Security AGI Tax Rates", //
+	    "IRMAA Multipliers", //
     };
+
+    final public static String[] _GrowthRateNames = { //
+	    "Inflation", //
+	    "Investment", //
+    };
+    final public static int _InflationIdx = 0;
+    final public static int _InvestmentIdx = 1;
 
     public class SheetAndBlocks implements Comparable<SheetAndBlocks> {
 	final boolean _fidelity;
@@ -143,9 +154,8 @@ public class RothCalculator {
 
 	    public final String _name;
 	    public final int _ageOfRmd;
-	    public final int _firstYear;
 	    public final double _currentDivisor;
-	    public final double _balance0;
+	    public final double _balanceBeginningOfCurrentYear;
 	    public final double _currentBalance;
 
 	    public Ira(final String iraName) {
@@ -155,15 +165,12 @@ public class RothCalculator {
 		final Line[] ageBlockLines = getBlock(staticsSheetName, "IRA Age of RMD")._lines;
 		final int idx0 = Arrays.binarySearch(ageBlockLines, forLookUp);
 		_ageOfRmd = idx0 < 0 ? 0 : (int) Math.round(ageBlockLines[idx0]._data._d);
-		final Line[] firstYearLines = getBlock(staticsSheetName, "IRA First Year")._lines;
-		final int idx1 = Arrays.binarySearch(firstYearLines, forLookUp);
-		_firstYear = idx1 < 0 ? 0 : (int) Math.round(firstYearLines[idx1]._data._d);
-		final Line[] divisorLines = getBlock(staticsSheetName, "IRA Divisor First Year")._lines;
+		final Line[] divisorLines = getBlock(staticsSheetName, "IRA Divisor Current Year")._lines;
 		final int idx2 = Arrays.binarySearch(divisorLines, forLookUp);
 		_currentDivisor = idx2 < 0 ? Double.NaN : divisorLines[idx2]._data._d;
-		final Line[] balance0Lines = getBlock(staticsSheetName, "IRA Balance First Year")._lines;
+		final Line[] balance0Lines = getBlock(staticsSheetName, "IRA Balance Beginning of Current Year")._lines;
 		final int idx3 = Arrays.binarySearch(balance0Lines, forLookUp);
-		_balance0 = balance0Lines[idx3]._data._d;
+		_balanceBeginningOfCurrentYear = balance0Lines[idx3]._data._d;
 		final Line[] balance1Lines = getBlock(staticsSheetName, "IRA Current Balance")._lines;
 		final int idx4 = Arrays.binarySearch(balance1Lines, forLookUp);
 		_currentBalance = balance1Lines[idx4]._data._d;
@@ -175,12 +182,12 @@ public class RothCalculator {
 	    }
 
 	    public String getString() {
-		String s = String.format("IRA[%s], Balance0[$%.2f] CurrentBalance[$%.2f]", _name, _balance0,
-			_currentBalance);
+		String s = String.format("IRA[%s], Balance0[$%.2f] CurrentBalance[$%.2f]", _name,
+			_balanceBeginningOfCurrentYear, _currentBalance);
 		if (_ageOfRmd > 0) {
 		    s += String.format(", Age of RMD[%d]", _ageOfRmd);
 		} else {
-		    s += String.format(", FirstYear[%d] DivisorForFirstYear[%.1f]", _firstYear, _currentDivisor);
+		    s += String.format(", CurrentDivisor[%.1f]", _currentDivisor);
 		}
 		return s;
 	    }
@@ -200,7 +207,7 @@ public class RothCalculator {
 	    public OutsideIncome(final String oiName) {
 		_name = oiName;
 		final Line forLookUp = new Line(_name);
-		final Line[] oiBlockLines = getBlock(getSheetName(_StaticsIdx), "Outside Income First Year")._lines;
+		final Line[] oiBlockLines = getBlock(getSheetName(_StaticsIdx), "Outside Income Current Year")._lines;
 		final int idx0 = Arrays.binarySearch(oiBlockLines, forLookUp);
 		_amountFirstYear = oiBlockLines[idx0]._data._d;
 	    }
@@ -222,7 +229,7 @@ public class RothCalculator {
 
 	public final String _taxPayerName;
 	public final Date _dateOfBirth;
-	public final double _firstYearSsa;
+	public final double _currentYearSsa;
 	public final Ira[] _iras;
 	public final OutsideIncome[] _outsideIncomes;
 
@@ -230,9 +237,9 @@ public class RothCalculator {
 	    _taxPayerName = line._header._s;
 	    _dateOfBirth = line._data._date;
 	    final String staticsSheetName = getSheetName(_StaticsIdx);
-	    final Line[] ssaLines = getBlock(staticsSheetName, "SSA First Year")._lines;
+	    final Line[] ssaLines = getBlock(staticsSheetName, "SSA Current Year")._lines;
 	    final int idx = Arrays.binarySearch(ssaLines, new Line(_taxPayerName));
-	    _firstYearSsa = idx < 0 ? 0d : ssaLines[idx]._data._d;
+	    _currentYearSsa = idx < 0 ? 0d : ssaLines[idx]._data._d;
 	    final Line[] iraDefnLines = getBlock(staticsSheetName, "IRA")._lines;
 	    final int nIraDefns = iraDefnLines.length;
 	    final ArrayList<Ira> iraList = new ArrayList<>();
@@ -261,9 +268,9 @@ public class RothCalculator {
 
 	public String getString() {
 	    String s = String.format("TaxPayer[%s], DateOfBirth[%s]", _taxPayerName,
-		    StringUtils.formatDateOnly(_dateOfBirth));
-	    if (_firstYearSsa > 0d) {
-		s += String.format(" FirstYearSSA[$%.2f]", _firstYearSsa);
+		    DateUtils.formatDateOnly(_dateOfBirth));
+	    if (_currentYearSsa > 0d) {
+		s += String.format(" Current Year SSA[$%.2f]", _currentYearSsa);
 	    }
 	    final int nIras = _iras.length;
 	    for (int k = 0; k < nIras; ++k) {
@@ -285,11 +292,11 @@ public class RothCalculator {
     public class CapitalGain implements Comparable<CapitalGain> {
 
 	public final String _name;
-	public final double _carryOverFirstYear;
+	public final double _carryOverToCurrentYear;
 
 	public CapitalGain(final Line cgLine) {
 	    _name = cgLine._header._s;
-	    _carryOverFirstYear = cgLine._data._d;
+	    _carryOverToCurrentYear = cgLine._data._d;
 	}
 
 	@Override
@@ -298,7 +305,8 @@ public class RothCalculator {
 	}
 
 	public String getString() {
-	    return String.format("Capital Gain[%s], Carryover First Year[$%.2f]", _name, _carryOverFirstYear);
+	    return String.format("Capital Gain[%s], Carryover to Current Year[$%.2f]", //
+		    _name, _carryOverToCurrentYear);
 	}
 
 	@Override
@@ -311,25 +319,17 @@ public class RothCalculator {
 
 	public final String _name;
 	public final double _perCentGrowth;
-	public final double _growthRate;
-	public final int _effectiveYear;
+	public final double _expGrowthRate;
 
 	public GrowthRate(final Line grLine) {
 	    _name = grLine._header._s;
 	    _perCentGrowth = grLine._data._d * 100d;
-	    _growthRate = Math.log(1d + _perCentGrowth / 100d);
-	    final String staticsSheetName = getSheetName(_StaticsIdx);
-	    final Line[] lines = getBlock(staticsSheetName, "Growth Rate Year")._lines;
-	    final int nLines = lines.length;
-	    int effectiveYear = -1;
-	    for (int k = 0; k < nLines; ++k) {
-		final Line line = lines[k];
-		if (line._header._s.equals(_name)) {
-		    effectiveYear = (int) Math.round(line._data._d);
-		    break;
-		}
-	    }
-	    _effectiveYear = effectiveYear;
+	    _expGrowthRate = Math.log(1d + _perCentGrowth / 100d);
+	}
+
+	public GrowthRate(final String name) {
+	    _name = name;
+	    _perCentGrowth = _expGrowthRate = Double.NaN;
 	}
 
 	@Override
@@ -338,12 +338,8 @@ public class RothCalculator {
 	}
 
 	public String getString() {
-	    String s = String.format("Growth Rate Name[%s], PerCentGrowth[%.0f%%] Growth Rate[%.4f]", //
-		    _name, _perCentGrowth, _growthRate);
-	    if (_effectiveYear > 0) {
-		s += String.format(", Effective Year[%d]", _effectiveYear);
-	    }
-	    return s;
+	    return String.format("Name[%s], PerCentGrowth[%.0f%%] ExpRate[%.4f]", //
+		    _name, _perCentGrowth, _expGrowthRate);
 	}
 
 	@Override
@@ -357,15 +353,17 @@ public class RothCalculator {
     final public FormulaEvaluator _formulaEvaluator;
     final public SheetAndBlocks[] _sheetAndBlocksS;
     /** Class representation: */
-    public final Date _firstEndOfYear;
-    public final Date _finalEndOfYear;
     public final Date _currentDate;
-    public final double _standardDeductionFirstYear;
-    public final double _medicarePartBStandardPremiumFirstYear;
+    public final int _finalYear;
+    public final double _remainderOfCurrentYear;
+    public final double _standardDeductionCurrentYear;
+    public final double _partBPremiumCurrentYear;
     public final TaxPayer[] _taxPayers;
     public final CapitalGain[] _capitalGains;
     public final GrowthRate[] _growthRates;
     public final Brackets[] _bracketsS;
+
+    public final YearOfData[] _yearsOfData;
 
     public RothCalculator(final XSSFWorkbook workBook) {
 	_workBook = workBook;
@@ -378,12 +376,17 @@ public class RothCalculator {
 	}
 	Arrays.sort(_sheetAndBlocksS);
 	final String staticsSheetName = getSheetName(_StaticsIdx);
-	_firstEndOfYear = getBlock(staticsSheetName, "First Year")._lines[0]._header._date;
-	_finalEndOfYear = getBlock(staticsSheetName, "Final Year")._lines[0]._header._date;
-	_standardDeductionFirstYear = getBlock(staticsSheetName, "Standard Deduction First Year")._lines[0]._data._d;
-	_medicarePartBStandardPremiumFirstYear = getBlock(staticsSheetName,
-		"Medicare Part B Standard Premium First Year")._lines[0]._data._d;
-	_currentDate = StringUtils.getDateOnly(new Date());
+	_currentDate = getBlock(staticsSheetName, "Current Date")._lines[0]._header._date;
+	final int currentYear = getCurrentYear();
+	_finalYear = (int) Math.round(getBlock(staticsSheetName, "Final Year")._lines[0]._header._d);
+	_standardDeductionCurrentYear = getBlock(staticsSheetName,
+		"Standard Deduction Current Year")._lines[0]._data._d;
+	_partBPremiumCurrentYear = getBlock(staticsSheetName, "Part B Premium Current Year")._lines[0]._data._d;
+	final Date thisJan1 = DateUtils.parseDate(String.format("%d-1-1", currentYear));
+	final Date nextJan1 = DateUtils.parseDate(String.format("%d-1-1", currentYear + 1));
+	final double d0 = DateUtils.getDateDiff(thisJan1, _currentDate, TimeUnit.DAYS);
+	final double d1 = DateUtils.getDateDiff(thisJan1, nextJan1, TimeUnit.DAYS);
+	_remainderOfCurrentYear = (d1 - d0) / d1;
 
 	final Line[] taxPayerLines = getBlock(staticsSheetName, "Tax Payer")._lines;
 	final int nLines0 = taxPayerLines.length;
@@ -391,35 +394,59 @@ public class RothCalculator {
 	for (int k = 0; k < nLines0; ++k) {
 	    _taxPayers[k] = new TaxPayer(taxPayerLines[k]);
 	}
-	final Line[] capitalGainsCarryOverFirstYearLines = getBlock(staticsSheetName,
-		"Capital Gains Carryover First Year")._lines;
-	final int nLines1 = capitalGainsCarryOverFirstYearLines.length;
+	final Line[] capitalGainsCarryOverLines = getBlock(staticsSheetName,
+		"Capital Gains Carryover to Current Year")._lines;
+	final int nLines1 = capitalGainsCarryOverLines.length;
 	_capitalGains = new CapitalGain[nLines1];
 	for (int k = 0; k < nLines1; ++k) {
-	    _capitalGains[k] = new CapitalGain(capitalGainsCarryOverFirstYearLines[k]);
+	    _capitalGains[k] = new CapitalGain(capitalGainsCarryOverLines[k]);
 	}
-	final Line[] growthRateLines = getBlock(staticsSheetName, "Growth Rate")._lines;
+	final Line[] growthRateLines = getBlock(staticsSheetName, "Growth Rates")._lines;
 	final int nLines2 = growthRateLines.length;
 	_growthRates = new GrowthRate[nLines2];
 	for (int k = 0; k < nLines2; ++k) {
 	    _growthRates[k] = new GrowthRate(growthRateLines[k]);
 	}
+	Arrays.sort(_growthRates);
 	final int nBracketsS = _BracketsNames.length;
 	_bracketsS = new Brackets[nBracketsS];
 	for (int k = 0; k < nBracketsS; ++k) {
 	    _bracketsS[k] = new Brackets(this, _BracketsNames[k]);
 	}
+
+	final int nYears = _finalYear - currentYear + 1;
+	_yearsOfData = new YearOfData[nYears];
+	for (int year = currentYear; year <= _finalYear; ++year) {
+	    _yearsOfData[year - currentYear] = new YearOfData(this, year);
+	}
+    }
+
+    public Block getBlock(final String sheetName, final String blockName) {
+	final int sheetIdx = Arrays.binarySearch(_sheetAndBlocksS, new SheetAndBlocks(sheetName));
+	if (sheetIdx < 0) {
+	    return null;
+	}
+	final Block[] theseBlocks = _sheetAndBlocksS[sheetIdx]._blocks;
+	final int blockIdx = Arrays.binarySearch(theseBlocks, new Block(blockName));
+	return blockIdx < 0 ? null : theseBlocks[blockIdx];
+    }
+
+    public int getCurrentYear() {
+	final LocalDate localDate = _currentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	return localDate.getYear();
+    }
+
+    public GrowthRate getGrowthRate(final int growthRateIdx) {
+	final String growthRateName = _GrowthRateNames[growthRateIdx];
+	return _growthRates[Arrays.binarySearch(_growthRates, new GrowthRate(growthRateName))];
     }
 
     public String getString() {
-	final String firstYearString = StringUtils.formatYearOnly(_firstEndOfYear);
-	final String currentDateString = StringUtils.formatDateOnly(new Date(System.currentTimeMillis()));
-	final String finalYearString = StringUtils.formatYearOnly(_finalEndOfYear);
-	String s = String.format("First Year[%s], Current Date[%s], Final Year[%s]", //
-		firstYearString, currentDateString, finalYearString);
+	String s = String.format("Current Year[%d], Current Date[%s], Final Year[%d]", //
+		getCurrentYear(), DateUtils.formatDateOnly(new Date(System.currentTimeMillis())), _finalYear);
 	s += String.format(//
-		"\nStandard Deduction First Year[$%.2f], Medicare-B Standard Premium First year[$%.2f]", //
-		_standardDeductionFirstYear, _medicarePartBStandardPremiumFirstYear //
+		"\nStandard Deduction Current Year[$%.2f], Medicare-B Standard Premium Current year[$%.2f]", //
+		_standardDeductionCurrentYear, _partBPremiumCurrentYear //
 	);
 	final int nTaxPayers = _taxPayers.length;
 	for (int k = 0; k < nTaxPayers; ++k) {
@@ -449,18 +476,17 @@ public class RothCalculator {
 	for (int k = 0; k < nFidelityBlocks; ++k) {
 	    s += "\n\n" + fidelityBlocks[k].getString();
 	}
+	//
+	final int nYearsOfData = _yearsOfData.length;
+	for (int k = 0; k < nYearsOfData; ++k) {
+	    s += "\n\n" + _yearsOfData[k].getString();
+	}
 	return s;
     }
 
     @Override
     public String toString() {
 	return getString();
-    }
-
-    public Block getBlock(final String sheetName, final String blockName) {
-	final int sheetAndBlocksIdx = Arrays.binarySearch(_sheetAndBlocksS, new SheetAndBlocks(sheetName));
-	final Block[] theseBlocks = _sheetAndBlocksS[sheetAndBlocksIdx]._blocks;
-	return theseBlocks[Arrays.binarySearch(theseBlocks, new Block(blockName))];
     }
 
     public static void main(final String[] args) {
