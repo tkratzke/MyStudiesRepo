@@ -11,13 +11,11 @@ import com.skagit.util.StringUtils;
 
 public class Block implements Comparable<Block> {
 
-    final boolean _fidelityBlock;
     final String _nameOfBlock;
     final Line[] _lines;
 
     public Block(final RothCalculator.SheetAndBlocks sheetAndBlocks, final CellRangeAddress start,
-	    final CellRangeAddress end, final boolean fidelityBlock) {
-	_fidelityBlock = fidelityBlock;
+	    final CellRangeAddress end) {
 	final int firstRow = start.getFirstRow();
 	final int dataRowStop = end.getFirstRow();
 	final XSSFSheet sheet = sheetAndBlocks._sheet;
@@ -37,7 +35,6 @@ public class Block implements Comparable<Block> {
 
     /** For looking up a Block. */
     public Block(final String s) {
-	_fidelityBlock = false;
 	_nameOfBlock = s;
 	_lines = null;
     }

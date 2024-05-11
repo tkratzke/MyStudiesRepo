@@ -8,7 +8,6 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 
-import com.skagit.util.DateUtils;
 import com.skagit.util.StringUtils;
 
 public class Field {
@@ -16,12 +15,10 @@ public class Field {
     final public static char _EmptySetChar = '\u2205';
     final public static String _EmptySetString = "" + '\u2205';
 
-    public final CellType _cellType;
     public final Boolean _b;
+    public final TypeOfDouble _typeOfDouble;
     public final double _d;
     public final String _s;
-    public final Date _date;
-    public final boolean _fidelity;
 
     public Field(final RothCalculator.SheetAndBlocks sheetAndBlocks, final int kRow, final int kClmn) {
 	this(sheetAndBlocks, sheetAndBlocks._sheet.getRow(kRow).getCell(kClmn));
@@ -53,119 +50,106 @@ public class Field {
     public Field(final String s) {
 	_b = null;
 	_d = Double.NaN;
+	_typeOfDouble = null;
 	_s = StringUtils.CleanWhiteSpace(s);
-	_date = null;
-	_cellType = CellType.STRING;
-	_fidelity = false;
     }
 
     public Field(final RothCalculator.SheetAndBlocks sheetAndBlocks, final XSSFCell cell) {
-	_fidelity = sheetAndBlocks._fidelity;
 	if (cell == null) {
 	    _b = null;
+	    _typeOfDouble = null;
 	    _d = Double.NaN;
 	    _s = null;
-	    _date = null;
-	    _cellType = null;
 	    return;
 	}
 	final RothCalculator rothCalculator = sheetAndBlocks.getRothCalculator();
 	final CellType cellType = cell.getCellType();
 	final FormulaEvaluator formulaEvaluator = rothCalculator._formulaEvaluator;
 	switch (cellType) {
-	case BLANK:
-	    _b = null;
-	    _d = Double.NaN;
-	    _s = null;
-	    _date = null;
-	    _cellType = cellType;
-	    return;
 	case BOOLEAN:
 	    _b = cell.getBooleanCellValue();
+	    _typeOfDouble = null;
 	    _d = Double.NaN;
 	    _s = null;
-	    _date = null;
-	    _cellType = cellType;
 	    return;
 	case FORMULA:
 	    final CellType cellType2 = formulaEvaluator.evaluateFormulaCell(cell);
 	    switch (cellType2) {
 	    case BOOLEAN:
 		_b = formulaEvaluator.evaluate(cell).getBooleanValue();
+		_typeOfDouble = null;
 		_d = Double.NaN;
 		_s = null;
-		_date = null;
-		_cellType = CellType.BOOLEAN;
 		return;
 	    case NUMERIC:
 		_b = null;
 		_s = null;
-		_cellType = CellType.NUMERIC;
-		final double d = formulaEvaluator.evaluate(cell).getNumberValue();
-		if (DateUtil.isCellDateFormatted(cell)) {
-		    _d = Double.NaN;
-		    _date = DateUtil.getJavaDate(d);
-		} else {
-		    _d = d;
-		    _date = null;
-		}
+		_typeOfDouble = getTypeOfDouble(cell);
+		_d = formulaEvaluator.evaluate(cell).getNumberValue();
 		return;
 	    case STRING:
 		_b = null;
 		_d = Double.NaN;
+		_typeOfDouble = null;
 		_s = StringUtils.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
-		_date = null;
-		_cellType = CellType.STRING;
 		return;
 	    default:
 		_b = null;
 		_d = Double.NaN;
+		_typeOfDouble = null;
 		_s = null;
-		_date = null;
-		_cellType = CellType.ERROR;
 		return;
 	    }
 	case NUMERIC:
-	    final double d = cell.getNumericCellValue();
-	    if (DateUtil.isCellDateFormatted(cell)) {
-		_d = Double.NaN;
-		_date = DateUtil.getJavaDate(d);
-	    } else {
-		_d = d;
-		_date = null;
-	    }
 	    _b = null;
+	    _typeOfDouble = getTypeOfDouble(cell);
+	    _d = cell.getNumericCellValue();
 	    _s = null;
-	    _cellType = CellType.NUMERIC;
 	    return;
 	case STRING:
 	    _b = null;
 	    _d = Double.NaN;
+	    _typeOfDouble = null;
 	    _s = StringUtils.CleanWhiteSpace(cell.getStringCellValue());
-	    _date = null;
-	    _cellType = cellType;
 	    return;
 	case ERROR:
 	case _NONE:
+	case BLANK:
 	default:
 	    _b = null;
+	    _typeOfDouble = null;
 	    _d = Double.NaN;
 	    _s = null;
-	    _date = null;
-	    _cellType = null;
 	    return;
 	}
+    }
+
+    public boolean hasData() {
+	return _s != null || _b != null || Double.isFinite(_d);
+    }
+
+    private static TypeOfDouble getTypeOfDouble(final XSSFCell cell) {
+	if (DateUtil.isCellDateFormatted(cell)) {
+	    return TypeOfDouble.DATE;
+	} else {
+	    final String formatString = cell.getCellStyle().getDataFormatString();
+	    if (formatString.contains("%")) {
+		return TypeOfDouble.PER_CENT;
+	    }
+	    if (formatString.contains("$")) {
+		return TypeOfDouble.MONEY;
+	    }
+	}
+	return TypeOfDouble.OTHER;
     }
 
     public String getString() {
 	if (_b != null) {
 	    return _b.toString();
 	} else if (Double.isFinite(_d)) {
-	    return String.format(_fidelity ? "$%.2f" : "%.2f", _d);
+	    return _typeOfDouble.format(_d);
 	} else if (_s != null) {
 	    return _s.length() == 0 ? _EmptySetString : _s;
-	} else if (_date != null) {
-	    return DateUtils.formatDateOnly(_date);
 	}
 	return "NULL";
     }
@@ -173,6 +157,10 @@ public class Field {
     @Override
     public String toString() {
 	return getString();
+    }
+
+    public Date getDate() {
+	return DateUtil.getJavaDate(_d);
     }
 
 }

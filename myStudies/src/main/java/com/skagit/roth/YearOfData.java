@@ -1,6 +1,7 @@
 package com.skagit.roth;
 
 public class YearOfData {
+    final private static String _BracketsSheetName = RothCalculator._SheetNames[RothCalculator._BracketsIdx];
 
     public final RothCalculator _rothCalculator;
     public final int _thisYear;
@@ -30,8 +31,7 @@ public class YearOfData {
 		final Brackets oldBrackets = pvsYear._bracketsS[k0];
 		final String name = oldBrackets._name;
 		final String name2 = name + " " + _thisYear;
-		final Block block2 = _rothCalculator
-			.getBlock(RothCalculator._BracketsNames[RothCalculator._BracketsIdx], name2);
+		final Block block2 = _rothCalculator.getBlock(_BracketsSheetName, name2);
 		final Line[] lines2 = block2 == null ? null : block2._lines;
 		final int nLines2 = lines2 == null ? 0 : lines2.length;
 		final Brackets newBrackets = new Brackets(oldBrackets);
@@ -39,7 +39,7 @@ public class YearOfData {
 		for (int k1 = 0; k1 < nPerCentCeilings; ++k1) {
 		    newBrackets._perCentCeilings[k1]._ceiling *= inflationFactor;
 		    if (nLines2 == nPerCentCeilings) {
-			newBrackets._perCentCeilings[k1]._perCent = lines2[k1]._header._d;
+			newBrackets._perCentCeilings[k1]._perCent = 100d * lines2[k1]._header._d;
 		    }
 		}
 		_bracketsS[k0] = newBrackets;

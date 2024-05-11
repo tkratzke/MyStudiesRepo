@@ -25,11 +25,11 @@ public class RothCalculator {
     final public static String[] _SheetNames = { //
 	    "Statics", //
 	    "Brackets", //
-	    "Fidelity" //
+	    "Investments" //
     };
     final public static int _StaticsIdx = 0;
     final public static int _BracketsIdx = 1;
-    final public static int _FidelityIdx = 2;
+    final public static int _InvestmentsIdx = 2;
 
     final public static String[] _BracketsNames = { //
 	    "Tax Brackets", //
@@ -46,13 +46,11 @@ public class RothCalculator {
     final public static int _InvestmentIdx = 1;
 
     public class SheetAndBlocks implements Comparable<SheetAndBlocks> {
-	final boolean _fidelity;
 	final String _name;
 	final XSSFSheet _sheet;
 	final Block[] _blocks;
 
 	public SheetAndBlocks(final String sheetName) {
-	    _fidelity = false;
 	    _name = StringUtils.CleanWhiteSpace(sheetName);
 	    _sheet = null;
 	    _blocks = null;
@@ -60,7 +58,6 @@ public class RothCalculator {
 
 	public SheetAndBlocks(final XSSFSheet sheet) {
 	    _name = StringUtils.CleanWhiteSpace(sheet.getSheetName());
-	    _fidelity = _name.equals(getSheetName(_FidelityIdx));
 	    _sheet = sheet;
 	    final int nMergedRegions = _sheet.getNumMergedRegions();
 	    final ArrayList<CellRangeAddress> craList0 = new ArrayList<>();
@@ -111,7 +108,7 @@ public class RothCalculator {
 	    for (int k = 0; k < nDataBlocks; ++k) {
 		final CellRangeAddress thisCra = javaInputHeaders[k];
 		final CellRangeAddress nextCra = javaInputHeaders[k + 1];
-		_blocks[k] = new Block(this, thisCra, nextCra, _fidelity);
+		_blocks[k] = new Block(this, thisCra, nextCra);
 	    }
 	    Arrays.sort(_blocks);
 	}
@@ -235,7 +232,7 @@ public class RothCalculator {
 
 	public TaxPayer(final Line line) {
 	    _taxPayerName = line._header._s;
-	    _dateOfBirth = line._data._date;
+	    _dateOfBirth = line._data.getDate();
 	    final String staticsSheetName = getSheetName(_StaticsIdx);
 	    final Line[] ssaLines = getBlock(staticsSheetName, "SSA Current Year")._lines;
 	    final int idx = Arrays.binarySearch(ssaLines, new Line(_taxPayerName));
@@ -376,7 +373,7 @@ public class RothCalculator {
 	}
 	Arrays.sort(_sheetAndBlocksS);
 	final String staticsSheetName = getSheetName(_StaticsIdx);
-	_currentDate = getBlock(staticsSheetName, "Current Date")._lines[0]._header._date;
+	_currentDate = getBlock(staticsSheetName, "Current Date")._lines[0]._header.getDate();
 	final int currentYear = getCurrentYear();
 	_finalYear = (int) Math.round(getBlock(staticsSheetName, "Final Year")._lines[0]._header._d);
 	_standardDeductionCurrentYear = getBlock(staticsSheetName,
@@ -470,11 +467,11 @@ public class RothCalculator {
 	for (int k = 0; k < nBracketsS; ++k) {
 	    s += String.format("\n\n%s", _bracketsS[k]);
 	}
-	final int fidelityIdx = Arrays.binarySearch(_sheetAndBlocksS, new SheetAndBlocks("Fidelity"));
-	final Block[] fidelityBlocks = _sheetAndBlocksS[fidelityIdx]._blocks;
-	final int nFidelityBlocks = fidelityBlocks.length;
-	for (int k = 0; k < nFidelityBlocks; ++k) {
-	    s += "\n\n" + fidelityBlocks[k].getString();
+	final int investmentSheetIdx = Arrays.binarySearch(_sheetAndBlocksS, new SheetAndBlocks("Investments"));
+	final Block[] investmentBlocks = _sheetAndBlocksS[investmentSheetIdx]._blocks;
+	final int nInvestmentBlocks = investmentBlocks.length;
+	for (int k = 0; k < nInvestmentBlocks; ++k) {
+	    s += "\n\n" + investmentBlocks[k].getString();
 	}
 	//
 	final int nYearsOfData = _yearsOfData.length;

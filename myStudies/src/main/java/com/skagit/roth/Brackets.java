@@ -51,10 +51,9 @@ public class Brackets {
 	_perCentCeilings = new PerCentCeiling[nLines];
 	for (int k = 0; k < nLines; ++k) {
 	    final Line line = lines[k];
-	    final double perCent = 100d * line._header._d;
 	    final double dataD = line._data._d;
 	    final double ceiling = dataD >= 0d ? dataD : Double.POSITIVE_INFINITY;
-	    _perCentCeilings[k] = new PerCentCeiling(perCent, ceiling);
+	    _perCentCeilings[k] = new PerCentCeiling(100d * line._header._d, ceiling);
 	}
     }
 
