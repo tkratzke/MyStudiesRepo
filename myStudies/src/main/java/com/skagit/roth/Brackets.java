@@ -1,6 +1,8 @@
 package com.skagit.roth;
 
-public class Brackets {
+import com.skagit.util.NamedEntity;
+
+public class Brackets extends NamedEntity {
 
     public static class PerCentCeiling implements Cloneable {
 	public double _perCent;
@@ -31,7 +33,7 @@ public class Brackets {
     }
 
     public Brackets(final Brackets brackets) {
-	_name = brackets._name;
+	super(brackets._name);
 	final PerCentCeiling[] perCentCeilings = brackets._perCentCeilings;
 	final int n = perCentCeilings.length;
 	_perCentCeilings = new PerCentCeiling[n];
@@ -40,11 +42,10 @@ public class Brackets {
 	}
     }
 
-    public final String _name;
     public final PerCentCeiling[] _perCentCeilings;
 
     public Brackets(final RothCalculator rothCalculator, final String bracketsName) {
-	_name = bracketsName;
+	super(bracketsName);
 	final String bracketsSheetName = RothCalculator.getSheetName(RothCalculator._BracketsIdx);
 	final Line[] lines = rothCalculator.getBlock(bracketsSheetName, bracketsName)._lines;
 	final int nLines = lines.length;

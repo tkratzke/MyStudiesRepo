@@ -8,9 +8,9 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 
-import com.skagit.util.StringUtils;
+import com.skagit.util.NamedEntity;
 
-public class Field {
+public class Field implements Comparable<Field> {
 
     final public static char _EmptySetChar = '\u2205';
     final public static String _EmptySetString = "" + '\u2205';
@@ -45,14 +45,6 @@ public class Field {
 	    return s0.compareTo(s1);
 	}
     };
-
-    /** For looking things up. */
-    public Field(final String s) {
-	_b = null;
-	_d = Double.NaN;
-	_typeOfDouble = null;
-	_s = StringUtils.CleanWhiteSpace(s);
-    }
 
     public Field(final RothCalculator.SheetAndBlocks sheetAndBlocks, final XSSFCell cell) {
 	if (cell == null) {
@@ -91,7 +83,7 @@ public class Field {
 		_b = null;
 		_d = Double.NaN;
 		_typeOfDouble = null;
-		_s = StringUtils.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
+		_s = NamedEntity.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
 		return;
 	    default:
 		_b = null;
@@ -110,7 +102,7 @@ public class Field {
 	    _b = null;
 	    _d = Double.NaN;
 	    _typeOfDouble = null;
-	    _s = StringUtils.CleanWhiteSpace(cell.getStringCellValue());
+	    _s = NamedEntity.CleanWhiteSpace(cell.getStringCellValue());
 	    return;
 	case ERROR:
 	case _NONE:
@@ -122,6 +114,13 @@ public class Field {
 	    _s = null;
 	    return;
 	}
+    }
+
+    public Field(final String s) {
+	_b = null;
+	_typeOfDouble = null;
+	_d = Double.NaN;
+	_s = s;
     }
 
     public boolean hasData() {
@@ -161,6 +160,39 @@ public class Field {
 
     public Date getDate() {
 	return DateUtil.getJavaDate(_d);
+    }
+
+    @Override
+    public int compareTo(final Field field) {
+	if (field == null) {
+	    return -1;
+	}
+	final String myS = _s, hisS = field._s;
+	if ((myS == null) != (hisS == null)) {
+	    return myS != null ? -1 : 1;
+	}
+	if (myS != null) {
+	    return myS.compareTo(hisS);
+	}
+	if ((_typeOfDouble == null) != (field._typeOfDouble == null)) {
+	    return _typeOfDouble != null ? -1 : 1;
+	}
+	if (_typeOfDouble != null) {
+	    if (_d == field._d) {
+		return 0;
+	    }
+	    return _d < field._d ? -1 : 1;
+	}
+	if ((_b == null) != (field._b == null)) {
+	    return _b == null ? -1 : 1;
+	}
+	if (_b == null) {
+	    return 0;
+	}
+	if (Boolean.valueOf(_b) == Boolean.valueOf(field._b)) {
+	    return 0;
+	}
+	return Boolean.valueOf(_b) ? 1 : -1;
     }
 
 }

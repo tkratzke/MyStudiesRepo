@@ -7,23 +7,34 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
-import com.skagit.util.StringUtils;
+import com.skagit.util.NamedEntity;
 
-public class Block implements Comparable<Block> {
+public class Block extends NamedEntity {
 
-    final String _nameOfBlock;
-    final Line[] _lines;
+    final public Line[] _lines;
+
+    private static String getNameOfBlock(final RothCalculator.SheetAndBlocks sheetAndBlocks,
+	    final CellRangeAddress start) {
+	final int firstRow = start.getFirstRow();
+	final XSSFSheet sheet = sheetAndBlocks._sheet;
+	final XSSFCell nameCell = sheet.getRow(firstRow).getCell(start.getFirstColumn());
+	return NamedEntity.CleanWhiteSpace(nameCell.getStringCellValue());
+    }
 
     public Block(final RothCalculator.SheetAndBlocks sheetAndBlocks, final CellRangeAddress start,
 	    final CellRangeAddress end) {
+	super(getNameOfBlock(sheetAndBlocks, start));
 	final int firstRow = start.getFirstRow();
 	final int dataRowStop = end.getFirstRow();
-	final XSSFSheet sheet = sheetAndBlocks._sheet;
-	final XSSFCell nameCell = sheet.getRow(firstRow).getCell(start.getFirstColumn());
-	_nameOfBlock = StringUtils.CleanWhiteSpace(nameCell.getStringCellValue());
 	final ArrayList<Line> lineList = new ArrayList<>();
 	for (int kRow = firstRow + 1; kRow < dataRowStop; ++kRow) {
-	    final Line line = new Line(sheetAndBlocks, kRow);
+	    Line line = null;
+	    try {
+		line = new Line(sheetAndBlocks, kRow);
+	    } catch (final Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 	    if (line.isValid()) {
 		lineList.add(line);
 	    }
@@ -33,14 +44,8 @@ public class Block implements Comparable<Block> {
 	Arrays.sort(_lines);
     }
 
-    /** For looking up a Block. */
-    public Block(final String s) {
-	_nameOfBlock = s;
-	_lines = null;
-    }
-
     public String getString() {
-	String s = _nameOfBlock;
+	String s = _name;
 	final int nLines = _lines.length;
 	for (int k = 0; k < nLines; ++k) {
 	    s += "\n" + _lines[k].getString();
@@ -53,16 +58,8 @@ public class Block implements Comparable<Block> {
 	return getString();
     }
 
-    @Override
-    public int compareTo(final Block block) {
-	if (block == null) {
-	    return 1;
-	}
-	return _nameOfBlock.compareTo(block._nameOfBlock);
-    }
-
     public Field getData(final String s) {
-	final int idx = Arrays.binarySearch(_lines, new Field(s));
+	final int idx = Arrays.binarySearch(_lines, new NamedEntity(s));
 	if (idx < 0) {
 	    return null;
 	}
