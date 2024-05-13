@@ -16,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.skagit.roth.yearOfData.YearOfData;
 import com.skagit.util.DateUtils;
 import com.skagit.util.NamedEntity;
 
@@ -27,10 +28,10 @@ public class RothCalculator {
 	    "Investments", //
 	    "Life Expectancies", // "
     };
-    final public static int _StaticsIdx = 0;
-    final public static int _BracketsIdx = 1;
-    final public static int _InvestmentsIdx = 2;
-    final public static int _LifeExpectanciesIdx = 3;
+    final public static int _StaticsSheetIdx = 0;
+    final public static int _BracketsSheetIdx = 1;
+    final public static int _InvestmentsSheetIdx = 2;
+    final public static int _LifeExpectanciesSheetIdx = 3;
 
     final public static String[] _BracketsNames = { //
 	    "Tax Brackets", //
@@ -41,10 +42,10 @@ public class RothCalculator {
 
     final public static String[] _GrowthRateNames = { //
 	    "Inflation", //
-	    "Investment", //
+	    "Investments", //
     };
-    final public static int _InflationIdx = 0;
-    final public static int _InvestmentIdx = 1;
+    final public static int _InflationGrowthRateIdx = 0;
+    final public static int _InvestmentsGrowthRateIdx = 1;
 
     public class SheetAndBlocks extends NamedEntity {
 	final XSSFSheet _sheet;
@@ -143,7 +144,7 @@ public class RothCalculator {
 	    public Ira(final String name) {
 		super(name);
 		final Line forLookUp = new Line(_name);
-		final String staticsSheetName = getSheetName(_StaticsIdx);
+		final String staticsSheetName = getSheetName(_StaticsSheetIdx);
 		final Line[] ageBlockLines = getBlock(staticsSheetName, "IRA Age of RMD")._lines;
 		final int idx0 = Arrays.binarySearch(ageBlockLines, forLookUp);
 		_ageOfRmd = idx0 < 0 ? 0 : (int) Math.round(ageBlockLines[idx0]._data._d);
@@ -187,10 +188,10 @@ public class RothCalculator {
 	    public OutsideIncome(final String name) {
 		super(name);
 		final Line forLookUp = new Line(_name);
-		final Line[] oi0BlockLines = getBlock(getSheetName(_StaticsIdx), "Outside Income Amount")._lines;
+		final Line[] oi0BlockLines = getBlock(getSheetName(_StaticsSheetIdx), "Outside Income Amount")._lines;
 		final int idx0 = Arrays.binarySearch(oi0BlockLines, forLookUp);
 		_amount = oi0BlockLines[idx0]._data._d;
-		final Line[] oi1BlockLines = getBlock(getSheetName(_StaticsIdx), "Outside Income Year")._lines;
+		final Line[] oi1BlockLines = getBlock(getSheetName(_StaticsSheetIdx), "Outside Income Year")._lines;
 		final int idx1 = Arrays.binarySearch(oi1BlockLines, forLookUp);
 		if (idx1 < 0) {
 		    _year = -1;
@@ -225,7 +226,7 @@ public class RothCalculator {
 	public TaxPayer(final Line line) {
 	    super(line._header._s);
 	    _dateOfBirth = line._data.getDate();
-	    final String staticsSheetName = getSheetName(_StaticsIdx);
+	    final String staticsSheetName = getSheetName(_StaticsSheetIdx);
 	    final Line[] ssaLines = getBlock(staticsSheetName, "SSA Current Year")._lines;
 	    final int idx = Arrays.binarySearch(ssaLines, new Line(_name));
 	    _ssa = idx < 0 ? 0d : ssaLines[idx]._data._d;
@@ -338,10 +339,9 @@ public class RothCalculator {
     public final TaxPayer[] _taxPayers;
     public final CapitalGain[] _capitalGains;
     public final GrowthRate[] _growthRates;
-    public final double _balance, _basis, _longOverTotal;
     public final Brackets[] _bracketsS;
 
-    // public final YearOfData[] _yearsOfData;
+    public final YearOfData[] _yearsOfData;
 
     public RothCalculator(final XSSFWorkbook workBook) {
 	_workBook = workBook;
@@ -353,7 +353,7 @@ public class RothCalculator {
 	    _sheetAndBlocksS[k] = new SheetAndBlocks(_workBook.getSheet(_SheetNames[k]));
 	}
 	Arrays.sort(_sheetAndBlocksS);
-	final String staticsSheetName = getSheetName(_StaticsIdx);
+	final String staticsSheetName = getSheetName(_StaticsSheetIdx);
 	_currentDate = getBlock(staticsSheetName, "Current Date")._lines[0]._header.getDate();
 	final int currentYear = getCurrentYear();
 	_finalYear = (int) Math.round(getBlock(staticsSheetName, "Final Year")._lines[0]._header._d);
@@ -394,31 +394,8 @@ public class RothCalculator {
 	    _bracketsS[k] = new Brackets(this, _BracketsNames[k]);
 	}
 	Arrays.sort(_bracketsS);
-	/**
-	 * The only thing we're reading from the Investments Sheet is the
-	 * balance/basis/longOverTotal.
-	 */
-	final String investmentsSheetName = getSheetName(_InvestmentsIdx);
-	final Line[] postTaxLines = getBlock(investmentsSheetName, "Consolidated Balance Information")._lines;
-	final int nPtLines = postTaxLines.length;
-	double balance = -1d, basis = -1d, longOverTotal = -1d;
-	for (int k0 = 0; k0 < nPtLines; ++k0) {
-	    final Line ptiLine = postTaxLines[k0];
-	    final String ptiName = ptiLine._header._s;
-	    final double d = ptiLine._data._d;
-	    if (ptiName.equals("Balance")) {
-		balance = d;
-	    } else if (ptiName.equals("Basis")) {
-		basis = d;
-	    } else if (ptiName.equals("Long/Total")) {
-		longOverTotal = d;
-	    }
-	}
-	_balance = balance;
-	_basis = basis;
-	_longOverTotal = longOverTotal;
 	/** Read in the Life Expectancies. */
-	final String lifeExpectanciesSheetName = getSheetName(_LifeExpectanciesIdx);
+	final String lifeExpectanciesSheetName = getSheetName(_LifeExpectanciesSheetIdx);
 	final Line[] lifeExpectancyLines = getBlock(lifeExpectanciesSheetName, "Expected Life Lengths")._lines;
 	final int nLines3 = lifeExpectancyLines.length;
 	_lifeExpectancies = new double[nLines3];
@@ -427,14 +404,10 @@ public class RothCalculator {
 	}
 
 	final int nYears = _finalYear - currentYear + 1;
-	/**
-	 * <pre>
-	 * _yearsOfData = new YearOfData[nYears];
-	 * for (int year = currentYear; year <= _finalYear; ++year) {
-	 *     _yearsOfData[year - currentYear] = null; // new YearOfData(this, year);
-	 * }
-	 * </pre>
-	 */
+	_yearsOfData = new YearOfData[nYears];
+	for (int year = currentYear; year <= _finalYear; ++year) {
+	    _yearsOfData[year - currentYear] = new YearOfData(this, year);
+	}
     }
 
     public Block getBlock(final String sheetName, final String blockName) {
@@ -448,7 +421,7 @@ public class RothCalculator {
     }
 
     public Block getNewBracketsBlock(final Brackets oldBrackets, final int thisYear) {
-	return getBlock(_SheetNames[_BracketsIdx], oldBrackets._name + " " + thisYear);
+	return getBlock(_SheetNames[_BracketsSheetIdx], oldBrackets._name + " " + thisYear);
     }
 
     public int getCurrentYear() {
@@ -490,26 +463,18 @@ public class RothCalculator {
 	for (int k = 0; k < nBracketsS; ++k) {
 	    s += String.format("\n\n%s", _bracketsS[k]);
 	}
-	s += String.format("\n\nPostTax: Balance[$%.2f] Basis[$%.2f] Long/Total[%.2f]", _balance, _basis,
-		_longOverTotal);
 	final int investmentSheetIdx = Arrays.binarySearch(_sheetAndBlocksS, new NamedEntity("Investments"));
 	final Block[] investmentBlocks = _sheetAndBlocksS[investmentSheetIdx]._blocks;
 	final int nInvestmentBlocks = investmentBlocks.length;
 	for (int k = 0; k < nInvestmentBlocks; ++k) {
 	    final Block block = investmentBlocks[k];
-	    if (!block._name.equals("Consolidated Balance Information")) {
-		s += "\n\n" + block.getString();
-	    }
+	    s += "\n\n" + block.getString();
 	}
-	/**
-	 * <pre>
-	 * final int nYearsOfData = _yearsOfData.length;
-	 * for (int k = 0; k < nYearsOfData; ++k) {
-	 *     final YearOfData yod = _yearsOfData[k];
-	 *     s += "\n\n" + (yod == null ? "NULL" : yod.getString());
-	 * }
-	 * </pre>
-	 */
+	final int nYearsOfData = _yearsOfData.length;
+	for (int k = 0; k < nYearsOfData; ++k) {
+	    final YearOfData yod = _yearsOfData[k];
+	    s += "\n\n" + (yod == null ? "NULL" : yod.getString());
+	}
 	return s;
     }
 
@@ -528,48 +493,44 @@ public class RothCalculator {
 	}
     }
 
-    /**
-     * <pre>
-     * public YearOfData.TP1 getTp1(final TaxPayer taxPayer, final int thisYear) {
-     *     final int currentYear = getCurrentYear();
-     *     if (thisYear < currentYear || thisYear > _finalYear) {
-     * 	return null;
-     *     }
-     *     final YearOfData yearOfData = _yearsOfData[thisYear - currentYear];
-     *     final YearOfData.TP1[] tp1s = yearOfData._tp1s;
-     *     final int idx = Arrays.binarySearch(tp1s, new NamedEntity(taxPayer._name, thisYear));
-     *     if (idx < 0) {
-     * 	return null;
-     *     }
-     *     return yearOfData._tp1s[idx];
-     * }
-     *
-     * public YearOfData.TP1.IRA1 getIra1(final TaxPayer.Ira ira, final int thisYear) {
-     *     final YearOfData.TP1 tp1 = getTp1(ira.getOwner(), thisYear);
-     *     if (tp1 == null) {
-     * 	return null;
-     *     }
-     *     final YearOfData.TP1.IRA1[] ira1s = tp1._ira1s;
-     *     final int idx = Arrays.binarySearch(ira1s, new NamedEntity(ira._name, thisYear));
-     *     if (idx < 0) {
-     * 	return null;
-     *     }
-     *     return tp1._ira1s[idx];
-     * }
-     *
-     * public YearOfData.TP1.OI1 getOi1(final TaxPayer.OutsideIncome outsideIncome, final int thisYear) {
-     *     final YearOfData.TP1 tp1 = getTp1(outsideIncome.getOwner(), thisYear);
-     *     if (tp1 == null) {
-     * 	return null;
-     *     }
-     *     final YearOfData.TP1.IRA1[] ira1s = tp1._ira1s;
-     *     final int idx = Arrays.binarySearch(ira1s, new NamedEntity(outsideIncome._name, thisYear));
-     *     if (idx < 0) {
-     * 	return null;
-     *     }
-     *     return tp1._oi1s[idx];
-     * }
-     * </pre>
-     */
+    public YearOfData.TP1 getTp1(final TaxPayer taxPayer, final int thisYear) {
+	final int currentYear = getCurrentYear();
+	if (thisYear < currentYear || thisYear > _finalYear) {
+	    return null;
+	}
+	final YearOfData yearOfData = _yearsOfData[thisYear - currentYear];
+	final YearOfData.TP1[] tp1s = yearOfData._tp1s;
+	final int idx = Arrays.binarySearch(tp1s, new NamedEntity(taxPayer._name, thisYear));
+	if (idx < 0) {
+	    return null;
+	}
+	return yearOfData._tp1s[idx];
+    }
+
+    public YearOfData.TP1.IRA1 getIra1(final TaxPayer.Ira ira, final int thisYear) {
+	final YearOfData.TP1 tp1 = getTp1(ira.getOwner(), thisYear);
+	if (tp1 == null) {
+	    return null;
+	}
+	final YearOfData.TP1.IRA1[] ira1s = tp1._ira1s;
+	final int idx = Arrays.binarySearch(ira1s, new NamedEntity(ira._name, thisYear));
+	if (idx < 0) {
+	    return null;
+	}
+	return tp1._ira1s[idx];
+    }
+
+    public YearOfData.TP1.OI1 getOi1(final TaxPayer.OutsideIncome outsideIncome, final int thisYear) {
+	final YearOfData.TP1 tp1 = getTp1(outsideIncome.getOwner(), thisYear);
+	if (tp1 == null) {
+	    return null;
+	}
+	final YearOfData.TP1.IRA1[] ira1s = tp1._ira1s;
+	final int idx = Arrays.binarySearch(ira1s, new NamedEntity(outsideIncome._name, thisYear));
+	if (idx < 0) {
+	    return null;
+	}
+	return tp1._oi1s[idx];
+    }
 
 }

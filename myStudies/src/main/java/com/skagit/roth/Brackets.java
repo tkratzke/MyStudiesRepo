@@ -46,7 +46,7 @@ public class Brackets extends NamedEntity {
 
     public Brackets(final RothCalculator rothCalculator, final String bracketsName) {
 	super(bracketsName);
-	final String bracketsSheetName = RothCalculator.getSheetName(RothCalculator._BracketsIdx);
+	final String bracketsSheetName = RothCalculator.getSheetName(RothCalculator._BracketsSheetIdx);
 	final Line[] lines = rothCalculator.getBlock(bracketsSheetName, bracketsName)._lines;
 	final int nLines = lines.length;
 	_perCentCeilings = new PerCentCeiling[nLines];

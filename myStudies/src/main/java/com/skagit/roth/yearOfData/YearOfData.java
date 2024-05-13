@@ -1,12 +1,9 @@
 package com.skagit.roth.yearOfData;
 
 import java.time.temporal.ChronoField;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import com.skagit.roth.Block;
 import com.skagit.roth.Brackets;
-import com.skagit.roth.Field;
 import com.skagit.roth.Line;
 import com.skagit.roth.RothCalculator;
 import com.skagit.util.DateUtils;
@@ -102,55 +99,33 @@ public class YearOfData {
 	}
 
 	public final RothCalculator.TaxPayer _tp0;
-	public final int _ageAtEndOfYear;
+	public final double _ssa;
 	public final IRA1[] _ira1s;
 	public final OI1[] _oi1s;
-	public final double _ssa;
 
 	public TP1(final RothCalculator.TaxPayer tp0) {
 	    super(tp0._name, _thisYear);
 	    _tp0 = tp0;
 	    final RothCalculator rothCalculator = _tp0.getRothCalculator();
 	    final TP1 _pvsTp1 = rothCalculator.getTp1(_tp0, _thisYear - 1);
-	    _ageAtEndOfYear = _thisYear - DateUtils.getAPartOfADate(_tp0._dateOfBirth, ChronoField.YEAR);
+	    _ssa = _pvsTp1 == null ? _tp0._ssa : (_pvsTp1._ssa * _inflationFactor);
 
-	    final RothCalculator.TaxPayer.Ira[] ira0s = tp0._iras;
-	    final String staticsSheetName = getSheetName(_StaticsIdx);
-	    final Line[] ssaLines = getBlock(staticsSheetName, "SSA Current Year")._lines;
-	    final int idx = Arrays.binarySearch(ssaLines, new Line(_taxPayerName));
-	    _currentYearSsa = idx < 0 ? 0d : ssaLines[idx]._data._d;
-	    final Line[] iraDefnLines = getBlock(staticsSheetName, "IRA")._lines;
-	    final int nIraDefns = iraDefnLines.length;
-	    final ArrayList<IRA1> iraList = new ArrayList<>();
-	    for (int k = 0; k < nIraDefns; ++k) {
-		final Line iraDefnLine = iraDefnLines[k];
-		final Field iraDefnLineData = iraDefnLine._data;
-		if (iraDefnLineData._s.equals(_taxPayerName)) {
-		    final String iraName = iraDefnLine._header._s;
-		    iraList.add(new IRA1(iraName));
-		}
+	    final RothCalculator.TaxPayer.Ira[] ira0s = _tp0._iras;
+	    final int nIras = ira0s.length;
+	    _ira1s = new IRA1[nIras];
+	    for (int k = 0; k < nIras; ++k) {
+		_ira1s[k] = new IRA1(ira0s[k]);
 	    }
-	    _ira1s = iraList.toArray(new IRA1[iraList.size()]);
-	    final Line[] outsideIncomeDefnLines = getBlock(staticsSheetName, "Outside Income")._lines;
-	    final int nOidls = outsideIncomeDefnLines.length;
-	    final ArrayList<OI1> oiList = new ArrayList<>();
-	    for (int k = 0; k < nOidls; ++k) {
-		final Line oiLine = outsideIncomeDefnLines[k];
-		final Field oiData = oiLine._data;
-		if (oiData._s.equals(_taxPayerName)) {
-		    final String oiName = oiLine._header._s;
-		    oiList.add(new OI1(oiName));
-		}
+	    final RothCalculator.TaxPayer.OutsideIncome[] oi0s = _tp0._outsideIncomes;
+	    final int nOis = oi0s.length;
+	    _oi1s = new OI1[nOis];
+	    for (int k = 0; k < nOis; ++k) {
+		_oi1s[k] = new OI1(oi0s[k]);
 	    }
-	    _oi1s = oiList.toArray(new OI1[oiList.size()]);
 	}
 
 	public String getString() {
-	    String s = String.format("TP1[%s], DateOfBirth[%s]", //
-		    getName(), DateUtils.formatDateOnly(_dateOfBirth));
-	    if (_currentYearSsa > 0d) {
-		s += String.format(" Current Year SSA[$%.2f]", _currentYearSsa);
-	    }
+	    String s = String.format("TP1[%s], SSA[$%.2f]", _name, _ssa);
 	    final int nIras = _ira1s.length;
 	    for (int k = 0; k < nIras; ++k) {
 		s += "\n\t" + _ira1s[k].getString();
@@ -171,19 +146,19 @@ public class YearOfData {
     public class CG1 extends NamedEntity {
 
 	public final RothCalculator.CapitalGain _cg0;
-	public double _estimateThisYear;
-	public double _carryOverToCurrentYear;
+	public double _amountThisYear;
+	public double _carryOverToNextYear;
 
 	public CG1(final RothCalculator.CapitalGain cg0) {
 	    super(cg0._name, _thisYear);
 	    _cg0 = cg0;
-	    _estimateThisYear = 0d;
-	    _carryOverToCurrentYear = 0d;
+	    _amountThisYear = 0d;
+	    _carryOverToNextYear = 0d;
 	}
 
 	public String getString() {
-	    return String.format("CG1[%s], EstimateThisYear[$%.2f] Carryover to Current Year[$%.2f]", //
-		    _name, _estimateThisYear, YearOfData.this._thisYear, _carryOverToCurrentYear);
+	    return String.format("CG1[%s], Amount This Year[$%.2f] Carryover to Next Year[$%.2f]", //
+		    _name, _amountThisYear, _carryOverToNextYear);
 	}
 
 	@Override
@@ -207,10 +182,10 @@ public class YearOfData {
 	final int myIdx = _thisYear - _rothCalculator.getCurrentYear();
 	final YearOfData pvsYear = myIdx == 0 ? null : _rothCalculator._yearsOfData[myIdx - 1];
 	final int nBracketsS = RothCalculator._BracketsNames.length;
-	final double inflationExpRate = _rothCalculator.getGrowthRate(RothCalculator._InflationIdx);
+	final double inflationExpRate = _rothCalculator.getGrowthRate(RothCalculator._InflationGrowthRateIdx);
 	final double deltaT = pvsYear == null ? _rothCalculator._remainderOfCurrentYear : 1d;
 	_inflationFactor = Math.exp(inflationExpRate * deltaT);
-	final double investmentsExpRate = _rothCalculator.getGrowthRate(RothCalculator._InvestmentIdx);
+	final double investmentsExpRate = _rothCalculator.getGrowthRate(RothCalculator._InvestmentsGrowthRateIdx);
 	_investmentsFactor = Math.exp(investmentsExpRate * deltaT);
 	if (pvsYear == null) {
 	    _standardDeduction = _rothCalculator._standardDeductionCurrentYear;
@@ -246,12 +221,20 @@ public class YearOfData {
 	}
     }
 
+    private final static boolean _DumpBracketsS = false;
+
     public String getString() {
-	String s = String.format("Year %4d, Std Ded[$%.2f] PartBPrem[$%.2f]", _thisYear, _standardDeduction,
+	String s = String.format("Year %d, Std Ded[$%.2f] PartBPrem[$%.2f]", _thisYear, _standardDeduction,
 		_partBStandardPremium);
-	final int nBracketsS = _bracketsS.length;
-	for (int k = 0; k < nBracketsS; ++k) {
-	    s += "\n\n" + _bracketsS[k].getString();
+	if (_DumpBracketsS) {
+	    final int nBracketsS = _bracketsS.length;
+	    for (int k = 0; k < nBracketsS; ++k) {
+		s += "\n\n" + _bracketsS[k].getString();
+	    }
+	}
+	final int nTp1s = _tp1s.length;
+	for (int k = 0; k < nTp1s; ++k) {
+	    s += "\n\n" + _tp1s[k].getString();
 	}
 	return s;
     }
