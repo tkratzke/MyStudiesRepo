@@ -75,7 +75,7 @@ abstract public class InterpolatedFunction implements Integrator.IntegrableFunct
 
     public static double simpleInterpolateFromPairs(final double[][] pairs, final double x, final Object util) {
 	final int n = pairs.length;
-	final int glbIndex = NumericalUtils.getGlbIndex(pairs, new double[] { x }, NumericalUtils._ByFirstOnly);
+	final int glbIndex = MyStudiesNumUtils.getGlbIndex(pairs, new double[] { x }, MyStudiesNumUtils._ByFirstOnly);
 	int lowIndex = Math.max(0, glbIndex);
 	int highIndex = lowIndex + 1;
 	boolean useLow = highIndex == n || ((x - pairs[lowIndex][0]) <= (pairs[highIndex][0] - x));

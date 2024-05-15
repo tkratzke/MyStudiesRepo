@@ -3,7 +3,7 @@ package com.skagit.util;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class NumericalUtils {
+public class MyStudiesNumUtils {
 
     /**
      * Examples, and comparison between binarySearch and glbIndex:

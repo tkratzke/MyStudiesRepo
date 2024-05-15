@@ -107,7 +107,7 @@ public class Eratosthenes {
 		}
 	    }
 	    final long currentTimeMillis1 = System.currentTimeMillis();
-	    final String durationString = StringUtils.durationInSecondsToMinsSecsString(
+	    final String durationString = MyStudiesStringUtils.durationInSecondsToMinsSecsString(
 		    (int) ((currentTimeMillis1 - currentTimeMillis0) / 1000L), /* nDigitsForMinutes= */2);
 	    System.out.printf("Took %s to compute primes.\n", durationString);
 	    try (final FileOutputStream fos = new FileOutputStream(f)) {

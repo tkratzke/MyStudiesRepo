@@ -3,7 +3,7 @@ package com.skagit.euler;
 import java.util.Arrays;
 
 import com.skagit.util.Eratosthenes;
-import com.skagit.util.StringUtils;
+import com.skagit.util.MyStudiesStringUtils;
 
 public class Euler0131 {
 
@@ -29,7 +29,7 @@ public class Euler0131 {
 			System.out.printf(n == 1 ? "" : (n % 10 == 1 ? "\n\n" : "\n"));
 			for (int k = 0; k < strings.length; ++k) {
 			    System.out.printf("%s%s", //
-				    k == 0 ? "" : " ", StringUtils.padRight(strings[k], maxLengths[k]));
+				    k == 0 ? "" : " ", MyStudiesStringUtils.padRight(strings[k], maxLengths[k]));
 			}
 		    }
 		}

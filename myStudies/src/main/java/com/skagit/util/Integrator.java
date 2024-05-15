@@ -162,7 +162,7 @@ public class Integrator {
 	    for (long n = 2;; n = Math.min(2L * n, Integer.MAX_VALUE)) {
 		try2 = simpsonApproximation(f, a, b, (int) n);
 		if (!Double.isNaN(try1)) {
-		    if (NumericalUtils.relativeErrorIsSmall(try1, try2, relativeErrorThreshold)) {
+		    if (MyStudiesNumUtils.relativeErrorIsSmall(try1, try2, relativeErrorThreshold)) {
 			final double returnValue = (try1 + try2) / 2d;
 			return returnValue;
 		    }

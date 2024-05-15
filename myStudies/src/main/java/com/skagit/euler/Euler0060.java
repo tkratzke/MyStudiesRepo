@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import com.skagit.util.Eratosthenes;
-import com.skagit.util.StringUtils;
+import com.skagit.util.MyStudiesStringUtils;
 
 public class Euler0060 {
 
@@ -111,7 +111,7 @@ public class Euler0060 {
 	final long hrs = duration.toHours();
 	final long mints = duration.toMinutesPart();
 	final long secs = duration.toSecondsPart();
-	System.out.printf(" %s, sum=%d, took %02d:%02d:%02d.", StringUtils.getString(euler0060._winningVector),
+	System.out.printf(" %s, sum=%d, took %02d:%02d:%02d.", MyStudiesStringUtils.getString(euler0060._winningVector),
 		euler0060._winningSum, hrs, mints, secs);
     }
 

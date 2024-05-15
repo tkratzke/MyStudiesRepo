@@ -32,7 +32,7 @@ public class NamedEntity implements Comparable<NamedEntity> {
     }
 
     public static String CleanWhiteSpace(final String s) {
-	String ss = StringUtils.CleanWhiteSpace(s);
+	String ss = MyStudiesStringUtils.CleanWhiteSpace(s);
 	if (ss.startsWith("\'")) {
 	    ss = ss.length() == 1 ? "" : ss.substring(1);
 	}

@@ -2,7 +2,7 @@ package com.skagit.util;
 
 import java.util.Arrays;
 
-public class StringUtils {
+public class MyStudiesStringUtils {
     final private static String _WhiteSpace = "\\s+";
 
     private static int _MaxWidthForString = 80;
@@ -21,6 +21,31 @@ public class StringUtils {
 	    sLen += ssLen;
 	}
 	return s;
+    }
+
+    public static String formatDouble(final double d) {
+	if (d < 0d) {
+	    return String.format("-%s", formatTwoDecimalPositiveDouble(-d));
+	}
+	return String.format("%s", formatTwoDecimalPositiveDouble(d));
+    }
+
+    public static String formatPerCent(final double d) {
+	if (d < 0d) {
+	    return String.format("-%s%%", formatTwoDecimalPositiveDouble(-d));
+	}
+	return String.format("%s%%", formatTwoDecimalPositiveDouble(d));
+    }
+
+    public static String formatDollars(final double d) {
+	if (d < 0d) {
+	    return String.format("-$%s", formatTwoDecimalPositiveDouble(-d));
+	}
+	return String.format("$%s", formatTwoDecimalPositiveDouble(d));
+    }
+
+    private static String formatTwoDecimalPositiveDouble(final double d) {
+	return String.format("%,.2f", d);
     }
 
     public static String getString(final int[] intVector) {

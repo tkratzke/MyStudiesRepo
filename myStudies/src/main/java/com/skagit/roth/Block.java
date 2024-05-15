@@ -28,13 +28,7 @@ public class Block extends NamedEntity {
 	final int dataRowStop = end.getFirstRow();
 	final ArrayList<Line> lineList = new ArrayList<>();
 	for (int kRow = firstRow + 1; kRow < dataRowStop; ++kRow) {
-	    Line line = null;
-	    try {
-		line = new Line(sheetAndBlocks, kRow);
-	    } catch (final Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
+	    final Line line = new Line(sheetAndBlocks, kRow);
 	    if (line.isValid()) {
 		lineList.add(line);
 	    }

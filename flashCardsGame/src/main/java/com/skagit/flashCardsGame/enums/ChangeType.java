@@ -20,18 +20,18 @@ public enum ChangeType {
     final public static ChangeType[] _Values = values();
 
     final public static EnumSet<ChangeType> _NewQuizSet = EnumSet.of(//
-	    ChangeType.CRITICAL_ONLY_WIN, //
-	    ChangeType.MOVE_ON_WIN, //
-	    ChangeType.LOSS, //
-	    ChangeType.NOTHING_TO_SOMETHING, //
-	    ChangeType.PARAMETERS_CHANGED, //
-	    ChangeType.RESTART//
+	    CRITICAL_ONLY_WIN, //
+	    MOVE_ON_WIN, //
+	    LOSS, //
+	    NOTHING_TO_SOMETHING, //
+	    PARAMETERS_CHANGED, //
+	    RESTART//
     );
 
     final public static EnumSet<ChangeType> _ReallyNewQuizSet = EnumSet.of(//
-	    ChangeType.MOVE_ON_WIN, //
-	    ChangeType.NOTHING_TO_SOMETHING, //
-	    ChangeType.PARAMETERS_CHANGED //
+	    MOVE_ON_WIN, //
+	    NOTHING_TO_SOMETHING, //
+	    PARAMETERS_CHANGED //
     );
 
 }

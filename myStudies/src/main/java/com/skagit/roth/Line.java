@@ -1,5 +1,6 @@
 package com.skagit.roth;
 
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 public class Line implements Comparable<Line> {
@@ -14,6 +15,11 @@ public class Line implements Comparable<Line> {
 
     public Line(final RothCalculator.SheetAndBlocks sheetAndBlocks, final int kRow) {
 	final XSSFSheet sheet = sheetAndBlocks._sheet;
+	final XSSFRow row = sheet.getRow(kRow);
+	if (row == null) {
+	    _header = _data = null;
+	    return;
+	}
 	_header = new Field(sheetAndBlocks, sheet.getRow(kRow).getCell(0));
 	_data = new Field(sheetAndBlocks, sheet.getRow(kRow).getCell(1));
     }

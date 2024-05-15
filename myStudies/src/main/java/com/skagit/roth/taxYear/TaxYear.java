@@ -1,4 +1,4 @@
-package com.skagit.roth.yearOfData;
+package com.skagit.roth.taxYear;
 
 import java.time.temporal.ChronoField;
 
@@ -9,7 +9,7 @@ import com.skagit.roth.RothCalculator;
 import com.skagit.util.DateUtils;
 import com.skagit.util.NamedEntity;
 
-public class YearOfData {
+public class TaxYear {
     /**
      * We assume RMDs are taken at the beginning of each year, and Roth Conversions
      * are taken at the end of each year.
@@ -143,30 +143,6 @@ public class YearOfData {
 	}
     }
 
-    public class CG1 extends NamedEntity {
-
-	public final RothCalculator.CapitalGain _cg0;
-	public double _amountThisYear;
-	public double _carryOverToNextYear;
-
-	public CG1(final RothCalculator.CapitalGain cg0) {
-	    super(cg0._name, _thisYear);
-	    _cg0 = cg0;
-	    _amountThisYear = 0d;
-	    _carryOverToNextYear = 0d;
-	}
-
-	public String getString() {
-	    return String.format("CG1[%s], Amount This Year[$%.2f] Carryover to Next Year[$%.2f]", //
-		    _name, _amountThisYear, _carryOverToNextYear);
-	}
-
-	@Override
-	public String toString() {
-	    return getString();
-	}
-    }
-
     public final RothCalculator _rothCalculator;
     public final int _thisYear;
     public final double _inflationFactor;
@@ -176,11 +152,11 @@ public class YearOfData {
     public final Brackets[] _bracketsS;
     public final TP1[] _tp1s;
 
-    public YearOfData(final RothCalculator rothCalculator, final int year) {
+    public TaxYear(final RothCalculator rothCalculator, final int year) {
 	_rothCalculator = rothCalculator;
 	_thisYear = year;
 	final int myIdx = _thisYear - _rothCalculator.getCurrentYear();
-	final YearOfData pvsYear = myIdx == 0 ? null : _rothCalculator._yearsOfData[myIdx - 1];
+	final TaxYear pvsYear = myIdx == 0 ? null : _rothCalculator._yearsOfData[myIdx - 1];
 	final int nBracketsS = RothCalculator._BracketsNames.length;
 	final double inflationExpRate = _rothCalculator.getGrowthRate(RothCalculator._InflationGrowthRateIdx);
 	final double deltaT = pvsYear == null ? _rothCalculator._remainderOfCurrentYear : 1d;
@@ -197,7 +173,7 @@ public class YearOfData {
 	    _bracketsS = new Brackets[nBracketsS];
 	    for (int k0 = 0; k0 < nBracketsS; ++k0) {
 		final Brackets oldBrackets = pvsYear._bracketsS[k0];
-		final Block newBracketsBlock = _rothCalculator.getNewBracketsBlock(oldBrackets, _thisYear);
+		final Block newBracketsBlock = getNewBracketsBlock(oldBrackets);
 		final Line[] newLines = newBracketsBlock == null ? null : newBracketsBlock._lines;
 		final int nNewLines = newLines == null ? 0 : newLines.length;
 		final Brackets newBrackets = new Brackets(oldBrackets);
@@ -219,6 +195,11 @@ public class YearOfData {
 	for (int k = 0; k < nTaxPayers; ++k) {
 	    _tp1s[k] = new TP1(taxPayers[k]);
 	}
+    }
+
+    public Block getNewBracketsBlock(final Brackets oldBrackets) {
+	return _rothCalculator.getBlock(RothCalculator._SheetNames[RothCalculator._BracketsSheetIdx],
+		oldBrackets._name + " " + _thisYear);
     }
 
     private final static boolean _DumpBracketsS = false;

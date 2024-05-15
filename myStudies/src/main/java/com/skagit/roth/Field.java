@@ -2,6 +2,7 @@ package com.skagit.roth;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -46,8 +47,11 @@ public class Field implements Comparable<Field> {
 	}
     };
 
+    final private static EnumSet<CellType> _BadCellTypes = EnumSet.of(CellType._NONE, CellType.ERROR, CellType.BLANK);
+
     public Field(final RothCalculator.SheetAndBlocks sheetAndBlocks, final XSSFCell cell) {
-	if (cell == null) {
+	final CellType cellType = cell == null ? null : cell.getCellType();
+	if (cellType == null || _BadCellTypes.contains(cellType)) {
 	    _b = null;
 	    _typeOfDouble = null;
 	    _d = Double.NaN;
@@ -55,7 +59,6 @@ public class Field implements Comparable<Field> {
 	    return;
 	}
 	final RothCalculator rothCalculator = sheetAndBlocks.getRothCalculator();
-	final CellType cellType = cell.getCellType();
 	final FormulaEvaluator formulaEvaluator = rothCalculator._formulaEvaluator;
 	switch (cellType) {
 	case BOOLEAN:
@@ -104,9 +107,6 @@ public class Field implements Comparable<Field> {
 	    _typeOfDouble = null;
 	    _s = NamedEntity.CleanWhiteSpace(cell.getStringCellValue());
 	    return;
-	case ERROR:
-	case _NONE:
-	case BLANK:
 	default:
 	    _b = null;
 	    _typeOfDouble = null;
