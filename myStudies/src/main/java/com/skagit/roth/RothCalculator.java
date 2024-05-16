@@ -284,28 +284,6 @@ public class RothCalculator {
 	}
     }
 
-    public class GrowthRate extends NamedEntity {
-
-	public final double _perCentGrowth;
-	public final double _expGrowthRate;
-
-	public GrowthRate(final Line grLine) {
-	    super(grLine._header._s);
-	    _perCentGrowth = grLine._data._d * 100d;
-	    _expGrowthRate = Math.log(1d + _perCentGrowth / 100d);
-	}
-
-	public String getString() {
-	    return String.format("Name[%s], PerCentGrowth[%.0f%%] ExpRate[%.4f]", //
-		    _name, _perCentGrowth, _expGrowthRate);
-	}
-
-	@Override
-	public String toString() {
-	    return getString();
-	}
-    }
-
     /** Poi concepts: */
     final public XSSFWorkbook _workBook;
     final public FormulaEvaluator _formulaEvaluator;
@@ -313,13 +291,17 @@ public class RothCalculator {
     /** Class representation: */
     public final Date _currentDate;
     public final int _finalYear;
-    public final double _remainderOfCurrentYear;
+    public final double _proportionRemainingInCurrentYear;
     public final double _standardDeductionCurrentYear;
     public final double _partBPremiumCurrentYear;
+    public final double _maxCapitalGainsLoss;
+    public final GrowthRate _inflationGrowthRate;
+    public final GrowthRate _investmentsGrowthRate;
+
     public final double[] _lifeExpectancies;
-    public final TaxPayer[] _taxPayers;
-    public final GrowthRate[] _growthRates;
     public final Brackets[] _bracketsS;
+
+    public final TaxPayer[] _taxPayers;
     public final InvestmentInfo[] _investmentInfos;
 
     public final TaxYear[] _yearsOfData;
@@ -335,17 +317,23 @@ public class RothCalculator {
 	}
 	Arrays.sort(_sheetAndBlocksS);
 	final String staticsSheetName = getSheetName(_StaticsSheetIdx);
-	_currentDate = getBlock(staticsSheetName, "Current Date")._lines[0]._header.getDate();
+	_currentDate = getMiscellaneousData("Current Date").getDate();
 	final int currentYear = getCurrentYear();
-	_finalYear = (int) Math.round(getBlock(staticsSheetName, "Final Year")._lines[0]._header._d);
-	_standardDeductionCurrentYear = getBlock(staticsSheetName,
-		"Standard Deduction Current Year")._lines[0]._data._d;
-	_partBPremiumCurrentYear = getBlock(staticsSheetName, "Part B Premium Current Year")._lines[0]._data._d;
+	_finalYear = (int) Math.round(getMiscellaneousData("Final Year")._d);
+	_standardDeductionCurrentYear = getMiscellaneousData("Standard Deduction Current Year")._d;
+	_partBPremiumCurrentYear = getMiscellaneousData("Part B Premium Current Year")._d;
+	_maxCapitalGainsLoss = getMiscellaneousData("Max Capital Gains Loss")._d;
+	final String inflationName = _GrowthRateNames[_InflationGrowthRateIdx];
+	final double inflationPerCentGrowth = getMiscellaneousData(inflationName)._d;
+	_inflationGrowthRate = new GrowthRate(inflationName, inflationPerCentGrowth);
+	final String investmentsName = _GrowthRateNames[_InvestmentsGrowthRateIdx];
+	final double investmentsNameGrowthRate = getMiscellaneousData(investmentsName)._d;
+	_investmentsGrowthRate = new GrowthRate(investmentsName, investmentsNameGrowthRate);
 	final Date thisJan1 = DateUtils.parseDate(String.format("%d-1-1", currentYear));
 	final Date nextJan1 = DateUtils.parseDate(String.format("%d-1-1", currentYear + 1));
 	final double d0 = DateUtils.getDateDiff(thisJan1, _currentDate, TimeUnit.DAYS);
 	final double d1 = DateUtils.getDateDiff(thisJan1, nextJan1, TimeUnit.DAYS);
-	_remainderOfCurrentYear = (d1 - d0) / d1;
+	_proportionRemainingInCurrentYear = (d1 - d0) / d1;
 
 	final Line[] taxPayerLines = getBlock(staticsSheetName, "Tax Payer")._lines;
 	final int nLines0 = taxPayerLines.length;
@@ -354,14 +342,6 @@ public class RothCalculator {
 	    _taxPayers[k] = new TaxPayer(taxPayerLines[k]);
 	}
 	Arrays.sort(_taxPayers);
-
-	final Line[] growthRateLines = getBlock(staticsSheetName, "Growth Rates")._lines;
-	final int nLines2 = growthRateLines.length;
-	_growthRates = new GrowthRate[nLines2];
-	for (int k = 0; k < nLines2; ++k) {
-	    _growthRates[k] = new GrowthRate(growthRateLines[k]);
-	}
-	Arrays.sort(_growthRates);
 
 	final int nBracketsS = _BracketsNames.length;
 	_bracketsS = new Brackets[nBracketsS];
@@ -416,19 +396,27 @@ public class RothCalculator {
 	if (sheetIdx < 0) {
 	    return null;
 	}
-	final Block[] theseBlocks = _sheetAndBlocksS[sheetIdx]._blocks;
-	final int blockIdx = Arrays.binarySearch(theseBlocks, new NamedEntity(blockName));
-	return blockIdx < 0 ? null : theseBlocks[blockIdx];
+	final Block[] blocks = _sheetAndBlocksS[sheetIdx]._blocks;
+	final int blockIdx = Arrays.binarySearch(blocks, new NamedEntity(blockName));
+	return blockIdx < 0 ? null : blocks[blockIdx];
+    }
+
+    public Line getLine(final String sheetName, final String blockName, final String s) {
+	final Block block = getBlock(sheetName, blockName);
+	if (block == null) {
+	    return null;
+	}
+	final Line[] lines = block._lines;
+	final int lineIdx = Arrays.binarySearch(lines, new Line(s));
+	return lineIdx < 0 ? null : lines[lineIdx];
+    }
+
+    public Field getMiscellaneousData(final String s) {
+	return getLine(_SheetNames[_StaticsSheetIdx], "Miscellaneous Data", s)._data;
     }
 
     public int getCurrentYear() {
 	return DateUtils.getAPartOfADate(_currentDate, ChronoField.YEAR);
-    }
-
-    public double getGrowthRate(final int growthRateIdx) {
-	final String growthRateName = _GrowthRateNames[growthRateIdx];
-	final int idx = Arrays.binarySearch(_growthRates, new NamedEntity(growthRateName));
-	return idx < 0 ? Double.NaN : _growthRates[idx]._expGrowthRate;
     }
 
     public String getString() {
@@ -442,13 +430,8 @@ public class RothCalculator {
 	for (int k = 0; k < nTaxPayers; ++k) {
 	    s += String.format("\n\n%d. %s", k, _taxPayers[k].getString());
 	}
-	final int nGrowthRates = _growthRates.length;
-	for (int k = 0; k < nGrowthRates; ++k) {
-	    if (k == 0) {
-		s += "\n";
-	    }
-	    s += String.format("\n%d. %s", k, _growthRates[k].getString());
-	}
+	s += String.format("\n\n%s", _inflationGrowthRate.getString());
+	s += String.format("\n%s", _investmentsGrowthRate.getString());
 	final int nBracketsS = _BracketsNames.length;
 	for (int k = 0; k < nBracketsS; ++k) {
 	    s += String.format("\n\n%s", _bracketsS[k]);

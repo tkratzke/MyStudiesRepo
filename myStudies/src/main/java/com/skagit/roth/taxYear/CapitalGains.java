@@ -3,7 +3,7 @@ package com.skagit.roth.taxYear;
 import com.skagit.util.MyStudiesStringUtils;
 
 public class CapitalGains {
-    final static double _MaxOffset = 3000d;
+    final static double _MinOutSum = -3000d;
 
     /** Note that the "in" fields are only for printing out getString() to debug. */
     final double _shIn, _ellIn, _cfShIn, _cfEllIn;
@@ -15,37 +15,32 @@ public class CapitalGains {
 	_ellIn = ellIn;
 	_cfShIn = cfShIn;
 	_cfEllIn = cfEllIn;
-	double remainingOffset = _MaxOffset;
 	double cfShOut = _cfShIn;
 	double shCgOut = _shIn;
-	/** Short against short. */
-	final double offset0 = Math.min(Math.min(shCgOut, -cfShOut), remainingOffset);
+	/** Short CF offsetting short. */
+	final double offset0 = Math.min(-cfShOut, shCgOut);
 	if (offset0 > 0d) {
 	    shCgOut -= offset0;
-	    remainingOffset -= offset0;
 	    cfShOut += offset0;
 	}
-	/** Long against long. */
+	/** Long CF offsetting long. */
 	double cfEllOut = _cfEllIn;
 	double ellCgOut = _ellIn;
-	final double offset1 = Math.min(Math.min(ellCgOut, -cfEllOut), remainingOffset);
+	final double offset1 = Math.min(-cfEllOut, ellCgOut);
 	if (offset1 > 0d) {
 	    ellCgOut -= offset1;
-	    remainingOffset -= offset1;
 	    cfEllOut += offset1;
 	}
-	/** Short against long. */
-	final double offset2 = Math.min(Math.min(shCgOut, -cfEllOut), remainingOffset);
+	/** Long CF offsetting short. */
+	final double offset2 = Math.min(-cfEllOut, shCgOut);
 	if (offset2 > 0d) {
 	    shCgOut -= offset2;
-	    remainingOffset -= offset2;
 	    cfEllOut += offset2;
 	}
-	/** Long against Short. */
-	final double offset3 = Math.min(Math.min(ellCgOut, -cfShOut), remainingOffset);
+	/** Short CF offsetting Long. */
+	final double offset3 = Math.min(-cfShOut, ellCgOut);
 	if (offset3 > 0d) {
 	    ellCgOut -= offset3;
-	    remainingOffset -= offset3;
 	    cfShOut += offset3;
 	}
 	_shOut = shCgOut;
@@ -55,12 +50,12 @@ public class CapitalGains {
     }
 
     public String getString() {
-	final String inS = String.format("[ShIn/EllIn/CfShIn/CfEllIn]=[%s/%s/%s/%s]", //
+	final String inS = String.format("[ShIn/ElIn/CfShIn/CfElIn]=[%s/%s/%s/%s]", //
 		MyStudiesStringUtils.formatDollars(_shIn), //
 		MyStudiesStringUtils.formatDollars(_ellIn), //
 		MyStudiesStringUtils.formatDollars(_cfShIn), //
 		MyStudiesStringUtils.formatDollars(_cfEllIn));
-	final String outS = String.format("[ShOt/EllOt/CfShOt/CfEllOt]=[%s/%s/%s/%s]", //
+	final String outS = String.format("[ShOt/ElOt/CfShOt/CfElOt]=[%s/%s/%s/%s]", //
 		MyStudiesStringUtils.formatDollars(_shOut), //
 		MyStudiesStringUtils.formatDollars(_ellOut), //
 		MyStudiesStringUtils.formatDollars(_cfShOut), //

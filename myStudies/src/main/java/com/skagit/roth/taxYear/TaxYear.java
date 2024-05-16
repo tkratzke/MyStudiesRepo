@@ -158,10 +158,10 @@ public class TaxYear {
 	final int myIdx = _thisYear - _rothCalculator.getCurrentYear();
 	final TaxYear pvsYear = myIdx == 0 ? null : _rothCalculator._yearsOfData[myIdx - 1];
 	final int nBracketsS = RothCalculator._BracketsNames.length;
-	final double inflationExpRate = _rothCalculator.getGrowthRate(RothCalculator._InflationGrowthRateIdx);
-	final double deltaT = pvsYear == null ? _rothCalculator._remainderOfCurrentYear : 1d;
+	final double inflationExpRate = _rothCalculator._inflationGrowthRate._expGrowthRate;
+	final double deltaT = pvsYear == null ? _rothCalculator._proportionRemainingInCurrentYear : 1d;
 	_inflationFactor = Math.exp(inflationExpRate * deltaT);
-	final double investmentsExpRate = _rothCalculator.getGrowthRate(RothCalculator._InvestmentsGrowthRateIdx);
+	final double investmentsExpRate = _rothCalculator._investmentsGrowthRate._expGrowthRate;
 	_investmentsFactor = Math.exp(investmentsExpRate * deltaT);
 	if (pvsYear == null) {
 	    _standardDeduction = _rothCalculator._standardDeductionCurrentYear;
