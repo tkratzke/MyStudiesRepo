@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-public class DateUtils {
+public class MyStudiesDateUtils {
     final private static DateTimeFormatter _TimeFormatter = DateTimeFormatter.ofPattern("MMM-dd hh:mm:ss");
     final private static SimpleDateFormat _SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     final private static SimpleDateFormat _YearOnlySimpleDateFormat = new SimpleDateFormat("yyyy");

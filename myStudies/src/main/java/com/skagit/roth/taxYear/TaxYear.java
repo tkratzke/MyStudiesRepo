@@ -6,7 +6,8 @@ import com.skagit.roth.Block;
 import com.skagit.roth.Brackets;
 import com.skagit.roth.Line;
 import com.skagit.roth.RothCalculator;
-import com.skagit.util.DateUtils;
+import com.skagit.roth.TypeOfDouble;
+import com.skagit.util.MyStudiesDateUtils;
 import com.skagit.util.NamedEntity;
 
 public class TaxYear {
@@ -39,7 +40,7 @@ public class TaxYear {
 		    divisor = ira0._currentDivisor + (_thisYear - beginningYear);
 		} else {
 		    final RothCalculator.TaxPayer tp0 = _ira0.getOwner();
-		    final int yearOfBirth = DateUtils.getAPartOfADate(tp0._dateOfBirth, ChronoField.YEAR);
+		    final int yearOfBirth = MyStudiesDateUtils.getAPartOfADate(tp0._dateOfBirth, ChronoField.YEAR);
 		    final int age = yearOfBirth - _thisYear;
 		    if (age < ira0._ageOfRmd) {
 			divisor = Double.NaN;
@@ -52,12 +53,14 @@ public class TaxYear {
 	    }
 
 	    public String getString() {
-		String s = String.format("IRA1[%s], InitBlnc[$%.2f]", _name, _initialBalance);
+		String s = String.format("IRA1[%s], InitBlnc[%s]", //
+			_name, //
+			TypeOfDouble.MONEY.format(_initialBalance));
 		if (_rmd > 0d) {
-		    s += String.format(", RMD[$%.2f]", _rmd);
+		    s += String.format(", RMD[%s]", TypeOfDouble.MONEY.format(_rmd));
 		}
 		if (_rothConversion > 0d) {
-		    s += String.format(", RothCnvrsn[$%.2f]", _rothConversion);
+		    s += String.format(", RthCnvrsn[%s]", TypeOfDouble.MONEY.format(_rothConversion));
 		}
 		return s;
 	    }
@@ -89,7 +92,8 @@ public class TaxYear {
 	    }
 
 	    public String getString() {
-		return String.format("OI1[%s], Amount[$%.2f]", _name, _amount);
+		return String.format("OI1[%s], Amnt[%s]", _name, //
+			TypeOfDouble.MONEY.format(_amount));
 	    }
 
 	    @Override
@@ -125,7 +129,8 @@ public class TaxYear {
 	}
 
 	public String getString() {
-	    String s = String.format("TP1[%s], SSA[$%.2f]", _name, _ssa);
+	    String s = String.format("TP1[%s], SSA[%s]", _name, //
+		    TypeOfDouble.MONEY.format(_ssa));
 	    final int nIras = _ira1s.length;
 	    for (int k = 0; k < nIras; ++k) {
 		s += "\n\t" + _ira1s[k].getString();
@@ -205,7 +210,9 @@ public class TaxYear {
     private final static boolean _DumpBracketsS = false;
 
     public String getString() {
-	String s = String.format("Year %d, Std Ded[$%.2f] PartBPrem[$%.2f]", _thisYear, _standardDeduction,
+	String s = String.format("Year %d, StdDdctn[%s] PrtBPrmm[%s]", //
+		_thisYear, //
+		TypeOfDouble.MONEY.format(_standardDeduction), //
 		_partBStandardPremium);
 	if (_DumpBracketsS) {
 	    final int nBracketsS = _bracketsS.length;

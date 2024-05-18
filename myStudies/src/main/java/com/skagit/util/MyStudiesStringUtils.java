@@ -23,29 +23,29 @@ public class MyStudiesStringUtils {
 	return s;
     }
 
-    public static String formatDouble(final double d) {
-	if (d < 0d) {
-	    return String.format("-%s", formatTwoDecimalPositiveDouble(-d));
-	}
-	return String.format("%s", formatTwoDecimalPositiveDouble(d));
-    }
-
     public static String formatPerCent(final double d) {
-	if (d < 0d) {
-	    return String.format("-%s%%", formatTwoDecimalPositiveDouble(-d));
-	}
-	return String.format("%s%%", formatTwoDecimalPositiveDouble(d));
+	return String.format("%,.2f%%", d);
     }
 
     public static String formatDollars(final double d) {
-	if (d < 0d) {
-	    return String.format("-$%s", formatTwoDecimalPositiveDouble(-d));
+	if (Math.abs(d) < 0.005) {
+	    return "$0";
 	}
-	return String.format("$%s", formatTwoDecimalPositiveDouble(d));
+	final int dInt = (int) Math.round(d);
+	final String s;
+	if (dInt == d) {
+	    s = String.format("%,d", dInt);
+	} else {
+	    s = String.format("%,.2f", d);
+	}
+	if (s.charAt(0) != '-') {
+	    return "$" + s;
+	}
+	return "-$" + s.substring(1);
     }
 
-    private static String formatTwoDecimalPositiveDouble(final double d) {
-	return String.format("%,.2f", d);
+    public static String formatOther(final double d, final int nDigits) {
+	return String.format("%,." + nDigits + "f", d);
     }
 
     public static String getString(final int[] intVector) {

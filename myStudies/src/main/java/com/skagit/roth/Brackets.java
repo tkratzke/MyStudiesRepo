@@ -23,7 +23,8 @@ public class Brackets extends NamedEntity {
 	}
 
 	public String getString() {
-	    return String.format("[%.1f%%:$%.2f]", _perCent, _ceiling);
+	    return String.format("[%s:%s]", //
+		    TypeOfDouble.PER_CENT.format(_perCent), TypeOfDouble.MONEY.format(_ceiling));
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class Brackets extends NamedEntity {
 	String s = _name;
 	final int nCeilingPerCents = _perCentCeilings.length;
 	for (int k = 0; k < nCeilingPerCents; ++k) {
-	    s += String.format("\n%S", _perCentCeilings[k]);
+	    s += String.format("\n%s", _perCentCeilings[k].getString());
 	}
 	return s;
     }

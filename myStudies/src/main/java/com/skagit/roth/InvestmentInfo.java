@@ -11,7 +11,7 @@ public class InvestmentInfo extends NamedEntity {
     }
 
     public String getString() {
-	return String.format("%s: $%.2f", _name, _d);
+	return String.format("%s: %s", _name, TypeOfDouble.MONEY.format(_d));
     }
 
     @Override

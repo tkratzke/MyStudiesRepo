@@ -1,66 +1,94 @@
 package com.skagit.roth.taxYear;
 
-import com.skagit.util.MyStudiesStringUtils;
+import com.skagit.roth.TypeOfDouble;
 
 public class CapitalGains {
-    final static double _MinOutSum = -3000d;
+    final double _maxCapitalGainsLoss;
+    final double _shIn, _elIn, _shCfIn, _elCfIn;
+    final double _shAfterOffset, _elAfterOffset, _shCfAfterOffset, _elCfAfterOffset;
+    final double _shOt, _elOt, _shCfOt, _elCfOt;
 
-    /** Note that the "in" fields are only for printing out getString() to debug. */
-    final double _shIn, _ellIn, _cfShIn, _cfEllIn;
-    final double _shOut, _ellOut, _cfShOut, _cfEllOut;
-
-    /** Assumes shIn and ellIn have already been extrapolated. */
-    public CapitalGains(final double shIn, final double ellIn, final double cfShIn, final double cfEllIn) {
+    public CapitalGains(final double maxCapitalGainsLoss, final double shIn, final double elIn, final double cfShIn,
+	    final double cfElIn) {
+	_maxCapitalGainsLoss = maxCapitalGainsLoss;
 	_shIn = shIn;
-	_ellIn = ellIn;
-	_cfShIn = cfShIn;
-	_cfEllIn = cfEllIn;
-	double cfShOut = _cfShIn;
-	double shCgOut = _shIn;
+	_elIn = elIn;
+	_shCfIn = cfShIn;
+	_elCfIn = cfElIn;
+	double shCfOt = _shCfIn;
+	double shOt = _shIn;
 	/** Short CF offsetting short. */
-	final double offset0 = Math.min(-cfShOut, shCgOut);
+	final double offset0 = Math.min(-shCfOt, shOt);
 	if (offset0 > 0d) {
-	    shCgOut -= offset0;
-	    cfShOut += offset0;
+	    shOt -= offset0;
+	    shCfOt += offset0;
 	}
 	/** Long CF offsetting long. */
-	double cfEllOut = _cfEllIn;
-	double ellCgOut = _ellIn;
-	final double offset1 = Math.min(-cfEllOut, ellCgOut);
+	double elCfOt = _elCfIn;
+	double elOt = _elIn;
+	final double offset1 = Math.min(-elCfOt, elOt);
 	if (offset1 > 0d) {
-	    ellCgOut -= offset1;
-	    cfEllOut += offset1;
+	    elOt -= offset1;
+	    elCfOt += offset1;
 	}
 	/** Long CF offsetting short. */
-	final double offset2 = Math.min(-cfEllOut, shCgOut);
+	final double offset2 = Math.min(-elCfOt, shOt);
 	if (offset2 > 0d) {
-	    shCgOut -= offset2;
-	    cfEllOut += offset2;
+	    shOt -= offset2;
+	    elCfOt += offset2;
 	}
 	/** Short CF offsetting Long. */
-	final double offset3 = Math.min(-cfShOut, ellCgOut);
+	final double offset3 = Math.min(-shCfOt, elOt);
 	if (offset3 > 0d) {
-	    ellCgOut -= offset3;
-	    cfShOut += offset3;
+	    elOt -= offset3;
+	    shCfOt += offset3;
 	}
-	_shOut = shCgOut;
-	_ellOut = ellCgOut;
-	_cfShOut = cfShOut;
-	_cfEllOut = cfEllOut;
+	_shAfterOffset = shOt;
+	_elAfterOffset = elOt;
+	_shCfAfterOffset = shCfOt;
+	_elCfAfterOffset = elCfOt;
+
+	/** Cap -shOt and -elOt as per _maxCapitalGAinsLoss. */
+	final double minShOt = -_maxCapitalGainsLoss;
+	if (shOt < minShOt) {
+	    shCfOt -= (minShOt - shOt);
+	    shOt = minShOt;
+	}
+	final double minElOt;
+	if (shOt < 0d) {
+	    minElOt = -_maxCapitalGainsLoss - shOt;
+	} else {
+	    minElOt = -_maxCapitalGainsLoss;
+	}
+	if (elOt < minElOt) {
+	    elCfOt -= (minElOt - elOt);
+	    elOt = minElOt;
+	}
+	_shOt = shOt;
+	_elOt = elOt;
+	_shCfOt = shCfOt;
+	_elCfOt = elCfOt;
     }
 
     public String getString() {
-	final String inS = String.format("[ShIn/ElIn/CfShIn/CfElIn]=[%s/%s/%s/%s]", //
-		MyStudiesStringUtils.formatDollars(_shIn), //
-		MyStudiesStringUtils.formatDollars(_ellIn), //
-		MyStudiesStringUtils.formatDollars(_cfShIn), //
-		MyStudiesStringUtils.formatDollars(_cfEllIn));
-	final String outS = String.format("[ShOt/ElOt/CfShOt/CfElOt]=[%s/%s/%s/%s]", //
-		MyStudiesStringUtils.formatDollars(_shOut), //
-		MyStudiesStringUtils.formatDollars(_ellOut), //
-		MyStudiesStringUtils.formatDollars(_cfShOut), //
-		MyStudiesStringUtils.formatDollars(_cfEllOut));
-	return String.format("%s ->\n%s", inS, outS);
+	final String maxCapGainsLossS = String.format("MaxCapitalGainsLoss[%s]",
+		TypeOfDouble.MONEY.format(_maxCapitalGainsLoss));
+	final String inS = String.format("In:   Shrt:Long[%s,%s]  ShrtCf:LongCf[%s:%s]", //
+		TypeOfDouble.MONEY.format(_shIn), //
+		TypeOfDouble.MONEY.format(_elIn), //
+		TypeOfDouble.MONEY.format(_shCfIn), //
+		TypeOfDouble.MONEY.format(_elCfIn));
+	final String afterOffsetS = String.format("AO:   Shrt:Long[%s:%s]  ShrtCf:LongCf[%s:%s]", //
+		TypeOfDouble.MONEY.format(_shAfterOffset), //
+		TypeOfDouble.MONEY.format(_elAfterOffset), //
+		TypeOfDouble.MONEY.format(_shCfAfterOffset), //
+		TypeOfDouble.MONEY.format(_elCfAfterOffset));
+	final String outS = String.format("Out:  Shrt:Long[%s:%s]  ShrtCf:LongCf[%s:%s]", //
+		TypeOfDouble.MONEY.format(_shOt), //
+		TypeOfDouble.MONEY.format(_elOt), //
+		TypeOfDouble.MONEY.format(_shCfOt), //
+		TypeOfDouble.MONEY.format(_elCfOt));
+	return String.format("%s\n%s ->\n%s ->\n%s", maxCapGainsLossS, inS, afterOffsetS, outS);
     }
 
     @Override
@@ -68,9 +96,26 @@ public class CapitalGains {
 	return getString();
     }
 
+    /** For debugging. */
+    private final static int _MaxCapGainsLoss = 3;
+
+    private CapitalGains(final int[] shElshCfelCf) {
+	this(_MaxCapGainsLoss, shElshCfelCf[0], shElshCfelCf[1], shElshCfelCf[2], shElshCfelCf[3]);
+    }
+
     public static void main(final String[] args) {
-	final CapitalGains cg = new CapitalGains(1000d, 10000d, -4000d, -000d);
-	System.out.println(cg.getString());
+
+	final int[][] cases = new int[][] { //
+		{ -1, -5, 0, 0 }, //
+		{ 2, -5, 0, 0 }, //
+		{ 1, -5, -4, 0 }, //
+		{ 1, -5, -4, 0 }, //
+	};
+	for (final int[] thisCase : cases) {
+	    final CapitalGains cg = new CapitalGains(thisCase);
+	    System.out.println(cg.getString());
+	    System.out.println();
+	}
     }
 
 }

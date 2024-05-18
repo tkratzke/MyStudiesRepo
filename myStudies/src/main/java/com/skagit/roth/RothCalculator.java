@@ -18,7 +18,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.skagit.roth.taxYear.TaxYear;
-import com.skagit.util.DateUtils;
+import com.skagit.util.MyStudiesDateUtils;
+import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
 
 public class RothCalculator {
@@ -165,12 +166,15 @@ public class RothCalculator {
 	    }
 
 	    public String getString() {
-		String s = String.format("IRA[%s], Balance[$%.2f] CurrentBalance[$%.2f]", _name,
-			_balanceBeginningOfCurrentYear, _currentBalance);
+		String s = String.format("IRA[%s], BlncBgnnngYr[%s] CrrntBlnc[%s]", //
+			_name, //
+			TypeOfDouble.MONEY.format(_balanceBeginningOfCurrentYear), //
+			TypeOfDouble.MONEY.format(_currentBalance));
 		if (_ageOfRmd > 0) {
-		    s += String.format(", Age of RMD[%d]", _ageOfRmd);
+		    s += String.format(", Age at RMD[%d]", _ageOfRmd);
 		} else {
-		    s += String.format(", CurrentDivisor[%.1f]", _currentDivisor);
+		    s += String.format(", CrrntDvsr[%s]", //
+			    MyStudiesStringUtils.formatOther(_currentDivisor, 1));
 		}
 		return s;
 	    }
@@ -206,7 +210,9 @@ public class RothCalculator {
 	    }
 
 	    public String getString() {
-		String s = String.format("OI[%s], Amount[$%.2f]", _name, _amount);
+		String s = String.format("OI[%s], Amnt[%s]", //
+			_name, //
+			TypeOfDouble.MONEY.format(_amount));
 		if (_year > 0) {
 		    s += String.format(", Year[%d]", _year);
 		}
@@ -259,9 +265,9 @@ public class RothCalculator {
 	}
 
 	public String getString() {
-	    String s = String.format("TP[%s], DateOfBirth[%s]", _name, DateUtils.formatDateOnly(_dateOfBirth));
+	    String s = String.format("TP[%s], DtOfBrth[%s]", _name, MyStudiesDateUtils.formatDateOnly(_dateOfBirth));
 	    if (_ssa > 0d) {
-		s += String.format(" Current Year SSA[$%.2f]", _ssa);
+		s += String.format(" CrrntYrSsa[%s]", TypeOfDouble.MONEY.format(_ssa));
 	    }
 	    final int nIras = _iras.length;
 	    for (int k = 0; k < nIras; ++k) {
@@ -297,6 +303,7 @@ public class RothCalculator {
     public final double _maxCapitalGainsLoss;
     public final GrowthRate _inflationGrowthRate;
     public final GrowthRate _investmentsGrowthRate;
+    public final double _perCentLong;
 
     public final double[] _lifeExpectancies;
     public final Brackets[] _bracketsS;
@@ -324,15 +331,16 @@ public class RothCalculator {
 	_partBPremiumCurrentYear = getMiscellaneousData("Part B Premium Current Year")._d;
 	_maxCapitalGainsLoss = getMiscellaneousData("Max Capital Gains Loss")._d;
 	final String inflationName = _GrowthRateNames[_InflationGrowthRateIdx];
-	final double inflationPerCentGrowth = getMiscellaneousData(inflationName)._d;
-	_inflationGrowthRate = new GrowthRate(inflationName, inflationPerCentGrowth);
+	final double inflationProportion = getMiscellaneousData(inflationName)._d;
+	_inflationGrowthRate = new GrowthRate(inflationName, inflationProportion);
 	final String investmentsName = _GrowthRateNames[_InvestmentsGrowthRateIdx];
-	final double investmentsNameGrowthRate = getMiscellaneousData(investmentsName)._d;
-	_investmentsGrowthRate = new GrowthRate(investmentsName, investmentsNameGrowthRate);
-	final Date thisJan1 = DateUtils.parseDate(String.format("%d-1-1", currentYear));
-	final Date nextJan1 = DateUtils.parseDate(String.format("%d-1-1", currentYear + 1));
-	final double d0 = DateUtils.getDateDiff(thisJan1, _currentDate, TimeUnit.DAYS);
-	final double d1 = DateUtils.getDateDiff(thisJan1, nextJan1, TimeUnit.DAYS);
+	final double investmentsProportion = getMiscellaneousData(investmentsName)._d;
+	_investmentsGrowthRate = new GrowthRate(investmentsName, investmentsProportion);
+	_perCentLong = getMiscellaneousData("% that's Long")._d;
+	final Date thisJan1 = MyStudiesDateUtils.parseDate(String.format("%d-1-1", currentYear));
+	final Date nextJan1 = MyStudiesDateUtils.parseDate(String.format("%d-1-1", currentYear + 1));
+	final double d0 = MyStudiesDateUtils.getDateDiff(thisJan1, _currentDate, TimeUnit.DAYS);
+	final double d1 = MyStudiesDateUtils.getDateDiff(thisJan1, nextJan1, TimeUnit.DAYS);
 	_proportionRemainingInCurrentYear = (d1 - d0) / d1;
 
 	final Line[] taxPayerLines = getBlock(staticsSheetName, "Tax Payer")._lines;
@@ -416,16 +424,20 @@ public class RothCalculator {
     }
 
     public int getCurrentYear() {
-	return DateUtils.getAPartOfADate(_currentDate, ChronoField.YEAR);
+	return MyStudiesDateUtils.getAPartOfADate(_currentDate, ChronoField.YEAR);
     }
 
     public String getString() {
-	String s = String.format("Current Year[%d], Current Date[%s], Final Year[%d]", //
-		getCurrentYear(), DateUtils.formatDateOnly(new Date(System.currentTimeMillis())), _finalYear);
+	String s = String.format("Crrnt Yr[%d], Crrnt Dt[%s], Fnl Yr[%d]", //
+		getCurrentYear(), MyStudiesDateUtils.formatDateOnly(new Date(System.currentTimeMillis())), _finalYear);
 	s += String.format(//
-		"\nStandard Deduction Current Year[$%.2f], Medicare-B Standard Premium Current year[$%.2f]", //
-		_standardDeductionCurrentYear, _partBPremiumCurrentYear //
-	);
+		"\nStdDdctnCrrntYr[%s], MdcrPrtBPrmmCrrntYr[%s]" + //
+			", Infltn[%s], InvstmntsGrwth[%s], Lng %% of Ttl[%s]", //
+		MyStudiesStringUtils.formatDollars(_standardDeductionCurrentYear), //
+		MyStudiesStringUtils.formatDollars(_partBPremiumCurrentYear), //
+		MyStudiesStringUtils.formatPerCent(_inflationGrowthRate._perCent), //
+		MyStudiesStringUtils.formatPerCent(_investmentsGrowthRate._perCent),
+		MyStudiesStringUtils.formatPerCent(_perCentLong));
 	final int nTaxPayers = _taxPayers.length;
 	for (int k = 0; k < nTaxPayers; ++k) {
 	    s += String.format("\n\n%d. %s", k, _taxPayers[k].getString());
