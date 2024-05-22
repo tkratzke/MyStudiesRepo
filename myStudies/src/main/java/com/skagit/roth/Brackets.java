@@ -1,6 +1,7 @@
 package com.skagit.roth;
 
 import com.skagit.util.NamedEntity;
+import com.skagit.util.TypeOfDouble;
 
 public class Brackets extends NamedEntity {
 
@@ -24,7 +25,7 @@ public class Brackets extends NamedEntity {
 
 	public String getString() {
 	    return String.format("[%s:%s]", //
-		    TypeOfDouble.PER_CENT.format(_perCent), TypeOfDouble.MONEY.format(_ceiling));
+		    TypeOfDouble.PER_CENT.format(_perCent, 1), TypeOfDouble.MONEY.format(_ceiling, 2));
 	}
 
 	@Override

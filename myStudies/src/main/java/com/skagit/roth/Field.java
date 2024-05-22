@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 
 import com.skagit.util.NamedEntity;
+import com.skagit.util.TypeOfDouble;
 
 public class Field implements Comparable<Field> {
 
@@ -146,7 +147,18 @@ public class Field implements Comparable<Field> {
 	if (_b != null) {
 	    return _b.toString();
 	} else if (Double.isFinite(_d)) {
-	    return _typeOfDouble.format(_d);
+	    switch (_typeOfDouble) {
+	    case DATE:
+		return _typeOfDouble.format(_d, 0);
+	    case MONEY:
+	    case OTHER:
+		return _typeOfDouble.format(_d, 2);
+	    case PER_CENT:
+		return _typeOfDouble.format(_d, 1);
+	    default:
+		break;
+
+	    }
 	} else if (_s != null) {
 	    return _s.length() == 0 ? _EmptySetString : _s;
 	}

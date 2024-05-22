@@ -1,6 +1,6 @@
 package com.skagit.roth.taxYear;
 
-import com.skagit.roth.TypeOfDouble;
+import com.skagit.util.TypeOfDouble;
 
 public class CapitalGains {
     final double _maxCapitalGainsLoss;
@@ -72,22 +72,22 @@ public class CapitalGains {
 
     public String getString() {
 	final String maxCapGainsLossS = String.format("MaxCapitalGainsLoss[%s]",
-		TypeOfDouble.MONEY.format(_maxCapitalGainsLoss));
+		TypeOfDouble.MONEY.format(_maxCapitalGainsLoss, 2));
 	final String inS = String.format("In:   Shrt:Long[%s,%s]  ShrtCf:LongCf[%s:%s]", //
-		TypeOfDouble.MONEY.format(_shIn), //
-		TypeOfDouble.MONEY.format(_elIn), //
-		TypeOfDouble.MONEY.format(_shCfIn), //
-		TypeOfDouble.MONEY.format(_elCfIn));
+		TypeOfDouble.MONEY.format(_shIn, 2), //
+		TypeOfDouble.MONEY.format(_elIn, 2), //
+		TypeOfDouble.MONEY.format(_shCfIn, 2), //
+		TypeOfDouble.MONEY.format(_elCfIn, 2));
 	final String afterOffsetS = String.format("AO:   Shrt:Long[%s:%s]  ShrtCf:LongCf[%s:%s]", //
-		TypeOfDouble.MONEY.format(_shAfterOffset), //
-		TypeOfDouble.MONEY.format(_elAfterOffset), //
-		TypeOfDouble.MONEY.format(_shCfAfterOffset), //
-		TypeOfDouble.MONEY.format(_elCfAfterOffset));
+		TypeOfDouble.MONEY.format(_shAfterOffset, 2), //
+		TypeOfDouble.MONEY.format(_elAfterOffset, 2), //
+		TypeOfDouble.MONEY.format(_shCfAfterOffset, 2), //
+		TypeOfDouble.MONEY.format(_elCfAfterOffset, 2));
 	final String outS = String.format("Out:  Shrt:Long[%s:%s]  ShrtCf:LongCf[%s:%s]", //
-		TypeOfDouble.MONEY.format(_shOt), //
-		TypeOfDouble.MONEY.format(_elOt), //
-		TypeOfDouble.MONEY.format(_shCfOt), //
-		TypeOfDouble.MONEY.format(_elCfOt));
+		TypeOfDouble.MONEY.format(_shOt, 2), //
+		TypeOfDouble.MONEY.format(_elOt, 2), //
+		TypeOfDouble.MONEY.format(_shCfOt, 2), //
+		TypeOfDouble.MONEY.format(_elCfOt, 2));
 	return String.format("%s\n%s ->\n%s ->\n%s", maxCapGainsLossS, inS, afterOffsetS, outS);
     }
 

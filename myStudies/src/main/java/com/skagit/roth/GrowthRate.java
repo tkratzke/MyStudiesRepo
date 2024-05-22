@@ -2,6 +2,7 @@ package com.skagit.roth;
 
 import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
+import com.skagit.util.TypeOfDouble;
 
 public class GrowthRate extends NamedEntity {
 
@@ -17,7 +18,7 @@ public class GrowthRate extends NamedEntity {
     public String getString() {
 	return String.format("%s %s: ExpGrowthRate[%s]", //
 		_name, //
-		TypeOfDouble.PER_CENT.format(_perCent), //
+		TypeOfDouble.PER_CENT.format(_perCent, 0), //
 		MyStudiesStringUtils.formatOther(_expGrowthRate, 4));
     }
 

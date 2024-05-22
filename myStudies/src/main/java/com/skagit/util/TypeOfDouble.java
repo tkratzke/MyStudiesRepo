@@ -1,14 +1,11 @@
-package com.skagit.roth;
+package com.skagit.util;
 
 import org.apache.poi.ss.usermodel.DateUtil;
-
-import com.skagit.util.MyStudiesDateUtils;
-import com.skagit.util.MyStudiesStringUtils;
 
 public enum TypeOfDouble {
     DATE, MONEY, PER_CENT, OTHER;
 
-    public String format(final double d) {
+    public String format(final double d, final int nDigits) {
 	if (this == DATE) {
 	    return MyStudiesDateUtils.formatDateOnly(DateUtil.getJavaDate(d));
 	}
@@ -18,9 +15,9 @@ public enum TypeOfDouble {
 	case MONEY:
 	    return MyStudiesStringUtils.formatDollars(d);
 	case OTHER:
-	    return MyStudiesStringUtils.formatOther(d, 2);
+	    return MyStudiesStringUtils.formatOther(d, nDigits);
 	case PER_CENT:
-	    return MyStudiesStringUtils.formatPerCent(d);
+	    return MyStudiesStringUtils.formatPerCent(d, nDigits);
 	default:
 	}
 	return null;

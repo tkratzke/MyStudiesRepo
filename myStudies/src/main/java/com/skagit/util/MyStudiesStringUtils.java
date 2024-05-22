@@ -23,8 +23,15 @@ public class MyStudiesStringUtils {
 	return s;
     }
 
-    public static String formatPerCent(final double d) {
-	return String.format("%,.2f%%", d);
+    public static String formatPerCent(final double d, final int nDigits) {
+	if (Math.abs(d) < 0.005) {
+	    return "0%";
+	}
+	final int dInt = (int) Math.round(d);
+	if (dInt == d) {
+	    return String.format("%,d%%", dInt);
+	}
+	return String.format("%,." + nDigits + "f%%", d);
     }
 
     public static String formatDollars(final double d) {
