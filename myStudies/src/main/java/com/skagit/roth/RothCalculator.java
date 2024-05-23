@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -19,7 +18,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.skagit.roth.taxYear.TaxYear;
 import com.skagit.util.MyStudiesDateUtils;
-import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
 import com.skagit.util.TypeOfDouble;
 
@@ -131,78 +129,6 @@ public class RothCalculator {
 	return _SheetNames[idx];
     }
 
-    public class Account extends NamedEntity {
-
-	public final Owner _owner;
-	public final double _ageOfRmd;
-	public final double _currentDivisor;
-	public final double _balanceBeginningOfCurrentYear;
-	public final double _currentBalance;
-
-	public Account(final String name, final Owner owner) {
-	    super(name);
-	    _owner = owner;
-	    final Line forLookUp = new Line(_name);
-	    final String staticsSheetName = getSheetName(_StaticsSheetIdx);
-	    if (_owner != null) {
-		final Line[] ageBlockLines = getBlock(staticsSheetName, "Age of RMD")._lines;
-		final int idx0 = Arrays.binarySearch(ageBlockLines, forLookUp);
-		_ageOfRmd = idx0 < 0 ? 0d : ageBlockLines[idx0]._data._d;
-		final Line[] divisorLines = getBlock(staticsSheetName, "Divisor Current Year")._lines;
-		final int idx2 = Arrays.binarySearch(divisorLines, forLookUp);
-		_currentDivisor = idx2 < 0 ? Double.NaN : divisorLines[idx2]._data._d;
-	    } else {
-		_ageOfRmd = 0d;
-		_currentDivisor = Double.NaN;
-	    }
-	    final Line[] balance0Lines = getBlock(staticsSheetName, "Balance Beginning of Current Year")._lines;
-	    final int idx3 = Arrays.binarySearch(balance0Lines, forLookUp);
-	    _balanceBeginningOfCurrentYear = balance0Lines[idx3]._data._d;
-	    final Line[] balance1Lines = getBlock(staticsSheetName, "Current Balance")._lines;
-	    final int idx4 = Arrays.binarySearch(balance1Lines, forLookUp);
-	    _currentBalance = balance1Lines[idx4]._data._d;
-	}
-
-	public String getString() {
-	    String s = String.format("ACCNT[%s]", _name);
-	    if (_owner != null) {
-		s += String.format(", OWNR[%s]", _owner._name);
-	    }
-	    s += String.format(", BlncBgnnngYr[%s] CrrntBlnc[%s]", //
-		    TypeOfDouble.MONEY.format(_balanceBeginningOfCurrentYear, 2), //
-		    TypeOfDouble.MONEY.format(_currentBalance, 2));
-	    if (_ageOfRmd > 0d) {
-		s += String.format(", Age at RMD[%s]", MyStudiesStringUtils.formatOther(_ageOfRmd, 1));
-	    } else if (_currentDivisor > 0d) {
-		s += String.format(", CrrntDvsr[%s]", //
-			MyStudiesStringUtils.formatOther(_currentDivisor, 1));
-	    }
-	    return s;
-	}
-
-	@Override
-	public String toString() {
-	    return getString();
-	}
-    }
-
-    public class JointAccount extends Account {
-
-	public JointAccount(final String name) {
-	    super(name, null);
-	}
-
-	@Override
-	public String getString() {
-	    return super.getString();
-	}
-
-	@Override
-	public String toString() {
-	    return getString();
-	}
-    }
-
     public class Owner extends NamedEntity {
 
 	public class OutsideIncome extends NamedEntity {
@@ -266,7 +192,7 @@ public class RothCalculator {
 		final String ownerName = accntDefnLineData._s;
 		if (ownerName != null && ownerName.equals(_name)) {
 		    final String accntName = accntDefnLine._header._s;
-		    myAccntList.add(new Account(accntName, this));
+		    myAccntList.add(new Account(accntName, RothCalculator.this, this));
 		}
 	    }
 	    _myAccnts = myAccntList.toArray(new Account[myAccntList.size()]);
@@ -333,8 +259,7 @@ public class RothCalculator {
     public final Brackets[] _bracketsS;
 
     public final Owner[] _owners;
-    public final Account[] _jointAccounts;
-    public final InvestmentItem[] _investmentItems;
+    public final JointAccount[] _jointAccounts;
 
     public final TaxYear[] _taxYears;
 
@@ -348,6 +273,25 @@ public class RothCalculator {
 	    _sheetAndBlocksS[k] = new SheetAndBlocks(_workBook.getSheet(_SheetNames[k]));
 	}
 	Arrays.sort(_sheetAndBlocksS);
+	/** Read in Brackets and Life Expectancies. */
+	final int nBracketsS = _BracketsNames.length;
+	_bracketsS = new Brackets[nBracketsS];
+	for (int k = 0; k < nBracketsS; ++k) {
+	    _bracketsS[k] = new Brackets(this, _BracketsNames[k]);
+	}
+	Arrays.sort(_bracketsS);
+	final String lifeExpectanciesSheetName = getSheetName(_LifeExpectanciesSheetIdx);
+	final Line[] lifeExpectancyLines = getBlock(lifeExpectanciesSheetName, "Expected Life Lengths")._lines;
+	final int nLines3 = lifeExpectancyLines.length;
+	_lifeExpectancies = new double[nLines3];
+	for (int k = 0; k < nLines3; ++k) {
+	    _lifeExpectancies[k] = lifeExpectancyLines[k]._data._d;
+	}
+
+	/**
+	 * Read in the Statics sheet, defining the Owners, their Accounts (IRAs), and
+	 * the Joint Accounts.
+	 */
 	final String staticsSheetName = getSheetName(_StaticsSheetIdx);
 	_currentDate = getMiscellaneousData("Current Date").getDate();
 	final int currentYear = getCurrentYear();
@@ -376,7 +320,8 @@ public class RothCalculator {
 	    _owners[k] = new Owner(ownerLines[k]);
 	}
 	Arrays.sort(_owners);
-	final ArrayList<Account> jointList = new ArrayList<>();
+
+	final ArrayList<JointAccount> jointList = new ArrayList<>();
 	final Line[] allAccntDefnLines = getBlock(staticsSheetName, "Account Owners")._lines;
 	final int nAccntDefns = allAccntDefnLines.length;
 	for (int k = 0; k < nAccntDefns; ++k) {
@@ -386,48 +331,47 @@ public class RothCalculator {
 	    if (accountOwnerName == null || accountOwnerName.length() == 0) {
 		/** This is a Joint account. */
 		final String accntName = accntDefnLine._header._s;
-		jointList.add(new Account(accntName, null));
+		jointList.add(new JointAccount(accntName, this));
 	    }
 	}
-	_jointAccounts = jointList.toArray(new Account[jointList.size()]);
 
-	final int nBracketsS = _BracketsNames.length;
-	_bracketsS = new Brackets[nBracketsS];
-	for (int k = 0; k < nBracketsS; ++k) {
-	    _bracketsS[k] = new Brackets(this, _BracketsNames[k]);
-	}
-	Arrays.sort(_bracketsS);
-
-	/** Read in the Life Expectancies. */
-	final String lifeExpectanciesSheetName = getSheetName(_LifeExpectanciesSheetIdx);
-	final Line[] lifeExpectancyLines = getBlock(lifeExpectanciesSheetName, "Expected Life Lengths")._lines;
-	final int nLines3 = lifeExpectancyLines.length;
-	_lifeExpectancies = new double[nLines3];
-	for (int k = 0; k < nLines3; ++k) {
-	    _lifeExpectancies[k] = lifeExpectancyLines[k]._data._d;
-	}
-
-	/** Build _investmentItems and check for duplicates. */
-	final HashSet<String> labels = new HashSet<>();
-	final int nInvestmentItems = InvestmentsEnum._Values.length;
-	_investmentItems = new InvestmentItem[nInvestmentItems];
+	/** Read in the Joint Accounts' Investment Information. */
+	final int nJointAccounts = jointList.size();
+	_jointAccounts = jointList.toArray(new JointAccount[nJointAccounts]);
+	Arrays.sort(_jointAccounts);
 	final int sheetIdx = Arrays.binarySearch(_sheetAndBlocksS, new NamedEntity(_SheetNames[_InvestmentsSheetIdx]));
 	final Block[] investmentBlocks = _sheetAndBlocksS[sheetIdx]._blocks;
 	final int nInvestmentBlocks = investmentBlocks.length;
-	for (int k0 = 0; k0 < nInvestmentBlocks; ++k0) {
-	    final Block investmentBlock = investmentBlocks[k0];
-	    final Line[] investmentLines = investmentBlock._lines;
-	    final int nInvestmentLines = investmentLines.length;
-	    for (int k1 = 0; k1 < nInvestmentLines; ++k1) {
-		final Line investmentLine = investmentLines[k1];
-		final String originalName = investmentLine._header._s;
-		if (!labels.add(originalName)) {
-		    System.err.println(String.format("%s from Block %s is a duplicate.", //
-			    investmentLine.getString(), investmentBlock._name));
-		} else {
+	for (int k0 = 0; k0 < nJointAccounts; ++k0) {
+	    final JointAccount jointAccount = _jointAccounts[k0];
+	    final String jointName = jointAccount._name;
+	    final ArrayList<Block> myBlocks = new ArrayList<>();
+	    for (int k1 = 0; k1 < nInvestmentBlocks; ++k1) {
+		final Block block = investmentBlocks[k1];
+		final String blockName = block._name;
+		if (blockName.contains(jointName)) {
+		    myBlocks.add(block);
+		}
+	    }
+	    final int nMyBlocks = myBlocks.size();
+	    for (int k2 = 0; k2 < nMyBlocks; ++k2) {
+		final Block block = myBlocks.get(k2);
+		final Line[] investmentLines = block._lines;
+		final int nInvestmentLines = investmentLines.length;
+		for (int k3 = 0; k3 < InvestmentsEnum._Values.length; ++k3) {
+		    jointAccount._investmentItems[k3] = new InvestmentItem(InvestmentsEnum._Values[k3], //
+			    0d);
+		}
+		for (int k5 = 0; k5 < nInvestmentLines; ++k5) {
+		    /** If two Lines have the same header, the second one trumps. */
+		    final Line line = investmentLines[k5];
+		    final String originalName = line._header._s;
 		    final InvestmentsEnum investmentsEnum = InvestmentsEnum._ReverseMap.get(originalName);
-		    _investmentItems[investmentsEnum.ordinal()] = new InvestmentItem(investmentsEnum, //
-			    investmentLines[k1]._data._d);
+		    if (investmentsEnum != null) {
+			final int k3 = investmentsEnum.ordinal();
+			jointAccount._investmentItems[k3] = new InvestmentItem(investmentsEnum, //
+				investmentLines[k5]._data._d);
+		    }
 		}
 	    }
 	}
@@ -490,31 +434,13 @@ public class RothCalculator {
 	}
 	final int nJointAccounts = _jointAccounts.length;
 	for (int k = 0; k < nJointAccounts; ++k) {
-	    if (k == 0) {
-		s += "\n";
-	    }
-	    s += String.format("\n%s", _jointAccounts[k].getString());
+	    s += String.format("\n\n%s", _jointAccounts[k].getString());
 	}
 	s += String.format("\n\n%s", _inflationGrowthRate.getString());
 	s += String.format("\n%s", _investmentsGrowthRate.getString());
 	final int nBracketsS = _BracketsNames.length;
 	for (int k = 0; k < nBracketsS; ++k) {
 	    s += String.format("\n\n%s", _bracketsS[k]);
-	}
-	if (true) {
-	    s += "\n\nInvestmentItems";
-	    final int nInvestmentItems = _investmentItems.length;
-	    for (int k = 0; k < nInvestmentItems; ++k) {
-		s += String.format("\n%03d. %s", k, _investmentItems[k].getString());
-	    }
-	} else {
-	    final int investmentSheetIdx = Arrays.binarySearch(_sheetAndBlocksS, new NamedEntity("Investments"));
-	    final Block[] investmentBlocks = _sheetAndBlocksS[investmentSheetIdx]._blocks;
-	    final int nInvestmentBlocks = investmentBlocks.length;
-	    for (int k = 0; k < nInvestmentBlocks; ++k) {
-		final Block block = investmentBlocks[k];
-		s += "\n\n" + block.getString();
-	    }
 	}
 	final int nYearsOfData = _taxYears.length;
 	for (int k = 0; k < nYearsOfData; ++k) {

@@ -5,8 +5,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 public class Line implements Comparable<Line> {
 
-    public Field _header;
-    public Field _data;
+    final public Field _header;
+    final public Field _data;
 
     public static String getName(final RothCalculator.SheetAndBlocks sheetAndBlocks, final int kRow) {
 	final XSSFSheet sheet = sheetAndBlocks._sheet;

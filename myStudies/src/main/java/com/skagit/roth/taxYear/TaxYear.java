@@ -2,9 +2,9 @@ package com.skagit.roth.taxYear;
 
 import java.time.temporal.ChronoField;
 
+import com.skagit.roth.Account;
 import com.skagit.roth.Block;
 import com.skagit.roth.Brackets;
-import com.skagit.roth.InvestmentItem;
 import com.skagit.roth.Line;
 import com.skagit.roth.RothCalculator;
 import com.skagit.util.MyStudiesDateUtils;
@@ -15,12 +15,12 @@ public class TaxYear {
 
     public class Account1 extends NamedEntity {
 
-	public final RothCalculator.Account _account0;
+	public final Account _account0;
 	public double _initialBalance;
 	public double _finalBalance;
 	public final double _rmd;
 
-	public Account1(final RothCalculator.Account account0) {
+	public Account1(final Account account0) {
 	    super(account0._name, _thisYear);
 	    _account0 = account0;
 	    final RothCalculator.Owner owner0 = _account0._owner;
@@ -117,7 +117,7 @@ public class TaxYear {
 	    final Owner1 _pvsOwner1 = rothCalculator.getOwner1(_owner0, _thisYear - 1);
 	    _ssa = _pvsOwner1 == null ? _owner0._ssa : (_pvsOwner1._ssa * _inflationFactor);
 
-	    final RothCalculator.Account[] ira0s = _owner0._myAccnts;
+	    final Account[] ira0s = _owner0._myAccnts;
 	    final int nIras = ira0s.length;
 	    _myAccounts1 = new Account1[nIras];
 	    for (int k = 0; k < nIras; ++k) {
@@ -159,7 +159,6 @@ public class TaxYear {
     public final double _partBStandardPremium;
     public final Brackets[] _bracketsS;
     public final Owner1[] _owner1s;
-    public final InvestmentItem[] _investmentItems;
     public final KeyValues _keyValues;
 
     public TaxYear(final RothCalculator rothCalculator, final int year) {
@@ -206,7 +205,6 @@ public class TaxYear {
 	    _owner1s[k] = new Owner1(taxPayers[k]);
 	}
 
-	_investmentItems = null;
 	_keyValues = new KeyValues(this);
     }
 

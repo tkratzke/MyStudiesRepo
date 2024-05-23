@@ -85,9 +85,9 @@ public class Field implements Comparable<Field> {
 		return;
 	    case STRING:
 		_b = null;
+		_s = NamedEntity.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
 		_d = Double.NaN;
 		_typeOfDouble = null;
-		_s = NamedEntity.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
 		return;
 	    default:
 		_b = null;
@@ -104,9 +104,9 @@ public class Field implements Comparable<Field> {
 	    return;
 	case STRING:
 	    _b = null;
+	    _s = NamedEntity.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
 	    _d = Double.NaN;
 	    _typeOfDouble = null;
-	    _s = NamedEntity.CleanWhiteSpace(cell.getStringCellValue());
 	    return;
 	default:
 	    _b = null;

@@ -5,23 +5,27 @@ import java.util.EnumSet;
 import com.skagit.roth.InvestmentsEnum;
 
 public class KeyValues {
+    /**
+     * <pre>
+     CPTL_GN_DSTRBTNS("Capital Gain Distributions"), //
+     TX_EXMPT_INCM("Tax-Exempt Income"), //
+     NT_SHRT_TRM("Net Short-Term"), //
+     NT_LNG_TRM("Net Long-Term"), //
+     FRGN_CRRNCY_GN_LSS("Foreign Currency Gain/Loss"), //
+     NN_QULFD_DVDNDS("- Non-Qualified Dividends"), //
+     QULFD_DVDNDS("- Qualified Dividends"), //
+     INVSTMNT_EXPNSS("Investment Expenses"), //
+     FRGN_TX_PD("Foreign Tax Paid"), //
+     * </pre>
+     */
     public final EnumSet<InvestmentsEnum> _Ordinary = EnumSet.of( //
-	    InvestmentsEnum.ORDNRY_DIV, //
-	    InvestmentsEnum.CG_DISTS, //
-	    InvestmentsEnum.INTRST_INC, //
-	    InvestmentsEnum.MSC_INC, //
-	    InvestmentsEnum.ORIG_ISS_DISC, //
-	    InvestmentsEnum.FRGN_CRRNCY_GN, //
-	    InvestmentsEnum.TAX_EXMPT_INCM, //
-	    InvestmentsEnum.NET_SHORT_TERM, //
-	    InvestmentsEnum.NET_LONG_TERM, //
-	    InvestmentsEnum.RPRTBL_BND_PRMM, //
-	    InvestmentsEnum.RLZD_ACC_MRKT_DSC_INC, //
-	    InvestmentsEnum.ORD_INC_OR_LSS, //
-	    InvestmentsEnum.RPRTBL_ACQ_PREM, //
-	    InvestmentsEnum.MRGN_INT_PD, //
-	    InvestmentsEnum.OPTN_SLS, //
-	    InvestmentsEnum.RTRN_OF_PRNCPL //
+	    InvestmentsEnum.NT_SHRT_TRM, //
+	    InvestmentsEnum.NN_QULFD_DVDNDS, //
+	    InvestmentsEnum.FRGN_CRRNCY_GN_LSS//
+    );
+    public final EnumSet<InvestmentsEnum> _NegativeOrdinary = EnumSet.of( //
+	    InvestmentsEnum.INVSTMNT_EXPNSS, //
+	    InvestmentsEnum.FRGN_TX_PD //
     );
     /**
      * <pre>
@@ -48,6 +52,7 @@ public class KeyValues {
     public double _longCg;
     public double _shortCg;
 
+    @SuppressWarnings("unused")
     public KeyValues(final TaxYear taxYear) {
 	_taxYear = taxYear;
 	final double inflationFactor = _taxYear._inflationFactor;
