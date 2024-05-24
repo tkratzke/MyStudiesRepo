@@ -1,4 +1,4 @@
-package com.skagit.roth.currentYear;
+package com.skagit.roth.baseYear;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,9 +15,9 @@ import com.skagit.util.TypeOfDouble;
 public class Owner0 extends NamedEntity {
 
     public final Date _dateOfBirth;
-    public final double _ssa;
+    public final double _ssIncome;
     public final Account0[] _iras;
-    public final OutsideIncome0[] _outsideIncomes;
+    public final OutsideIncome0[] _outsideIncome0s;
 
     public Owner0(final Line line) {
 	super(line._header._s);
@@ -25,9 +25,9 @@ public class Owner0 extends NamedEntity {
 	final SheetAndBlocks sheetAndBlocks = line._sheetAndBlocks;
 	final WorkBookConcepts workBookConcepts = sheetAndBlocks._workBookConcepts;
 	final String staticsSheetName = WorkBookConcepts.getSheetName(WorkBookConcepts._StaticsSheetIdx);
-	final Line[] ssaLines = workBookConcepts.getBlock(staticsSheetName, "SSA")._lines;
+	final Line[] ssaLines = workBookConcepts.getBlock(staticsSheetName, "Social Security Income")._lines;
 	final int idx = Arrays.binarySearch(ssaLines, new Line(_name));
-	_ssa = idx < 0 ? 0d : ssaLines[idx]._data._d;
+	_ssIncome = idx < 0 ? 0d : ssaLines[idx]._data._d;
 	final Line[] allAccntDefnLines = workBookConcepts.getBlock(staticsSheetName, "Account Owners")._lines;
 	final int nAccntDefns = allAccntDefnLines.length;
 	final ArrayList<Account0> myAccntList = new ArrayList<>();
@@ -52,22 +52,22 @@ public class Owner0 extends NamedEntity {
 		oiList.add(new OutsideIncome0(oiName, workBookConcepts, this));
 	    }
 	}
-	_outsideIncomes = oiList.toArray(new OutsideIncome0[oiList.size()]);
-	Arrays.sort(_outsideIncomes);
+	_outsideIncome0s = oiList.toArray(new OutsideIncome0[oiList.size()]);
+	Arrays.sort(_outsideIncome0s);
     }
 
     public String getString() {
 	String s = String.format("Owner[%s], DtOfBrth[%s]", _name, MyStudiesDateUtils.formatDateOnly(_dateOfBirth));
-	if (_ssa > 0d) {
-	    s += String.format(" CrrntYrSsa[%s]", TypeOfDouble.MONEY.format(_ssa, 2));
+	if (_ssIncome > 0d) {
+	    s += String.format(" CrrntYrSsa[%s]", TypeOfDouble.MONEY.format(_ssIncome, 2));
 	}
 	final int nMyAccnts = _iras.length;
 	for (int k = 0; k < nMyAccnts; ++k) {
 	    s += "\n\t" + _iras[k].getString();
 	}
-	final int nOutsideIncomes = _outsideIncomes.length;
+	final int nOutsideIncomes = _outsideIncome0s.length;
 	for (int k = 0; k < nOutsideIncomes; ++k) {
-	    s += "\n\t" + _outsideIncomes[k].getString();
+	    s += "\n\t" + _outsideIncome0s[k].getString();
 	}
 	return s;
     }

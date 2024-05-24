@@ -1,28 +1,31 @@
 package com.skagit.roth.taxYear;
 
-import com.skagit.roth.currentYear.OutsideIncome0;
+import com.skagit.roth.baseYear.OutsideIncome0;
+import com.skagit.roth.rothCalculator.RothCalculator;
 import com.skagit.util.NamedEntity;
 import com.skagit.util.TypeOfDouble;
 
 public class OutsideIncome1 extends NamedEntity {
 
-    public final OutsideIncome0 _oi0;
+    public final OutsideIncome0 _outsideIncome0;
     public final double _amount;
 
-    public OutsideIncome1(final OutsideIncome0 oi0, final TaxYear taxYear) {
-	super(oi0._name, taxYear._thisYear);
-	final int thisYear = taxYear._thisYear;
-	_oi0 = oi0;
-	if (_oi0._year > 0) {
+    public OutsideIncome1(final OutsideIncome0 outsideIncome0, final RothCalculator rothCalculator,
+	    final int thisYear) {
+	super(outsideIncome0._name, thisYear);
+	_outsideIncome0 = outsideIncome0;
+	if (_outsideIncome0._year > 0) {
 	    /** Signals a "one-off" year. */
-	    _amount = thisYear == _oi0._year ? _oi0._amount : 0d;
+	    _amount = thisYear == _outsideIncome0._year ? _outsideIncome0._amount : 0d;
 	    return;
 	}
-	final OutsideIncome1 pvsOi1 = taxYear._rothCalculator.getOi1(_oi0, thisYear - 1);
-	if (pvsOi1 == null) {
-	    _amount = _oi0._amount;
+	final int baseDateYear = rothCalculator._baseYear._baseDateYear;
+	if (thisYear == baseDateYear) {
+	    _amount = _outsideIncome0._amount;
 	} else {
-	    _amount = taxYear._inflationFactor * pvsOi1._amount;
+	    final OutsideIncome1 pvsOutsideIncome1 = rothCalculator.getOutsideIncome1(_outsideIncome0, thisYear - 1);
+	    final double inflationFactor = rothCalculator.getInflationFactor(thisYear);
+	    _amount = inflationFactor * pvsOutsideIncome1._amount;
 	}
     }
 

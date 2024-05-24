@@ -1,4 +1,4 @@
-package com.skagit.roth.currentYear;
+package com.skagit.roth.baseYear;
 
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import com.skagit.roth.rothCalculator.Brackets;
 import com.skagit.roth.rothCalculator.InvestmentItem;
 import com.skagit.roth.rothCalculator.InvestmentsEnum;
 import com.skagit.roth.rothCalculator.RothCalculator;
+import com.skagit.roth.taxYear.ParameterSet;
 import com.skagit.roth.workBookConcepts.Block;
 import com.skagit.roth.workBookConcepts.Field;
 import com.skagit.roth.workBookConcepts.Line;
@@ -18,44 +18,28 @@ import com.skagit.util.MyStudiesDateUtils;
 import com.skagit.util.NamedEntity;
 import com.skagit.util.TypeOfDouble;
 
-public class CurrentYear {
+public class BaseYear {
 
-    public final Date _currentDate;
-    public final double _standardDeductionCurrentYear;
-    public final double _partBPremiumCurrentYear;
-    public final double _maxCapitalGainsLossCurrentYear;
-    public final double _medicareTaxThresholdCurrentYear;
-    public final Brackets[] _bracketsCurrentYear;
-    public final double _perCentLeftOfCurrentYear;
+    public final Date _baseDate;
+    public final int _baseDateYear;
+    public final double _perCentLeftOfBaseYear;
+
+    public final ParameterSet _baseParameterSet;
 
     public final Owner0[] _owner0s;
     public final Account0[] _jointAccounts;
 
-    public CurrentYear(final WorkBookConcepts workBookConcepts) {
-	/** Read in Brackets and Life Expectancies. */
-	final int nBracketsS = RothCalculator._BracketsNames.length;
-	_bracketsCurrentYear = new Brackets[nBracketsS];
-	for (int k = 0; k < nBracketsS; ++k) {
-	    _bracketsCurrentYear[k] = new Brackets(workBookConcepts, RothCalculator._BracketsNames[k]);
-	}
-	Arrays.sort(_bracketsCurrentYear);
-
-	/**
-	 * Read in the Statics sheet, defining the Owners, their Accounts (IRAs), and
-	 * the Joint Accounts.
-	 */
+    public BaseYear(final RothCalculator rothCalculator) {
+	final WorkBookConcepts workBookConcepts = rothCalculator._workBookConcepts;
 	final String staticsSheetName = WorkBookConcepts.getSheetName(WorkBookConcepts._StaticsSheetIdx);
-	_currentDate = workBookConcepts.getMiscellaneousData("Current Date").getDate();
-	final int currentYear = getCurrentYear();
-	final Date thisJan1 = MyStudiesDateUtils.parseDate(String.format("%d-1-1", currentYear));
-	final Date nextJan1 = MyStudiesDateUtils.parseDate(String.format("%d-1-1", currentYear + 1));
-	final double d0 = MyStudiesDateUtils.getDateDiff(thisJan1, _currentDate, TimeUnit.DAYS);
+	_baseDate = workBookConcepts.getMiscellaneousData("Base Date").getDate();
+	_baseDateYear = MyStudiesDateUtils.getAPartOfADate(_baseDate, ChronoField.YEAR);
+	final Date thisJan1 = MyStudiesDateUtils.parseDate(String.format("%d-1-1", _baseDateYear));
+	final Date nextJan1 = MyStudiesDateUtils.parseDate(String.format("%d-1-1", _baseDateYear + 1));
+	final double d0 = MyStudiesDateUtils.getDateDiff(thisJan1, _baseDate, TimeUnit.DAYS);
 	final double d1 = MyStudiesDateUtils.getDateDiff(thisJan1, nextJan1, TimeUnit.DAYS);
-	_perCentLeftOfCurrentYear = 100d * (d1 - d0) / d1;
-	_standardDeductionCurrentYear = workBookConcepts.getMiscellaneousData("Standard Deduction Current Year")._d;
-	_partBPremiumCurrentYear = workBookConcepts.getMiscellaneousData("Part B Premium Current Year")._d;
-	_maxCapitalGainsLossCurrentYear = workBookConcepts.getMiscellaneousData("Max Capital Gains Loss")._d;
-	_medicareTaxThresholdCurrentYear = workBookConcepts.getMiscellaneousData("Medicare Tax Threshold")._d;
+	_perCentLeftOfBaseYear = 100d * (d1 - d0) / d1;
+	_baseParameterSet = new ParameterSet(rothCalculator, _baseDateYear, _baseDateYear);
 
 	final Line[] ownerLines = workBookConcepts.getBlock(staticsSheetName, "Owners")._lines;
 	final int nLines0 = ownerLines.length;
@@ -125,23 +109,12 @@ public class CurrentYear {
 	}
     }
 
-    public int getCurrentYear() {
-	return MyStudiesDateUtils.getAPartOfADate(_currentDate, ChronoField.YEAR);
-    }
-
     public String getString() {
-	String s = String.format("Crrnt Yr[%d], Crrnt Dt[%s], %%of CrrntYr Left[%s], CrrntMxCGLoss[%s]", //
-		getCurrentYear(), MyStudiesDateUtils.formatDateOnly(_currentDate), //
-		TypeOfDouble.PER_CENT.format(_perCentLeftOfCurrentYear, 2), //
-		TypeOfDouble.MONEY.format(_maxCapitalGainsLossCurrentYear, 2) //
+	String s = String.format("Base Yr[%d], Base Dt[%s], %%of BaseYr Left[%s]\n%s", //
+		_baseDateYear, MyStudiesDateUtils.formatDateOnly(_baseDate), //
+		TypeOfDouble.PER_CENT.format(_perCentLeftOfBaseYear, 2), //
+		_baseParameterSet.getString() //
 	);
-	s += String.format(//
-		"\nStdDdctnCrrntYr[%s], MdcrPrtBPrmmCrrntYr[%s]", //
-		TypeOfDouble.MONEY.format(_standardDeductionCurrentYear, 2), //
-		TypeOfDouble.MONEY.format(_partBPremiumCurrentYear, 2));
-	s += String.format(//
-		"\nMdcrTxThrshldCrrntYr[%s]", //
-		TypeOfDouble.MONEY.format(_medicareTaxThresholdCurrentYear, 2));
 	final int nOwner0s = _owner0s.length;
 	for (int k = 0; k < nOwner0s; ++k) {
 	    s += String.format("\n\n%d. %s", k, _owner0s[k].getString());
@@ -150,10 +123,6 @@ public class CurrentYear {
 	final int nJointAccounts = jointAccounts.length;
 	for (int k = 0; k < nJointAccounts; ++k) {
 	    s += String.format("\n\n%s", jointAccounts[k].getString());
-	}
-	final int nBracketsS = _bracketsCurrentYear.length;
-	for (int k = 0; k < nBracketsS; ++k) {
-	    s += String.format("\n\n%s", _bracketsCurrentYear[k]);
 	}
 	return s;
     }

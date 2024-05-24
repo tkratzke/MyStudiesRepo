@@ -55,8 +55,6 @@ public class KeyValues {
     @SuppressWarnings("unused")
     public KeyValues(final TaxYear taxYear) {
 	_taxYear = taxYear;
-	final double inflationFactor = _taxYear._inflationFactor;
-	final double investmentsFactor = _taxYear._investmentsFactor;
 	// TODO Auto-generated constructor stub
     }
 
