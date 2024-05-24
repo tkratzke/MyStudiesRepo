@@ -1,5 +1,7 @@
-package com.skagit.roth;
+package com.skagit.roth.rothCalculator;
 
+import com.skagit.roth.workBookConcepts.Line;
+import com.skagit.roth.workBookConcepts.WorkBookConcepts;
 import com.skagit.util.NamedEntity;
 import com.skagit.util.TypeOfDouble;
 
@@ -46,10 +48,10 @@ public class Brackets extends NamedEntity {
 
     public final PerCentCeiling[] _perCentCeilings;
 
-    public Brackets(final RothCalculator rothCalculator, final String bracketsName) {
+    public Brackets(final WorkBookConcepts workBookConcepts, final String bracketsName) {
 	super(bracketsName);
-	final String bracketsSheetName = RothCalculator.getSheetName(RothCalculator._BracketsSheetIdx);
-	final Line[] lines = rothCalculator.getBlock(bracketsSheetName, bracketsName)._lines;
+	final String bracketsSheetName = WorkBookConcepts.getSheetName(WorkBookConcepts._BracketsSheetIdx);
+	final Line[] lines = workBookConcepts.getBlock(bracketsSheetName, bracketsName)._lines;
 	final int nLines = lines.length;
 	_perCentCeilings = new PerCentCeiling[nLines];
 	for (int k = 0; k < nLines; ++k) {

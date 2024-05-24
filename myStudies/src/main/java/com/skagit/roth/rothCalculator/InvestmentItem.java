@@ -1,4 +1,4 @@
-package com.skagit.roth;
+package com.skagit.roth.rothCalculator;
 
 import com.skagit.util.TypeOfDouble;
 
@@ -12,8 +12,7 @@ public class InvestmentItem {
     }
 
     public String getString() {
-	return String.format("%s(%s): %s", _investmentsEnum.name(), _investmentsEnum._originalString,
-		TypeOfDouble.MONEY.format(_d, 2));
+	return String.format("%s: %s", _investmentsEnum._originalString, TypeOfDouble.MONEY.format(_d, 2));
     }
 
     @Override

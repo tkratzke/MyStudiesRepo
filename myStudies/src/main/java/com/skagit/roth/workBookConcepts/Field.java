@@ -1,4 +1,4 @@
-package com.skagit.roth;
+package com.skagit.roth.workBookConcepts;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -21,10 +21,6 @@ public class Field implements Comparable<Field> {
     public final TypeOfDouble _typeOfDouble;
     public final double _d;
     public final String _s;
-
-    public Field(final RothCalculator.SheetAndBlocks sheetAndBlocks, final int kRow, final int kClmn) {
-	this(sheetAndBlocks, sheetAndBlocks._sheet.getRow(kRow).getCell(kClmn));
-    }
 
     public static Comparator<Field> ByString = new Comparator<Field>() {
 
@@ -50,7 +46,11 @@ public class Field implements Comparable<Field> {
 
     final private static EnumSet<CellType> _BadCellTypes = EnumSet.of(CellType._NONE, CellType.ERROR, CellType.BLANK);
 
-    public Field(final RothCalculator.SheetAndBlocks sheetAndBlocks, final XSSFCell cell) {
+    public Field(final SheetAndBlocks sheetAndBlocks, final int kRow, final int kClmn) {
+	this(sheetAndBlocks, sheetAndBlocks._sheet.getRow(kRow).getCell(kClmn));
+    }
+
+    public Field(final SheetAndBlocks sheetAndBlocks, final XSSFCell cell) {
 	final CellType cellType = cell == null ? null : cell.getCellType();
 	if (cellType == null || _BadCellTypes.contains(cellType)) {
 	    _b = null;
@@ -59,8 +59,8 @@ public class Field implements Comparable<Field> {
 	    _s = null;
 	    return;
 	}
-	final RothCalculator rothCalculator = sheetAndBlocks.getRothCalculator();
-	final FormulaEvaluator formulaEvaluator = rothCalculator._formulaEvaluator;
+	final WorkBookConcepts workBookConcepts = sheetAndBlocks._workBookConcepts;
+	final FormulaEvaluator formulaEvaluator = workBookConcepts._formulaEvaluator;
 	switch (cellType) {
 	case BOOLEAN:
 	    _b = cell.getBooleanCellValue();
@@ -85,9 +85,16 @@ public class Field implements Comparable<Field> {
 		return;
 	    case STRING:
 		_b = null;
-		_s = NamedEntity.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
-		_d = Double.NaN;
-		_typeOfDouble = null;
+		final String s = NamedEntity.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
+		if (s.equals("--")) {
+		    _d = 0d;
+		    _typeOfDouble = TypeOfDouble.MONEY;
+		    _s = null;
+		} else {
+		    _d = Double.NaN;
+		    _typeOfDouble = null;
+		    _s = s;
+		}
 		return;
 	    default:
 		_b = null;
@@ -104,9 +111,16 @@ public class Field implements Comparable<Field> {
 	    return;
 	case STRING:
 	    _b = null;
-	    _s = NamedEntity.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
-	    _d = Double.NaN;
-	    _typeOfDouble = null;
+	    final String s = NamedEntity.CleanWhiteSpace(formulaEvaluator.evaluate(cell).getStringValue());
+	    if (s.equals("--")) {
+		_d = 0d;
+		_typeOfDouble = TypeOfDouble.MONEY;
+		_s = null;
+	    } else {
+		_d = Double.NaN;
+		_typeOfDouble = null;
+		_s = s;
+	    }
 	    return;
 	default:
 	    _b = null;

@@ -1,4 +1,4 @@
-package com.skagit.roth;
+package com.skagit.roth.workBookConcepts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,16 +13,14 @@ public class Block extends NamedEntity {
 
     final public Line[] _lines;
 
-    private static String getNameOfBlock(final RothCalculator.SheetAndBlocks sheetAndBlocks,
-	    final CellRangeAddress start) {
+    private static String getNameOfBlock(final SheetAndBlocks sheetAndBlocks, final CellRangeAddress start) {
 	final int firstRow = start.getFirstRow();
 	final XSSFSheet sheet = sheetAndBlocks._sheet;
 	final XSSFCell nameCell = sheet.getRow(firstRow).getCell(start.getFirstColumn());
 	return NamedEntity.CleanWhiteSpace(nameCell.getStringCellValue());
     }
 
-    public Block(final RothCalculator.SheetAndBlocks sheetAndBlocks, final CellRangeAddress start,
-	    final CellRangeAddress end) {
+    public Block(final SheetAndBlocks sheetAndBlocks, final CellRangeAddress start, final CellRangeAddress end) {
 	super(getNameOfBlock(sheetAndBlocks, start));
 	final int firstRow = start.getFirstRow();
 	final int dataRowStop = end.getFirstRow();

@@ -1,30 +1,33 @@
-package com.skagit.roth;
+package com.skagit.roth.workBookConcepts;
 
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 public class Line implements Comparable<Line> {
 
+    final public SheetAndBlocks _sheetAndBlocks;
     final public Field _header;
     final public Field _data;
 
-    public static String getName(final RothCalculator.SheetAndBlocks sheetAndBlocks, final int kRow) {
+    public static String getName(final SheetAndBlocks sheetAndBlocks, final int kRow) {
 	final XSSFSheet sheet = sheetAndBlocks._sheet;
 	return new Field(sheetAndBlocks, sheet.getRow(kRow).getCell(0))._s;
     }
 
-    public Line(final RothCalculator.SheetAndBlocks sheetAndBlocks, final int kRow) {
-	final XSSFSheet sheet = sheetAndBlocks._sheet;
+    public Line(final SheetAndBlocks sheetAndBlocks, final int kRow) {
+	_sheetAndBlocks = sheetAndBlocks;
+	final XSSFSheet sheet = _sheetAndBlocks._sheet;
 	final XSSFRow row = sheet.getRow(kRow);
 	if (row == null) {
 	    _header = _data = null;
 	    return;
 	}
-	_header = new Field(sheetAndBlocks, sheet.getRow(kRow).getCell(0));
-	_data = new Field(sheetAndBlocks, sheet.getRow(kRow).getCell(1));
+	_header = new Field(_sheetAndBlocks, sheet.getRow(kRow).getCell(0));
+	_data = new Field(_sheetAndBlocks, sheet.getRow(kRow).getCell(1));
     }
 
     public Line(final String name) {
+	_sheetAndBlocks = null;
 	_header = new Field(name);
 	_data = null;
     }

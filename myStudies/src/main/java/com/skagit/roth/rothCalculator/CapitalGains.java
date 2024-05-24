@@ -1,4 +1,4 @@
-package com.skagit.roth.taxYear;
+package com.skagit.roth.rothCalculator;
 
 import com.skagit.util.TypeOfDouble;
 

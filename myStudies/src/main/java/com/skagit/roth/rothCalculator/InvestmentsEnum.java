@@ -1,4 +1,4 @@
-package com.skagit.roth;
+package com.skagit.roth.rothCalculator;
 
 import java.util.TreeMap;
 

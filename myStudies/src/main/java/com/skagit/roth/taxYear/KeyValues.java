@@ -2,7 +2,7 @@ package com.skagit.roth.taxYear;
 
 import java.util.EnumSet;
 
-import com.skagit.roth.InvestmentsEnum;
+import com.skagit.roth.rothCalculator.InvestmentsEnum;
 
 public class KeyValues {
     /**

@@ -1,0 +1,67 @@
+package com.skagit.roth.taxYear;
+
+import java.time.temporal.ChronoField;
+
+import com.skagit.roth.currentYear.Account0;
+import com.skagit.roth.currentYear.Owner0;
+import com.skagit.roth.rothCalculator.RothCalculator;
+import com.skagit.util.MyStudiesDateUtils;
+import com.skagit.util.NamedEntity;
+import com.skagit.util.TypeOfDouble;
+
+public class Account1 extends NamedEntity {
+
+    public final Account0 _account0;
+    public double _initialBalance;
+    public double _finalBalance;
+    public final double _rmd;
+
+    public Account1(final Account0 account0, final TaxYear taxYear) {
+	super(account0._name, taxYear._thisYear);
+	_account0 = account0;
+	final Owner0 owner0 = _account0._owner;
+	final int thisYear = taxYear._thisYear;
+	final RothCalculator rothCalculator = taxYear._rothCalculator;
+	final Account1 pvsAccount1 = rothCalculator.getAccount1(account0, thisYear - 1);
+	if (pvsAccount1 == null) {
+	    _initialBalance = account0._balanceBeginningOfCurrentYear;
+	} else {
+	    _initialBalance = pvsAccount1._finalBalance;
+	}
+	if (owner0 == null) {
+	    _rmd = 0d;
+	} else {
+	    final double divisor;
+	    final int beginningYear = rothCalculator._currentYear.getCurrentYear();
+	    if (_account0._ageOfRmd < 0) {
+		divisor = account0._currentDivisor + (thisYear - beginningYear);
+	    } else {
+		final int yearOfBirth = MyStudiesDateUtils.getAPartOfADate(owner0._dateOfBirth, ChronoField.YEAR);
+		final int age = yearOfBirth - thisYear;
+		if (age < account0._ageOfRmd) {
+		    divisor = Double.NaN;
+		} else {
+		    divisor = rothCalculator._lifeExpectancies[age];
+		}
+	    }
+	    _rmd = divisor > 0d ? (_initialBalance / divisor) : 0d;
+	}
+	final double investmentsFactor = taxYear._investmentsFactor;
+	_finalBalance = (investmentsFactor * (_initialBalance - _rmd));
+    }
+
+    public String getString() {
+	String s = String.format("Account1[%s], InitBlnc[%s]", //
+		_name, //
+		TypeOfDouble.MONEY.format(_initialBalance, 2));
+	if (_rmd > 0d) {
+	    s += String.format(", RMD[%s]", TypeOfDouble.MONEY.format(_rmd, 2));
+	}
+	return s;
+    }
+
+    @Override
+    public String toString() {
+	return getString();
+    }
+}

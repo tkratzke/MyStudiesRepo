@@ -1,4 +1,4 @@
-package com.skagit.roth;
+package com.skagit.roth.rothCalculator;
 
 import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
