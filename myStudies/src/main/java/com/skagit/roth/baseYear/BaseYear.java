@@ -6,16 +6,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import com.skagit.roth.rothCalculator.InvestmentItem;
-import com.skagit.roth.rothCalculator.InvestmentsEnum;
 import com.skagit.roth.rothCalculator.RothCalculator;
 import com.skagit.roth.taxYear.ParameterSet;
-import com.skagit.roth.workBookConcepts.Block;
 import com.skagit.roth.workBookConcepts.Field;
 import com.skagit.roth.workBookConcepts.Line;
 import com.skagit.roth.workBookConcepts.WorkBookConcepts;
 import com.skagit.util.MyStudiesDateUtils;
-import com.skagit.util.NamedEntity;
 import com.skagit.util.TypeOfDouble;
 
 public class BaseYear {
@@ -63,50 +59,9 @@ public class BaseYear {
 	    }
 	}
 
-	/** Read in the Joint Accounts' Investment Information. */
 	final int nJointAccounts = jointList.size();
 	_jointAccounts = jointList.toArray(new Account0[nJointAccounts]);
 	Arrays.sort(_jointAccounts);
-	final int sheetIdx = Arrays.binarySearch(workBookConcepts._sheetAndBlocksS,
-		new NamedEntity(WorkBookConcepts._SheetNames[WorkBookConcepts._InvestmentsSheetIdx]));
-	final Block[] investmentBlocks = workBookConcepts._sheetAndBlocksS[sheetIdx]._blocks;
-	final int nInvestmentBlocks = investmentBlocks.length;
-	for (int k0 = 0; k0 < nJointAccounts; ++k0) {
-	    final Account0 jointAccount = _jointAccounts[k0];
-	    final String jointName = jointAccount._name;
-	    final ArrayList<Block> myBlocks = new ArrayList<>();
-	    for (int k1 = 0; k1 < nInvestmentBlocks; ++k1) {
-		final Block block = investmentBlocks[k1];
-		final String blockName = block._name;
-		if (blockName.contains(jointName)) {
-		    myBlocks.add(block);
-		}
-	    }
-	    final int nMyBlocks = myBlocks.size();
-	    for (int k2 = 0; k2 < nMyBlocks; ++k2) {
-		final Block block = myBlocks.get(k2);
-		final Line[] investmentLines = block._lines;
-		final int nInvestmentLines = investmentLines.length;
-		for (int k3 = 0; k3 < InvestmentsEnum._Values.length; ++k3) {
-		    jointAccount._investmentItems[k3] = new InvestmentItem(InvestmentsEnum._Values[k3], //
-			    0d);
-		}
-		for (int k5 = 0; k5 < nInvestmentLines; ++k5) {
-		    /** If two Lines have the same header, the second one trumps. */
-		    final Line line = investmentLines[k5];
-		    final String originalName = line._header._s;
-		    final double dollars = line._data._d;
-		    if (originalName != null && Double.isFinite(dollars)) {
-			final InvestmentsEnum investmentsEnum = InvestmentsEnum._ReverseMap.get(originalName);
-			if (investmentsEnum != null) {
-			    final int k3 = investmentsEnum.ordinal();
-			    jointAccount._investmentItems[k3] = new InvestmentItem(investmentsEnum, //
-				    investmentLines[k5]._data._d);
-			}
-		    }
-		}
-	    }
-	}
     }
 
     public String getString() {

@@ -9,10 +9,6 @@ import com.skagit.roth.rothCalculator.RothCalculator;
 import com.skagit.util.NamedEntity;
 import com.skagit.util.TypeOfDouble;
 
-/**
- * We assume RMDs are taken at the beginning of each year, and Roth Conversions
- * are taken at the end of each year.
- */
 public class Owner1 extends NamedEntity {
 
     public final Owner0 _owner0;
@@ -21,7 +17,7 @@ public class Owner1 extends NamedEntity {
     public final OutsideIncome1[] _outsideIncome1s;
 
     public Owner1(final Owner0 owner0, final RothCalculator rothCalculator, final int thisYear) {
-	super(owner0._name, thisYear);
+	super(owner0._name);
 	_owner0 = owner0;
 	final double inflationFactor = rothCalculator.getInflationFactor(thisYear);
 	final Owner1 pvsOwner1 = rothCalculator.getOwner1(_owner0, thisYear - 1);

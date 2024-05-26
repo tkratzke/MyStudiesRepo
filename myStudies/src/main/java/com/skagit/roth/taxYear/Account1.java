@@ -17,7 +17,7 @@ public class Account1 extends NamedEntity {
     public final double _rmd;
 
     public Account1(final Account0 account0, final RothCalculator rothCalculator, final int thisYear) {
-	super(account0._name, thisYear);
+	super(account0._name);
 	_account0 = account0;
 	final Owner0 owner0 = _account0._owner;
 	final Account1 pvsAccount1 = rothCalculator.getAccount1(account0, thisYear - 1);
@@ -31,8 +31,9 @@ public class Account1 extends NamedEntity {
 	} else {
 	    final double divisor;
 	    final int baseDateYear = rothCalculator._baseYear._baseDateYear;
-	    if (_account0._ageOfRmd < 0) {
-		divisor = account0._baseDivisor + (thisYear - baseDateYear);
+	    final double baseDivisorForInhIra = account0._baseDivisorForInhIra;
+	    if (baseDivisorForInhIra > 0d) {
+		divisor = baseDivisorForInhIra + (thisYear - baseDateYear);
 	    } else {
 		final int yearOfBirth = MyStudiesDateUtils.getAPartOfADate(owner0._dateOfBirth, ChronoField.YEAR);
 		final int age = yearOfBirth - thisYear;

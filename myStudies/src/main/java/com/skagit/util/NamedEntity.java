@@ -9,10 +9,6 @@ public class NamedEntity implements Comparable<NamedEntity> {
 	_name = CleanWhiteSpace(name);
     }
 
-    public NamedEntity(final String name, final int year) {
-	_name = name + " " + year;
-    }
-
     @Override
     public int compareTo(final NamedEntity namedEntity) {
 	return namedEntity == null ? -1 : _name.compareTo(namedEntity._name);

@@ -12,7 +12,7 @@ public class OutsideIncome1 extends NamedEntity {
 
     public OutsideIncome1(final OutsideIncome0 outsideIncome0, final RothCalculator rothCalculator,
 	    final int thisYear) {
-	super(outsideIncome0._name, thisYear);
+	super(outsideIncome0._name);
 	_outsideIncome0 = outsideIncome0;
 	if (_outsideIncome0._year > 0) {
 	    /** Signals a "one-off" year. */

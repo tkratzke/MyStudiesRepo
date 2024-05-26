@@ -107,7 +107,7 @@ public class RothCalculator {
 	}
 	final TaxYear taxYear = _taxYears[thisYear - baseDateYear];
 	final Owner1[] owner1s = taxYear._owner1s;
-	final int idx = Arrays.binarySearch(owner1s, new NamedEntity(owner._name, thisYear));
+	final int idx = Arrays.binarySearch(owner1s, new NamedEntity(owner._name));
 	if (idx < 0) {
 	    return null;
 	}
@@ -120,7 +120,7 @@ public class RothCalculator {
 	    return null;
 	}
 	final Account1[] account1s = owner1._account1s;
-	final int idx = Arrays.binarySearch(account1s, new NamedEntity(account0._name, thisYear));
+	final int idx = Arrays.binarySearch(account1s, new NamedEntity(account0._name));
 	if (idx < 0) {
 	    return null;
 	}
@@ -133,7 +133,7 @@ public class RothCalculator {
 	    return null;
 	}
 	final OutsideIncome1[] myOutsideIncome1s = owner1._outsideIncome1s;
-	final NamedEntity forLookingUp = new NamedEntity(outsideIncome0._name, thisYear);
+	final NamedEntity forLookingUp = new NamedEntity(outsideIncome0._name);
 	final int idx = Arrays.binarySearch(myOutsideIncome1s, forLookingUp);
 	if (idx < 0) {
 	    return null;
@@ -145,7 +145,7 @@ public class RothCalculator {
 	if (_baseYear._baseDateYear == thisYear) {
 	    return 1d;
 	}
-	return _inflationGrowthRate._expGrowthRate;
+	return Math.exp(_inflationGrowthRate._expGrowthRate);
     }
 
     public double getInvestmentsFactor(final int thisYear) {
@@ -155,8 +155,8 @@ public class RothCalculator {
 	} else {
 	    deltaT = 1d;
 	}
-	final double expGrowthRate = _investmentsGrowthRate._expGrowthRate;
-	return Math.exp(expGrowthRate * deltaT);
+	final double growthRate = _investmentsGrowthRate._expGrowthRate;
+	return Math.exp(growthRate * deltaT);
     }
 
     public static void main(final String[] args) {
