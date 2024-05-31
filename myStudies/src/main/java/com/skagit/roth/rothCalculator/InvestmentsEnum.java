@@ -7,10 +7,8 @@ public enum InvestmentsEnum {
     TX_EXMPT_INCM("Tax-Exempt Income"), //
     NT_SHRT_TRM("Net Short-Term"), //
     NT_LNG_TRM("Net Long-Term"), //
-    FRGN_CRRNCY_GN_LSS("Foreign Currency Gain/Loss"), //
     NN_QULFD_DVDNDS("- Non-Qualified Dividends"), //
     QULFD_DVDNDS("- Qualified Dividends"), //
-    INVSTMNT_EXPNSS("Investment Expenses"), //
     FRGN_TX_PD("Foreign Tax Paid"), //
     ;
 

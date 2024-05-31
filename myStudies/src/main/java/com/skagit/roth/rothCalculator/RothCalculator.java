@@ -39,7 +39,7 @@ public class RothCalculator {
     public final GrowthRate _investmentsGrowthRate;
     public final double _additionalMedicareTaxPerCent;
     public final double _medicareTaxPerCentOnInvestments;
-    public final double _perCentLong;
+    public final int _perCentLong;
 
     public final double[] _lifeExpectancies;
     public final TaxYear[] _taxYears;
@@ -53,7 +53,7 @@ public class RothCalculator {
 	final double investmentsProportion = _workBookConcepts
 		.getMiscellaneousData(RothCalculator._InvestmentsGrowthRateName)._d;
 	_investmentsGrowthRate = new GrowthRate(RothCalculator._InvestmentsGrowthRateName, investmentsProportion);
-	_perCentLong = _workBookConcepts.getMiscellaneousData("% that's Long")._d;
+	_perCentLong = (int) Math.round(_workBookConcepts.getMiscellaneousData("% that's Long")._d);
 	final String lifeExpectanciesSheetName = WorkBookConcepts
 		.getSheetName(WorkBookConcepts._LifeExpectanciesSheetIdx);
 	final Line[] lifeExpectancyLines = _workBookConcepts.getBlock(lifeExpectanciesSheetName,
@@ -79,7 +79,7 @@ public class RothCalculator {
 
     public String getString() {
 	String s = String.format("Fnl Yr[%d]", _finalYear);
-	s += String.format("\n%% that's Long[%s]", TypeOfDouble.PER_CENT.format(_perCentLong, 2));
+	s += String.format("\n%% that's Long[%s]", TypeOfDouble.PER_CENT.format(_perCentLong, 0));
 	s += String.format(//
 		"\nAddtnlMdcrTx[%s] MdcrTxPerCentOnInvstmnts[%s]", //
 		TypeOfDouble.PER_CENT.format(_additionalMedicareTaxPerCent, 1),

@@ -18,6 +18,7 @@ public class Owner0 extends NamedEntity {
     public final double _ssIncome;
     public final Account0[] _iras;
     public final OutsideIncome0[] _outsideIncome0s;
+    public final Account0 _rothAccount;
 
     public Owner0(final Line line) {
 	super(line._header._s);
@@ -54,6 +55,7 @@ public class Owner0 extends NamedEntity {
 	}
 	_outsideIncome0s = oiList.toArray(new OutsideIncome0[oiList.size()]);
 	Arrays.sort(_outsideIncome0s);
+	_rothAccount = new Account0("Roth", workBookConcepts, this);
     }
 
     public String getString() {

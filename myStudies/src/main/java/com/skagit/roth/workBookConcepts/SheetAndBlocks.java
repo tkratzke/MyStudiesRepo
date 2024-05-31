@@ -24,11 +24,11 @@ public class SheetAndBlocks extends NamedEntity {
 	final ArrayList<CellRangeAddress> craList0 = new ArrayList<>();
 	for (int k = 0; k < nMergedRegions; ++k) {
 	    final CellRangeAddress cra = sheet.getMergedRegion(k);
-	    final int nCells = cra.getNumberOfCells();
 	    final int firstRow = cra.getFirstRow();
 	    final int lastRow = cra.getLastRow();
 	    final int firstClmn = cra.getFirstColumn();
-	    if (nCells == 3 && firstRow == lastRow && firstClmn == 0) {
+	    final int lastClmn = cra.getLastColumn();
+	    if (firstRow == lastRow && firstClmn == 0 && lastClmn == 1) {
 		craList0.add(cra);
 	    }
 	}
@@ -54,8 +54,8 @@ public class SheetAndBlocks extends NamedEntity {
 	    }
 	}
 	final int nCras1 = craList1.size();
-	final CellRangeAddress[] javaInputHeaders = craList1.toArray(new CellRangeAddress[nCras1]);
-	Arrays.sort(javaInputHeaders, new Comparator<CellRangeAddress>() {
+	final CellRangeAddress[] craArray = craList1.toArray(new CellRangeAddress[nCras1]);
+	Arrays.sort(craArray, new Comparator<CellRangeAddress>() {
 
 	    @Override
 	    public int compare(final CellRangeAddress cra0, final CellRangeAddress cra1) {
@@ -67,8 +67,8 @@ public class SheetAndBlocks extends NamedEntity {
 	final int nDataBlocks = nCras1 - 1;
 	_blocks = new Block[nDataBlocks];
 	for (int k = 0; k < nDataBlocks; ++k) {
-	    final CellRangeAddress thisCra = javaInputHeaders[k];
-	    final CellRangeAddress nextCra = javaInputHeaders[k + 1];
+	    final CellRangeAddress thisCra = craArray[k];
+	    final CellRangeAddress nextCra = craArray[k + 1];
 	    _blocks[k] = new Block(this, thisCra, nextCra);
 	}
 	Arrays.sort(_blocks);

@@ -17,11 +17,11 @@ public class Account0 extends NamedEntity {
     public final double _baseBalance;
     /** If it's an IRA: */
     public final Owner0 _owner;
-    /** For non-inherited: */
+    /** If non-inherited IRA */
     public final double _ageOfRmd;
-    /** For inherited: */
+    /** If inherited IRA */
     public final double _baseDivisorForInhIra;
-    /** Otherwise: */
+    /** If Joint: */
     public final InvestmentItem[] _investmentItems;
 
     public Account0(final String name, final WorkBookConcepts workBookConcepts, final Owner0 owner) {
