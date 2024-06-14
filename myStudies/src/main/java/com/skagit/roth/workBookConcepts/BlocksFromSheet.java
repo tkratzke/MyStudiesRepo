@@ -5,22 +5,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.skagit.util.NamedEntity;
 
-public class SheetAndBlocks extends NamedEntity {
-    final public WorkBookConcepts _workBookConcepts;
-    final XSSFSheet _sheet;
+public class BlocksFromSheet extends NamedEntity {
     final public Block[] _blocks;
 
-    public SheetAndBlocks(final WorkBookConcepts workBookConcepts, final XSSFSheet sheet) {
+    public BlocksFromSheet(final XSSFSheet sheet, final FormulaEvaluator formulaEvaluator) {
 	super(sheet.getSheetName());
-	_workBookConcepts = workBookConcepts;
-	_sheet = sheet;
-	final int nMergedRegions = _sheet.getNumMergedRegions();
+	final int nMergedRegions = sheet.getNumMergedRegions();
 	final ArrayList<CellRangeAddress> craList0 = new ArrayList<>();
 	for (int k = 0; k < nMergedRegions; ++k) {
 	    final CellRangeAddress cra = sheet.getMergedRegion(k);
@@ -69,11 +66,12 @@ public class SheetAndBlocks extends NamedEntity {
 	for (int k = 0; k < nDataBlocks; ++k) {
 	    final CellRangeAddress thisCra = craArray[k];
 	    final CellRangeAddress nextCra = craArray[k + 1];
-	    _blocks[k] = new Block(this, thisCra, nextCra);
+	    _blocks[k] = new Block(sheet, formulaEvaluator, thisCra, nextCra);
 	}
 	Arrays.sort(_blocks);
     }
 
+    @Override
     public String getString() {
 	String s = _name;
 	final int nBlocks = _blocks == null ? 0 : _blocks.length;
@@ -82,10 +80,5 @@ public class SheetAndBlocks extends NamedEntity {
 	    s += String.format("\n%s", block.getString());
 	}
 	return s;
-    }
-
-    @Override
-    public String toString() {
-	return getString();
     }
 }

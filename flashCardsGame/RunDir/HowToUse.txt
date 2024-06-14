@@ -7,7 +7,7 @@
 	I also uninstalled all other versions of Java under add/remove programs.
 	
 2.	Make a note of where you installed my program.  If it's just in C:/Program Files,
-	you don't need to do anything with this information.  Otherwise, carefully open the .bat file
+	you don't need to do anything with this information.  Otherwise, carefully open the .bat file (FOR EDITING)
 	that is in RunDir and replace the string %ProgramW6432% with wherever you installed it (E.g., D:\My Programs).
 	Be sure to keep the quotation marks.
 

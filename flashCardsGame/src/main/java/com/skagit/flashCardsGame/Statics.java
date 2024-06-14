@@ -22,24 +22,32 @@ public class Statics {
     final public static String _SpaceProxy = "%Sp%";
     final public static char _keyboardSymbol = '\u2328';
     final public static char _ClubSymbolChar = '\u2663';
-    final public static char _CommentChar = '!';
     final public static char _DiamondSymbolChar = '\u2666';
-    final public static char _EditPropertiesChar = '@';
     final public static char _EmptySetChar = '\u2205';
     final public static char _HeavyCheckChar = '\u2714';
-    final public static char _HelpChar = 'H';
-    final public static char _QuitChar = '!';
-    final public static char _ReloadCardsChar = '$';
-    final public static char _RestartQuizChar = '#';
     final public static char _ReturnChar = '\u23CE';
     final public static char _RtArrowChar = '\u2192';
     final public static char _RtArrowChar2 = '\u21a0';
     final public static char _SpadeSymbolChar = '\u2660';
     final public static char _LtArrowChar = '\u2190';
-    final public static char _NoChar = 'N';
     final public static char _TabSymbolChar = '\u2409';
+    final public static char _CommentChar = '!';
+    final public static char _EditPropertiesChar = '@';
+    final public static char _HelpChar = 'H';
+    final public static char _QuitChar = '!';
+    final public static char _ReloadCardsChar = '$';
+    final public static char _RestartQuizChar = '#';
+    final public static char _NoChar = 'N';
     final public static char _YesChar = 'Y';
     final public static char _FileDelimiter = '%';
+    final public static String _SoundString, _PenString;
+    static {
+	final byte[] soundBytes = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x94, (byte) 0x8A };
+	_SoundString = new String(soundBytes, StandardCharsets.UTF_8);
+	final byte[] penBytes = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x96, (byte) 0x8A };
+	_PenString = new String(penBytes, StandardCharsets.UTF_8);
+    }
+
     public static char[] _SpecialChars = { //
 	    _keyboardSymbol, _ClubSymbolChar, _CommentChar, _DiamondSymbolChar, _EditPropertiesChar, _EmptySetChar,
 	    _HeavyCheckChar, _HelpChar, _QuitChar, _ReloadCardsChar, _RestartQuizChar, _ReturnChar, _RtArrowChar,
@@ -52,13 +60,6 @@ public class Statics {
     final public static int _MaxNFailsPerElement = 5;
     final public static int _NominalTabLen = 8;
 
-    final public static String _SoundString, _PenString;
-    static {
-	final byte[] soundBytes = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x94, (byte) 0x8A };
-	_SoundString = new String(soundBytes, StandardCharsets.UTF_8);
-	final byte[] penBytes = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x96, (byte) 0x8A };
-	_PenString = new String(penBytes, StandardCharsets.UTF_8);
-    }
     final public static String _GameFileEndingLc = "-fcg.properties";
     final public static String _CardsFileExtensionLc = "txt";
     final public static String _CardsFileEndingLc = "." + _CardsFileExtensionLc;

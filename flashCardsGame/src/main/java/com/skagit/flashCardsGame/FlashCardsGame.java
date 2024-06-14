@@ -679,10 +679,10 @@ public class FlashCardsGame {
 		final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 		final int typeIPromptLen = typeIPrompt.length();
 		final String terminalString;
-		if (answerHasSoundFile && answerHasStringPart) {
+		if (!_silentMode && answerHasSoundFile && answerHasStringPart) {
 		    terminalString = String.format("%s%s%c   ", Statics._Sep2, Statics._SoundString,
 			    Statics._keyboardSymbol);
-		} else if (answerHasSoundFile) {
+		} else if (!_silentMode && answerHasSoundFile) {
 		    terminalString = String.format("%s%s  ", Statics._Sep2, Statics._SoundString);
 		} else if (answerHasStringPart) {
 		    terminalString = String.format("%s%c  ", Statics._Sep2, Statics._keyboardSymbol);
@@ -708,7 +708,9 @@ public class FlashCardsGame {
 		boolean longQuestion = false;
 
 		/** Expose the clue. */
-		card.playSoundFileIfPossible(_silentMode, /* clueSide= */true);
+		if (!_silentMode) {
+		    card.playSoundFileIfPossible(/* clueSide= */true);
+		}
 		if (len1 <= Statics._MaxLineLen) {
 		    System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueStringPart, terminalString);
 		} else {
@@ -791,15 +793,14 @@ public class FlashCardsGame {
 		}
 
 		if (_silentMode && (!clueHasStringPart || !answerHasStringPart)) {
-		    System.out.println(Statics._Sep1
-			    + "In Silent Mode, both Clue and Answer must have String Parts.  Automatically right."
-			    + Statics._Sep2);
 		    _needLineFeed = true;
 		    gotItRight = true;
 		    continue;
 		}
 		/** Must process a response to the clue. */
-		card.playSoundFileIfPossible(_silentMode, /* clueSide= */false);
+		if (!_silentMode) {
+		    card.playSoundFileIfPossible(/* clueSide= */false);
+		}
 		if (responseStringPartLen == 0) {
 		    int nUsedOnCurrentLine = 0;
 		    /**

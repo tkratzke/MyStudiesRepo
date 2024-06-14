@@ -23,27 +23,27 @@ public class MyStudiesStringUtils {
 	return s;
     }
 
-    public static String formatPerCent(final double d, final int nDigits) {
-	if (Math.abs(d) < 0.005) {
+    public static String formatPerCent(final double perCent, final int nDigits) {
+	if (Math.abs(perCent) < 0.005) {
 	    return "0%";
 	}
-	final int dInt = (int) Math.round(d);
-	if (dInt == d) {
+	final int dInt = (int) Math.round(perCent);
+	if (dInt == perCent) {
 	    return String.format("%,d%%", dInt);
 	}
-	return String.format("%,." + nDigits + "f%%", d);
+	return String.format("%,." + nDigits + "f%%", perCent);
     }
 
-    public static String formatDollars(final double d) {
-	if (Math.abs(d) < 0.005) {
+    public static String formatDollars(final double dollars) {
+	if (Math.abs(dollars) < 0.005) {
 	    return "$0";
 	}
-	final int dInt = (int) Math.round(d);
+	final int dInt = (int) Math.round(dollars);
 	final String s;
-	if (dInt == d) {
+	if (dInt == dollars) {
 	    s = String.format("%,d", dInt);
 	} else {
-	    s = String.format("%,.2f", d);
+	    s = String.format("%,.2f", dollars);
 	}
 	if (s.charAt(0) != '-') {
 	    return "$" + s;

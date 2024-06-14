@@ -112,11 +112,9 @@ class Card {
 	return (forClue ? _clueSide : _answerSide).getFullString();
     }
 
-    public void playSoundFileIfPossible(final boolean silentMode, final boolean forClue) {
-	if (!silentMode) {
-	    SimpleAudioPlayer //
-		    .playSoundFileIfPossible((forClue ? _clueSide : _answerSide)._soundFile);
-	}
+    public void playSoundFileIfPossible(final boolean forClue) {
+	SimpleAudioPlayer //
+		.playSoundFileIfPossible((forClue ? _clueSide : _answerSide)._soundFile);
     }
 
     @Override

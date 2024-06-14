@@ -1,11 +1,11 @@
-package com.skagit.roth.rothCalculator;
+package com.skagit.roth.parameters;
 
+import com.skagit.roth.workBookConcepts.Block;
 import com.skagit.roth.workBookConcepts.Line;
-import com.skagit.roth.workBookConcepts.WorkBookConcepts;
 import com.skagit.util.NamedEntity;
 import com.skagit.util.TypeOfDouble;
 
-public class Brackets extends NamedEntity {
+public class TaxTable extends NamedEntity {
 
     public static class PerCentCeiling implements Cloneable {
 	public double _perCent;
@@ -36,9 +36,9 @@ public class Brackets extends NamedEntity {
 	}
     }
 
-    public Brackets(final Brackets brackets) {
-	super(brackets._name);
-	final PerCentCeiling[] perCentCeilings = brackets._perCentCeilings;
+    public TaxTable(final TaxTable taxTable) {
+	super(taxTable._name);
+	final PerCentCeiling[] perCentCeilings = taxTable._perCentCeilings;
 	final int n = perCentCeilings.length;
 	_perCentCeilings = new PerCentCeiling[n];
 	for (int k = 0; k < n; ++k) {
@@ -48,10 +48,9 @@ public class Brackets extends NamedEntity {
 
     public final PerCentCeiling[] _perCentCeilings;
 
-    public Brackets(final WorkBookConcepts workBookConcepts, final String bracketsName) {
-	super(bracketsName);
-	final String bracketsSheetName = WorkBookConcepts.getSheetName(WorkBookConcepts._BracketsSheetIdx);
-	final Line[] lines = workBookConcepts.getBlock(bracketsSheetName, bracketsName)._lines;
+    public TaxTable(final Block block) {
+	super(block._name);
+	final Line[] lines = block._lines;
 	final int nLines = lines.length;
 	_perCentCeilings = new PerCentCeiling[nLines];
 	for (int k = 0; k < nLines; ++k) {
@@ -62,6 +61,7 @@ public class Brackets extends NamedEntity {
 	}
     }
 
+    @Override
     public String getString() {
 	String s = _name;
 	final int nCeilingPerCents = _perCentCeilings.length;
@@ -70,10 +70,4 @@ public class Brackets extends NamedEntity {
 	}
 	return s;
     }
-
-    @Override
-    public String toString() {
-	return getString();
-    }
-
 }

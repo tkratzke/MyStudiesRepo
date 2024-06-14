@@ -3,6 +3,7 @@ package com.skagit.roth.workBookConcepts;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -13,20 +14,21 @@ public class Block extends NamedEntity {
 
     final public Line[] _lines;
 
-    private static String getNameOfBlock(final SheetAndBlocks sheetAndBlocks, final CellRangeAddress start) {
+    private static String getNameOfBlock(final XSSFSheet sheet, final CellRangeAddress start) {
 	final int firstRow = start.getFirstRow();
-	final XSSFSheet sheet = sheetAndBlocks._sheet;
 	final XSSFCell nameCell = sheet.getRow(firstRow).getCell(start.getFirstColumn());
 	return NamedEntity.CleanWhiteSpace(nameCell.getStringCellValue());
     }
 
-    public Block(final SheetAndBlocks sheetAndBlocks, final CellRangeAddress start, final CellRangeAddress end) {
-	super(getNameOfBlock(sheetAndBlocks, start));
+    public Block(final XSSFSheet sheet, final FormulaEvaluator formulaEvaluator, final CellRangeAddress start,
+	    final CellRangeAddress end) {
+	super(getNameOfBlock(sheet, start));
 	final int firstRow = start.getFirstRow();
 	final int dataRowStop = end.getFirstRow();
 	final ArrayList<Line> lineList = new ArrayList<>();
 	for (int kRow = firstRow + 1; kRow < dataRowStop; ++kRow) {
-	    final Line line = new Line(sheetAndBlocks, kRow);
+	    final int origIdxWithinBlock = kRow - (firstRow + 1);
+	    final Line line = new Line(sheet, formulaEvaluator, origIdxWithinBlock, kRow);
 	    if (line.isValid()) {
 		lineList.add(line);
 	    }
@@ -36,6 +38,7 @@ public class Block extends NamedEntity {
 	Arrays.sort(_lines);
     }
 
+    @Override
     public String getString() {
 	String s = _name;
 	final int nLines = _lines.length;
@@ -43,11 +46,6 @@ public class Block extends NamedEntity {
 	    s += "\n" + _lines[k].getString();
 	}
 	return s;
-    }
-
-    @Override
-    public String toString() {
-	return getString();
     }
 
     public Field getData(final String s) {

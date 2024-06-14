@@ -1,5 +1,6 @@
-package com.skagit.roth.rothCalculator;
+package com.skagit.roth;
 
+import com.skagit.roth.parameters.Parameters;
 import com.skagit.util.TypeOfDouble;
 
 public class CapitalGains {
@@ -8,9 +9,9 @@ public class CapitalGains {
     final double _shAfterOffset, _elAfterOffset, _shCfAfterOffset, _elCfAfterOffset;
     final double _shOt, _elOt, _shCfOt, _elCfOt;
 
-    public CapitalGains(final double maxCapitalGainsLoss, final double shIn, final double elIn, final double cfShIn,
+    public CapitalGains(final int year, final double shIn, final double elIn, final double cfShIn,
 	    final double cfElIn) {
-	_maxCapitalGainsLoss = maxCapitalGainsLoss;
+	_maxCapitalGainsLoss = Parameters.getInflationMultiplier(year) * Parameters._MaxCapitalGainsLossCurrentYear;
 	_shIn = shIn;
 	_elIn = elIn;
 	_shCfIn = cfShIn;

@@ -46,11 +46,7 @@ public class Field implements Comparable<Field> {
 
     final private static EnumSet<CellType> _BadCellTypes = EnumSet.of(CellType._NONE, CellType.ERROR, CellType.BLANK);
 
-    public Field(final SheetAndBlocks sheetAndBlocks, final int kRow, final int kClmn) {
-	this(sheetAndBlocks, sheetAndBlocks._sheet.getRow(kRow).getCell(kClmn));
-    }
-
-    public Field(final SheetAndBlocks sheetAndBlocks, final XSSFCell cell) {
+    public Field(final FormulaEvaluator formulaEvaluator, final XSSFCell cell) {
 	final CellType cellType = cell == null ? null : cell.getCellType();
 	if (cellType == null || _BadCellTypes.contains(cellType)) {
 	    _b = null;
@@ -59,8 +55,6 @@ public class Field implements Comparable<Field> {
 	    _s = null;
 	    return;
 	}
-	final WorkBookConcepts workBookConcepts = sheetAndBlocks._workBookConcepts;
-	final FormulaEvaluator formulaEvaluator = workBookConcepts._formulaEvaluator;
 	switch (cellType) {
 	case BOOLEAN:
 	    _b = cell.getBooleanCellValue();

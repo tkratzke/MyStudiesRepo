@@ -1,4 +1,4 @@
-package com.skagit.roth.rothCalculator;
+package com.skagit.roth.parameters;
 
 import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
@@ -15,6 +15,7 @@ public class GrowthRate extends NamedEntity {
 	_expGrowthRate = Math.log(1d + _perCent / 100d);
     }
 
+    @Override
     public String getString() {
 	return String.format("%s %s: ExpGrowthRate[%s]", //
 		_name, //
@@ -22,8 +23,8 @@ public class GrowthRate extends NamedEntity {
 		MyStudiesStringUtils.formatOther(_expGrowthRate, 4));
     }
 
-    @Override
-    public String toString() {
-	return getString();
+    public double getMultiplier(final int year) {
+	final double t = year - Parameters._CurrentDateYear;
+	return Math.exp(t * _expGrowthRate);
     }
 }

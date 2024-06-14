@@ -9,9 +9,28 @@ public class NamedEntity implements Comparable<NamedEntity> {
 	_name = CleanWhiteSpace(name);
     }
 
+    public String getString() {
+	return "";
+    }
+
+    @Override
+    final public String toString() {
+	return getString();
+    }
+
     @Override
     public int compareTo(final NamedEntity namedEntity) {
-	return namedEntity == null ? -1 : _name.compareTo(namedEntity._name);
+	if (namedEntity == null) {
+	    return -1;
+	}
+	final String hisName = namedEntity._name;
+	if ((_name == null) != (hisName == null)) {
+	    return _name == null ? -1 : 1;
+	}
+	if (_name == null) {
+	    return 0;
+	}
+	return _name.compareTo(hisName);
     }
 
     public static void main(final String[] args) {
@@ -28,6 +47,9 @@ public class NamedEntity implements Comparable<NamedEntity> {
     }
 
     public static String CleanWhiteSpace(final String s) {
+	if (s == null) {
+	    return null;
+	}
 	String ss = MyStudiesStringUtils.CleanWhiteSpace(s);
 	if (ss.startsWith("\'")) {
 	    ss = ss.length() == 1 ? "" : ss.substring(1);
@@ -44,13 +66,9 @@ class NamedEntity1 extends NamedEntity {
 	_abc = abc;
     }
 
+    @Override
     public String getString() {
 	return String.format("%s %d", _name, _abc);
-    }
-
-    @Override
-    public String toString() {
-	return getString();
     }
 
 }

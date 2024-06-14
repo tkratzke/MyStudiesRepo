@@ -5,63 +5,85 @@ import java.util.Arrays;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
 
 public class WorkBookConcepts {
 
-    final public static String[] _SheetNames = { //
-	    "Statics", //
-	    "Brackets", //
-	    "Investments", //
-	    "Life Expectancies", // "
-    };
-    final public static int _StaticsSheetIdx = 0;
-    final public static int _BracketsSheetIdx = 1;
-    final public static int _InvestmentsSheetIdx = 2;
-    final public static int _LifeExpectanciesSheetIdx = 3;
-
-    public static String getSheetName(final int idx) {
-	return _SheetNames[idx];
-    }
-
     final public XSSFWorkbook _workBook;
-    final public FormulaEvaluator _formulaEvaluator;
-    final public SheetAndBlocks[] _sheetAndBlocksS;
+    final FormulaEvaluator _formulaEvaluator;
 
     public WorkBookConcepts(final XSSFWorkbook workBook) {
 	_workBook = workBook;
 	_formulaEvaluator = _workBook.getCreationHelper().createFormulaEvaluator();
-	/** Read Sheets into Blocks. */
-	final int nSheets = _SheetNames.length;
-	_sheetAndBlocksS = new SheetAndBlocks[nSheets];
-	for (int k = 0; k < nSheets; ++k) {
-	    _sheetAndBlocksS[k] = new SheetAndBlocks(this, _workBook.getSheet(_SheetNames[k]));
-	}
-	Arrays.sort(_sheetAndBlocksS);
     }
 
-    public Block getBlock(final String sheetName, final String blockName) {
-	final int sheetIdx = Arrays.binarySearch(_sheetAndBlocksS, new NamedEntity(sheetName));
-	if (sheetIdx < 0) {
-	    return null;
-	}
-	final Block[] blocks = _sheetAndBlocksS[sheetIdx]._blocks;
-	final int blockIdx = Arrays.binarySearch(blocks, new NamedEntity(blockName));
-	return blockIdx < 0 ? null : blocks[blockIdx];
+    public static Block getBlock(final Block[] blocks, final String blockName) {
+	final int idx = Arrays.binarySearch(blocks, new NamedEntity(blockName));
+	return idx < 0 ? null : blocks[idx];
     }
 
-    public Line getLine(final String sheetName, final String blockName, final String s) {
-	final Block block = getBlock(sheetName, blockName);
+    public static int[] getMatchingLineIdxs(final String lineHderName, final Line[] lines) {
+	final int nLines = lines.length;
+	final Line line = new Line(lineHderName);
+	final int idx = Arrays.binarySearch(lines, line);
+	if (idx < 0) {
+	    final int k = -idx - 1;
+	    return new int[] { k, k };
+	}
+	int lo = idx;
+	for (int k = idx - 1; k >= 0; --k) {
+	    if (lines[k].compareTo(line) == 0) {
+		lo = k;
+	    }
+	}
+	int hi = idx + 1;
+	for (int k = idx + 1; k < nLines; ++k) {
+	    if (lines[k].compareTo(line) == 0) {
+		hi = k + 1;
+	    }
+	}
+	return new int[] { lo, hi };
+    }
+
+    public static double getDouble(final Block[] blocks, final String blockName, final String lineHdrName) {
+	final Block block = WorkBookConcepts.getBlock(blocks, blockName);
 	if (block == null) {
-	    return null;
+	    return Double.NaN;
 	}
 	final Line[] lines = block._lines;
-	final int lineIdx = Arrays.binarySearch(lines, new Line(s));
-	return lineIdx < 0 ? null : lines[lineIdx];
+	final int[] loHi = WorkBookConcepts.getMatchingLineIdxs(lineHdrName, lines);
+	if (loHi[1] != loHi[0] + 1) {
+	    return Double.NaN;
+	}
+	return lines[loHi[0]]._data._d;
     }
 
-    public Field getMiscellaneousData(final String s) {
-	return getLine(_SheetNames[_StaticsSheetIdx], "Miscellaneous Data", s)._data;
+    private static int[] getMatchingInts(final int i, final int[] ints) {
+	final int nInts = ints.length;
+	final int idx = Arrays.binarySearch(ints, i);
+	if (idx < 0) {
+	    final int k = -idx - 1;
+	    return new int[] { k, k };
+	}
+	int lo = idx;
+	for (int k = idx - 1; k >= 0; --k) {
+	    if (ints[k] == i) {
+		lo = k;
+	    }
+	}
+	int hi = idx + 1;
+	for (int k = idx + 1; k < nInts; ++k) {
+	    if (ints[k] == i) {
+		hi = k + 1;
+	    }
+	}
+	return new int[] { lo, hi };
+    }
+
+    public static void main(final String[] args) {
+	final int[] ints = { 1, 1, 3, 3, 3, 3, 4, 6, 6 };
+	System.out.println(MyStudiesStringUtils.getString(getMatchingInts(2, ints)));
     }
 
 }
