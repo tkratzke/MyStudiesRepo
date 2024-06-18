@@ -5,6 +5,7 @@ import com.skagit.rothProblem.RothProblem;
 import com.skagit.rothProblem.owner0.Account0;
 import com.skagit.rothProblem.owner0.OutsideIncome0;
 import com.skagit.rothProblem.owner0.Owner0;
+import com.skagit.rothProblem.owner0.TypeOfAccount;
 import com.skagit.rothProblem.parameters.Parameters;
 import com.skagit.rothProblem.workBookConcepts.WorkBookConcepts;
 import com.skagit.util.MyStudiesDateUtils;
@@ -59,18 +60,20 @@ public class TaxYear {
 	    final int nAccount0s = account0s.length;
 	    for (int k1 = 0; k1 < nAccount0s; ++k1) {
 		final Account0 account0 = account0s[k1];
-		double thisShortTermCg = account0._shortTermCapitalGain;
-		double thisLongTermCg = account0._longTermCapitalGain;
-		if (account0._projectCapitalGains) {
-		    thisShortTermCg *= 1d / proportionOfYear;
-		    thisLongTermCg *= 1d / proportionOfYear;
+		if (account0._typeOfAccount == TypeOfAccount.POST_TAX) {
+		    double thisShortTermCg = account0._shortTermCapitalGain;
+		    double thisLongTermCg = account0._longTermCapitalGain;
+		    if (account0._projectCapitalGains) {
+			thisShortTermCg *= 1d / proportionOfYear;
+			thisLongTermCg *= 1d / proportionOfYear;
+		    }
+		    thisYearShortTermCg += thisShortTermCg;
+		    thisYearLongTermCg += thisLongTermCg;
 		}
-		thisYearShortTermCg += thisShortTermCg;
-		thisYearLongTermCg += thisLongTermCg;
 	    }
 	}
-	final double shortTermCarryForwardIn = _rothProblem._currentShCf;
-	final double longTermCarryForwardIn = _rothProblem._currentElCf;
+	final double shortTermCarryForwardIn = _rothProblem._currentShortTermCarryForward;
+	final double longTermCarryForwardIn = _rothProblem._currentLongTermCarryForward;
 	_capitalGains = new CapitalGains(maxCapitalGainsLoss, //
 		thisYearShortTermCg, thisYearLongTermCg, //
 		shortTermCarryForwardIn, longTermCarryForwardIn);

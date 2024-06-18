@@ -23,8 +23,8 @@ import com.skagit.util.NamedEntity;
 public class RothProblem {
     /** The spreadsheet supplies the parameters and the following data: */
     final public Date _currentDate;
-    final public double _currentShCf;
-    final public double _currentElCf;
+    final public double _currentShortTermCarryForward;
+    final public double _currentLongTermCarryForward;
     final public double _currentLivingExpenses;
     final public Owner0[] _owner0s;
 
@@ -38,9 +38,9 @@ public class RothProblem {
 	/** Miscellaneous Data. */
 	final String miscellaneousDataSheetName = "Miscellaneous Data";
 	_currentDate = WorkBookConcepts.getDate(accountsBlocks, miscellaneousDataSheetName, "Current Date");
-	_currentShCf = WorkBookConcepts.getDouble(accountsBlocks, miscellaneousDataSheetName,
+	_currentShortTermCarryForward = WorkBookConcepts.getDouble(accountsBlocks, miscellaneousDataSheetName,
 		"Short-Term Carry Forward");
-	_currentElCf = WorkBookConcepts.getDouble(accountsBlocks, miscellaneousDataSheetName,
+	_currentLongTermCarryForward = WorkBookConcepts.getDouble(accountsBlocks, miscellaneousDataSheetName,
 		"Long-Term Carry Forward");
 	_currentLivingExpenses = WorkBookConcepts.getDouble(accountsBlocks, miscellaneousDataSheetName,
 		"Current Living Expenses");
@@ -81,8 +81,8 @@ public class RothProblem {
 
     public String getString() {
 	String s = String.format("\nShCf[%s] ElCf[%s] LvngExpnss[%s]", //
-		MyStudiesStringUtils.formatDollars(_currentShCf), //
-		MyStudiesStringUtils.formatDollars(_currentElCf), //
+		MyStudiesStringUtils.formatDollars(_currentShortTermCarryForward), //
+		MyStudiesStringUtils.formatDollars(_currentLongTermCarryForward), //
 		MyStudiesStringUtils.formatDollars(_currentLivingExpenses));
 	final int nOwner0s = _owner0s.length;
 	for (int k = 0; k < nOwner0s; ++k) {
