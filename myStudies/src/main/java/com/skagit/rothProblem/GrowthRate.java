@@ -1,4 +1,4 @@
-package com.skagit.roth.parameters;
+package com.skagit.rothProblem;
 
 import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
@@ -21,10 +21,5 @@ public class GrowthRate extends NamedEntity {
 		_name, //
 		TypeOfDouble.PER_CENT.format(_perCent, 0), //
 		MyStudiesStringUtils.formatOther(_expGrowthRate, 4));
-    }
-
-    public double getMultiplier(final int year) {
-	final double t = year - Parameters._CurrentDateYear;
-	return Math.exp(t * _expGrowthRate);
     }
 }

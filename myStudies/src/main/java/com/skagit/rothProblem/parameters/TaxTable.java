@@ -1,7 +1,7 @@
-package com.skagit.roth.parameters;
+package com.skagit.rothProblem.parameters;
 
-import com.skagit.roth.workBookConcepts.Block;
-import com.skagit.roth.workBookConcepts.Line;
+import com.skagit.rothProblem.workBookConcepts.Block;
+import com.skagit.rothProblem.workBookConcepts.Line;
 import com.skagit.util.NamedEntity;
 import com.skagit.util.TypeOfDouble;
 

@@ -3,6 +3,7 @@ package com.skagit.util;
 import java.util.Arrays;
 
 public class NamedEntity implements Comparable<NamedEntity> {
+
     public final String _name;
 
     public NamedEntity(final String name) {

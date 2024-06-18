@@ -1,16 +1,16 @@
-package com.skagit.roth.accountOwner;
+package com.skagit.rothProblem.owner0;
 
 import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
 
-public class OutsideIncome extends NamedEntity {
-    public final AccountOwner _owner;
+public class OutsideIncome0 extends NamedEntity {
+    public final Owner0 _owner0;
     public final double _amount;
     public final int _year;
 
-    public OutsideIncome(final AccountOwner owner, final String name, final double amount, final int year) {
+    public OutsideIncome0(final Owner0 owner0, final String name, final double amount, final int year) {
 	super(name);
-	_owner = owner;
+	_owner0 = owner0;
 	_amount = amount;
 	_year = year;
     }

@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -22,9 +23,26 @@ public class MyStudiesDateUtils {
 	return timeUnit.convert(date1.getTime() - date0.getTime(), TimeUnit.MILLISECONDS);
     }
 
-    public static int getAPartOfADate(final Date date, final ChronoField chronoField) {
+    public static int getYear(final Date date) {
 	final LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-	return localDate.get(chronoField);
+	return localDate.get(ChronoField.YEAR);
+    }
+
+    public static double getProportionOfYear(final Date date) {
+	final Calendar mainCalendar = Calendar.getInstance();
+	mainCalendar.setTime(date);
+	final int y = mainCalendar.get(Calendar.YEAR);
+	final Calendar beginningOfThisYear = Calendar.getInstance();
+	beginningOfThisYear.set(Calendar.YEAR, y);
+	beginningOfThisYear.set(Calendar.MONTH, Calendar.JANUARY);
+	beginningOfThisYear.set(Calendar.DATE, 1);
+	final Calendar beginningOfNextYear = Calendar.getInstance();
+	beginningOfNextYear.set(Calendar.YEAR, y + 1);
+	beginningOfNextYear.set(Calendar.MONTH, Calendar.JANUARY);
+	beginningOfNextYear.set(Calendar.DATE, 1);
+	final double fullYear = beginningOfNextYear.getTimeInMillis() - beginningOfThisYear.getTimeInMillis();
+	final double partialYear = mainCalendar.getTimeInMillis() - beginningOfThisYear.getTimeInMillis();
+	return partialYear / fullYear;
     }
 
     public static Date parseDate(final String date) {
