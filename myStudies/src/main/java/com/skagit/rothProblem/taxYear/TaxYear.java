@@ -1,47 +1,42 @@
 package com.skagit.rothProblem.taxYear;
 
-import com.skagit.rothProblem.CapitalGains;
 import com.skagit.rothProblem.RothProblem;
-import com.skagit.rothProblem.owner0.Account0;
 import com.skagit.rothProblem.owner0.OutsideIncome0;
 import com.skagit.rothProblem.owner0.Owner0;
-import com.skagit.rothProblem.owner0.TypeOfAccount;
 import com.skagit.rothProblem.parameters.Parameters;
 import com.skagit.rothProblem.workBookConcepts.WorkBookConcepts;
-import com.skagit.util.MyStudiesDateUtils;
+import com.skagit.util.MyStudiesStringUtils;
 
 public class TaxYear {
 
     final RothProblem _rothProblem;
-    final int _thisYear;
-    final double _inflationFactor;
+    final Parameters _parameters;
+    final TaxYear _pvsYear;
     final double _ttlSsa;
     final double _ttlOutsideIncome;
     final double _livingExpenses;
-    final CapitalGains _capitalGains;
 
-    public TaxYear(final RothProblem rothProblem) {
-	/** This ctor creates the TaxYear for the currentYear. */
+    public TaxYear(final RothProblem rothProblem, final Parameters parameters) {
 	_rothProblem = rothProblem;
-	final Parameters parameters = Parameters._CurrentYearParameters;
-	final int firstYear = parameters._currentYear;
-	_thisYear = firstYear;
-	final double proportionOfYear = MyStudiesDateUtils.getProportionOfYear(_rothProblem._currentDate);
-	_inflationFactor = Math
-		.exp(Parameters._CurrentYearParameters._inflationGrowthRate._expGrowthRate * proportionOfYear);
+	_parameters = parameters;
+	_pvsYear = null;
+	final int firstYear = _parameters._thisYear;
 	double ttlSsa = 0d;
 	double ttlOutsideIncome = 0d;
 	final int nOwner0s = _rothProblem._owner0s.length;
 	for (int k0 = 0; k0 < nOwner0s; ++k0) {
 	    final Owner0 owner0 = _rothProblem._owner0s[k0];
-	    ttlSsa += owner0._currentSsa;
+	    final double currentSsa = owner0._currentSsa;
+	    if (Double.isFinite(currentSsa)) {
+		ttlSsa += currentSsa;
+	    }
 	    final OutsideIncome0[] outsideIncome0s = owner0._outsideIncome0s;
 	    final int nOutsideIncome0s = outsideIncome0s.length;
 	    for (int k1 = 0; k1 < nOutsideIncome0s; ++k1) {
 		final OutsideIncome0 outsideIncome0 = outsideIncome0s[k1];
 		final int outsideIncome0Year = outsideIncome0._year;
 		if (outsideIncome0Year != WorkBookConcepts._NotAnInteger) {
-		    ttlOutsideIncome += outsideIncome0Year == _thisYear ? outsideIncome0._amount : 0d;
+		    ttlOutsideIncome += outsideIncome0Year == firstYear ? outsideIncome0._amount : 0d;
 		} else {
 		    ttlOutsideIncome += outsideIncome0._amount;
 		}
@@ -49,45 +44,17 @@ public class TaxYear {
 	}
 	_ttlSsa = ttlSsa;
 	_ttlOutsideIncome = ttlOutsideIncome;
-	_livingExpenses = _rothProblem._currentLivingExpenses;
-	final double maxCapitalGainsLoss = parameters._maxCapitalGainsLoss;
-	double thisYearShortTermCg = 0d;
-	double thisYearLongTermCg = 0d;
-	for (int k0 = 0; k0 < nOwner0s; ++k0) {
-	    final Owner0 owner0 = _rothProblem._owner0s[k0];
-	    ttlSsa += owner0._currentSsa;
-	    final Account0[] account0s = owner0._account0s;
-	    final int nAccount0s = account0s.length;
-	    for (int k1 = 0; k1 < nAccount0s; ++k1) {
-		final Account0 account0 = account0s[k1];
-		if (account0._typeOfAccount == TypeOfAccount.POST_TAX) {
-		    double thisShortTermCg = account0._shortTermCapitalGain;
-		    double thisLongTermCg = account0._longTermCapitalGain;
-		    if (account0._projectCapitalGains) {
-			thisShortTermCg *= 1d / proportionOfYear;
-			thisLongTermCg *= 1d / proportionOfYear;
-		    }
-		    thisYearShortTermCg += thisShortTermCg;
-		    thisYearLongTermCg += thisLongTermCg;
-		}
-	    }
-	}
-	final double shortTermCarryForwardIn = _rothProblem._currentShortTermCarryForward;
-	final double longTermCarryForwardIn = _rothProblem._currentLongTermCarryForward;
-	_capitalGains = new CapitalGains(maxCapitalGainsLoss, //
-		thisYearShortTermCg, thisYearLongTermCg, //
-		shortTermCarryForwardIn, longTermCarryForwardIn);
+	_livingExpenses = _rothProblem._livingExpenses;
     }
 
-    public TaxYear(final RothProblem rothProblem, final TaxYear pvsYear) {
-	_rothProblem = rothProblem;
-	final int firstYear = Parameters._CurrentYearParameters._currentYear;
-	_thisYear = pvsYear._thisYear + 1;
-	_inflationFactor = Math.exp(Parameters._CurrentYearParameters._inflationGrowthRate._expGrowthRate);
-	_ttlSsa = _inflationFactor * pvsYear._ttlSsa;
+    public TaxYear(final TaxYear pvsYear) {
+	_pvsYear = pvsYear;
+	_rothProblem = _pvsYear._rothProblem;
+	_parameters = new Parameters(_pvsYear._parameters);
+	final int thisYear = _parameters._thisYear;
+	final double inflationFactor = Math.exp(_parameters._inflationGrowthRate._expGrowthRate);
+	_ttlSsa = inflationFactor * pvsYear._ttlSsa;
 	double ttlOutsideIncome = 0d;
-	final double outsideIncomeInflationFactor = Math
-		.exp(Parameters._CurrentYearParameters._inflationGrowthRate._expGrowthRate * (_thisYear - firstYear));
 	final int nOwner0s = _rothProblem._owner0s.length;
 	for (int k0 = 0; k0 < nOwner0s; ++k0) {
 	    final Owner0 owner0 = _rothProblem._owner0s[k0];
@@ -97,16 +64,29 @@ public class TaxYear {
 		final OutsideIncome0 outsideIncome0 = outsideIncome0s[k1];
 		final int outsideIncome0Year = outsideIncome0._year;
 		if (outsideIncome0Year != WorkBookConcepts._NotAnInteger) {
-		    ttlOutsideIncome += outsideIncome0Year == _thisYear ? outsideIncome0._amount : 0d;
+		    ttlOutsideIncome += outsideIncome0Year == thisYear ? outsideIncome0._amount : 0d;
 		} else {
-		    ttlOutsideIncome += outsideIncome0._amount * outsideIncomeInflationFactor;
+		    ttlOutsideIncome += outsideIncome0._amount * inflationFactor;
 		}
 	    }
 	}
 	_ttlOutsideIncome = ttlOutsideIncome;
-	_livingExpenses = pvsYear._livingExpenses * _inflationFactor;
-	/** Still must do this. */
-	_capitalGains = null;
+	_livingExpenses = pvsYear._livingExpenses * inflationFactor;
+    }
+
+    public String getString() {
+	String s = _parameters.getString();
+	s += String.format("\n\nttlSsa[%s] ttlOutsideIncome[%s] livingExpenses[%s]", //
+		MyStudiesStringUtils.formatDollars(_ttlSsa), //
+		MyStudiesStringUtils.formatDollars(_ttlOutsideIncome), //
+		MyStudiesStringUtils.formatDollars(_livingExpenses) //
+	);
+	return s;
+    }
+
+    @Override
+    public String toString() {
+	return getString();
     }
 
 }

@@ -13,6 +13,10 @@ public class Account0 extends NamedEntity {
 
     final public Owner0 _owner;
 
+    /** For all: */
+    final public GrowthRate _growthRate;
+    final public double _balance;
+
     /** For Inherited IRA: */
     final public double _divisorForRmd;
 
@@ -25,35 +29,37 @@ public class Account0 extends NamedEntity {
 
     /** For Post-Tax: */
     final public double _basis;
-    final public double _perCentThatIsLong;
-    final public Boolean _projectCapitalGains;
+    final public double _perCentTaxExempt;
+    final public double _perCentLongCg;
+    final public double _perCentAsLongCg;
+    final public double _perCentShortCg;
+    final public double _perCentAsShortCg;
     final public double _taxExempt;
-    final public double _shortTermCapitalGain;
-    final public double _longTermCapitalGain;
+    final public double _longCg;
+    final public double _asLongCg;
+    final public double _shortCg;
+    final public double _asShortCg;
 
     /** Roth has nothing special. */
-
-    /** For all: */
-    final public GrowthRate _growthRate;
-    final public double _endingBalance;
 
     public Account0(final Owner0 owner0, final Block[] accountsBlocks, final String name) {
 	super(name);
 	_owner = owner0;
-	final double divisorForRmd = WorkBookConcepts.getDouble(accountsBlocks,
-		"Accounts and Divisors for Current Year", _name);
+	final double growthRateProportion = WorkBookConcepts.getDouble(accountsBlocks, _name, "Growth Rate");
+	_growthRate = new GrowthRate("Growth Rate", growthRateProportion);
+	_balance = WorkBookConcepts.getDouble(accountsBlocks, _name, "Balance");
+	final double divisorForRmd = WorkBookConcepts.getDouble(accountsBlocks, _name, "Divisor, Current Year");
 	if (divisorForRmd > 0d) {
 	    _typeOfAccount = TypeOfAccount.INH_IRA;
 	    _divisorForRmd = divisorForRmd;
-	    _rmdAlreadyTaken = WorkBookConcepts.getBoolean(accountsBlocks, "Accounts and RMD Taken Current Year",
-		    _name);
-	    _beginningBalance = WorkBookConcepts.getDouble(accountsBlocks,
-		    "Accounts and Balances Beginning of Current Year", _name);
-	    _ageOfFirstRmd = _perCentThatIsLong = _basis = _taxExempt = _shortTermCapitalGain = _longTermCapitalGain = Double.NaN;
-	    _projectCapitalGains = null;
+	    _rmdAlreadyTaken = WorkBookConcepts.getBoolean(accountsBlocks, _name, "RMD Taken Current Year");
+	    _beginningBalance = WorkBookConcepts.getDouble(accountsBlocks, _name, "Balance, Beginning of Current Year");
+	    _basis = Double.NaN;
+	    _ageOfFirstRmd = Double.NaN;
+	    _perCentTaxExempt = _perCentLongCg = _perCentAsLongCg = _perCentShortCg = _perCentAsShortCg = Double.NaN;
+	    _taxExempt = _longCg = _asLongCg = _shortCg = _asShortCg = Double.NaN;
 	} else {
-	    final double ageOfFirstRmd = WorkBookConcepts.getDouble(accountsBlocks, "Accounts and Ages of First RMD",
-		    _name);
+	    final double ageOfFirstRmd = WorkBookConcepts.getDouble(accountsBlocks, _name, "Age of First RMD");
 	    if (ageOfFirstRmd > 0d) {
 		_typeOfAccount = TypeOfAccount.REG_IRA;
 		_ageOfFirstRmd = ageOfFirstRmd;
@@ -61,48 +67,53 @@ public class Account0 extends NamedEntity {
 		final int birthYear = MyStudiesDateUtils.getYear(_owner._birthDate);
 		final int currentAge = currentYear - birthYear;
 		if (currentAge >= _ageOfFirstRmd) {
-		    _rmdAlreadyTaken = WorkBookConcepts.getBoolean(accountsBlocks,
-			    "Accounts and RMD Taken Current Year", _name);
-		    _beginningBalance = WorkBookConcepts.getDouble(accountsBlocks,
-			    "Accounts and Balances Beginning of Current Year", _name);
+		    _rmdAlreadyTaken = WorkBookConcepts.getBoolean(accountsBlocks, _name, "RMD Taken Current Year");
+		    _beginningBalance = WorkBookConcepts.getDouble(accountsBlocks, _name,
+			    "Balance, Beginning of Current Year");
 		} else {
 		    _rmdAlreadyTaken = null;
 		    _beginningBalance = Double.NaN;
 		}
-		_divisorForRmd = _perCentThatIsLong = _basis = _taxExempt = _shortTermCapitalGain = _longTermCapitalGain = Double.NaN;
-		_projectCapitalGains = null;
+		_divisorForRmd = Double.NaN;
+		_basis = Double.NaN;
+		_perCentTaxExempt = _perCentLongCg = _perCentAsLongCg = _perCentShortCg = _perCentAsShortCg = Double.NaN;
+		_taxExempt = _longCg = _asLongCg = _shortCg = _asShortCg = Double.NaN;
 	    } else {
-		final double basis = WorkBookConcepts.getDouble(accountsBlocks, "Accounts and Bases", _name);
+		final double basis = WorkBookConcepts.getDouble(accountsBlocks, _name, "Basis");
 		if (Double.isFinite(basis)) {
 		    _typeOfAccount = TypeOfAccount.POST_TAX;
 		    _basis = basis;
-		    _perCentThatIsLong = WorkBookConcepts.getDouble(accountsBlocks, "Accounts and % That is Long",
-			    _name);
-		    _projectCapitalGains = WorkBookConcepts.getBoolean(accountsBlocks,
-			    "Accounts and Project Capital Gains", _name);
-		    _taxExempt = WorkBookConcepts.getDouble(accountsBlocks, _name, "Current Tax-Exempt");
-		    _shortTermCapitalGain = WorkBookConcepts.getDouble(accountsBlocks, _name, "Current Short-Term");
-		    _longTermCapitalGain = WorkBookConcepts.getDouble(accountsBlocks, _name, "Current Long-Term");
+		    _perCentTaxExempt = WorkBookConcepts.getDouble(accountsBlocks, _name, "% Tax-Exempt") * 100d;
+		    _perCentLongCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "% Long-Term") * 100d;
+		    _perCentAsLongCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "% As Long-Term") * 100d;
+		    _perCentShortCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "% Short-Term") * 100d;
+		    _perCentAsShortCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "% As Short-Term") * 100d;
+		    _taxExempt = WorkBookConcepts.getDouble(accountsBlocks, _name, "Tax-Exempt");
+		    _longCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "Long-Term");
+		    _asLongCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "As Long-Term");
+		    _shortCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "Short-Term");
+		    _asShortCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "As Short-Term");
 		    _divisorForRmd = _ageOfFirstRmd = _beginningBalance = Double.NaN;
 		    _rmdAlreadyTaken = null;
 		} else {
 		    _typeOfAccount = TypeOfAccount.ROTH;
-		    _divisorForRmd = _ageOfFirstRmd = _beginningBalance = _basis = _perCentThatIsLong = _taxExempt = _shortTermCapitalGain = _longTermCapitalGain = Double.NaN;
-		    _rmdAlreadyTaken = _projectCapitalGains = null;
+		    _ageOfFirstRmd = Double.NaN;
+		    _rmdAlreadyTaken = null;
+		    _beginningBalance = Double.NaN;
+		    _divisorForRmd = Double.NaN;
+		    _basis = Double.NaN;
+		    _perCentTaxExempt = _perCentLongCg = _perCentAsLongCg = _perCentShortCg = _perCentAsShortCg = Double.NaN;
+		    _taxExempt = _longCg = _asLongCg = _shortCg = _asShortCg = Double.NaN;
 		}
 	    }
 	}
-	final double growthRateProportion = WorkBookConcepts.getDouble(accountsBlocks, "Accounts and Growth Rates",
-		_name);
-	_growthRate = new GrowthRate("Growth Rate", growthRateProportion);
-	_endingBalance = WorkBookConcepts.getDouble(accountsBlocks, "Accounts and Balances", _name);
     }
 
     @Override
     public String getString() {
 	String s = String.format("%s(%s), Growth Rate[%s], Balance[%s]", //
 		_name, _typeOfAccount._english, //
-		_growthRate.getString(), MyStudiesStringUtils.formatDollars(_endingBalance) //
+		_growthRate.getString(), MyStudiesStringUtils.formatDollars(_balance) //
 	);
 	if (_typeOfAccount == TypeOfAccount.INH_IRA) {
 	    s += String.format("\n\tDivisorForRmd[%s], RmdAlreadyTaken[%b], BeginningBalance[%s]", //
@@ -124,15 +135,24 @@ public class Account0 extends NamedEntity {
 		);
 	    }
 	} else if (_typeOfAccount == TypeOfAccount.POST_TAX) {
-	    s += String.format("\n\tBasis[%s], %% Long[%s], ProjctCGs[%b]" + //
-		    "\n\tTaxExmpt[%s], ShrtTrmCGs[%s], LngTrmCGs[%s]", //
+	    s += String.format("\n\tBasis[%s], TxExmpt[%s], Long[%s], asLong[%s], Short[%s], asShort[%s]", //
 		    MyStudiesStringUtils.formatDollars(_basis), //
-		    MyStudiesStringUtils.formatPerCent(_perCentThatIsLong, 1), //
-		    _projectCapitalGains.booleanValue(), //
-		    MyStudiesStringUtils.formatDollars(_taxExempt), //
-		    MyStudiesStringUtils.formatDollars(_shortTermCapitalGain), //
-		    MyStudiesStringUtils.formatDollars(_longTermCapitalGain) //
+		    MyStudiesStringUtils.formatPerCent(_perCentTaxExempt, 0), //
+		    MyStudiesStringUtils.formatPerCent(_perCentLongCg, 0), //
+		    MyStudiesStringUtils.formatPerCent(_perCentAsLongCg, 0), //
+		    MyStudiesStringUtils.formatPerCent(_perCentShortCg, 0), //
+		    MyStudiesStringUtils.formatPerCent(_perCentAsShortCg, 0) //
 	    );
+	    if (Double.isFinite(_taxExempt) || Double.isFinite(_taxExempt) || Double.isFinite(_taxExempt)
+		    || Double.isFinite(_taxExempt) || Double.isFinite(_taxExempt)) {
+		s += String.format("\n\tTaxExmpt[%s], LongCgs[%s], AsLongCgs[%s], ShortCgs[%s], AsShortCGs[%s]", //
+			MyStudiesStringUtils.formatDollars(_taxExempt), //
+			MyStudiesStringUtils.formatDollars(_longCg), //
+			MyStudiesStringUtils.formatDollars(_asLongCg), //
+			MyStudiesStringUtils.formatDollars(_shortCg), //
+			MyStudiesStringUtils.formatDollars(_asShortCg) //
+		);
+	    }
 	} else if (_typeOfAccount == TypeOfAccount.ROTH) {
 	    /** There's no special data for a Roth. */
 	}

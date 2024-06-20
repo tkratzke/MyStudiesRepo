@@ -1,7 +1,6 @@
 package com.skagit.rothProblem.parameters;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 
@@ -18,17 +17,11 @@ import com.skagit.util.NamedEntity;
 
 public class Parameters {
 
-    final public static String _ParametersSheetName = "Current Year Parameters";
-    final public static Parameters _CurrentYearParameters;
-    static {
-	_CurrentYearParameters = new Parameters();
-    }
-
-    final public int _currentYear;
+    final public int _thisYear;
     final public int _finalYear;
     final public double _standardDeduction;
     final public double _partBStandardPremium;
-    final public double _maxCapitalGainsLoss;
+    final public double _maxCgLoss;
     final public double _medicareTaxThreshold;
     final public TaxTable[] _taxTables;
     /** Constants. */
@@ -38,25 +31,18 @@ public class Parameters {
     final public int _firstLifeExpectancyAge;
     final public double[] _lifeExpectancies;
 
-    public Parameters() {
-	FormulaEvaluator formulaEvaluator = null;
-	BlocksFromSheet blocksFromSheet = null;
-	Block[] blocks = null;
-	final String filePath = System.getProperty("ParametersFile") + ".xlsx";
-	try (XSSFWorkbook workBook = new XSSFWorkbook(new FileInputStream(filePath))) {
-	    formulaEvaluator = workBook.getCreationHelper().createFormulaEvaluator();
-	    blocksFromSheet = new BlocksFromSheet(workBook.getSheet(_ParametersSheetName), formulaEvaluator);
-	    blocks = blocksFromSheet._blocks;
-	} catch (final IOException e) {
-	    e.printStackTrace();
-	}
+    public Parameters(final XSSFWorkbook workBook, final FormulaEvaluator formulaEvaluator,
+	    final String parametersSheetName) {
+	final BlocksFromSheet blocksFromSheet = new BlocksFromSheet(workBook.getSheet(parametersSheetName),
+		formulaEvaluator);
+	final Block[] blocks = blocksFromSheet._blocks;
 	final int nBlocks = blocks.length;
 	/** Miscellaneous Data. */
 	final BitSet usedBlocks = new BitSet(nBlocks);
 	final String miscellaneousConstantsBlockName = "Miscellaneous Constants";
 	final int idx0 = Arrays.binarySearch(blocks, new NamedEntity(miscellaneousConstantsBlockName));
 	usedBlocks.set(idx0);
-	_currentYear = (int) Math
+	_thisYear = (int) Math
 		.round(WorkBookConcepts.getDouble(blocks, miscellaneousConstantsBlockName, "Current Year"));
 	_finalYear = (int) Math
 		.round(WorkBookConcepts.getDouble(blocks, miscellaneousConstantsBlockName, "Final Year"));
@@ -76,8 +62,7 @@ public class Parameters {
 		"Standard Deduction");
 	_partBStandardPremium = WorkBookConcepts.getDouble(blocks, miscellaneousDollarAmountsBlockName,
 		"Part B Standard Premium");
-	_maxCapitalGainsLoss = WorkBookConcepts.getDouble(blocks, miscellaneousDollarAmountsBlockName,
-		"Max Capital Gains Loss");
+	_maxCgLoss = WorkBookConcepts.getDouble(blocks, miscellaneousDollarAmountsBlockName, "Max Capital Gains Loss");
 	_medicareTaxThreshold = WorkBookConcepts.getDouble(blocks, miscellaneousDollarAmountsBlockName,
 		"Medicare Tax Threshold");
 	/** Life Expectancies. */
@@ -96,31 +81,81 @@ public class Parameters {
 	_taxTables = new TaxTable[nTaxTables];
 	for (int k0 = usedBlocks.nextClearBit(0), k1 = 0; k0 < nBlocks; k0 = usedBlocks.nextClearBit(k0 + 1)) {
 	    usedBlocks.set(k0);
-	    _taxTables[k1++] = new TaxTable(blocks[k0]);
+	    _taxTables[k1++] = new TaxTable(_thisYear, blocks[k0]);
 	}
     }
 
+    /**
+     * Creates a new set of Parameters for the year after parameters._thisYear. This
+     * is NOT a copy ctor.
+     */
+    public Parameters(final Parameters parameters) {
+	_thisYear = parameters._thisYear + 1;
+	_finalYear = parameters._finalYear;
+	_inflationGrowthRate = parameters._inflationGrowthRate;
+	final double inflationFactor = Math.exp(_inflationGrowthRate._expGrowthRate);
+	_standardDeduction = parameters._standardDeduction * inflationFactor;
+	_partBStandardPremium = parameters._partBStandardPremium * inflationFactor;
+	_maxCgLoss = parameters._maxCgLoss * inflationFactor;
+	_medicareTaxThreshold = parameters._medicareTaxThreshold * inflationFactor;
+	_additionalMedicareTaxPerCent = parameters._additionalMedicareTaxPerCent;
+	_additionalMedicareTaxOnInvestmentsPerCent = parameters._additionalMedicareTaxOnInvestmentsPerCent;
+	_firstLifeExpectancyAge = parameters._firstLifeExpectancyAge;
+	_lifeExpectancies = parameters._lifeExpectancies;
+	final TaxTable[] taxTables = parameters._taxTables;
+	final int nTaxTables = taxTables.length;
+	final BitSet usedTaxTables = new BitSet(nTaxTables);
+	final ArrayList<TaxTable> list = new ArrayList<>();
+	for (int k0 = usedTaxTables.nextClearBit(0); k0 < nTaxTables; k0 = usedTaxTables.nextClearBit(k0 + 1)) {
+	    final TaxTable taxTable = taxTables[k0];
+	    final String name = taxTable._name;
+	    final PerCentCeiling[] perCentCeilings = taxTable._perCentCeilings;
+	    final int nPerCentCeilings = perCentCeilings.length;
+	    final PerCentCeiling[] newPerCentCeilings = new PerCentCeiling[nPerCentCeilings];
+	    final TaxTable nextTaxTable = k0 < (nTaxTables - 1) ? taxTables[k0 + 1] : null;
+	    if (nextTaxTable != null && nextTaxTable._name.equals(name + " " + _thisYear)) {
+		usedTaxTables.set(k0 + 1);
+		final PerCentCeiling[] nextPerCentCeilings = nextTaxTable._perCentCeilings;
+		final int nNextPerCentCeilings = nextPerCentCeilings.length;
+		if (nNextPerCentCeilings == nPerCentCeilings) {
+		    for (int k1 = 0; k1 < nPerCentCeilings; ++k1) {
+			newPerCentCeilings[k1] = new PerCentCeiling(nextPerCentCeilings[k1]._perCent,
+				perCentCeilings[k1]._ceiling * inflationFactor);
+		    }
+		    usedTaxTables.set(k0);
+		}
+	    }
+	    if (!usedTaxTables.get(k0)) {
+		for (int k1 = 0; k1 < nPerCentCeilings; ++k1) {
+		    newPerCentCeilings[k1] = new PerCentCeiling(perCentCeilings[k1]._perCent,
+			    perCentCeilings[k1]._ceiling * inflationFactor);
+		}
+		usedTaxTables.set(k0);
+	    }
+	    list.add(new TaxTable(name, _thisYear, newPerCentCeilings));
+	}
+	_taxTables = list.toArray(new TaxTable[list.size()]);
+	Arrays.sort(_taxTables);
+
+    }
+
     public String getString() {
-	String s = String.format("Parameters: CurrentYear[%d] to FinalYear[%d]:", _currentYear, _finalYear);
+	String s = String.format("Parameters: CurrentYear[%d] to FinalYear[%d]:", _thisYear, _finalYear);
 	s += String.format("\nStd Ded=%s", MyStudiesStringUtils.formatDollars(_standardDeduction));
 	s += String.format("\nPart B Std Prmm=%s.", MyStudiesStringUtils.formatDollars(_partBStandardPremium));
-	s += String.format("\nMxCptlGnsLss=%s.", MyStudiesStringUtils.formatDollars(_maxCapitalGainsLoss));
+	s += String.format("\nMxCptlGnsLss=%s.", MyStudiesStringUtils.formatDollars(_maxCgLoss));
 	s += String.format("\nMdcrTxThrshld=%s.", MyStudiesStringUtils.formatDollars(_medicareTaxThreshold));
 	s += String.format("\nAddtnl MdcrTx=%s.", MyStudiesStringUtils.formatPerCent(_additionalMedicareTaxPerCent, 1));
 	s += String.format("\nAddtnl MdcrTx On Invstmnts=%s.",
 		MyStudiesStringUtils.formatPerCent(_additionalMedicareTaxOnInvestmentsPerCent, 1));
 	s += String.format("\n%s", _inflationGrowthRate.getString());
-	s += String.format("\nFrstLfExpctncyAg=%s: ", MyStudiesStringUtils.formatOther(_firstLifeExpectancyAge, 1));
-	s += String.format("[");
+	s += String.format("\nLife Expectancies:");
 	final int nLfExpctncies = _lifeExpectancies.length;
 	for (int k = 0; k < nLfExpctncies; ++k) {
-	    if (k > 0) {
-		s += ",";
-	    }
-	    s += MyStudiesStringUtils.formatOther(_lifeExpectancies[k], 1);
+	    s += (k % 8 == 0) ? "\n\t" : ",";
+	    s += String.format("(%s:%s)", MyStudiesStringUtils.formatOther(_firstLifeExpectancyAge + k, 0),
+		    MyStudiesStringUtils.formatOther(_lifeExpectancies[k], 1));
 	}
-	s += String.format("]");
-
 	final int nTaxTables = _taxTables.length;
 	for (int k = 0; k < nTaxTables; ++k) {
 	    s += String.format("\n\n%s", _taxTables[k].getString());
@@ -131,9 +166,5 @@ public class Parameters {
     @Override
     public String toString() {
 	return getString();
-    }
-
-    public static void main(final String[] args) {
-	System.out.println(_CurrentYearParameters.getString());
     }
 }

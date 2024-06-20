@@ -1,5 +1,6 @@
 package com.skagit.rothProblem.owner0;
 
+import com.skagit.rothProblem.workBookConcepts.WorkBookConcepts;
 import com.skagit.util.MyStudiesStringUtils;
 import com.skagit.util.NamedEntity;
 
@@ -18,7 +19,7 @@ public class OutsideIncome0 extends NamedEntity {
     @Override
     public String getString() {
 	String s = String.format("%s: %s", _name, MyStudiesStringUtils.formatDollars(_amount));
-	if (_year > 0) {
+	if (_year != WorkBookConcepts._NotAnInteger) {
 	    s += String.format("(%d)", _year);
 	}
 	return s;

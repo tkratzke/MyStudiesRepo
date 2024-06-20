@@ -35,15 +35,20 @@ public class MyStudiesStringUtils {
     }
 
     public static String formatDollars(final double dollars) {
-	final int cents = (int) Math.round(dollars * 100d);
-	final int absCents = Math.abs(cents);
-	final String s;
-	if (absCents % 100 == 0) {
-	    s = String.format("$%,d", absCents / 100);
-	} else {
-	    s = String.format("$%,.2f", absCents / 100d);
+	if (Double.isFinite(dollars)) {
+	    final int cents = (int) Math.round(dollars * 100d);
+	    final int absCents = Math.abs(cents);
+	    final String s;
+	    if (absCents % 100 == 0) {
+		s = String.format("$%,d", absCents / 100);
+	    } else {
+		s = String.format("$%,.2f", absCents / 100d);
+	    }
+	    return (absCents == cents ? "" : "-") + s;
+	} else if (Double.isInfinite(dollars)) {
+	    return "" + dollars;
 	}
-	return (absCents == cents ? "" : "-") + s;
+	return "$*.**";
     }
 
     public static String formatOther(final double d, final int nDigits) {

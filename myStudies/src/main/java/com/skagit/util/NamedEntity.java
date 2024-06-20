@@ -34,7 +34,7 @@ public class NamedEntity implements Comparable<NamedEntity> {
 	return _name.compareTo(hisName);
     }
 
-    public static void main(final String[] args) {
+    public static void mainx(final String[] args) {
 	final NamedEntity1[] namedEntity1s = new NamedEntity1[] { //
 		new NamedEntity1("b", 2), //
 		new NamedEntity1("a", 1), //
