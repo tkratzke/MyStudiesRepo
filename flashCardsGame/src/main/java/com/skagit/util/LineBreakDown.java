@@ -1,9 +1,9 @@
-package com.skagit.flashCardsGame;
+package com.skagit.util;
 
 public class LineBreakDown {
-    final String _aSide;
-    final String _bSide;
-    final boolean _nextLineIsContinuation;
+    final public String _aSide;
+    final public String _bSide;
+    final public boolean _nextLineIsContinuation;
 
     /**
      * Assumes that nextLine is not blank. Furthermore, it is not a comment nor a
@@ -11,7 +11,7 @@ public class LineBreakDown {
      * get to the BY_ANSWER-Side. If it's not a number then it only takes one tab to
      * get to the BY_ANSWER side.
      */
-    LineBreakDown(final String nextLine) {
+    public LineBreakDown(final String nextLine) {
 	/** Not blank and not a comment; split the original line and process it. */
 	final int len = nextLine.length();
 	_nextLineIsContinuation = nextLine.charAt(len - 1) == '\t';

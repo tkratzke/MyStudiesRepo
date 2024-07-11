@@ -5,6 +5,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.skagit.util.Statics;
+
 public class FullSide implements Comparable<FullSide> {
 
     final String _trimmedInputString;
@@ -43,6 +45,7 @@ public class FullSide implements Comparable<FullSide> {
 	}
 	_trimmedInputString = fileStringPart + " " + _stringPart;
 	_soundFile = allSoundFiles.get(fileString);
+	final int x = 0;
     }
 
     public String getStringPart() {

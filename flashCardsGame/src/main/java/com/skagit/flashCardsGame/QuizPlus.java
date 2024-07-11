@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
+import com.skagit.util.Statics;
+
 class QuizPlus implements Serializable {
     private static final long serialVersionUID = 1L;
     final private int[] _fullQuiz;

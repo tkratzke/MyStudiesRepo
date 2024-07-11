@@ -1,6 +1,7 @@
 package com.skagit.rothProblem.taxYear;
 
 import com.skagit.rothProblem.RothProblem;
+import com.skagit.rothProblem.owner0.Account0;
 import com.skagit.rothProblem.owner0.OutsideIncome0;
 import com.skagit.rothProblem.owner0.Owner0;
 import com.skagit.rothProblem.parameters.Parameters;
@@ -15,6 +16,7 @@ public class TaxYear {
     final double _ttlSsa;
     final double _ttlOutsideIncome;
     final double _livingExpenses;
+    private final Account1[] _account1s;
 
     public TaxYear(final RothProblem rothProblem, final Parameters parameters) {
 	_rothProblem = rothProblem;
@@ -24,6 +26,7 @@ public class TaxYear {
 	double ttlSsa = 0d;
 	double ttlOutsideIncome = 0d;
 	final int nOwner0s = _rothProblem._owner0s.length;
+	int nAccount1s = 0;
 	for (int k0 = 0; k0 < nOwner0s; ++k0) {
 	    final Owner0 owner0 = _rothProblem._owner0s[k0];
 	    final double currentSsa = owner0._currentSsa;
@@ -41,10 +44,20 @@ public class TaxYear {
 		    ttlOutsideIncome += outsideIncome0._amount;
 		}
 	    }
+	    nAccount1s += owner0._account0s.length;
 	}
 	_ttlSsa = ttlSsa;
 	_ttlOutsideIncome = ttlOutsideIncome;
 	_livingExpenses = _rothProblem._livingExpenses;
+	_account1s = new Account1[nAccount1s];
+	for (int k0 = 0, k1 = 0; k0 < nOwner0s; ++k0) {
+	    final Owner0 owner0 = _rothProblem._owner0s[k0];
+	    final Account0[] account0s = owner0._account0s;
+	    final int nAccount0s = account0s.length;
+	    for (int k2 = 0; k2 < nAccount0s; ++k2) {
+		_account1s[k1++] = new Account1(account0s[k2]);
+	    }
+	}
     }
 
     public TaxYear(final TaxYear pvsYear) {
@@ -72,6 +85,11 @@ public class TaxYear {
 	}
 	_ttlOutsideIncome = ttlOutsideIncome;
 	_livingExpenses = pvsYear._livingExpenses * inflationFactor;
+	final int nAccount1s = _pvsYear._account1s.length;
+	_account1s = new Account1[nAccount1s];
+	for (int k1 = 0; k1 < nAccount1s; ++k1) {
+	    _account1s[k1] = new Account1(_pvsYear._account1s[k1]);
+	}
     }
 
     public String getString() {

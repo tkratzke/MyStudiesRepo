@@ -1,11 +1,11 @@
-package com.skagit.flashCardsGame;
+package com.skagit.util;
 
 import java.util.ArrayList;
 
 public class CommentParts extends ArrayList<String> {
     private static final long serialVersionUID = 1L;
 
-    CommentParts(final String fullComment, final int maxLineLen) {
+    public CommentParts(final String fullComment, final int maxLineLen) {
 	super();
 	if (fullComment == null || fullComment.isBlank()) {
 	    return;

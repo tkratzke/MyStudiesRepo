@@ -19,13 +19,18 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.skagit.SimpleAudioPlayer;
-import com.skagit.flashCardsGame.Statics.YesNoResponse;
 import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.Clumping;
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
 import com.skagit.flashCardsGame.enums.Mode;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
+import com.skagit.util.CommentParts;
+import com.skagit.util.DirsTracker;
+import com.skagit.util.InputString;
+import com.skagit.util.LineBreakDown;
+import com.skagit.util.SimpleAudioPlayer;
+import com.skagit.util.Statics;
+import com.skagit.util.Statics.YesNoResponse;
 
 /**
  * <pre>
@@ -145,7 +150,7 @@ public class FlashCardsGame {
 
 	    @Override
 	    public boolean accept(final File f) {
-		return SimpleAudioPlayer.validate(f);
+		return SimpleAudioPlayer.checkAudioFile(f, /* playFile= */false);
 	    }
 	});
 	for (final File f : mainDirSoundFiles) {
@@ -401,7 +406,7 @@ public class FlashCardsGame {
 	{
 	    int maxCluePartLen = 0;
 	    for (final Card card : _cards) {
-		final CardParts aParts = new CardParts(card.getFullString(/* clueSide= */true),
+		final FullSideStringParts aParts = new FullSideStringParts(card.getFullString(/* clueSide= */true),
 			Statics._MaxLenForCardPart);
 		maxCluePartLen = Math.max(maxCluePartLen, aParts._maxLen);
 	    }
@@ -412,10 +417,10 @@ public class FlashCardsGame {
 	    boolean recentWasMultiLine = false;
 	    for (int kCard = 0, nPrinted = 0; kCard < nCards; ++kCard) {
 		final Card card = _cards[kCard];
-		final CardParts clueParts = new CardParts(card.getFullString(/* clueSide= */true),
+		final FullSideStringParts clueParts = new FullSideStringParts(card.getFullString(/* clueSide= */true),
 			Statics._MaxLenForCardPart);
-		final CardParts answerParts = new CardParts(card.getFullString(/* clueSide= */false),
-			Statics._MaxLenForCardPart);
+		final FullSideStringParts answerParts = new FullSideStringParts(
+			card.getFullString(/* clueSide= */false), Statics._MaxLenForCardPart);
 		final int nClueParts = clueParts.size();
 		final int nAnswerParts = answerParts.size();
 		final int nDataParts = Math.max(nClueParts, nAnswerParts);
@@ -708,8 +713,9 @@ public class FlashCardsGame {
 		boolean longQuestion = false;
 
 		/** Expose the clue. */
-		if (!_silentMode) {
-		    card.playSoundFileIfPossible(/* clueSide= */true);
+		final File clueSideSoundFile = card._clueSide._soundFile;
+		if (!_silentMode && clueSideSoundFile != null) {
+		    SimpleAudioPlayer.checkAudioFile(clueSideSoundFile, /* playFile= */true);
 		}
 		if (len1 <= Statics._MaxLineLen) {
 		    System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueStringPart, terminalString);
@@ -754,7 +760,7 @@ public class FlashCardsGame {
 		     */
 		    final char char0Uc = Character.toUpperCase(responseStringPart.charAt(0));
 		    if (char0Uc == Statics._QuitChar) {
-			System.out.print(Statics.getFullYesNoPrompt("Reallly quit?", true));
+			System.out.print(Statics.getFullYesNoPrompt("Really quit?", true));
 			final YesNoResponse yesNoResponse = new YesNoResponse(sc, /* defaultYesNo= */true);
 			if (!yesNoResponse._yesValue) {
 			    continue OUTSIDE_LOOP;
@@ -798,8 +804,10 @@ public class FlashCardsGame {
 		    continue;
 		}
 		/** Must process a response to the clue. */
-		if (!_silentMode) {
-		    card.playSoundFileIfPossible(/* clueSide= */false);
+		//
+		final File answerSideSoundFile = card._answerSide._soundFile;
+		if (!_silentMode && answerSideSoundFile != null) {
+		    SimpleAudioPlayer.checkAudioFile(answerSideSoundFile, /* playFile= */true);
 		}
 		if (responseStringPartLen == 0) {
 		    int nUsedOnCurrentLine = 0;
@@ -951,6 +959,7 @@ public class FlashCardsGame {
 	    System.out.println();
 	    try (Scanner sc = new Scanner(System.in)) {
 		flashCardsGame.mainLoop(sc);
+		System.out.println("Exiting Program");
 	    } catch (final Exception e) {
 		e.printStackTrace();
 	    }

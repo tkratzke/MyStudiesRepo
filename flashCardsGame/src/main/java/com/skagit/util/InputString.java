@@ -1,13 +1,13 @@
-package com.skagit.flashCardsGame;
+package com.skagit.util;
 
 import java.util.Scanner;
 
-class InputString {
-    final boolean _lastLineWasBlank;
-    final int _nLinesOfResponse;
-    final String _inputString;
+public class InputString {
+    final public boolean _lastLineWasBlank;
+    final public int _nLinesOfResponse;
+    final public String _inputString;
 
-    InputString(final Scanner sc) {
+    public InputString(final Scanner sc) {
 	String s = "";
 	boolean lastLineWasBlank = false;
 	int nLinesOfResponse = 1;

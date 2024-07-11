@@ -1,4 +1,4 @@
-package com.skagit.flashCardsGame;
+package com.skagit.util;
 
 import java.io.File;
 import java.io.FileFilter;

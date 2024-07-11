@@ -8,6 +8,7 @@ import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.DecayType;
 import com.skagit.flashCardsGame.enums.Mode;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
+import com.skagit.util.Statics;
 
 public class QuizGenerator {
     final private Mode _mode;

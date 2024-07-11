@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
 import com.skagit.flashCardsGame.enums.MatchType;
+import com.skagit.util.Statics;
 
 public class ResponseEvaluator {
     final boolean _gotItRight;

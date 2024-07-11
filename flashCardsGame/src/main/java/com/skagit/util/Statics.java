@@ -1,4 +1,4 @@
-package com.skagit.flashCardsGame;
+package com.skagit.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,9 +91,9 @@ public class Statics {
     final public static int _IndentLen = _IndentString.length();
 
     public static class YesNoResponse {
-	final boolean _yesValue, _lastLineWasBlank;
+	final public boolean _yesValue, _lastLineWasBlank;
 
-	YesNoResponse(final Scanner sc, final boolean defaultYesValue) {
+	public YesNoResponse(final Scanner sc, final boolean defaultYesValue) {
 	    final char otherChar = defaultYesValue ? _NoChar : _YesChar;
 	    final InputString inputString = new InputString(sc);
 	    final String response = inputString._inputString;

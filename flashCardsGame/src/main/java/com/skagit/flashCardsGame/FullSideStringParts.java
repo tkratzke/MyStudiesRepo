@@ -2,11 +2,13 @@ package com.skagit.flashCardsGame;
 
 import java.util.ArrayList;
 
-public class CardParts extends ArrayList<String> {
+import com.skagit.util.Statics;
+
+public class FullSideStringParts extends ArrayList<String> {
     private static final long serialVersionUID = 1L;
     int _maxLen;
 
-    CardParts(final String fullSideString, final int maxLen0) {
+    FullSideStringParts(final String fullSideString, final int maxLen0) {
 	super();
 	String part = "";
 	int maxLen = 0;

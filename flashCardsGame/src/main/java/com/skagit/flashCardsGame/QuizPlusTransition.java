@@ -1,6 +1,7 @@
 package com.skagit.flashCardsGame;
 
 import com.skagit.flashCardsGame.enums.ChangeType;
+import com.skagit.util.Statics;
 
 class QuizPlusTransition {
     final QuizPlus _newQuizPlus;

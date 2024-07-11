@@ -7,12 +7,12 @@ import java.io.PrintStream;
 import java.util.Comparator;
 import java.util.TreeMap;
 
-import com.skagit.SimpleAudioPlayer;
+import com.skagit.util.Statics;
 
 class Card {
     int _cardNumber;
-    final private FullSide _clueSide;
-    final private FullSide _answerSide;
+    final FullSide _clueSide;
+    final FullSide _answerSide;
     String[] _commentLines;
 
     Card(final boolean switchSides, final TreeMap<String, File> allSoundFiles, final TreeMap<String, String> partToStem,
@@ -110,11 +110,6 @@ class Card {
 
     public String getFullString(final boolean forClue) {
 	return (forClue ? _clueSide : _answerSide).getFullString();
-    }
-
-    public void playSoundFileIfPossible(final boolean forClue) {
-	SimpleAudioPlayer //
-		.playSoundFileIfPossible((forClue ? _clueSide : _answerSide)._soundFile);
     }
 
     @Override

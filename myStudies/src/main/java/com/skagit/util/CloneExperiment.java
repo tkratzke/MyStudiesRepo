@@ -1,4 +1,4 @@
-package com.skagit;
+package com.skagit.util;
 
 import java.util.HashMap;
 

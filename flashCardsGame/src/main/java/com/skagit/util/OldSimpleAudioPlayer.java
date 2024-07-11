@@ -1,4 +1,4 @@
-package com.skagit;
+package com.skagit.util;
 
 /**
  * <pre>
@@ -29,7 +29,7 @@ import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public class SimpleAudioPlayer {
+public class OldSimpleAudioPlayer {
 
     Long _currentFrame;
     Clip _clip;
@@ -37,7 +37,7 @@ public class SimpleAudioPlayer {
     AudioInputStream _audioInputStream;
     String _filePath;
 
-    public SimpleAudioPlayer(final String filePath)
+    public OldSimpleAudioPlayer(final String filePath)
 	    throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 	_filePath = filePath;
 	_audioInputStream = AudioSystem.getAudioInputStream(new File(_filePath).getAbsoluteFile());
@@ -45,6 +45,7 @@ public class SimpleAudioPlayer {
 	_clip = AudioSystem.getClip();
 	_clip.open(_audioInputStream);
 	_clip.loop(Clip.LOOP_CONTINUOUSLY);
+	_clip.loop(1);
     }
 
     private void goToChoice(final int c) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
@@ -161,16 +162,18 @@ public class SimpleAudioPlayer {
 	    try {
 		syncLatch.await();
 	    } catch (final InterruptedException e1) {
+		final int x = 0;
 	    }
 	} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+	    final int x = 0;
 	}
     }
 
-    public static void mainx(final String[] args) {
-	final String filePath = "Your path for the file";
+    public static void main(final String[] args) {
+	final String filePath = "RunDir/Data/SoundFilesDirs/VN.00-SoundFiles/Tran-00/000-winter.aiff";
 	try (Scanner sc = new Scanner(System.in)) {
 	    try {
-		final SimpleAudioPlayer audioPlayer = new SimpleAudioPlayer(filePath);
+		final OldSimpleAudioPlayer audioPlayer = new OldSimpleAudioPlayer(filePath);
 		audioPlayer.play();
 		while (true) {
 		    System.out.println("1. pause");

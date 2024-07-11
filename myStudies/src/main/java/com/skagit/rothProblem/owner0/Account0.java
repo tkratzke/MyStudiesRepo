@@ -15,7 +15,7 @@ public class Account0 extends NamedEntity {
 
     /** For all: */
     final public GrowthRate _growthRate;
-    final public double _balance;
+    final public double _currentValue;
 
     /** For Inherited IRA: */
     final public double _divisorForRmd;
@@ -28,17 +28,12 @@ public class Account0 extends NamedEntity {
     final public double _beginningBalance;
 
     /** For Post-Tax: */
-    final public double _basis;
-    final public double _perCentTaxExempt;
-    final public double _perCentLongCg;
-    final public double _perCentAsLongCg;
-    final public double _perCentShortCg;
-    final public double _perCentAsShortCg;
-    final public double _taxExempt;
-    final public double _longCg;
-    final public double _asLongCg;
-    final public double _shortCg;
-    final public double _asShortCg;
+    final public double _cash; // In $$
+    final public double _perCentDueOfNonCashAtEoy; // Unavoidable, eg dividends (5%)
+    final public double _annualPerCentGrowthInValueOfNonCash; // If you left it alone, what would it be (eg 8%)?
+    final public double _annualPerCentGrowthInValueOfCash; // (Eg 3%)
+    final public double _incomeGeneratedAndDirectedToCashAsPerCentOfNonCash; // (Eg 2%)
+    final public double _incomeGeneratedAndReInvestedAsPerCentOfNonCash; // (Eg 4%)
 
     /** Roth has nothing special. */
 
@@ -47,17 +42,18 @@ public class Account0 extends NamedEntity {
 	_owner = owner0;
 	final double growthRateProportion = WorkBookConcepts.getDouble(accountsBlocks, _name, "Growth Rate");
 	_growthRate = new GrowthRate("Growth Rate", growthRateProportion);
-	_balance = WorkBookConcepts.getDouble(accountsBlocks, _name, "Balance");
+	_currentValue = WorkBookConcepts.getDouble(accountsBlocks, _name, "Current Value");
 	final double divisorForRmd = WorkBookConcepts.getDouble(accountsBlocks, _name, "Divisor, Current Year");
 	if (divisorForRmd > 0d) {
 	    _typeOfAccount = TypeOfAccount.INH_IRA;
 	    _divisorForRmd = divisorForRmd;
 	    _rmdAlreadyTaken = WorkBookConcepts.getBoolean(accountsBlocks, _name, "RMD Taken Current Year");
 	    _beginningBalance = WorkBookConcepts.getDouble(accountsBlocks, _name, "Balance, Beginning of Current Year");
-	    _basis = Double.NaN;
 	    _ageOfFirstRmd = Double.NaN;
-	    _perCentTaxExempt = _perCentLongCg = _perCentAsLongCg = _perCentShortCg = _perCentAsShortCg = Double.NaN;
-	    _taxExempt = _longCg = _asLongCg = _shortCg = _asShortCg = Double.NaN;
+	    _cash = _perCentDueOfNonCashAtEoy = Double.NaN;
+	    _annualPerCentGrowthInValueOfNonCash = _annualPerCentGrowthInValueOfCash = Double.NaN;
+	    _incomeGeneratedAndDirectedToCashAsPerCentOfNonCash = Double.NaN;
+	    _incomeGeneratedAndReInvestedAsPerCentOfNonCash = Double.NaN;
 	} else {
 	    final double ageOfFirstRmd = WorkBookConcepts.getDouble(accountsBlocks, _name, "Age of First RMD");
 	    if (ageOfFirstRmd > 0d) {
@@ -75,35 +71,37 @@ public class Account0 extends NamedEntity {
 		    _beginningBalance = Double.NaN;
 		}
 		_divisorForRmd = Double.NaN;
-		_basis = Double.NaN;
-		_perCentTaxExempt = _perCentLongCg = _perCentAsLongCg = _perCentShortCg = _perCentAsShortCg = Double.NaN;
-		_taxExempt = _longCg = _asLongCg = _shortCg = _asShortCg = Double.NaN;
+		_cash = _perCentDueOfNonCashAtEoy = Double.NaN;
+		_annualPerCentGrowthInValueOfNonCash = _annualPerCentGrowthInValueOfCash = Double.NaN;
+		_incomeGeneratedAndDirectedToCashAsPerCentOfNonCash = Double.NaN;
+		_incomeGeneratedAndReInvestedAsPerCentOfNonCash = Double.NaN;
 	    } else {
-		final double basis = WorkBookConcepts.getDouble(accountsBlocks, _name, "Basis");
-		if (Double.isFinite(basis)) {
+		final double cash = WorkBookConcepts.getDouble(accountsBlocks, _name, "Cash");
+		if (Double.isFinite(cash)) {
 		    _typeOfAccount = TypeOfAccount.POST_TAX;
-		    _basis = basis;
-		    _perCentTaxExempt = WorkBookConcepts.getDouble(accountsBlocks, _name, "% Tax-Exempt") * 100d;
-		    _perCentLongCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "% Long-Term") * 100d;
-		    _perCentAsLongCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "% As Long-Term") * 100d;
-		    _perCentShortCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "% Short-Term") * 100d;
-		    _perCentAsShortCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "% As Short-Term") * 100d;
-		    _taxExempt = WorkBookConcepts.getDouble(accountsBlocks, _name, "Tax-Exempt");
-		    _longCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "Long-Term");
-		    _asLongCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "As Long-Term");
-		    _shortCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "Short-Term");
-		    _asShortCg = WorkBookConcepts.getDouble(accountsBlocks, _name, "As Short-Term");
 		    _divisorForRmd = _ageOfFirstRmd = _beginningBalance = Double.NaN;
 		    _rmdAlreadyTaken = null;
+		    _cash = cash;
+		    _perCentDueOfNonCashAtEoy = WorkBookConcepts.getDouble(accountsBlocks, _name,
+			    "% Due of Non-Cash at EOY");
+		    _annualPerCentGrowthInValueOfNonCash = WorkBookConcepts.getDouble(accountsBlocks, _name,
+			    "Growth Rate Non-Cash");
+		    _annualPerCentGrowthInValueOfCash = WorkBookConcepts.getDouble(accountsBlocks, _name,
+			    "Growth Rate Cash");
+		    _incomeGeneratedAndDirectedToCashAsPerCentOfNonCash = WorkBookConcepts.getDouble(accountsBlocks,
+			    _name, "Income as % of Income Directed to Cash");
+		    _incomeGeneratedAndReInvestedAsPerCentOfNonCash = WorkBookConcepts.getDouble(accountsBlocks, _name,
+			    "Income as % of Income Re-Invested");
 		} else {
 		    _typeOfAccount = TypeOfAccount.ROTH;
 		    _ageOfFirstRmd = Double.NaN;
 		    _rmdAlreadyTaken = null;
 		    _beginningBalance = Double.NaN;
 		    _divisorForRmd = Double.NaN;
-		    _basis = Double.NaN;
-		    _perCentTaxExempt = _perCentLongCg = _perCentAsLongCg = _perCentShortCg = _perCentAsShortCg = Double.NaN;
-		    _taxExempt = _longCg = _asLongCg = _shortCg = _asShortCg = Double.NaN;
+		    _cash = _perCentDueOfNonCashAtEoy = Double.NaN;
+		    _annualPerCentGrowthInValueOfNonCash = _annualPerCentGrowthInValueOfCash = Double.NaN;
+		    _incomeGeneratedAndDirectedToCashAsPerCentOfNonCash = Double.NaN;
+		    _incomeGeneratedAndReInvestedAsPerCentOfNonCash = Double.NaN;
 		}
 	    }
 	}
@@ -113,7 +111,7 @@ public class Account0 extends NamedEntity {
     public String getString() {
 	String s = String.format("%s(%s), Growth Rate[%s], Balance[%s]", //
 		_name, _typeOfAccount._english, //
-		_growthRate.getString(), MyStudiesStringUtils.formatDollars(_balance) //
+		_growthRate.getString(), MyStudiesStringUtils.formatDollars(_currentValue) //
 	);
 	if (_typeOfAccount == TypeOfAccount.INH_IRA) {
 	    s += String.format("\n\tDivisorForRmd[%s], RmdAlreadyTaken[%b], BeginningBalance[%s]", //
@@ -135,24 +133,15 @@ public class Account0 extends NamedEntity {
 		);
 	    }
 	} else if (_typeOfAccount == TypeOfAccount.POST_TAX) {
-	    s += String.format("\n\tBasis[%s], TxExmpt[%s], Long[%s], asLong[%s], Short[%s], asShort[%s]", //
-		    MyStudiesStringUtils.formatDollars(_basis), //
-		    MyStudiesStringUtils.formatPerCent(_perCentTaxExempt, 0), //
-		    MyStudiesStringUtils.formatPerCent(_perCentLongCg, 0), //
-		    MyStudiesStringUtils.formatPerCent(_perCentAsLongCg, 0), //
-		    MyStudiesStringUtils.formatPerCent(_perCentShortCg, 0), //
-		    MyStudiesStringUtils.formatPerCent(_perCentAsShortCg, 0) //
+	    s += String.format(
+		    "\n\tCash[%s], GeneralTaxes[%s], GrwthRtNon-Csh[%s], GrwthRtCsh[%s], IncmToCsh[%s], IncmReInv[%s]", //
+		    MyStudiesStringUtils.formatDollars(_cash), //
+		    MyStudiesStringUtils.formatPerCent(_perCentDueOfNonCashAtEoy, 0), //
+		    MyStudiesStringUtils.formatPerCent(_annualPerCentGrowthInValueOfNonCash, 0), //
+		    MyStudiesStringUtils.formatPerCent(_annualPerCentGrowthInValueOfCash, 0), //
+		    MyStudiesStringUtils.formatPerCent(_incomeGeneratedAndDirectedToCashAsPerCentOfNonCash, 0), //
+		    MyStudiesStringUtils.formatPerCent(_incomeGeneratedAndReInvestedAsPerCentOfNonCash, 0) //
 	    );
-	    if (Double.isFinite(_taxExempt) || Double.isFinite(_taxExempt) || Double.isFinite(_taxExempt)
-		    || Double.isFinite(_taxExempt) || Double.isFinite(_taxExempt)) {
-		s += String.format("\n\tTaxExmpt[%s], LongCgs[%s], AsLongCgs[%s], ShortCgs[%s], AsShortCGs[%s]", //
-			MyStudiesStringUtils.formatDollars(_taxExempt), //
-			MyStudiesStringUtils.formatDollars(_longCg), //
-			MyStudiesStringUtils.formatDollars(_asLongCg), //
-			MyStudiesStringUtils.formatDollars(_shortCg), //
-			MyStudiesStringUtils.formatDollars(_asShortCg) //
-		);
-	    }
 	} else if (_typeOfAccount == TypeOfAccount.ROTH) {
 	    /** There's no special data for a Roth. */
 	}
