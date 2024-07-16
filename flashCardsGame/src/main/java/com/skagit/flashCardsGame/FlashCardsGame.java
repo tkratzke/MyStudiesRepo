@@ -55,6 +55,7 @@ public class FlashCardsGame {
     final private DiacriticsTreatment _diacriticsTreatment;
     final private Clumping _clumping;
     final private QuizGenerator _quizGenerator;
+    final private long _lagLengthInMilliseconds;
 
     private Card[] _cards;
     private QuizPlus _quizPlus;
@@ -70,6 +71,7 @@ public class FlashCardsGame {
 	    _partToStem = null;
 	    _properties = null;
 	    _randomSeed = 0;
+	    _lagLengthInMilliseconds = -1L;
 	    _mode = null;
 	    _diacriticsTreatment = null;
 	    _clumping = null;
@@ -104,6 +106,8 @@ public class FlashCardsGame {
 	final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 	_clumping = Clumping.valueOf(clumpingString);
 	_silentMode = Boolean.valueOf(PropertyPlus.SILENT_MODE.getValidString(_properties));
+	_lagLengthInMilliseconds = Integer
+		.parseInt(PropertyPlus.LAG_LENGTH_IN_MILLISECONDS.getValidString(_properties));
 
 	_allSoundFiles = new TreeMap<>();
 	_partToStem = new TreeMap<>();
@@ -150,7 +154,7 @@ public class FlashCardsGame {
 
 	    @Override
 	    public boolean accept(final File f) {
-		return SimpleAudioPlayer.checkAudioFile(f, /* playFile= */false);
+		return SimpleAudioPlayer.checkAudioFile(f, /* playFile= */false, /* lagLengthInMs= */-1);
 	    }
 	});
 	for (final File f : mainDirSoundFiles) {
@@ -715,7 +719,7 @@ public class FlashCardsGame {
 		/** Expose the clue. */
 		final File clueSideSoundFile = card._clueSide._soundFile;
 		if (!_silentMode && clueSideSoundFile != null) {
-		    SimpleAudioPlayer.checkAudioFile(clueSideSoundFile, /* playFile= */true);
+		    SimpleAudioPlayer.checkAudioFile(clueSideSoundFile, /* playFile= */true, _lagLengthInMilliseconds);
 		}
 		if (len1 <= Statics._MaxLineLen) {
 		    System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueStringPart, terminalString);
@@ -804,10 +808,10 @@ public class FlashCardsGame {
 		    continue;
 		}
 		/** Must process a response to the clue. */
-		//
 		final File answerSideSoundFile = card._answerSide._soundFile;
 		if (!_silentMode && answerSideSoundFile != null) {
-		    SimpleAudioPlayer.checkAudioFile(answerSideSoundFile, /* playFile= */true);
+		    SimpleAudioPlayer.checkAudioFile(answerSideSoundFile, /* playFile= */true,
+			    _lagLengthInMilliseconds);
 		}
 		if (responseStringPartLen == 0) {
 		    int nUsedOnCurrentLine = 0;

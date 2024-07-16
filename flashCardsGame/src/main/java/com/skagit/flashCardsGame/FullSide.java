@@ -45,7 +45,6 @@ public class FullSide implements Comparable<FullSide> {
 	}
 	_trimmedInputString = fileStringPart + " " + _stringPart;
 	_soundFile = allSoundFiles.get(fileString);
-	final int x = 0;
     }
 
     public String getStringPart() {

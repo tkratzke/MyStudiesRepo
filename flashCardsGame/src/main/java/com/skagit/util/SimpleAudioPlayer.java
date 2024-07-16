@@ -39,31 +39,29 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SimpleAudioPlayer {
 
-    public static boolean checkAudioFile(final File f, final boolean playFile) {
+    public static boolean checkAudioFile(final File f, final boolean playFile, final long lagLengthInMs) {
+	final CountDownLatch countDownLatch = new CountDownLatch(1);
 	try (//
 		final AudioInputStream stream = AudioSystem.getAudioInputStream(f.getAbsoluteFile()); //
-		final Clip clip = AudioSystem.getClip() //
+		Clip clip = AudioSystem.getClip() //
 	) {
+	    clip.addLineListener(e -> {
+		if (e.getType() == LineEvent.Type.STOP) {
+		    countDownLatch.countDown();
+		}
+	    });
 	    clip.open(stream);
 	    if (!playFile) {
 		return true;
 	    }
-	    final CountDownLatch countDownLatch = new CountDownLatch(1);
-	    clip.addLineListener(e -> {
-		final LineEvent.Type eventType = e.getType();
-		if (eventType == LineEvent.Type.STOP) {
-		    countDownLatch.countDown();
-		}
-	    });
 	    clip.start();
 	    try {
-		/**
-		 * countDownLatch will simply wait until clip triggers a STOP. clip's
-		 * LineListener will then count down and that will release countDownSynch.
-		 */
 		countDownLatch.await();
+		/** Wait a specified amount of time for any latency after the STOP event. */
+		if (lagLengthInMs > 0L) {
+		    Thread.sleep(lagLengthInMs);
+		}
 	    } catch (final InterruptedException e) {
-		return false;
 	    }
 	} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 	    return false;
@@ -74,7 +72,7 @@ public class SimpleAudioPlayer {
     public static void main(final String[] args) {
 	try {
 	    final String filePath = "RunDir/Data/SoundFilesDirs/VN.00-SoundFiles/Tran-00/000-winter.aiff";
-	    System.out.println(checkAudioFile(new File(filePath), /* playFile= */true));
+	    System.out.println(checkAudioFile(new File(filePath), /* playFile= */true, /* lagLengthInMs= */250));
 	} catch (final Exception ex) {
 	    System.out.println("Error with playing sound.");
 	    ex.printStackTrace();

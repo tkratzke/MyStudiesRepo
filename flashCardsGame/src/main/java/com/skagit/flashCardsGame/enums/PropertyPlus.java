@@ -16,6 +16,8 @@ public enum PropertyPlus {
     NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
     NUMBER_OF_TIMES_FOR_NEW_WORDS(String.valueOf(1), ""), //
     PERCENTAGE_FOR_RECENT_WORDS(String.valueOf(75) + "%", ""), //
+    LAG_LENGTH_IN_MILLISECONDS(String.valueOf(1000), ""), //
+
     DECAY_TYPE("LINEAR", ""), //
 
     DIACRITICS_TREATMENT( //
@@ -103,6 +105,7 @@ public enum PropertyPlus {
 	case NUMBER_OF_TIMES_FOR_NEW_WORDS:
 	case TOP_CARD_INDEX:
 	case RANDOM_SEED:
+	case LAG_LENGTH_IN_MILLISECONDS:
 	    try {
 		final int i = Integer.parseInt(stringToParseForAnInt);
 		switch (this) {
@@ -117,6 +120,8 @@ public enum PropertyPlus {
 		    return i >= 0 ? s : _defaultStringValue;
 		case RANDOM_SEED:
 		    return s;
+		case LAG_LENGTH_IN_MILLISECONDS:
+		    return i >= 0 ? s : _defaultStringValue;
 		default:
 		    /** Cannot get to the following: */
 		    return null;
