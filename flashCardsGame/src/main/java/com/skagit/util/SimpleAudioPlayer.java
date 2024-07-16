@@ -45,8 +45,15 @@ public class SimpleAudioPlayer {
 		final AudioInputStream stream = AudioSystem.getAudioInputStream(f.getAbsoluteFile()); //
 		Clip clip = AudioSystem.getClip() //
 	) {
-	    clip.addLineListener(e -> {
-		if (e.getType() == LineEvent.Type.STOP) {
+	    clip.addLineListener(event -> {
+		if (event.getType() == LineEvent.Type.STOP) {
+		    /** Wait a specified amount of time for any latency after the STOP event. */
+		    if (lagLengthInMs > 0L) {
+			try {
+			    Thread.sleep(lagLengthInMs);
+			} catch (final InterruptedException e) {
+			}
+		    }
 		    countDownLatch.countDown();
 		}
 	    });
@@ -56,11 +63,8 @@ public class SimpleAudioPlayer {
 	    }
 	    clip.start();
 	    try {
+		/** Wait until the count down, which is triggered by the stop event. */
 		countDownLatch.await();
-		/** Wait a specified amount of time for any latency after the STOP event. */
-		if (lagLengthInMs > 0L) {
-		    Thread.sleep(lagLengthInMs);
-		}
 	    } catch (final InterruptedException e) {
 	    }
 	} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {

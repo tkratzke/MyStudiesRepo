@@ -24,7 +24,7 @@ class Card {
 	_commentLines = commentLines;
     }
 
-    static final Comparator<Card> _ByCardNumberOnly = new Comparator<>() {
+    final static Comparator<Card> _ByCardNumberOnly = new Comparator<>() {
 
 	@Override
 	public int compare(final Card card0, final Card card1) {
@@ -36,6 +36,45 @@ class Card {
 	    return idx0 < idx1 ? -1 : (idx0 > idx1 ? 1 : 0);
 	}
     };
+
+    final static Comparator<Card> _ByDifficulty = new Comparator<>() {
+
+	@Override
+	public int compare(final Card card0, final Card card1) {
+	    final int compareValue = Statics.NullCompare(card0, card1);
+	    if (-1 <= compareValue && compareValue <= 1) {
+		return compareValue;
+	    }
+	    final FullSide answerSide0 = card0._answerSide;
+	    final FullSide answerSide1 = card0._answerSide;
+	    if ((answerSide0._soundFile != null) != (answerSide1._soundFile != null)) {
+		return answerSide0._soundFile != null ? -1 : 1;
+	    }
+	    if (answerSide0._soundFile != null) {
+		return _ByCardNumberOnly.compare(card0, card1);
+	    }
+	    final String s0 = answerSide0._stringPart;
+	    final String s1 = answerSide1._stringPart;
+	    final int nSpaces0 = countSpaces(s0);
+	    final int nSpaces1 = countSpaces(s1);
+	    if (nSpaces0 != nSpaces1) {
+		return nSpaces0 < nSpaces1 ? -1 : 1;
+	    }
+	    final int len0 = s0.length();
+	    final int len1 = s1.length();
+	    if (len0 != len1) {
+		return len0 < len1 ? -1 : 1;
+	    }
+	    return _ByCardNumberOnly.compare(card0, card1);
+	}
+    };
+
+    private static int countSpaces(final String s) {
+	if (s == null) {
+	    return -1;
+	}
+	return s.length() - s.replaceAll(" ", "").length();
+    }
 
     static final Comparator<Card> _ByClueSideOnly = new Comparator<>() {
 
