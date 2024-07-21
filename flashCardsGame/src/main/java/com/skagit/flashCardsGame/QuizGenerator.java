@@ -65,7 +65,7 @@ public class QuizGenerator {
 	    case MODE:
 	    case CARDS_FILE:
 	    case SOUND_FILES_DIR:
-		break;
+	    case LAG_LENGTH_IN_MILLISECONDS:
 	    case NUMBER_OF_NEW_WORDS:
 		properties.put(propertyPlus._propertyName, Integer.toString(_maxNNewWords));
 		break;
@@ -350,6 +350,7 @@ public class QuizGenerator {
 	case CLUMPING:
 	case CARDS_FILE:
 	case SOUND_FILES_DIR:
+	case LAG_LENGTH_IN_MILLISECONDS:
 	    break;
 	}
     }

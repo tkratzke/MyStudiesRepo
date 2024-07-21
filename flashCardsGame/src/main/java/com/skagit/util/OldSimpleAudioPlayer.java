@@ -162,10 +162,8 @@ public class OldSimpleAudioPlayer {
 	    try {
 		syncLatch.await();
 	    } catch (final InterruptedException e1) {
-		final int x = 0;
 	    }
 	} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-	    final int x = 0;
 	}
     }
 

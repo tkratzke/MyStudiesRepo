@@ -1,8 +1,8 @@
 package com.skagit.util;
 
 public class LineBreakDown {
-    final public String _aSide;
-    final public String _bSide;
+    final public String _clueSide;
+    final public String _answerSide;
     final public boolean _nextLineIsContinuation;
 
     /**
@@ -59,7 +59,7 @@ public class LineBreakDown {
 	    break;
 	}
 	if (!haveData) {
-	    _aSide = _bSide = null;
+	    _clueSide = _answerSide = null;
 	    return;
 	}
 
@@ -81,30 +81,30 @@ public class LineBreakDown {
 		     * this is b-side.
 		     */
 		    final int nTabs = countTabs(nextLine, field1);
-		    _aSide = nTabs >= 2 ? "" : field2;
-		    _bSide = nTabs >= 2 ? field2 : "";
+		    _clueSide = nTabs >= 2 ? "" : field2;
+		    _answerSide = nTabs >= 2 ? field2 : "";
 		    return;
 		}
 		/** There are at least two fields past the number. */
-		_aSide = field2;
-		_bSide = field3;
+		_clueSide = field2;
+		_answerSide = field3;
 		return;
 	    }
 
 	    /**
 	     * There is a tab before the first non-blank field, which exists and is not an
-	     * integer. If there is only one field, then it is ASide if the initial
-	     * separator has 0 or 1 tabs, and BSide otherwise.
+	     * integer. If there is only one field, then it is ClkueSide if the initial
+	     * separator has 0 or 1 tabs, and AnswerSide otherwise.
 	     */
 	    if (field2 == null) {
 		final int nTabs = countTabs(nextLine, "");
-		_aSide = nTabs < 2 ? field1 : "";
-		_bSide = nTabs >= 2 ? field1 : "";
+		_clueSide = nTabs < 2 ? field1 : "";
+		_answerSide = nTabs >= 2 ? field1 : "";
 		return;
 	    }
 	    /** There are at least two fields. */
-	    _aSide = field1;
-	    _bSide = field2;
+	    _clueSide = field1;
+	    _answerSide = field2;
 	    return;
 	}
 
@@ -116,22 +116,22 @@ public class LineBreakDown {
 		 * the separator. If there are two or more, this is b-side.
 		 */
 		final int nTabs = countTabs(nextLine, field0);
-		_aSide = nTabs < 2 ? field1 : "";
-		_bSide = nTabs >= 2 ? field1 : "";
+		_clueSide = nTabs < 2 ? field1 : "";
+		_answerSide = nTabs >= 2 ? field1 : "";
 		return;
 	    }
 	    /** There are at least two fields past the number. */
-	    _aSide = field1;
-	    _bSide = field2;
+	    _clueSide = field1;
+	    _answerSide = field2;
 	    return;
 	}
 
 	/**
 	 * First field is not blank and not an integer. Hence, there are no tabs before
-	 * the first non-white space, and the first field is _aSide.
+	 * the first non-white space, and the first field is _clueSide.
 	 */
-	_aSide = field0;
-	_bSide = field1 == null ? "" : field1;
+	_clueSide = field0;
+	_answerSide = field1 == null ? "" : field1;
     }
 
     private static boolean isInteger(final String s) {
@@ -161,7 +161,7 @@ public class LineBreakDown {
     }
 
     String getString() {
-	return String.format("BY_CLUE-Side|%s|, BY_ANSWER-Side|%s| %s", _aSide, _bSide,
+	return String.format("BY_CLUE-Side|%s|, BY_ANSWER-Side|%s| %s", _clueSide, _answerSide,
 		"" + (_nextLineIsContinuation ? Statics._RtArrowChar2 : Statics._SpadeSymbolChar));
     }
 

@@ -122,8 +122,8 @@ public class FlashCardsGame {
 		System.out.println(String.format("n%s=%d.", dupType, nDups));
 	    }
 	}
-	reWriteCardsFile();
-	if (_mode == Mode.SWITCH) {
+	dumpCardsToFile();
+	if (Mode._DumpCardsAndAbort.contains(_mode)) {
 	    _quizGenerator = null;
 	    return;
 	}
@@ -163,8 +163,8 @@ public class FlashCardsGame {
 	    /** fName is a valid key. */
 	    keyList.add(fName);
 	    /** Strip the extension from fName to make stem, which is a valid key. */
-	    final int lastDot = fName.lastIndexOf('.');
-	    final String stem = lastDot >= 0 ? fName.substring(0, lastDot) : fName;
+	    final String[] stemAndExtension = Statics.getStemAndExtension(fName);
+	    final String stem = stemAndExtension[0];
 	    if (stem != fName) {
 		keyList.add(stem);
 	    }
@@ -209,7 +209,7 @@ public class FlashCardsGame {
 	final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
 	final int nCards = cardMap.size();
 	_cards = cardMap.keySet().toArray(new Card[nCards]);
-	Arrays.sort(_cards, Card._ByCardNumberOnly);
+	Arrays.sort(_cards, Mode._StrangeSort.contains(_mode) ? Card._StrangeSortSet : Card._ByCardNumberOnly);
     }
 
     /**
@@ -238,8 +238,8 @@ public class FlashCardsGame {
 		}
 	    }
 
-	    String aSide = null;
-	    String bSide = null;
+	    String fullClueString = null;
+	    String fullAnswerString = null;
 	    final ArrayList<String> commentLinesList = new ArrayList<>();
 	    String comment = null;
 	    try (final Scanner fileSc = new Scanner(in)) {
@@ -278,33 +278,35 @@ public class FlashCardsGame {
 
 		    /** Not a comment and not part of a comment. */
 		    final LineBreakDown lbd = new LineBreakDown(nextLine);
-		    final String lbdASide = lbd._aSide;
-		    final String lbdBSide = lbd._bSide;
-		    if (lbdASide == null && lbdBSide == null) {
+		    final String lbdClueSide = lbd._clueSide;
+		    final String lbdAnswerSide = lbd._answerSide;
+		    if (lbdClueSide == null && lbdAnswerSide == null) {
 			/** Essentially, nextLine is blank. */
 			continue;
 		    }
-		    if (aSide == null) {
-			aSide = lbdASide;
-			bSide = lbdBSide;
+		    if (fullClueString == null) {
+			fullClueString = lbdClueSide;
+			fullAnswerString = lbdAnswerSide;
 		    } else {
-			if (lbdASide.length() > 0) {
-			    aSide += " " + lbdASide;
+			if (lbdClueSide.length() > 0) {
+			    fullClueString += " " + lbdClueSide;
 			}
-			if (lbdBSide.length() > 0) {
-			    bSide += " " + lbdBSide;
+			if (lbdAnswerSide.length() > 0) {
+			    fullAnswerString += " " + lbdAnswerSide;
 			}
 		    }
 		    if (!lbd._nextLineIsContinuation) {
-			wrapUp(cardMap, aSide, bSide, commentLinesList, comment, announceCompleteDups);
-			aSide = bSide = comment = null;
+			wrapUp(cardMap, fullClueString, fullAnswerString, commentLinesList, comment,
+				announceCompleteDups);
+			fullClueString = fullAnswerString = comment = null;
 		    }
 		}
-		wrapUp(cardMap, aSide, bSide, commentLinesList, comment, announceCompleteDups);
-		aSide = bSide = comment = null;
+		wrapUp(cardMap, fullClueString, fullAnswerString, commentLinesList, comment, announceCompleteDups);
+		fullClueString = fullAnswerString = comment = null;
 	    } catch (final Exception e) {
 	    }
 	} catch (final IOException e) {
+	    e.printStackTrace();
 	}
 	return cardMap;
     }
@@ -314,7 +316,7 @@ public class FlashCardsGame {
 	if (comment != null && comment.length() > 0) {
 	    commentList.add(comment);
 	}
-	final boolean switchSides = _mode == Mode.SWITCH;
+	final boolean switchSides = _mode == Mode.SWITCH_AND_DUMP;
 	if (clueSide != null && answerSide != null && clueSide.length() > 0 && answerSide.length() > 0) {
 	    final int nNewCommentLines = commentList.size();
 	    final String[] newCommentLines = commentList.toArray(new String[nNewCommentLines]);
@@ -397,7 +399,7 @@ public class FlashCardsGame {
 	return nDups;
     }
 
-    private void reWriteCardsFile() {
+    private void dumpCardsToFile() {
 	final int nCards = _cards.length;
 	if (nCards == 0) {
 	    return;
@@ -406,29 +408,38 @@ public class FlashCardsGame {
 	final String intFormat = String.format("%%%dd.", nDigits);
 	final String blankIntFormat = String.format("%%-%ds ", nDigits);
 	final String blankIntString = String.format(blankIntFormat, "");
-	final String cluePartFormat;
-	{
-	    int maxCluePartLen = 0;
-	    for (final Card card : _cards) {
-		final FullSideStringParts aParts = new FullSideStringParts(card.getFullString(/* clueSide= */true),
-			Statics._MaxLenForCardPart);
-		maxCluePartLen = Math.max(maxCluePartLen, aParts._maxLen);
-	    }
-	    cluePartFormat = String.format("%%-%ds", maxCluePartLen);
+	int maxCluePartLen = 0;
+	for (final Card card : _cards) {
+	    final FullSideStringParts aParts = new FullSideStringParts(card.getFullString(/* clueSide= */true),
+		    Statics._MaxLenForCardPart);
+	    maxCluePartLen = Math.max(maxCluePartLen, aParts._maxLen);
 	}
+	final String cluePartFormat = String.format("%%-%ds", maxCluePartLen);
 
-	try (PrintWriter pw = new PrintWriter(_cardsFile)) {
+	final File dumpFile = BackupFileGetter.getBackupFile(_cardsFile, Statics._CardsFileEnding,
+		Statics._NDigitsForCardsFile);
+
+	try (PrintWriter pw = new PrintWriter(dumpFile)) {
 	    boolean recentWasMultiLine = false;
 	    for (int kCard = 0, nPrinted = 0; kCard < nCards; ++kCard) {
 		final Card card = _cards[kCard];
-		final FullSideStringParts clueParts = new FullSideStringParts(card.getFullString(/* clueSide= */true),
+		final String clueSideString = card.getFullString(/* clueSide= */true);
+		final String answerSideString;
+		final String[] commentLines;
+		if (_mode != Mode.SUPPRESS_ANSWERS_AND_DUMP) {
+		    answerSideString = card.getFullString(/* clueSide= */false);
+		    commentLines = card._commentLines;
+		} else {
+		    answerSideString = "";
+		    commentLines = new String[0];
+		}
+		final FullSideStringParts clueParts = new FullSideStringParts(clueSideString,
 			Statics._MaxLenForCardPart);
-		final FullSideStringParts answerParts = new FullSideStringParts(
-			card.getFullString(/* clueSide= */false), Statics._MaxLenForCardPart);
+		final FullSideStringParts answerParts = new FullSideStringParts(answerSideString,
+			Statics._MaxLenForCardPart);
 		final int nClueParts = clueParts.size();
 		final int nAnswerParts = answerParts.size();
 		final int nDataParts = Math.max(nClueParts, nAnswerParts);
-		final String[] commentLines = card._commentLines;
 		final int nCommentLines = commentLines == null ? 0 : commentLines.length;
 		final boolean isMultiLine = nCommentLines > 0 || nDataParts > 1;
 		if (kCard > 0) {
@@ -468,6 +479,7 @@ public class FlashCardsGame {
 		++nPrinted;
 	    }
 	} catch (final FileNotFoundException e) {
+	    e.printStackTrace();
 	}
     }
 
@@ -959,7 +971,7 @@ public class FlashCardsGame {
 	System.out.println(DirsTracker.getDirCasesFinderDirsString());
 	final FlashCardsGame flashCardsGame = new FlashCardsGame(args[0]);
 	System.out.println(flashCardsGame.getString());
-	if (flashCardsGame._mode != Mode.SWITCH) {
+	if (!Mode._DumpCardsAndAbort.contains(flashCardsGame._mode)) {
 	    System.out.println();
 	    try (Scanner sc = new Scanner(System.in)) {
 		flashCardsGame.mainLoop(sc);

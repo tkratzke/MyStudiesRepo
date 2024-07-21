@@ -3,7 +3,7 @@ package com.skagit.flashCardsGame.enums;
 public enum Clumping {
     BY_CLUE("Cards are grouped by Clue."), //
     BY_ANSWER("Cards are grouped by Answer."), //
-    NO_CLUMPING("Cards are not re-ordered.");
+    NO_CLUMPING("Cards are not clumped by Clue or Answer.");
 
     final public static Clumping[] _Values = values();
 

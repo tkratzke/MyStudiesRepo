@@ -1,0 +1,33 @@
+1.	Install the latest version of java.  This is written on Apr 6, 2024, and I went to:
+	https://www.oracle.com/java/technologies/downloads/
+	From there, I clicked on "Windows" and went to:
+	https://www.oracle.com/java/technologies/downloads/#jdk22-windows
+	Then I downloaded the .exe installer (x64 installer)
+	
+	I also uninstalled all other versions of Java under add/remove programs.
+	
+2.	Make a note of where you installed my program.  If it's just in C:/Program Files,
+	you don't need to do anything with this information.  Otherwise, carefully open the .bat file (FOR EDITING)
+	that is in RunDir and replace the string %ProgramW6432% with wherever you installed it (E.g., D:\My Programs).
+	Be sure to keep the quotation marks.
+
+3.	Copy the RunDir folder to wherever you wish to run the program.
+	You can double-click the .bat file and you will be using the "FlashCardsGame"
+	VN.00.  This is a reference to the folder VN.00 found in
+	RunDir\GameDirs.  This folder contains the file VN.00-fcg.properties.
+
+4.	You can text-edit the file VN.00-fcg.properties to tweak the program.
+	The most important lines are:
+	Card.Files=
+	Sound.Files=
+	These refer to where to find the Cards and sound files, and those are
+	relative to the directories RunDir/Data/CardFiles and RunDir/Data/SoundFilesDirs.
+
+5.	Other properties that you can edit are:
+	a.	Top.Card.Index: Change this if you want to start somewhere other than the beginning.
+		This line gets changed by the program as you progress down the file, so if you want to
+		start over, you should reset this line to 0.
+	b.	Silent.Mode: Change this to true if you want to play this without sound.
+
+6.	There are other properties, but they're a little technical and you don't need to change them
+	right now.

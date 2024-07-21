@@ -37,7 +37,12 @@ class Card {
 	}
     };
 
-    final static Comparator<Card> _ByDifficulty = new Comparator<>() {
+    /**
+     * As written, this puts the ones that have Answers that have Sound Files on the
+     * top, and then by increasing number of spaces in the answers, and then by
+     * increasing length.
+     */
+    final static Comparator<Card> _StrangeSortSet = new Comparator<>() {
 
 	@Override
 	public int compare(final Card card0, final Card card1) {
@@ -46,7 +51,7 @@ class Card {
 		return compareValue;
 	    }
 	    final FullSide answerSide0 = card0._answerSide;
-	    final FullSide answerSide1 = card0._answerSide;
+	    final FullSide answerSide1 = card1._answerSide;
 	    if ((answerSide0._soundFile != null) != (answerSide1._soundFile != null)) {
 		return answerSide0._soundFile != null ? -1 : 1;
 	    }

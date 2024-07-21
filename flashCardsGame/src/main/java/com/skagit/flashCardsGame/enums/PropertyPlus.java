@@ -5,19 +5,20 @@ import java.util.Properties;
 public enum PropertyPlus {
     CARDS_FILE("", //
 	    "Strings that indicate where to find the Cards File," //
-		    + "\nthe directory of sound files, and" //
-		    + "\nwhether or not to play the sounds."), //
+		    + "\nthe directory of sound files, " //
+		    + "\nwhether or not to play the sounds, " //
+		    + "\nand how long to pause for each sound to finish."), //
     SOUND_FILES_DIR("", ""), //
     SILENT_MODE(Boolean.FALSE.toString(), ""), //
+    LAG_LENGTH_IN_MILLISECONDS(String.valueOf(1000), ""), //
 
-    TOP_CARD_INDEX(String.valueOf(0),
-	    "Highest card index in first quiz," + "\nplus 4 lines that specify normal quiz generation."), //
+    TOP_CARD_INDEX(String.valueOf(0), //
+	    "Highest card index in first quiz," + //
+		    "\nplus 5 lines that specify normal quiz generation."), //
     NUMBER_OF_NEW_WORDS(String.valueOf(1), ""), //
     NUMBER_OF_RECENT_WORDS(String.valueOf(3), ""), //
     NUMBER_OF_TIMES_FOR_NEW_WORDS(String.valueOf(1), ""), //
     PERCENTAGE_FOR_RECENT_WORDS(String.valueOf(75) + "%", ""), //
-    LAG_LENGTH_IN_MILLISECONDS(String.valueOf(1000), ""), //
-
     DECAY_TYPE("LINEAR", ""), //
 
     DIACRITICS_TREATMENT( //
@@ -29,8 +30,11 @@ public enum PropertyPlus {
 
     MODE(Mode.NORMAL.name(), //
 	    Mode.NORMAL._explanation + //
-		    "\n" + Mode.SWITCH._explanation + //
-		    "\n" + Mode.STEP._explanation //
+		    "\n" + Mode.STEP._explanation + //
+		    "\n" + Mode.SWITCH_AND_DUMP._explanation + //
+		    "\n" + Mode.STRANGE_SORT_AND_DUMP._explanation + //
+		    "\n" + Mode.SUPPRESS_ANSWERS_AND_DUMP._explanation //
+
     ),
 
     RANDOM_SEED(String.valueOf(0), //
