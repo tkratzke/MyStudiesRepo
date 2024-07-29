@@ -43,7 +43,7 @@ public class Statics {
     final public static String _SoundString, _PenString;
 
     final public static String _CardsFileEnding = "-Cards.txt";
-    final public static int _NDigitsForCardsFile = 3;
+    final public static int _NDigitsForCardsFileBackups = 2;
     final public static String _SoundFilesDirEnding = "-SoundFiles";
 
     static {
@@ -58,7 +58,6 @@ public class Statics {
 	    _HeavyCheckChar, _HelpChar, _QuitChar, _ReloadCardsChar, _RestartQuizChar, _ReturnChar, _RtArrowChar,
 	    _RtArrowChar2, _SpadeSymbolChar, _LtArrowChar, _NoChar, _TabSymbolChar, _YesChar, _FileDelimiter };
 
-    final public static int _BlockSize = 10;
     final public static int _RoomLen = 10;
     final public static int _MaxLenForCardPart = 45;
     final public static int _MaxLineLen = 80;
@@ -389,21 +388,24 @@ public class Statics {
 	}
 	final String cardsFileString2 = turnSlashesAround(cardsFileString1);
 
-	final File[] dirsToTry = new File[] { gameDir, DirsTracker.getCardFilesDir(), DirsTracker.getUserDir(),
-		DirsTracker.getGamesDirsDir() };
+	final File[] dirsToTry = new File[] { //
+		gameDir, //
+		DirsTracker.getCardFilesDir() //
+	};
 	/**
 	 * <pre>
-	 * Try:
-	 * 1. as-is, if it ends with _CardsFileEnding.
-	 * 2. Strip the extension and the dot, and add _CardsFileEnding
+	 * For the name of the Cards file, try:
+	 * 1. As-is, if it ends with _CardsFileEnding.
+	 * 2. Strip any extension, and add _CardsFileEnding.
 	 * 3. Add _CardsFileEnding to it.
+	 * For Each of these,  try the gameDir itself and the CardsFilesDir.
 	 * </pre>
 	 */
 	for (int iPass = 0; iPass < 3; ++iPass) {
-	    final String cardsFileString3;
+	    final String cardsFileString;
 	    if (iPass == 0) {
 		if (cardsFileString2.toLowerCase().endsWith(_CardsFileEnding.toLowerCase())) {
-		    cardsFileString3 = cardsFileString2;
+		    cardsFileString = cardsFileString2;
 		} else {
 		    continue;
 		}
@@ -414,12 +416,12 @@ public class Statics {
 		    /** No extension to strip. */
 		    continue;
 		}
-		cardsFileString3 = cardsFileString2.substring(0, lastDot - 1) + _CardsFileEnding;
+		cardsFileString = cardsFileString2.substring(0, lastDot - 1) + _CardsFileEnding;
 	    } else {
-		cardsFileString3 = cardsFileString2 + _CardsFileEnding;
+		cardsFileString = cardsFileString2 + _CardsFileEnding;
 	    }
 	    for (final File dir : dirsToTry) {
-		final File f = new File(dir, cardsFileString3);
+		final File f = new File(dir, cardsFileString);
 		if (f.isFile()) {
 		    return f;
 		}
@@ -438,29 +440,27 @@ public class Statics {
 	}
 	final String soundFilesString2 = turnSlashesAround(soundFilesString1);
 
-	final File[] dirsToTry = new File[] { gameDir, DirsTracker.getSoundFilesDirsDir(), DirsTracker.getUserDir(),
-		DirsTracker.getGamesDirsDir() };
 	/**
 	 * <pre>
-	 * Try:
-	 * 1. as-is, if it ends with -SoundFiles.
-	 * 2. Strip the extension and the dot, and add -SoundFiles
-	 * 3. Add -SoundFiles to it.
+	 * For the name of the Sounds File directory, try:
+	 * 1. As-is.
+	 * 2. Add _SoundFilesDirEnding to it.
+	 * For Each of these,  try the gameDir itself and the SoundFilesDirsDir.
 	 * </pre>
 	 */
+	final File[] dirsToTry = new File[] { //
+		gameDir, //
+		DirsTracker.getSoundFilesDirsDir() //
+	};
 	for (int iPass = 0; iPass < 2; ++iPass) {
-	    final String soundFilesString3;
+	    final String soundFilesString;
 	    if (iPass == 0) {
-		if (soundFilesString2.toLowerCase().endsWith(_SoundFilesDirEnding.toLowerCase())) {
-		    soundFilesString3 = soundFilesString2;
-		} else {
-		    continue;
-		}
+		soundFilesString = soundFilesString2;
 	    } else {
-		soundFilesString3 = soundFilesString2 + _SoundFilesDirEnding;
+		soundFilesString = soundFilesString2 + _SoundFilesDirEnding;
 	    }
 	    for (final File dir : dirsToTry) {
-		final File f = new File(dir, soundFilesString3);
+		final File f = new File(dir, soundFilesString);
 		if (f.isDirectory()) {
 		    return f;
 		}

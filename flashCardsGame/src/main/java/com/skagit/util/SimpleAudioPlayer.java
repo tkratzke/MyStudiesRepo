@@ -17,9 +17,11 @@ package com.skagit.util;
  * Use Audacity to convert iphone's voice memo's m4a files to aiff files as follows:
  * 1. Open Audacity
  * 2. Open the m4a file.
+ * 3. Label the breaks
  * 3. File/Export Audio
  * 4. Select "other uncompressed files"
  * 5. Be sure AIFF is in the "Header" box.
+ * 6. Use Multiple files and export at labels.
  * </pre>
  *
  * Introduction to lambda expressions:

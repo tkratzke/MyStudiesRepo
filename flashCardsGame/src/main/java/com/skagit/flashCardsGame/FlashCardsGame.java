@@ -24,6 +24,7 @@ import com.skagit.flashCardsGame.enums.Clumping;
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
 import com.skagit.flashCardsGame.enums.Mode;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
+import com.skagit.util.BackupFileGetter;
 import com.skagit.util.CommentParts;
 import com.skagit.util.DirsTracker;
 import com.skagit.util.InputString;
@@ -41,7 +42,7 @@ import com.skagit.util.Statics.YesNoResponse;
 public class FlashCardsGame {
 
     final private File _gameDir;
-    final private File _gameFile;
+    final private File _fcgFile;
     final private File _cardsFile;
     final private File _soundFilesDir;
 
@@ -51,11 +52,13 @@ public class FlashCardsGame {
     final private Properties _properties;
     final private long _randomSeed;
     final private Mode _mode;
-    final private boolean _silentMode;
+    final private int _blockSize;
+    final private boolean _beSilent;
+    final private boolean _backUpFcgAndCardsFiles;
+    final private long _lagLengthInMilliseconds;
     final private DiacriticsTreatment _diacriticsTreatment;
     final private Clumping _clumping;
     final private QuizGenerator _quizGenerator;
-    final private long _lagLengthInMilliseconds;
 
     private Card[] _cards;
     private QuizPlus _quizPlus;
@@ -64,8 +67,8 @@ public class FlashCardsGame {
     FlashCardsGame(final String gameDirString) {
 	_needLineFeed = false;
 	_gameDir = Statics.getGameDir(gameDirString);
-	_gameFile = Statics.getGameFileFromDirFile(_gameDir);
-	if (_gameFile == null) {
+	_fcgFile = Statics.getGameFileFromDirFile(_gameDir);
+	if (_fcgFile == null) {
 	    _cardsFile = _soundFilesDir = null;
 	    _allSoundFiles = null;
 	    _partToStem = null;
@@ -73,15 +76,17 @@ public class FlashCardsGame {
 	    _randomSeed = 0;
 	    _lagLengthInMilliseconds = -1L;
 	    _mode = null;
+	    _blockSize = -1;
 	    _diacriticsTreatment = null;
 	    _clumping = null;
 	    _quizGenerator = null;
-	    _silentMode = false;
+	    _beSilent = true;
+	    _backUpFcgAndCardsFiles = false;
 	    return;
 	}
 
 	_properties = new Properties();
-	try (InputStreamReader isr = new InputStreamReader(new FileInputStream(_gameFile), "UTF-8")) {
+	try (InputStreamReader isr = new InputStreamReader(new FileInputStream(_fcgFile), "UTF-8")) {
 	    final Properties properties = new Properties();
 	    properties.load(isr);
 	    final int nPropertyPluses = PropertyPlus._Values.length;
@@ -97,15 +102,21 @@ public class FlashCardsGame {
 	_cardsFile = Statics.getCardsFile(_gameDir, cardsFileString);
 	final String soundFilesDirString = PropertyPlus.SOUND_FILES_DIR.getValidString(_properties);
 	_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
-	reWritePropertiesFile();
+	dumpFcgFile();
 
 	_diacriticsTreatment = DiacriticsTreatment
 		.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
 	_mode = Mode.valueOf(PropertyPlus.MODE.getValidString(_properties));
+	_blockSize = Integer.parseInt(PropertyPlus.BLOCK_SIZE.getValidString(_properties));
 	_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 	final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 	_clumping = Clumping.valueOf(clumpingString);
-	_silentMode = Boolean.valueOf(PropertyPlus.SILENT_MODE.getValidString(_properties));
+	_beSilent = Boolean.valueOf(PropertyPlus.BE_SILENT.getValidString(_properties));
+	if (Mode._DumpCardsAndAbort.contains(_mode)) {
+	    _backUpFcgAndCardsFiles = true;
+	} else {
+	    _backUpFcgAndCardsFiles = Boolean.valueOf(PropertyPlus.BACK_UP_FCG_AND_CARDS_FILES.getValidString(_properties));
+	}
 	_lagLengthInMilliseconds = Integer
 		.parseInt(PropertyPlus.LAG_LENGTH_IN_MILLISECONDS.getValidString(_properties));
 
@@ -138,12 +149,26 @@ public class FlashCardsGame {
     }
 
     private void addToSoundFiles(final File mainDir) {
+	if (mainDir == null) {
+	    return;
+	}
 	/** Add sub-directories' soundFiles. */
 	final File[] subDirs = mainDir.listFiles(new FileFilter() {
 
 	    @Override
 	    public boolean accept(final File f) {
-		return f.isDirectory();
+		if (!f.isDirectory()) {
+		    return false;
+		}
+		final String fName = f.getName();
+		if (0 <= "(){}[]".indexOf(fName.charAt(0))) {
+		    return false;
+		}
+		final int fNameLen = fName.length();
+		if (0 <= "(){}[]".indexOf(fName.charAt(fNameLen - 1))) {
+		    return false;
+		}
+		return true;
 	    }
 	});
 	for (final File subDir : subDirs) {
@@ -416,10 +441,13 @@ public class FlashCardsGame {
 	}
 	final String cluePartFormat = String.format("%%-%ds", maxCluePartLen);
 
-	final File dumpFile = BackupFileGetter.getBackupFile(_cardsFile, Statics._CardsFileEnding,
-		Statics._NDigitsForCardsFile);
+	if (_backUpFcgAndCardsFiles) {
+	    final File backUpFile = BackupFileGetter.getBackupFile(_cardsFile, Statics._CardsFileEnding,
+		    Statics._NDigitsForCardsFileBackups);
+	    _cardsFile.renameTo(backUpFile);
+	}
 
-	try (PrintWriter pw = new PrintWriter(dumpFile)) {
+	try (PrintWriter pw = new PrintWriter(_cardsFile)) {
 	    boolean recentWasMultiLine = false;
 	    for (int kCard = 0, nPrinted = 0; kCard < nCards; ++kCard) {
 		final Card card = _cards[kCard];
@@ -443,7 +471,7 @@ public class FlashCardsGame {
 		final int nCommentLines = commentLines == null ? 0 : commentLines.length;
 		final boolean isMultiLine = nCommentLines > 0 || nDataParts > 1;
 		if (kCard > 0) {
-		    if ((isMultiLine || recentWasMultiLine || (nPrinted % Statics._BlockSize == 0))) {
+		    if ((isMultiLine || recentWasMultiLine || (nPrinted % _blockSize == 0))) {
 			pw.println();
 		    }
 		}
@@ -479,7 +507,6 @@ public class FlashCardsGame {
 		++nPrinted;
 	    }
 	} catch (final FileNotFoundException e) {
-	    e.printStackTrace();
 	}
     }
 
@@ -488,7 +515,7 @@ public class FlashCardsGame {
 	_quizGenerator.updateProperties(_properties);
     }
 
-    void reWritePropertiesFile() {
+    void dumpFcgFile() {
 	final Properties properties;
 	final long seed = Long.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 	if (seed < 0) {
@@ -502,7 +529,13 @@ public class FlashCardsGame {
 	} else {
 	    properties = _properties;
 	}
-	try (PrintWriter pw = new PrintWriter(new FileOutputStream(_gameFile))) {
+	if (_backUpFcgAndCardsFiles) {
+	    final File backUpFile = BackupFileGetter.getBackupFile(_fcgFile, Statics._GameFileEndingLc,
+		    Statics._NDigitsForCardsFileBackups);
+	    _fcgFile.renameTo(backUpFile);
+	}
+
+	try (PrintWriter pw = new PrintWriter(new FileOutputStream(_fcgFile))) {
 	    final int nPropertyPluses = PropertyPlus._Values.length;
 	    for (int k0 = 0; k0 < nPropertyPluses; ++k0) {
 		final PropertyPlus propertyPlus = PropertyPlus._Values[k0];
@@ -586,17 +619,16 @@ public class FlashCardsGame {
 	    System.out.print(prompt);
 	    System.out.print(": ");
 	    final InputString inputString = new InputString(sc);
-	    final String myLine = inputString._inputString.toUpperCase();
+	    final String inputLine = inputString._inputString;
 	    _needLineFeed = !inputString._lastLineWasBlank;
-	    if (myLine.length() == 0) {
+	    if (inputLine.length() == 0) {
 		return;
 	    }
-	    final String[] fields = myLine.split(Statics._WhiteSpace);
 	    /**
 	     * Currently, we have no properties of our own to edit, so we immediately turn
 	     * it over to _quizGenerator.
 	     */
-	    _quizGenerator.modifySingleProperty(fields);
+	    _quizGenerator.modifySingleProperty(inputLine);
 	}
     }
 
@@ -628,7 +660,7 @@ public class FlashCardsGame {
 			+ "GameDir      : %s\n" //
 			+ "CardsFile    : %s\n" //
 			+ "SoundFilesDir: %s", //
-		_gameFile == null ? "NULL" : _gameFile, //
+		_fcgFile == null ? "NULL" : _fcgFile, //
 		_gameDir == null ? "NULL" : _gameDir, //
 		_cardsFile == null ? "NULL" : _cardsFile, //
 		_soundFilesDir == null ? "NULL" : _soundFilesDir //
@@ -681,7 +713,7 @@ public class FlashCardsGame {
 	    }
 	    if (madeChangesFrom(oldValues)) {
 		updateProperties();
-		reWritePropertiesFile();
+		dumpFcgFile();
 		oldValues = storeValues();
 	    }
 
@@ -700,10 +732,10 @@ public class FlashCardsGame {
 		final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 		final int typeIPromptLen = typeIPrompt.length();
 		final String terminalString;
-		if (!_silentMode && answerHasSoundFile && answerHasStringPart) {
+		if (!_beSilent && answerHasSoundFile && answerHasStringPart) {
 		    terminalString = String.format("%s%s%c   ", Statics._Sep2, Statics._SoundString,
 			    Statics._keyboardSymbol);
-		} else if (!_silentMode && answerHasSoundFile) {
+		} else if (!_beSilent && answerHasSoundFile) {
 		    terminalString = String.format("%s%s  ", Statics._Sep2, Statics._SoundString);
 		} else if (answerHasStringPart) {
 		    terminalString = String.format("%s%c  ", Statics._Sep2, Statics._keyboardSymbol);
@@ -730,7 +762,7 @@ public class FlashCardsGame {
 
 		/** Expose the clue. */
 		final File clueSideSoundFile = card._clueSide._soundFile;
-		if (!_silentMode && clueSideSoundFile != null) {
+		if (!_beSilent && clueSideSoundFile != null) {
 		    SimpleAudioPlayer.checkAudioFile(clueSideSoundFile, /* playFile= */true, _lagLengthInMilliseconds);
 		}
 		if (len1 <= Statics._MaxLineLen) {
@@ -814,14 +846,14 @@ public class FlashCardsGame {
 		    }
 		}
 
-		if (_silentMode && (!clueHasStringPart || !answerHasStringPart)) {
+		if (_beSilent && (!clueHasStringPart || !answerHasStringPart)) {
 		    _needLineFeed = true;
 		    gotItRight = true;
 		    continue;
 		}
 		/** Must process a response to the clue. */
 		final File answerSideSoundFile = card._answerSide._soundFile;
-		if (!_silentMode && answerSideSoundFile != null) {
+		if (!_beSilent && answerSideSoundFile != null) {
 		    SimpleAudioPlayer.checkAudioFile(answerSideSoundFile, /* playFile= */true,
 			    _lagLengthInMilliseconds);
 		}
@@ -962,6 +994,13 @@ public class FlashCardsGame {
 	    }
 	    _quizPlus.reactToRightResponse(wasWrongAtLeastOnce);
 	}
+    }
+
+    public static void mainx(final String[] args) {
+	final String s = "abc]";
+	System.out.println(0 <= "(){}[]".indexOf(s.charAt(0)));
+	final int sLen = s.length();
+	System.out.println(0 <= "(){}[]".indexOf(s.charAt(sLen - 1)));
     }
 
     public static void main(final String[] args) {

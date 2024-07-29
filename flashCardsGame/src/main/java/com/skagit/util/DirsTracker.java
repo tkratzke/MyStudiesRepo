@@ -151,9 +151,11 @@ public class DirsTracker {
 	String s = "";
 	s += "User Dir: " + Statics.getCanonicalPath(getUserDir());
 	s += "\nRunDir: " + Statics.getCanonicalPath(getRunDir());
-	s += "\nDataDir: " + Statics.getCanonicalPath(getDataDir());
 	s += "\nLogDir: " + Statics.getCanonicalPath(getLogDir());
 	s += "\nGamesDir: " + Statics.getCanonicalPath(getGamesDirsDir());
+	s += "\nDataDir: " + Statics.getCanonicalPath(getDataDir());
+	s += "\nCardFilesDir: " + Statics.getCanonicalPath(getCardFilesDir());
+	s += "\nSoundFilesDirsDirDir: " + Statics.getCanonicalPath(getSoundFilesDirsDir());
 	return s;
     }
 

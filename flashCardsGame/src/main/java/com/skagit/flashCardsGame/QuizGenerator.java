@@ -11,16 +11,17 @@ import com.skagit.flashCardsGame.enums.PropertyPlus;
 import com.skagit.util.Statics;
 
 public class QuizGenerator {
-    final private Mode _mode;
+    int _topCardIndex;
     final private int _maxNNewWords;
     final private int _maxNRecentWords;
-    int _topCardIndex;
 
     final private int _nRepeatsOfNew;
     final private int _percentageForRecentsI;
     final private DecayType _decayType;
 
     final private int _allowablePerCent;
+
+    final private Mode _mode;
 
     final private Random _r;
 
@@ -61,7 +62,8 @@ public class QuizGenerator {
 		break;
 	    case CLUMPING:
 	    case DIACRITICS_TREATMENT:
-	    case SILENT_MODE:
+	    case BE_SILENT:
+	    case BACK_UP_FCG_AND_CARDS_FILES:
 	    case MODE:
 	    case CARDS_FILE:
 	    case SOUND_FILES_DIR:
@@ -77,6 +79,9 @@ public class QuizGenerator {
 		break;
 	    case PERCENTAGE_FOR_RECENT_WORDS:
 		properties.put(propertyPlus._propertyName, Integer.toString(_percentageForRecentsI) + '%');
+		break;
+	    case BLOCK_SIZE:
+		properties.put(propertyPlus._propertyName, Integer.toString(_percentageForRecentsI));
 		break;
 	    case RANDOM_SEED:
 		break;
@@ -306,27 +311,29 @@ public class QuizGenerator {
 	return String.format("\n\tTCI(Top Card Index<%d>)", _topCardIndex);
     }
 
-    private PropertyPlus getPropertyPlus(final String field0) {
-	if (field0 == null) {
+    private PropertyPlus getPropertyPlus(final String propertyPlusShortName) {
+	if (propertyPlusShortName == null) {
 	    return null;
 	}
 	for (final PropertyPlus propertyPlus : PropertyPlus._Values) {
-	    if (propertyPlus._indicatorString.equals(field0)) {
+	    if (propertyPlus._shortName.equals(propertyPlusShortName)) {
 		return propertyPlus;
 	    }
 	}
 	return null;
     }
 
-    void modifySingleProperty(final String[] fields) {
+    void modifySingleProperty(final String inputLine) {
+	final String inputLineUc = inputLine.toUpperCase();
+	final String[] fields = inputLineUc.split(Statics._WhiteSpace);
 	final int nFields = fields == null ? 0 : fields.length;
 	final String field0 = (nFields < 1) ? null : fields[0].toUpperCase();
 	final String field1 = (nFields < 2) ? null : fields[1].toUpperCase();
-	/** Only one field to check; TOP_CARD_INDEX. */
 	final PropertyPlus propertyPlus = getPropertyPlus(field0);
 	if (propertyPlus == null) {
 	    return;
 	}
+	/** Only one property that we might modify right now; TOP_CARD_INDEX. */
 	switch (propertyPlus) {
 	case TOP_CARD_INDEX:
 	    final int oldTopCardIdx = _topCardIndex;
@@ -339,8 +346,10 @@ public class QuizGenerator {
 	    return;
 	case ALLOWABLE_MISS_PERCENTAGE:
 	case DIACRITICS_TREATMENT:
-	case SILENT_MODE:
+	case BE_SILENT:
+	case BACK_UP_FCG_AND_CARDS_FILES:
 	case MODE:
+	case BLOCK_SIZE:
 	case DECAY_TYPE:
 	case NUMBER_OF_NEW_WORDS:
 	case NUMBER_OF_RECENT_WORDS:

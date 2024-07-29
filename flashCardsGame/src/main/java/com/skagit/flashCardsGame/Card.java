@@ -40,13 +40,13 @@ class Card {
     /**
      * As written, this puts the ones that have Answers that have Sound Files on the
      * top, and then by increasing number of spaces in the answers, and then by
-     * increasing length.
+     * increasing length of the answers.
      */
     final static Comparator<Card> _StrangeSortSet = new Comparator<>() {
 
 	@Override
 	public int compare(final Card card0, final Card card1) {
-	    final int compareValue = Statics.NullCompare(card0, card1);
+	    int compareValue = Statics.NullCompare(card0, card1);
 	    if (-1 <= compareValue && compareValue <= 1) {
 		return compareValue;
 	    }
@@ -69,6 +69,16 @@ class Card {
 	    final int len1 = s1.length();
 	    if (len0 != len1) {
 		return len0 < len1 ? -1 : 1;
+	    }
+	    final String s00 = Statics.StripVNDiacritics(s0);
+	    final String s10 = Statics.StripVNDiacritics(s1);
+	    compareValue = s00.compareTo(s10);
+	    if (compareValue != 0) {
+		return compareValue;
+	    }
+	    compareValue = s0.compareTo(s1);
+	    if (compareValue != 0) {
+		return compareValue;
 	    }
 	    return _ByCardNumberOnly.compare(card0, card1);
 	}
