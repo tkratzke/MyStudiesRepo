@@ -102,7 +102,7 @@ public class FlashCardsGame {
 	_cardsFile = Statics.getCardsFile(_gameDir, cardsFileString);
 	final String soundFilesDirString = PropertyPlus.SOUND_FILES_DIR.getValidString(_properties);
 	_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
-	dumpFcgFile();
+	overwriteFcgFile(/* initialOverwrite= */true);
 
 	_diacriticsTreatment = DiacriticsTreatment
 		.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
@@ -115,7 +115,8 @@ public class FlashCardsGame {
 	if (Mode._DumpCardsAndAbort.contains(_mode)) {
 	    _backUpFcgAndCardsFiles = true;
 	} else {
-	    _backUpFcgAndCardsFiles = Boolean.valueOf(PropertyPlus.BACK_UP_FCG_AND_CARDS_FILES.getValidString(_properties));
+	    _backUpFcgAndCardsFiles = Boolean
+		    .valueOf(PropertyPlus.BACK_UP_FCG_AND_CARDS_FILES.getValidString(_properties));
 	}
 	_lagLengthInMilliseconds = Integer
 		.parseInt(PropertyPlus.LAG_LENGTH_IN_MILLISECONDS.getValidString(_properties));
@@ -234,7 +235,7 @@ public class FlashCardsGame {
 	final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
 	final int nCards = cardMap.size();
 	_cards = cardMap.keySet().toArray(new Card[nCards]);
-	Arrays.sort(_cards, Mode._StrangeSort.contains(_mode) ? Card._StrangeSortSet : Card._ByCardNumberOnly);
+	Arrays.sort(_cards, Mode._StrangeSort.contains(_mode) ? Card._StrangeSort : Card._ByCardNumberOnly);
     }
 
     /**
@@ -435,7 +436,7 @@ public class FlashCardsGame {
 	final String blankIntString = String.format(blankIntFormat, "");
 	int maxCluePartLen = 0;
 	for (final Card card : _cards) {
-	    final FullSideStringParts aParts = new FullSideStringParts(card.getFullString(/* clueSide= */true),
+	    final FullSideStringParts aParts = new FullSideStringParts(card.getTrimmedInputString(/* clueSide= */true),
 		    Statics._MaxLenForCardPart);
 	    maxCluePartLen = Math.max(maxCluePartLen, aParts._maxLen);
 	}
@@ -451,19 +452,19 @@ public class FlashCardsGame {
 	    boolean recentWasMultiLine = false;
 	    for (int kCard = 0, nPrinted = 0; kCard < nCards; ++kCard) {
 		final Card card = _cards[kCard];
-		final String clueSideString = card.getFullString(/* clueSide= */true);
-		final String answerSideString;
+		final String clueSideTrimmedInputString = card.getTrimmedInputString(/* clueSide= */true);
+		final String answerSideTrimmedInputString;
 		final String[] commentLines;
 		if (_mode != Mode.SUPPRESS_ANSWERS_AND_DUMP) {
-		    answerSideString = card.getFullString(/* clueSide= */false);
+		    answerSideTrimmedInputString = card.getTrimmedInputString(/* clueSide= */false);
 		    commentLines = card._commentLines;
 		} else {
-		    answerSideString = "";
+		    answerSideTrimmedInputString = "";
 		    commentLines = new String[0];
 		}
-		final FullSideStringParts clueParts = new FullSideStringParts(clueSideString,
+		final FullSideStringParts clueParts = new FullSideStringParts(clueSideTrimmedInputString,
 			Statics._MaxLenForCardPart);
-		final FullSideStringParts answerParts = new FullSideStringParts(answerSideString,
+		final FullSideStringParts answerParts = new FullSideStringParts(answerSideTrimmedInputString,
 			Statics._MaxLenForCardPart);
 		final int nClueParts = clueParts.size();
 		final int nAnswerParts = answerParts.size();
@@ -515,7 +516,7 @@ public class FlashCardsGame {
 	_quizGenerator.updateProperties(_properties);
     }
 
-    void dumpFcgFile() {
+    void overwriteFcgFile(final boolean initialOverwrite) {
 	final Properties properties;
 	final long seed = Long.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 	if (seed < 0) {
@@ -529,7 +530,7 @@ public class FlashCardsGame {
 	} else {
 	    properties = _properties;
 	}
-	if (_backUpFcgAndCardsFiles) {
+	if (initialOverwrite && _backUpFcgAndCardsFiles) {
 	    final File backUpFile = BackupFileGetter.getBackupFile(_fcgFile, Statics._GameFileEndingLc,
 		    Statics._NDigitsForCardsFileBackups);
 	    _fcgFile.renameTo(backUpFile);
@@ -632,8 +633,12 @@ public class FlashCardsGame {
 	}
     }
 
+    public long[] getChangeableCoreValues() {
+	return new long[0];
+    }
+
     final boolean madeChangesFrom(final long[] oldValues) {
-	final long[] newValues = storeValues();
+	final long[] newValues = getCurrentChangeableValues();
 	final int nValues = newValues.length;
 	for (int k = 0; k < nValues; ++k) {
 	    if (newValues[k] != oldValues[k]) {
@@ -643,15 +648,15 @@ public class FlashCardsGame {
 	return false;
     }
 
-    final long[] storeValues() {
-	final long[] core = new long[] {};
-	final long[] others = _quizGenerator.getPropertyValues();
-	final int nCore = core.length;
-	final int nOthers = others.length;
-	final long[] array = new long[nCore + nOthers];
-	System.arraycopy(core, 0, array, 0, nCore);
-	System.arraycopy(others, 0, array, nCore, nOthers);
-	return array;
+    final long[] getCurrentChangeableValues() {
+	final long[] coreValues = getChangeableCoreValues();
+	final long[] quizGeneratorValues = _quizGenerator.getChangeableQuizGeneratorValues();
+	final int nA = coreValues.length;
+	final int nB = quizGeneratorValues.length;
+	final long[] allChangeableValues = new long[nA + nB];
+	System.arraycopy(coreValues, 0, allChangeableValues, 0, nA);
+	System.arraycopy(quizGeneratorValues, 0, allChangeableValues, nA, nB);
+	return allChangeableValues;
     }
 
     final String getString() {
@@ -686,7 +691,7 @@ public class FlashCardsGame {
 
     void mainLoop(final Scanner sc) {
 	int nCards = _cards.length;
-	long[] oldValues = storeValues();
+	long[] oldChangeableValues = getCurrentChangeableValues();
 	_quizPlus = null;
 	boolean restarted = false;
 
@@ -711,10 +716,10 @@ public class FlashCardsGame {
 		System.out.println(" " + quizPlusTransition._transitionString);
 		_needLineFeed = true;
 	    }
-	    if (madeChangesFrom(oldValues)) {
+	    if (madeChangesFrom(oldChangeableValues)) {
 		updateProperties();
-		dumpFcgFile();
-		oldValues = storeValues();
+		overwriteFcgFile(/* initialOverwrite= */false);
+		oldChangeableValues = getCurrentChangeableValues();
 	    }
 
 	    final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
@@ -825,13 +830,13 @@ public class FlashCardsGame {
 		    } else if (char0Uc == Statics._ReloadCardsChar) {
 			final int oldTci = _quizGenerator._topCardIndex;
 			final Card topCard = _cards[oldTci];
-			final String keyString = topCard.getFullString(/* clueSide= */true);
+			final String trimmedInputString = topCard.getTrimmedInputString(/* clueSide= */true);
 			loadCards(/* announceCompleteDups= */false);
 			nCards = _cards.length;
 			int tci = -1;
 			for (int kCard = 0; kCard < nCards; ++kCard) {
 			    final Card card1 = _cards[kCard];
-			    if (keyString.compareToIgnoreCase(card1.getFullString(true)) == 0) {
+			    if (trimmedInputString.compareToIgnoreCase(card1.getTrimmedInputString(true)) == 0) {
 				tci = kCard;
 				break;
 			    }

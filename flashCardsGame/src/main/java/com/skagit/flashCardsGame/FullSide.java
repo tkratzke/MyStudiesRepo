@@ -11,6 +11,7 @@ public class FullSide implements Comparable<FullSide> {
 
     final String _trimmedInputString;
     final String _stringPart;
+    final String _fileStringPart;
     final File _soundFile;
 
     public FullSide(final TreeMap<String, File> allSoundFiles, final TreeMap<String, String> partToStem,
@@ -21,17 +22,20 @@ public class FullSide implements Comparable<FullSide> {
 	final int idx0 = trimmedInputString.indexOf(Statics._FileDelimiter);
 	if (idx0 == -1) {
 	    _stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
+	    _fileStringPart = null;
 	    _soundFile = null;
 	    return;
 	}
 	final int idx1 = (0 <= idx0 && idx0 < len) ? trimmedInputString.indexOf(Statics._FileDelimiter, idx0 + 1) : -1;
 	if (idx1 == -1) {
 	    _stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
+	    _fileStringPart = null;
 	    _soundFile = null;
 	    return;
 	}
 	if (idx1 < idx0 + 3) {
 	    _stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
+	    _fileStringPart = null;
 	    _soundFile = null;
 	    return;
 	}
@@ -45,23 +49,12 @@ public class FullSide implements Comparable<FullSide> {
 	}
 	_trimmedInputString = fileStringPart + " " + _stringPart;
 	_soundFile = allSoundFiles.get(fileString);
-    }
-
-    public String getStringPart() {
-	return _stringPart;
-    }
-
-    public File getSoundFile() {
-	return _soundFile;
-    }
-
-    public String getFullString() {
-	return _trimmedInputString;
+	_fileStringPart = _soundFile == null ? null : fileStringPart;
     }
 
     @Override
     public String toString() {
-	return getFullString();
+	return _trimmedInputString;
     }
 
     @Override

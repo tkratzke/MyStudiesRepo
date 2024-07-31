@@ -42,7 +42,7 @@ class Card {
      * top, and then by increasing number of spaces in the answers, and then by
      * increasing length of the answers.
      */
-    final static Comparator<Card> _StrangeSortSet = new Comparator<>() {
+    final static Comparator<Card> _StrangeSort = new Comparator<>() {
 
 	@Override
 	public int compare(final Card card0, final Card card1) {
@@ -52,10 +52,21 @@ class Card {
 	    }
 	    final FullSide answerSide0 = card0._answerSide;
 	    final FullSide answerSide1 = card1._answerSide;
-	    if ((answerSide0._soundFile != null) != (answerSide1._soundFile != null)) {
-		return answerSide0._soundFile != null ? -1 : 1;
+	    final File soundFile0 = answerSide0._soundFile;
+	    final File soundFile1 = answerSide1._soundFile;
+	    if ((soundFile0 != null) != (soundFile1 != null)) {
+		return soundFile0 != null ? -1 : 1;
 	    }
-	    if (answerSide0._soundFile != null) {
+	    if (soundFile0 != null) {
+		final String fileStringPart0 = answerSide0._fileStringPart;
+		final String fileStringPart1 = answerSide1._fileStringPart;
+		compareValue = fileStringPart0.compareTo(fileStringPart1);
+		if (compareValue != 0) {
+		    return compareValue;
+		}
+	    }
+	    /** Retain the input order now. */
+	    if (false) {
 		return _ByCardNumberOnly.compare(card0, card1);
 	    }
 	    final String s0 = answerSide0._stringPart;
@@ -70,15 +81,17 @@ class Card {
 	    if (len0 != len1) {
 		return len0 < len1 ? -1 : 1;
 	    }
-	    final String s00 = Statics.StripVNDiacritics(s0);
-	    final String s10 = Statics.StripVNDiacritics(s1);
-	    compareValue = s00.compareTo(s10);
-	    if (compareValue != 0) {
-		return compareValue;
-	    }
-	    compareValue = s0.compareTo(s1);
-	    if (compareValue != 0) {
-		return compareValue;
+	    if (false) {
+		final String s00 = Statics.StripVNDiacritics(s0);
+		final String s10 = Statics.StripVNDiacritics(s1);
+		compareValue = s00.compareTo(s10);
+		if (compareValue != 0) {
+		    return compareValue;
+		}
+		compareValue = s0.compareTo(s1);
+		if (compareValue != 0) {
+		    return compareValue;
+		}
 	    }
 	    return _ByCardNumberOnly.compare(card0, card1);
 	}
@@ -145,7 +158,8 @@ class Card {
 	    for (int k = 0; k < nCommentLines; ++k) {
 		System.out.println(Statics._CommentString + _commentLines[k]);
 	    }
-	    System.out.printf("%04d.\t%s:\t%s", _cardNumber, _clueSide.getFullString(), _answerSide.getFullString());
+	    System.out.printf("%04d.\t%s:\t%s", _cardNumber, _clueSide._trimmedInputString,
+		    _answerSide._trimmedInputString);
 	    s = baos.toString();
 	    System.out.flush();
 	    System.setOut(old);
@@ -155,15 +169,15 @@ class Card {
     }
 
     public String getStringPart(final boolean forClue) {
-	return (forClue ? _clueSide : _answerSide).getStringPart();
+	return (forClue ? _clueSide : _answerSide)._stringPart;
     }
 
     public File getSoundFile(final boolean forClue) {
-	return (forClue ? _clueSide : _answerSide).getSoundFile();
+	return (forClue ? _clueSide : _answerSide)._soundFile;
     }
 
-    public String getFullString(final boolean forClue) {
-	return (forClue ? _clueSide : _answerSide).getFullString();
+    public String getTrimmedInputString(final boolean forClue) {
+	return (forClue ? _clueSide : _answerSide)._trimmedInputString;
     }
 
     @Override

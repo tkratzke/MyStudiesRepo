@@ -24,32 +24,32 @@
  20.	a star                                      	%0021-Star% sao
  21.	There were stars last night.                	%0022-ThereWereStars% Tối qua có sao.
  22.	after                                       	%0023-After% sau đó
- 23.	before                                      	$0024-Before% trước
- 24.	The moon is white.                          	%0025-TheMoonIsWhite% Mặt trăng màu trắng.
- 25.	rain                                        	%0026-Rain% mưa
- 26.	snow                                        	%0027-Snow% tuyết
+ 23.	The moon is white.                          	%0025-TheMoonIsWhite% Mặt trăng màu trắng.
+ 24.	rain                                        	%0026-Rain% mưa
+ 25.	snow                                        	%0027-Snow% tuyết
 
- 27.	The earth is blue.                          	%0028-TheEarthIsBlue% Trái đất màu xanh da	
+ 26.	The earth is blue.                          	%0028-TheEarthIsBlue% Trái đất màu xanh da	
     	                                            	trời.
 
- 28.	The sun is red.                             	%0029-TheSunIsRed% Mặt trời màu đỏ.
- 29.	word at end of sentence showing respect     	%0030-WordAtEnd% ạ
+ 27.	The sun is red.                             	%0029-TheSunIsRed% Mặt trời màu đỏ.
+ 28.	word at end of sentence showing respect     	%0030-WordAtEnd% ạ
+ 29.	am, at, in, on                              	%0031-AmAtInOn% ở
 
- 30.	am, at, in, on                              	%0031-AmAtInOn% ở
- 31.	yes (informal)                              	%0032-Yes(Inf'r'l)% ừ
- 32.	be warm                                     	%0033BeWarm% ấm
- 33.	to eat                                      	%0034-Eat% ăn
- 34.	three                                       	%0035-Three% ba
- 35.	a woman                                     	%0036-Woman% bà
- 36.	a little child                              	%0037-LittleChild% bé
- 37.	a calf                                      	%0038-Calf-% bê
- 38.	to carry                                    	%0039-Carry% bê
- 39.	a squash                                    	%0040-ASquash% bí
- 40.	dad                                         	%0041-Dad% bố
- 41.	a shore                                     	%0042-AShore% bờ
- 42.	butter                                      	%0043-Butter% bơ
- 43.	a fish                                      	%0044-AFish% cá
- 44.	a pickle                                    	%0045-APickle% cà
+ 30.	yes (informal)                              	%0032-Yes(Inf'r'l)% ừ
+ 31.	be warm                                     	%0033-BeWarm% ấm
+ 32.	to eat                                      	%0034-Eat% ăn
+ 33.	three                                       	%0035-Three% ba
+ 34.	a woman                                     	%0036-Woman% bà
+ 35.	a little child                              	%0037-LittleChild% bé
+ 36.	a calf                                      	%0038-Calf% bê
+ 37.	to carry                                    	%0039-Carry% bê
+ 38.	a squash                                    	%0040-ASquash% bí
+ 39.	dad                                         	%0041-Dad% bố
+ 40.	a shore                                     	%0042-AShore% bờ
+ 41.	butter                                      	%0043-Butter% bơ
+ 42.	a fish                                      	%0044-AFish% cá
+ 43.	a pickle                                    	%0045-APickle% cà
+ 44.	a goat                                      	%0046-AGoat% dê
 
  45.	shortened form of cô ấy                     	%0047-ShortShe% cổ
  46.	an aunt                                     	%0048-Aunt% cô
@@ -64,534 +64,543 @@
  55.	a banyon tree                               	%0057-BanyonTree% đa
  56.	a rock                                      	%0058-Rock% đá
  57.	a cricket                                   	%0059-Cricket% dế
- 58.	a goat                                      	%0046-AGoat% dê
- 59.	go/walk                                     	đi
+ 58.	from (some time)                            	từ
+ 59.	class'f'r/cups and glasses(l...)            	ly
 
- 60.	red                                         	đỏ
- 61.	a ferry                                     	đò
- 62.	dirty                                       	dỏ
- 63.	an umbrella                                 	dù
- 64.	to swing or a swing                         	đu
- 65.	a chicken                                   	gà
- 66.	a train station                             	ga
- 67.	what (question)                             	gì
- 68.	to tap hit or drum                          	gõ
- 69.	a wood                                      	gỗ
- 70.	laughter as in ha ha                        	hi
- 71.	they                                        	họ
- 72.	to cough                                    	ho
- 73.	a tiger                                     	hổ
- 74.	bad (h )                                    	hư
+ 60.	class'f'r/paper-like things                 	tờ
+ 61.	dad                                         	bố
+ 62.	mom                                         	mẹ
+ 63.	a wife                                      	vợ
+ 64.	to eat                                      	ăn
+ 65.	a car (x 1 word)                            	xe
+ 66.	a chicken                                   	gà
+ 67.	a fish                                      	cá
+ 68.	a number                                    	số
+ 69.	a notebook                                  	vở
+ 70.	they                                        	họ
+ 71.	red                                         	đỏ
+ 72.	three                                       	ba
+ 73.	and                                         	và
+ 74.	big                                         	to
 
- 75.	jar                                         	hủ
- 76.	to scare                                    	hù
- 77.	a vat                                       	hũ
- 78.	a donkey                                    	la
- 79.	to shout or to scold                        	la
- 80.	a leaf                                      	lá
- 81.	to be                                       	là
- 82.	a holiday                                   	lễ
- 83.	a vat                                       	lu
- 84.	an incense burner                           	lư
- 85.	class'f'r/cups and glasses(l...)            	ly
- 86.	a ghost                                     	ma
- 87.	mom                                         	mẹ
- 88.	a tamarind                                  	me
- 89.	you (very familiar)                         	mi
+ 75.	to peck                                     	mổ
+ 76.	to operate                                  	mổ
+ 77.	full                                        	no
+ 78.	you (very familiar)                         	mi
+ 79.	I (very familiar)                           	ta
+ 80.	he or she (much younger or friend)          	nó
+ 81.	bad (h )                                    	hư
+ 82.	to cough                                    	ho
+ 83.	to go outside (without d )                  	ra
+ 84.	to return                                   	về
+ 85.	jar                                         	hủ
+ 86.	far away                                    	xa
+ 87.	a vat                                       	lu
+ 88.	an incense burner                           	lư
+ 89.	an apricot/to dream                         	mơ
 
- 90.	to peck                                     	mổ
- 91.	to operate                                  	mổ
- 92.	an apricot/to dream                         	mơ
- 93.	a tocsin (wooden bell or bamboo tocsin)     	mõ
- 94.	blind                                       	mù
- 95.	pus                                         	mủ
- 96.	a hat                                       	mũ
- 97.	soursop                                     	na
- 98.	full                                        	no
- 99.	he or she (much younger or friend)          	nó
-100.	a bow                                       	nơ
-101.	to go outside (without d )                  	ra
-102.	a basket                                    	rổ
-103.	to invite (to do something)                 	rủ
-104.	to put baby to sleep (lull)                 	ru
+ 90.	a big bowl                                  	tô
+ 91.	a bow                                       	nơ
+ 92.	an umbrella                                 	dù
+ 93.	to swing or a swing                         	đu
+ 94.	go/walk                                     	đi
+ 95.	soursop                                     	na
+ 96.	a tamarind                                  	me
+ 97.	a donkey                                    	la
+ 98.	to shout or to scold                        	la
+ 99.	a leaf                                      	lá
+100.	a little child                              	bé
+101.	a squash                                    	bí
+102.	a ferry                                     	đò
+103.	blind                                       	mù
+104.	a shore                                     	bờ
 
-105.	a number                                    	số
-106.	scary/be scared                             	sợ
-107.	to compare                                  	so
-108.	I (very familiar)                           	ta
-109.	to fall                                     	té
-110.	class'f'r/paper-like things                 	tờ
-111.	big                                         	to
-112.	a big bowl                                  	tô
-113.	a nest                                      	tổ
-114.	from (some time)                            	từ
-115.	an armoire                                  	tủ
-116.	and                                         	và
-117.	to mend                                     	vá
-118.	to return                                   	về
-119.	a cicada                                    	ve
+105.	a tiger                                     	hổ
+106.	laughter as in ha ha                        	hi
+107.	to scare                                    	hù
+108.	a calf                                      	bê
+109.	to carry                                    	bê
+110.	to fall                                     	té
+111.	to invite (to do something)                 	rủ
+112.	a cicada                                    	ve
+113.	to mend                                     	vá
+114.	a nest                                      	tổ
+115.	pus                                         	mủ
+116.	scary/be scared                             	sợ
+117.	a ghost                                     	ma
+118.	butter                                      	bơ
+119.	a hat                                       	mũ
 
-120.	a wife                                      	vợ
-121.	a notebook                                  	vở
-122.	far away                                    	xa
-123.	a car (x 1 word)                            	xe
-124.	cent                                        	xu
-125.	shortened form of anh ấy                    	ảnh
-126.	an image or photo                           	ảnh
-127.	an uncle                                    	bác
-128.	a table                                     	bàn
-129.	you (a friend)                              	bạn
-130.	a newspaper                                 	báo
-131.	class'f'r/bowls                             	bát
-132.	seven                                       	bảy
-133.	word going with left right above or below   	bên
-134.	a kitchen                                   	bếp
+120.	what (question)                             	gì
+121.	to be                                       	là
+122.	an armoire                                  	tủ
+123.	dirty                                       	dỏ
+124.	a train station                             	ga
+125.	to tap hit or drum                          	gõ
+126.	a tocsin (wooden bell or bamboo tocsin)     	mõ
+127.	a vat                                       	hũ
+128.	a wood                                      	gỗ
+129.	a holiday                                   	lễ
+130.	cent                                        	xu
+131.	to compare                                  	so
+132.	to put baby to sleep (lull)                 	ru
+133.	a basket                                    	rổ
+134.	to (some time, so "until")                  	đến
 
-135.	beer                                        	bia
-136.	to swim                                     	bơi
-137.	four                                        	bốn
-138.	class'f'r/narrow rect'g'lar things          	bức
-139.	a pen                                       	bút
-140.	class'f'r/inanimate objects                 	cái
-141.	kilogram                                    	cân
-142.	a scale                                     	cân
-143.	a big sister                                	chị
-144.	a dog                                       	chó
-145.	a market                                    	chợ
-146.	uncle                                       	chú
-147.	class'f'r/cups and glasses(c...)            	cốc
-148.	rice                                        	cơm
-149.	child or children                           	con
+135.	at (some time)                              	lúc
+136.	this (thing)                                	này
+137.	this (time)                                 	nay
+138.	class'f'r/inanimate objects                 	cái
+139.	class'f'r/cups and glasses(c...)            	cốc
+140.	class'f'r/bowls                             	bát
+141.	class'f'r/narrow rect'g'lar things          	bức
+142.	all or both                                 	đều
+143.	shortened form of anh ấy                    	ảnh
+144.	to swim                                     	bơi
+145.	kilogram                                    	cân
+146.	a home or a house                           	nhà
+147.	a grandfather                               	ông
+148.	an uncle                                    	bác
+149.	a knife                                     	dao
 
-150.	a sheep                                     	cừu
-151.	a knife                                     	dao
-152.	a peach                                     	đào
-153.	generic accent                              	dấu
-154.	to wake up (d ...)                          	dậy
-155.	to teach                                    	dạy
-156.	to (some time, so "until")                  	đến
-157.	black                                       	đen
-158.	all or both                                 	đều
-159.	to read                                     	đọc
-160.	hungry                                      	đói
-161.	a chair                                     	ghế
-162.	to stop by                                  	ghé
-163.	a skin infection producing pus              	ghẻ
-164.	icky                                        	ghê
+150.	an apple                                    	táo
+151.	a grape                                     	nho
+152.	a name                                      	tên
+153.	pho                                         	phở
+154.	milk                                        	sữa
+155.	tea                                         	trà
+156.	a spring roll                               	nem
+157.	ice cream                                   	kem
+158.	to do or to make                            	làm
+159.	to sing                                     	hát
+160.	to read                                     	đọc
+161.	a letter                                    	thư
+162.	a newspaper                                 	báo
+163.	to see or to watch                          	xem
+164.	a cat                                       	mèo
 
-165.	two                                         	hai
-166.	to sing                                     	hát
-167.	good                                        	hay
-168.	or                                          	hay
-169.	hook above (accent)                         	hỏi
-170.	ice cream                                   	kem
-171.	a monkey                                    	khỏ
-172.	to do or to make                            	làm
-173.	up                                          	lên
-174.	a pig                                       	lợn
-175.	at (some time)                              	lúc
-176.	a color                                     	màu
-177.	a cat                                       	mèo
-178.	tired                                       	mệt
-179.	one                                         	một
+165.	a dog                                       	chó
+166.	a sheep                                     	cừu
+167.	a monkey                                    	khỏ
+168.	a rabbit                                    	thỏ
+169.	a pig                                       	lợn
+170.	a duck                                      	vịt
+171.	a pen                                       	bút
+172.	a peach                                     	đào
+173.	a table                                     	bàn
+174.	a chair                                     	ghế
+175.	beer                                        	bia
+176.	rice                                        	cơm
+177.	night, PM                                   	tối
+178.	take a shower or wash                       	tắm
+179.	an image or photo                           	ảnh
 
-180.	a deer                                      	nai
-181.	five                                        	năm
-182.	which (question)                            	nào
-183.	brown                                       	nâu
-184.	this (thing)                                	này
-185.	this (time)                                 	nay
-186.	a spring roll                               	nem
-187.	tilde (accent)                              	ngã
-188.	to sleep                                    	ngủ
-189.	a home or a house                           	nhà
-190.	a grape                                     	nho
-191.	a grandfather                               	ông
-192.	pho                                         	phở
-193.	a battery                                   	pin
-194.	fruit designator (q )                       	quả
+180.	with                                        	với
+181.	to wake up (d ...)                          	dậy
+182.	purple                                      	tím
+183.	a color                                     	màu
+184.	black                                       	đen
+185.	child or children                           	con
+186.	one                                         	một
+187.	two                                         	hai
+188.	four                                        	bốn
+189.	five                                        	năm
+190.	six                                         	sáu
+191.	seven                                       	bảy
+192.	eight                                       	tám
+193.	behind                                      	sau
+194.	a handbag                                   	túi
 
-195.	acute (accent)                              	sắc
-196.	six                                         	sáu
-197.	behind                                      	sau
-198.	milk                                        	sữa
-199.	take a shower or wash                       	tắm
-200.	eight                                       	tám
-201.	an apple                                    	táo
-202.	a name                                      	tên
-203.	a rabbit                                    	thỏ
-204.	a letter                                    	thư
-205.	purple                                      	tím
-206.	night, PM                                   	tối
-207.	tea                                         	trà
-208.	a handbag                                   	túi
-209.	a duck                                      	vịt
+195.	a kitchen                                   	bếp
+196.	to sleep                                    	ngủ
+197.	you (a friend)                              	bạn
+198.	generic accent                              	dấu
+199.	acute (accent)                              	sắc
+200.	hook above (accent)                         	hỏi
+201.	tilde (accent)                              	ngã
+202.	please (x )                                 	xin
+203.	hungry                                      	đói
+204.	tired                                       	mệt
+205.	good                                        	hay
+206.	or                                          	hay
+207.	fruit designator (q )                       	quả
+208.	word going with left right above or below   	bên
+209.	bad (x )                                    	xấu
 
-210.	with                                        	với
-211.	to be happy                                 	vui
-212.	bad (x )                                    	xấu
-213.	to see or to watch                          	xem
-214.	please (x )                                 	xin
-215.	sticky rice                                 	xôi
-216.	a ball                                      	bóng
-217.	time designator                             	buổi
-218.	soup                                        	canh
-219.	probably                                    	chác
-220.	a blanket                                   	chăn
-221.	hello (informal) or "good bye"              	chào
-222.	a bird                                      	chim
-223.	nine                                        	chín
-224.	to play                                     	chơi
+210.	a market                                    	chợ
+211.	a big sister                                	chị
+212.	to stop by                                  	ghé
+213.	a skin infection producing pus              	ghẻ
+214.	icky                                        	ghê
+215.	a deer                                      	nai
+216.	uncle                                       	chú
+217.	brown                                       	nâu
+218.	a scale                                     	cân
+219.	up                                          	lên
+220.	sticky rice                                 	xôi
+221.	to be happy                                 	vui
+222.	which (question)                            	nào
+223.	to teach                                    	dạy
+224.	a battery                                   	pin
 
-225.	do (for games)                              	chơi
-226.	not yet                                     	chưa
-227.	plus/to add                                 	cộng
-228.	also                                        	cũng
-229.	under                                       	dưới
-230.	below                                       	dươi
-231.	paper                                       	giấy
-232.	between                                     	giữa
-233.	strong or healthy                           	khỏe
-234.	we (informal you and I)                     	mình
-235.	ten                                         	mười
-236.	to want                                     	muốn
-237.	underdot (accent)                           	nặng
-238.	to listen                                   	nghe
-239.	a job                                       	nghề
+225.	on, on top of, or above                     	trên
+226.	under                                       	dưới
+227.	to the left                                 	trái
+228.	to the right                                	phải
+229.	years old                                   	tuổi
+230.	money                                       	tiền
+231.	a gun                                       	súng
+232.	a mango                                     	xoài
+233.	wrong                                       	trái
+234.	to drink                                    	uống
+235.	water                                       	nước
+236.	to dance                                    	nhảy
+237.	to jump                                     	nhảy
+238.	a book                                      	sách
+239.	to write                                    	viết
 
-240.	delicious                                   	ngon
-241.	a horse                                     	ngựa
-242.	music                                       	nhạc
-243.	to dance                                    	nhảy
-244.	to jump                                     	nhảy
-245.	water                                       	nước
-246.	a country                                   	nườc
-247.	to the right                                	phải
-248.	a book                                      	sách
-249.	morning                                     	sáng
-250.	to live                                     	sống
-251.	a gun                                       	súng
-252.	money                                       	tiền
-253.	math                                        	toán
-254.	to the left                                 	trái
+240.	to listen                                   	nghe
+241.	music                                       	nhạc
+242.	a horse                                     	ngựa
+243.	a bird                                      	chim
+244.	fruit designator (t )                       	trái
+245.	a ball                                      	bóng
+246.	soup                                        	canh
+247.	paper                                       	giấy
+248.	to play                                     	chơi
+249.	do (for games)                              	chơi
+250.	probably                                    	chác
+251.	math                                        	toán
+252.	to want                                     	muốn
+253.	yellow                                      	vàng
+254.	nine                                        	chín
 
-255.	wrong                                       	trái
-256.	fruit designator (t )                       	trái
-257.	brother or male                             	trai
-258.	on, on top of, or above                     	trên
-259.	noon                                        	trưa
-260.	years old                                   	tuổi
-261.	to drink                                    	uống
-262.	yellow                                      	vàng
-263.	yes (formal)                                	vang
-264.	to write                                    	viết
-265.	a mango                                     	xoài
-266.	a husband                                   	chồng
-267.	a banana                                    	chuối
-268.	a mouse                                     	chuột
-269.	grave (accent)                              	huyền
+255.	ten                                         	mười
+256.	between                                     	giữa
+257.	underdot (accent)                           	nặng
+258.	morning                                     	sáng
+259.	time designator                             	buổi
+260.	noon                                        	trưa
+261.	not yet                                     	chưa
+262.	also                                        	cũng
+263.	below                                       	dươi
+264.	strong or healthy                           	khỏe
+265.	yes (formal)                                	vang
+266.	we (informal you and I)                     	mình
+267.	brother or male                             	trai
+268.	plus/to add                                 	cộng
+269.	hello (informal) or "good bye"              	chào
 
-270.	zero                                        	không
-271.	no                                          	không
-272.	out or outside                              	ngoài
-273.	a person                                    	người
-274.	but                                         	nhưng
-275.	a pizza                                     	pizza
+270.	delicious                                   	ngon
+271.	a blanket                                   	chăn
+272.	a country                                   	nườc
+273.	a job                                       	nghề
+274.	to live                                     	sống
+275.	in or inside                                	trong
 276.	class'f'r/books and volumes                 	quyển
-277.	to like                                     	thích
-278.	white                                       	trắng
-279.	a picture or painting                       	tranh
-280.	in or inside                                	trong
-281.	in front of                                 	trước
-282.	a school                                    	trường
-283.	I/You (same gen older)                      	anh/chị
-284.	I/You (same age)                            	tôi/bạn
+277.	a husband                                   	chồng
+278.	a banana                                    	chuối
+279.	to like                                     	thích
+280.	a pizza                                     	pizza
+281.	a mouse                                     	chuột
+282.	a picture or painting                       	tranh
+283.	white                                       	trắng
+284.	zero                                        	không
 
-285.	a sandwich                                  	sandwich
-286.	spaghetti                                   	mì Ý
-287.	a car (o )                                  	ô tô
-288.	a nurse                                     	y tá
-289.	that lady (with respect)                    	bà ấy
-290.	grass field                                 	bờ cỏ
-291.	a perch (fish)                              	cá rô
-292.	she or her                                  	cô ấy
-293.	to make crickets fight                      	đá dế
-294.	skin with padding                           	da dẻ
-295.	to go outside (with d )                     	đi ra
-296.	to go inside                                	đi vô
-297.	to go by car                                	đi xe
-298.	to tell stories                             	kể lể
-299.	to wander                                   	lê la
+285.	no                                          	không
+286.	out or outside                              	ngoài
+287.	in front of                                 	trước
+288.	but                                         	nhưng
+289.	grave (accent)                              	huyền
+290.	a person                                    	người
+291.	a school                                    	trường
+292.	I/You (same age)                            	tôi/bạn
+293.	I/You (same gen older)                      	anh/chị
+294.	a sandwich                                  	sandwich
+295.	a nurse                                     	y tá
+296.	a car (o )                                  	ô tô
+297.	spaghetti                                   	mì Ý
+298.	she or her                                  	cô ấy
+299.	slow down                                   	từ từ
 
-300.	she (polite)                                	mợ ta
-301.	a car (m )                                  	mô tô
-302.	a soursop                                   	na to
-303.	full (with padding)                         	no nê
-304.	a big bow                                   	nơ to
-305.	where (question)                            	ở đâu
-306.	a sparrow                                   	se sẻ
-307.	rough                                       	sù sì
-308.	a lion                                      	sư tử
-309.	TV                                          	ti vi
+300.	a car (m )                                  	mô tô
+301.	to go by car                                	đi xe
+302.	TV                                          	ti vi
+303.	a lion                                      	sư tử
+304.	that lady (with respect)                    	bà ấy
+305.	she (polite)                                	mợ ta
+306.	full (with padding)                         	no nê
+307.	to go inside                                	đi vô
+308.	to go outside (with d )                     	đi ra
+309.	a big bow                                   	nơ to
 310.	a big bowl of tamarind                      	tô me
-311.	slow down                                   	từ từ
-312.	a lottery                                   	xổ số
-313.	to eat lunch                                	ăn cơm
-314.	to have dinner                              	ăn tối
+311.	to wander                                   	lê la
+312.	to make crickets fight                      	đá dế
+313.	a sparrow                                   	se sẻ
+314.	grass field                                 	bờ cỏ
 
-315.	he or him                                   	anh ấy
-316.	a physician                                 	bác sĩ
-317.	coffee                                      	cà phê
-318.	thank you                                   	cảm ơn
-319.	lady named Tư                               	chị Tư
-320.	his/her uncle                               	chú nó
-321.	maybe                                       	có thể
-322.	orange                                      	da cam
-323.	to go to work                               	đi làm
-324.	a younger sister                            	em gái
-325.	an artist                                   	họa sĩ
-326.	doing (part of a question)                  	làm gì
-327.	please (l )                                 	làm ơn
-328.	finish work                                 	tan ca
-329.	Tuesday                                     	thứ ba
+315.	to tell stories                             	kể lể
+316.	skin with padding                           	da dẻ
+317.	rough                                       	sù sì
+318.	where (question)                            	ở đâu
+319.	a soursop                                   	na to
+320.	a lottery                                   	xổ số
+321.	a perch (fish)                              	cá rô
+322.	he or him                                   	anh ấy
+323.	a younger sister                            	em gái
+324.	a physician                                 	bác sĩ
+325.	thank you                                   	cảm ơn
+326.	coffee                                      	cà phê
+327.	a car (x 2 words)                           	xe hơi
+328.	a bicycle                                   	xe đạp
+329.	a train                                     	xe lửa
 
-330.	Wednesday                                   	thứ tư
-331.	a bicycle                                   	xe đạp
-332.	a car (x 2 words)                           	xe hơi
-333.	a train                                     	xe lửa
-334.	to have breakfast                           	ăn sáng
-335.	to have lunch                               	ăn trưa
-336.	bread                                       	bánh mì
-337.	when (as in a question)                     	bao giờ
-338.	now                                         	bây giờ
-339.	beef steak                                  	bít tết
-340.	dinner                                      	bữa tối
-341.	an egg roll                                 	chả giò
-342.	hello to younger person                     	chào em
-343.	to run                                      	chạy bộ
-344.	an older sister                             	chị gái
+330.	maybe                                       	có thể
+331.	to go to work                               	đi làm
+332.	finish work                                 	tan ca
+333.	orange                                      	da cam
+334.	doing (part of a question)                  	làm gì
+335.	please (l )                                 	làm ơn
+336.	Wednesday                                   	thứ tư
+337.	Tuesday                                     	thứ ba
+338.	his/her uncle                               	chú nó
+339.	lady named Tư                               	chị Tư
+340.	an artist                                   	họa sĩ
+341.	to eat lunch                                	ăn cơm
+342.	to have dinner                              	ăn tối
+343.	a strawberry                                	dâu tây
+344.	a watermelon                                	dưa hấu
 
-345.	a daughter                                  	con gái
-346.	of mine (way of showing possessive)         	của tôi
-347.	to name                                     	đặt tên
-348.	a chef                                      	đầu bếp
-349.	a strawberry                                	dâu tây
-350.	a watermelon                                	dưa hấu
-351.	a younger brother                           	em trai
-352.	a professor                                 	giáo sư
-353.	a fruit                                     	hoa quả
-354.	today                                       	hôm nay
-355.	yesterday                                   	hôm qua
-356.	a lawyer                                    	luật sư
-357.	how many (needs something)                  	mấy cái
-358.	this year                                   	năm nay
-359.	next year                                   	năm sau
+345.	next year                                   	năm sau
+346.	this year                                   	năm nay
+347.	a daughter                                  	con gái
+348.	an older sister                             	chị gái
+349.	a younger brother                           	em trai
+350.	a lawyer                                    	luật sư
+351.	a chef                                      	đầu bếp
+352.	a fruit                                     	hoa quả
+353.	an egg roll                                 	chả giò
+354.	beef steak                                  	bít tết
+355.	to run                                      	chạy bộ
+356.	bread                                       	bánh mì
+357.	wash face                                   	rưa mặt
+358.	cook a meal                                 	nấu cơm
+359.	how many (needs something)                  	mấy cái
 
-360.	cook a meal                                 	nấu cơm
-361.	wake up (n...)                              	ngủ dậy
-362.	United States                               	nước Mỹ
-363.	national flag                               	quốc kì
-364.	wash face                                   	rưa mặt
-365.	Monday                                      	thứ hai
-366.	Vietnam                                     	Việt Nam
-367.	an older brother                            	anh trai
-368.	next to or beside                           	bên cạnh
-369.	breakfast                                   	bữa sáng
-370.	lunch                                       	bữa trưa
-371.	sleepy                                      	buồn ngủ
-372.	a police officer                            	cảnh sát
-373.	hello to friend                             	chào bạn
-374.	I/You (1 gen up)                            	cháu bác
+360.	United States                               	nước Mỹ
+361.	dinner                                      	bữa tối
+362.	wake up (n...)                              	ngủ dậy
+363.	a professor                                 	giáo sư
+364.	national flag                               	quốc kì
+365.	of mine (way of showing possessive)         	của tôi
+366.	to have breakfast                           	ăn sáng
+367.	now                                         	bây giờ
+368.	when (as in a question)                     	bao giờ
+369.	today                                       	hôm nay
+370.	yesterday                                   	hôm qua
+371.	Monday                                      	thứ hai
+372.	hello to younger person                     	chào em
+373.	to name                                     	đặt tên
+374.	to have lunch                               	ăn trưa
 
-375.	Sunday                                      	chủ nhật
-376.	a son                                       	con trai
-377.	to watch                                    	đang xem
-378.	a family                                    	gia đình
-379.	director or CEO                             	giám đốc
-380.	a student                                   	học sinh
-381.	"do a job" or work (l...)                   	làm việc
-382.	sixteen                                     	mười sáu
-383.	tomorrow                                    	ngày mai
-384.	a zebra                                     	ngựa vằn
-385.	American person                             	người Mỹ
-386.	a big restaurant                            	nhà hàng
-387.	a farmer                                    	nông dân
-388.	United Kingdom                              	nước anh
-389.	a diner                                     	quán cơm
+375.	a son                                       	con trai
+376.	an older brother                            	anh trai
+377.	a student                                   	học sinh
+378.	a police officer                            	cảnh sát
+379.	a farmer                                    	nông dân
+380.	"do a job" or work (l...)                   	làm việc
+381.	Vietnam                                     	Việt Nam
+382.	United Kingdom                              	nước anh
+383.	American person                             	người Mỹ
+384.	breakfast                                   	bữa sáng
+385.	lunch                                       	bữa trưa
+386.	director or CEO                             	giám đốc
+387.	a library                                   	thư viện
+388.	a zoo                                       	vườn thú
+389.	a zebra                                     	ngựa vằn
 
-390.	a phở house                                 	quán phở
-391.	good bye                                    	tạm biệt
-392.	April                                       	tháng tư
-393.	a library                                   	thư viện
-394.	I'm fine                                    	tôi khỏe
-395.	a game                                      	trò chơi
-396.	a zoo                                       	vườn thú
-397.	hello (polite)                              	xin chào
-398.	done with something                         	xong rồi
-399.	how many (for a large number)               	bao nhiêu
-400.	a hospital                                  	bệnh viện
-401.	afternoon                                   	buổi trưa
-402.	hello to child                              	chào cháu
-403.	we (Lan and I)                              	chúng tôi
-404.	a park                                      	công viên
+390.	next to or beside                           	bên cạnh
+391.	to watch                                    	đang xem
+392.	good bye                                    	tạm biệt
+393.	I'm fine                                    	tôi khỏe
+394.	sixteen                                     	mười sáu
+395.	done with something                         	xong rồi
+396.	April                                       	tháng tư
+397.	sleepy                                      	buồn ngủ
+398.	tomorrow                                    	ngày mai
+399.	Sunday                                      	chủ nhật
+400.	hello (polite)                              	xin chào
+401.	hello to friend                             	chào bạn
+402.	a family                                    	gia đình
+403.	a game                                      	trò chơi
+404.	I/You (1 gen up)                            	cháu bác
 
-405.	playing                                     	đang chơi
-406.	brush teeth                                 	đáng răng
-407.	a teacher                                   	giáo viên
-408.	no accent                                   	không dấu
-409.	last year                                   	năm trước
-410.	a bank                                      	ngân hàng
-411.	staff                                       	nhân viên
-412.	a bedroom                                   	phòng ngủ
-413.	a university student                        	sinh viên
-414.	February                                    	tháng hai
-415.	an office                                   	văn phòng
-416.	China                                       	Trung Quốc
-417.	a telephone                                 	điện thoại
-418.	French person                               	người Pháp
-419.	to speak with each other                    	nói chuyện
+405.	a phở house                                 	quán phở
+406.	a diner                                     	quán cơm
+407.	a big restaurant                            	nhà hàng
+408.	last year                                   	năm trước
+409.	a teacher                                   	giáo viên
+410.	brush teeth                                 	đáng răng
+411.	how many (for a large number)               	bao nhiêu
+412.	a bank                                      	ngân hàng
+413.	a hospital                                  	bệnh viện
+414.	a park                                      	công viên
+415.	a bedroom                                   	phòng ngủ
+416.	no accent                                   	không dấu
+417.	afternoon                                   	buổi trưa
+418.	playing                                     	đang chơi
+419.	February                                    	tháng hai
 
-420.	I/You (Uncle/Aunt)                          	chú/cô cháu
-421.	I/You (2 gen up)                            	ông/bà cháu
-422.	a living room                               	phòng khách
-423.	January                                     	tháng giêng
-424.	clay fishpot dish                           	cá kho tộ
-425.	hello to grandmotherly                      	chào bà ạ
-426.	hello to older brother                      	chào anh ạ
-427.	hello to older female                       	chào chị ạ
-428.	hello to grandfatherly                      	chào ông ạ
-429.	a motorcycle                                	xe gắn máy
-430.	a cyclo                                     	xe xích lô
-431.	What time are we eating?                    	ăn mấy giờ?
-432.	how do you say                              	làm sao nói
-433.	a bathroom                                  	nhà vệ sinh
-434.	a coffee shop                               	quán cà phê
+420.	we (Lan and I)                              	chúng tôi
+421.	hello to child                              	chào cháu
+422.	staff                                       	nhân viên
+423.	an office                                   	văn phòng
+424.	a university student                        	sinh viên
+425.	to speak with each other                    	nói chuyện
+426.	a telephone                                 	điện thoại
+427.	China                                       	Trung Quốc
+428.	French person                               	người Pháp
+429.	a living room                               	phòng khách
+430.	January                                     	tháng giêng
+431.	I/You (2 gen up)                            	ông/bà cháu
+432.	I/You (Uncle/Aunt)                          	chú/cô cháu
+433.	clay fishpot dish                           	cá kho tộ
+434.	hello to grandmotherly                      	chào bà ạ
 
-435.	I am sorry                                  	tôi xin lỗi
-436.	green                                       	xanh lá cây
-437.	You're welcome.                             	Không có chi
-438.	Speak slowly.                               	Nói chậm lại
-439.	I am sleepy.                                	Tôi buồn ngủ
-440.	blue                                        	xanh da trời
-441.	good night                                  	chào buổi tồi
-442.	never                                       	không bao giờ
-443.	16th of                                     	ngày mười sáu
-444.	How are you (anh)                           	Anh khỏe không
-445.	Good morning                                	Chào buổi sáng
-446.	two books                                   	hai quyển sách
-447.	how many books                              	mấy quyển sách
-448.	Vietnamese person                           	người Việt Nam
-449.	a cinema                                    	rạp chiếu phim
+435.	a motorcycle                                	xe gắn máy
+436.	a cyclo                                     	xe xích lô
+437.	hello to older female                       	chào chị ạ
+438.	hello to older brother                      	chào anh ạ
+439.	hello to grandfatherly                      	chào ông ạ
+440.	green                                       	xanh lá cây
+441.	a coffee shop                               	quán cà phê
+442.	a bathroom                                  	nhà vệ sinh
+443.	I am sorry                                  	tôi xin lỗi
+444.	how do you say                              	làm sao nói
+445.	What time are we eating?                    	ăn mấy giờ?
+446.	blue                                        	xanh da trời
+447.	You're welcome.                             	Không có chi
+448.	Speak slowly.                               	Nói chậm lại
+449.	I am sleepy.                                	Tôi buồn ngủ
 
-450.	Good evening                                	Chào buổi chiều
-451.	We'll talk later.                           	nói chuyện sau.
-452.	Chinese person                              	người Trung Quốc
-453.	You will go shopping. (market) (anh)        	Anh sẽ đi chợ
-454.	Where do you study? (anh)                   	Anh học ở đâu.
-455.	I study at home.                            	Tôi học ở nhà.
-456.	hello to teacher Hạnh (female)              	chào cô Hạnh ạ
-457.	Where do you live?                          	Chị sống ở đâu.
-458.	I am American.                              	Tôi la người Mỹ.
-459.	I am a teacher.                             	tôi là giáo viên.
-460.	I like apples.                              	Tôi thích quả táo.
-461.	Please do not talk with each other.         	Xin đừng nói chuyệt.
-462.	You will go shopping. (general) (anh)       	Anh sẽ đi mua đồ
-463.	I take D swimming.                          	Tôi đưa D đi bơi.
-464.	What do you do? or What is your job? (anh)  	anh làm nghế gì ạ?
+450.	never                                       	không bao giờ
+451.	good night                                  	chào buổi tồi
+452.	16th of                                     	ngày mười sáu
+453.	how many books                              	mấy quyển sách
+454.	Vietnamese person                           	người Việt Nam
+455.	two books                                   	hai quyển sách
+456.	a cinema                                    	rạp chiếu phim
+457.	Good morning                                	Chào buổi sáng
+458.	How are you (anh)                           	Anh khỏe không
+459.	Good evening                                	Chào buổi chiều
+460.	We'll talk later.                           	nói chuyện sau.
+461.	Chinese person                              	người Trung Quốc
+462.	You will go shopping. (market) (anh)        	Anh sẽ đi chợ
+463.	Where do you study? (anh)                   	Anh học ở đâu.
+464.	I study at home.                            	Tôi học ở nhà.
 
-465.	Where do you work? (anh)                    	Anh làm việc ở đâu.
-466.	What time is it now?                        	Bây giờ là mấy giờ?
-467.	We (you and I) cleaned the house.           	Chúng ta đã rửa nhà.
-468.	one hundred fifty five                      	một trăm năm mươi lăm
-469.	My husband is Vietnamese.                   	Chồng tôi là người Mỹ.
-470.	The younger brother is drinking milk.       	Em trai đang uống sữa.
-471.	I will study Vietnamese.                    	Tôi sẽ học tiếng Việt.
-472.	When are we eating dinner?                  	bao giờ mình ăn chieu?
-473.	I like this bowl of soup.                   	Tôi thích bát canh này.
-474.	I am studying Vietnamese.                   	Tôi đang học tiếng Việt.
-475.	I do not speak Vietnamese.                  	Tôi không nói tiếng việt.
-476.	I like studying Vietnamese.                 	Tôi thích học tiếng Việt.
-477.	An-na is making a sandwich, right?          	An-na đang làm sandwich à?
-478.	You guys are eating ice cream, right?       	Các bạn đang ăn kem à.
-479.	I work in Hà Nôi.                           	Tôi làm việc ở Hà Nội.
+465.	hello to teacher Hạnh (female)              	chào cô Hạnh ạ
+466.	Where do you live?                          	Chị sống ở đâu.
+467.	I am American.                              	Tôi la người Mỹ.
+468.	I am a teacher.                             	tôi là giáo viên.
+469.	I like apples.                              	Tôi thích quả táo.
+470.	Please do not talk with each other.         	Xin đừng nói chuyệt.
+471.	You will go shopping. (general) (anh)       	Anh sẽ đi mua đồ
+472.	I take D swimming.                          	Tôi đưa D đi bơi.
+473.	What do you do? or What is your job? (anh)  	anh làm nghế gì ạ?
+474.	What time is it now?                        	Bây giờ là mấy giờ?
+475.	Where do you work? (anh)                    	Anh làm việc ở đâu.
+476.	We (you and I) cleaned the house.           	Chúng ta đã rửa nhà.
+477.	one hundred fifty five                      	một trăm năm mươi lăm
+478.	When are we eating dinner?                  	bao giờ mình ăn chieu?
+479.	My husband is Vietnamese.                   	Chồng tôi là người Mỹ.
 
-480.	Whose picture is this?                      	Bức tranh này là của ai?
-481.	I am working today                          	Tôi đang làm việc hôm nay
-482.	I sleep at 11:00. (tôi)                     	Tôi ngủ lúc mười một giờ.
-483.	My wife is Vietnamese.                      	Vợ tôi là người Việt Nam.
-484.	year 2024                                   	năm hai ngàn hai mươi bốn
-485.	The older sister likes this photo.          	Chị gái thích bức ảnh này.
+480.	I will study Vietnamese.                    	Tôi sẽ học tiếng Việt.
+481.	The younger brother is drinking milk.       	Em trai đang uống sữa.
+482.	I like this bowl of soup.                   	Tôi thích bát canh này.
+483.	I am studying Vietnamese.                   	Tôi đang học tiếng Việt.
+484.	I do not speak Vietnamese.                  	Tôi không nói tiếng việt.
+485.	I like studying Vietnamese.                 	Tôi thích học tiếng Việt.
+486.	An-na is making a sandwich, right?          	An-na đang làm sandwich à?
+487.	I work in Hà Nôi.                           	Tôi làm việc ở Hà Nội.
+488.	You guys are eating ice cream, right?       	Các bạn đang ăn kem à.
+489.	Whose picture is this?                      	Bức tranh này là của ai?
+490.	I sleep at 11:00. (tôi)                     	Tôi ngủ lúc mười một giờ.
+491.	I am working today                          	Tôi đang làm việc hôm nay
+492.	My wife is Vietnamese.                      	Vợ tôi là người Việt Nam.
+493.	year 2024                                   	năm hai ngàn hai mươi bốn
+494.	The older sister likes this photo.          	Chị gái thích bức ảnh này.
 
-486.	The older brother is also reading a         	Anh trai cũng đang đọc báo.	
+495.	Today I study Vietnamese.                   	Hôm nay tôi học tiếng Việt.
+
+496.	The older brother is also reading a         	Anh trai cũng đang đọc báo.	
     	newspaper.
 
-487.	Today I study Vietnamese.                   	Hôm nay tôi học tiếng Việt.
-488.	I do not like studying Vietnamese.          	Tôi không thích học tiếng Việt.
-489.	That cup of coffee is dad's.                	Ly cà phê đó là của bố.
-490.	She eats breakfast at 7:00.                 	Bảy giờ cô ấy ăn bữa sáng.
-491.	Whose pieces of paper are those?            	Những tờ giấy đó là của ai?
-492.	My wife is 30 years old this year.          	Vợ tôi năm nay ba mươi tuổi.
-493.	My younger brother will be eight years.     	Năm sau em trai tôi tám tuổi.
-494.	Thu Phương is eating steak, isn't she?      	Thu Phương đang ăn bít tết à?
+497.	I do not like studying Vietnamese.          	Tôi không thích học tiếng Việt.
+498.	That cup of coffee is dad's.                	Ly cà phê đó là của bố.
+499.	She eats breakfast at 7:00.                 	Bảy giờ cô ấy ăn bữa sáng.
+500.	Whose pieces of paper are those?            	Những tờ giấy đó là của ai?
+501.	My wife is 30 years old this year.          	Vợ tôi năm nay ba mươi tuổi.
+502.	Thu Phương is eating steak, isn't she?      	Thu Phương đang ăn bít tết à?
+503.	My younger brother will be eight years.     	Năm sau em trai tôi tám tuổi.
+504.	Mom cooks the meal at 5:30 in the afternoon.	Mẹ nấu cơm lúc năm rưỡi chiều.
+505.	I like this cup of Vietnamese beer.         	Tôi thích ly bia Việt Nam này.
+506.	This picture is the older brother's.        	Bức tranh này là của anh trai.
+507.	Four chairs are one hundred British pounds. 	Bốn cái ghế một trăm bảng Anh.
+508.	Is An-na also drinking coffee?              	An-na cũng đang uống cà phê à?
 
-495.	Is An-na also drinking coffee?              	An-na cũng đang uống cà phê à?
-496.	Four chairs are one hundred British pounds. 	Bốn cái ghế một trăm bảng Anh.
-497.	This picture is the older brother's.        	Bức tranh này là của anh trai.
-498.	Mom cooks the meal at 5:30 in the afternoon.	Mẹ nấu cơm lúc năm rưỡi chiều.
-
-499.	My son was seven years old the year before  	Năm kia con trai tôi bảy tuổi.	
+509.	My son was seven years old the year before  	Năm kia con trai tôi bảy tuổi.	
     	last year.
 
-500.	I like this cup of Vietnamese beer.         	Tôi thích ly bia Việt Nam này.
-501.	Dad was 55 years old last year.             	Năm trước bố năm mươi lăm tuổi.
-502.	Tomorrow I will study Vietnamese.           	Ngày mai tôi sẽ học tiếng Việt.
-503.	Yesterday I also studied Vietnamese.        	Hôm qua tôi cũng học tiếng Việt.
+510.	Tomorrow I will study Vietnamese.           	Ngày mai tôi sẽ học tiếng Việt.
+511.	Dad was 55 years old last year.             	Năm trước bố năm mươi lăm tuổi.
+512.	Yesterday I also studied Vietnamese.        	Hôm qua tôi cũng học tiếng Việt.
 
-504.	The older brother doesn't like that photo   	Anh trai không thích bức ảnh kia.	
+513.	The older brother doesn't like that photo   	Anh trai không thích bức ảnh kia.	
     	over there.
 
-505.	I am not Vietnamese.                        	Tôi không phải la người Việt Nam.
-506.	I don't like the yellow duck.               	Tôi không thích con vịt màu vàng.
+514.	I don't like the yellow duck.               	Tôi không thích con vịt màu vàng.
+515.	I am not Vietnamese.                        	Tôi không phải la người Việt Nam.
 
-507.	Today I will work with G in the afternoon.  	Trưa nay tôi sẽ làm việc với G	
+516.	Today I will work with G in the afternoon.  	Trưa nay tôi sẽ làm việc với G	
     	(tôi)
 
-508.	What time does mom cook the meal today?     	Hôm nay mẹ nấu cơm lúc mấy giờ?
-509.	I have an appointment with the doctor.      	Tôi có một buổi hẹn với bác sĩ.
+517.	What time does mom cook the meal today?     	Hôm nay mẹ nấu cơm lúc mấy giờ?
+518.	I have an appointment with the doctor.      	Tôi có một buổi hẹn với bác sĩ.
+519.	These two notebooks are both mine.          	Hai quyển vở này đều là của tôi.
+520.	How old will his son be next year?          	Con trai anh ấy năm sau mấy tuổi?
 
-510.	These two notebooks are both mine.          	Hai quyển vở này đều là của tôi.
-511.	How old will his son be next year?          	Con trai anh ấy năm sau mấy tuổi?
-
-512.	I will talk to you when you wake up. (tôi,  	Tôi sẽ nói chuyện bao giờ em dậy.	
+521.	I will talk to you when you wake up. (tôi,  	Tôi sẽ nói chuyện bao giờ em dậy.	
     	em)
 
-513.	Those pieces of paper are ours.             	Những tờ giấy đó là của chúng tôi.
-514.	We eat at twelve o'clock sharp.             	Đúng mười hai giờ chúng tôi ăn cơm.
-515.	year 1957                                   	năm một ngàn chín trăm năm mươi bảy
-516.	My husband is not Vietnamese.               	Chồng tôi không phải là người Việt Nam.
-517.	Maybe I will also study math with Lan. (tôi)	Có thể tôi cũng sẽ học toán với Lan
+522.	Those pieces of paper are ours.             	Những tờ giấy đó là của chúng tôi.
+523.	We eat at twelve o'clock sharp.             	Đúng mười hai giờ chúng tôi ăn cơm.
+524.	year 1957                                   	năm một ngàn chín trăm năm mươi bảy
 
-518.	Probably I will not go to the gym or swim.  	Chác, tôi sẽ không đi gym hay đi bơi.	
+525.	My husband is not Vietnamese.               	Chồng tôi không phải là người Việt Nam.
+526.	Maybe I will also study math with Lan. (tôi)	Có thể tôi cũng sẽ học toán với Lan
+
+527.	Probably I will not go to the gym or swim.  	Chác, tôi sẽ không đi gym hay đi bơi.	
     	(tôi)
 
-519.	Do you guys run at 6:30 in the morning?     	Sáu rưỡi sáng các bạn có chạy bộ không?
+528.	Do you guys run at 6:30 in the morning?     	Sáu rưỡi sáng các bạn có chạy bộ không?
 
-520.	No, we run at six o'clock sharp in the      	Không, đúng sáu giờ sáng chúng tôi chạy bộ.	
+529.	No, we run at six o'clock sharp in the      	Không, đúng sáu giờ sáng chúng tôi chạy bộ.	
     	morning.
 
-521.	The older brother and older sister are all  	Anh trai và chị gái đều đang uống cà phê.	
+530.	The older brother and older sister are all  	Anh trai và chị gái đều đang uống cà phê.	
     	drinking coffee.
 
-522.	I will do chess at 1:45 (tôi).              	Tôi sẽ chơi chess lúc một giờ bốn mươi lăm.
+531.	I will do chess at 1:45 (tôi).              	Tôi sẽ chơi chess lúc một giờ bốn mươi lăm.
 
-523.	I will go swimming from 2:00 until 3:30.    	Tôi sẽ đi bơi từ hai giờ đến ba giờ ba mươi.	
+532.	I will go swimming from 2:00 until 3:30.    	Tôi sẽ đi bơi từ hai giờ đến ba giờ ba mươi.	
     	(tôi)
 
-524.	I will talk with Thal at 12:15 (tôi).       	Tôi sẽ nói chuyện với Thal lúc mười hai giờ	
+533.	I will talk with Thal at 12:15 (tôi).       	Tôi sẽ nói chuyện với Thal lúc mười hai giờ	
     	                                            	mười lăm.
 
-525.	Today I will go to the gym from 9:00 until  	Hôm nay tôi sẽ đi gym từ chín giờ đến mười	
+534.	Today I will go to the gym from 9:00 until  	Hôm nay tôi sẽ đi gym từ chín giờ đến mười	
     	11:30 (tôi).                                	một giờ ba mươi.
 
-526.	I will study Vietnamese with Thal from 12:15	Tôi sẽ học Tiêng Việt với Thal từ mười hai	
+535.	I will study Vietnamese with Thal from 12:15	Tôi sẽ học Tiêng Việt với Thal từ mười hai	
     	to 12:30. (tôi)                             	giờ mười lăm đến mười hai giờ ba mươi.

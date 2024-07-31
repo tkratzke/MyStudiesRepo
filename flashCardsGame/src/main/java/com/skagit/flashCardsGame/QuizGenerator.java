@@ -92,7 +92,7 @@ public class QuizGenerator {
 	}
     }
 
-    long[] getPropertyValues() {
+    long[] getChangeableQuizGeneratorValues() {
 	return new long[] { _topCardIndex };
     }
 
