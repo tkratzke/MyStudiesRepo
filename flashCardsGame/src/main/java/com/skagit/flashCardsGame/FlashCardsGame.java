@@ -102,7 +102,6 @@ public class FlashCardsGame {
 	_cardsFile = Statics.getCardsFile(_gameDir, cardsFileString);
 	final String soundFilesDirString = PropertyPlus.SOUND_FILES_DIR.getValidString(_properties);
 	_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
-	overwriteFcgFile(/* initialOverwrite= */true);
 
 	_diacriticsTreatment = DiacriticsTreatment
 		.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
@@ -120,6 +119,7 @@ public class FlashCardsGame {
 	}
 	_lagLengthInMilliseconds = Integer
 		.parseInt(PropertyPlus.LAG_LENGTH_IN_MILLISECONDS.getValidString(_properties));
+	overwriteFcgFile(/* initialOverwrite= */true);
 
 	_allSoundFiles = new TreeMap<>();
 	_partToStem = new TreeMap<>();
@@ -512,8 +512,11 @@ public class FlashCardsGame {
     }
 
     void updateProperties() {
-	_properties.put(PropertyPlus.RANDOM_SEED._propertyName, Long.toString(_randomSeed));
-	_quizGenerator.updateProperties(_properties);
+	updateChangeableProperties();
+	_quizGenerator.updateChangeableProperties(_properties);
+    }
+
+    void updateChangeableProperties() {
     }
 
     void overwriteFcgFile(final boolean initialOverwrite) {
@@ -611,6 +614,18 @@ public class FlashCardsGame {
 	return prompt + _quizGenerator.getTypeIIPrompt();
     }
 
+    private static PropertyPlus getPropertyPlus(final String propertyPlusShortName) {
+	if (propertyPlusShortName == null) {
+	    return null;
+	}
+	for (final PropertyPlus propertyPlus : PropertyPlus._Values) {
+	    if (propertyPlus._shortName.equals(propertyPlusShortName)) {
+		return propertyPlus;
+	    }
+	}
+	return null;
+    }
+
     final private void modifyProperties(final Scanner sc) {
 	for (;;) {
 	    if (_needLineFeed) {
@@ -625,20 +640,33 @@ public class FlashCardsGame {
 	    if (inputLine.length() == 0) {
 		return;
 	    }
-	    /**
-	     * Currently, we have no properties of our own to edit, so we immediately turn
-	     * it over to _quizGenerator.
-	     */
-	    _quizGenerator.modifySingleProperty(inputLine);
+	    final String inputLineUc = inputLine.toUpperCase();
+	    final String[] fields = inputLineUc.split(Statics._WhiteSpace);
+	    final int nFields = fields == null ? 0 : fields.length;
+	    final String propertyPlusShortName = (nFields < 1) ? null : fields[0].toUpperCase();
+	    final String propertyPlusValue = (nFields < 2) ? null : fields[1].toUpperCase();
+	    final PropertyPlus propertyPlus = getPropertyPlus(propertyPlusShortName);
+	    if (propertyPlus == null) {
+		continue;
+	    }
+	    if (PropertyPlus._ChangeableCoreProperties.contains(propertyPlus)) {
+		modifyProperty(propertyPlus, propertyPlusValue);
+	    } else if (PropertyPlus._ChangeableQuizGeneratorProperties.contains(propertyPlus)) {
+		_quizGenerator.modifyProperty(propertyPlus, propertyPlusValue);
+	    }
 	}
     }
 
-    public long[] getChangeableCoreValues() {
+    private void modifyProperty(final PropertyPlus propertyPlus, final String propertyPlusValue) {
+	/** No core properties can be modified. */
+    }
+
+    private long[] getChangeableLongPropertyValues() {
 	return new long[0];
     }
 
-    final boolean madeChangesFrom(final long[] oldValues) {
-	final long[] newValues = getCurrentChangeableValues();
+    final private boolean madeChangesFrom(final long[] oldValues) {
+	final long[] newValues = getAllCurrentChangeableValues();
 	final int nValues = newValues.length;
 	for (int k = 0; k < nValues; ++k) {
 	    if (newValues[k] != oldValues[k]) {
@@ -648,9 +676,9 @@ public class FlashCardsGame {
 	return false;
     }
 
-    final long[] getCurrentChangeableValues() {
-	final long[] coreValues = getChangeableCoreValues();
-	final long[] quizGeneratorValues = _quizGenerator.getChangeableQuizGeneratorValues();
+    final private long[] getAllCurrentChangeableValues() {
+	final long[] coreValues = getChangeableLongPropertyValues();
+	final long[] quizGeneratorValues = _quizGenerator.getChangeableLongPropertyValues();
 	final int nA = coreValues.length;
 	final int nB = quizGeneratorValues.length;
 	final long[] allChangeableValues = new long[nA + nB];
@@ -691,7 +719,7 @@ public class FlashCardsGame {
 
     void mainLoop(final Scanner sc) {
 	int nCards = _cards.length;
-	long[] oldChangeableValues = getCurrentChangeableValues();
+	long[] oldChangeableValues = getAllCurrentChangeableValues();
 	_quizPlus = null;
 	boolean restarted = false;
 
@@ -719,7 +747,7 @@ public class FlashCardsGame {
 	    if (madeChangesFrom(oldChangeableValues)) {
 		updateProperties();
 		overwriteFcgFile(/* initialOverwrite= */false);
-		oldChangeableValues = getCurrentChangeableValues();
+		oldChangeableValues = getAllCurrentChangeableValues();
 	    }
 
 	    final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();

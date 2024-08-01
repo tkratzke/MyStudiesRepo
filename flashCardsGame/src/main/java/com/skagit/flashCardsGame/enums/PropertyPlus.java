@@ -1,5 +1,6 @@
 package com.skagit.flashCardsGame.enums;
 
+import java.util.EnumSet;
 import java.util.Properties;
 
 public enum PropertyPlus {
@@ -102,6 +103,12 @@ public enum PropertyPlus {
     ),;
 
     final public static PropertyPlus[] _Values = values();
+
+    final public static EnumSet<PropertyPlus> _ChangeableCoreProperties = EnumSet.noneOf(PropertyPlus.class);
+
+    final public static EnumSet<PropertyPlus> _ChangeableQuizGeneratorProperties = EnumSet.of(//
+	    TOP_CARD_INDEX //
+    );
 
     final public String _propertyName;
     final public String _shortName;

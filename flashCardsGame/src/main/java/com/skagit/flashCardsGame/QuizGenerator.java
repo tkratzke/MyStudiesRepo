@@ -51,48 +51,11 @@ public class QuizGenerator {
 	correctQuizGeneratorProperties(nCards);
     }
 
-    void updateProperties(final Properties properties) {
-	for (final PropertyPlus propertyPlus : PropertyPlus._Values) {
-	    switch (propertyPlus) {
-	    case ALLOWABLE_MISS_PERCENTAGE:
-		properties.put(propertyPlus._propertyName, Integer.toString(_allowablePerCent) + '%');
-		break;
-	    case DECAY_TYPE:
-		properties.put(propertyPlus._propertyName, _decayType.name());
-		break;
-	    case CLUMPING:
-	    case DIACRITICS_TREATMENT:
-	    case BE_SILENT:
-	    case BACK_UP_FCG_AND_CARDS_FILES:
-	    case MODE:
-	    case CARDS_FILE:
-	    case SOUND_FILES_DIR:
-	    case LAG_LENGTH_IN_MILLISECONDS:
-	    case NUMBER_OF_NEW_WORDS:
-		properties.put(propertyPlus._propertyName, Integer.toString(_maxNNewWords));
-		break;
-	    case NUMBER_OF_RECENT_WORDS:
-		properties.put(propertyPlus._propertyName, Integer.toString(_maxNRecentWords));
-		break;
-	    case NUMBER_OF_TIMES_FOR_NEW_WORDS:
-		properties.put(propertyPlus._propertyName, Integer.toString(_nRepeatsOfNew));
-		break;
-	    case PERCENTAGE_FOR_RECENT_WORDS:
-		properties.put(propertyPlus._propertyName, Integer.toString(_percentageForRecentsI) + '%');
-		break;
-	    case BLOCK_SIZE:
-		properties.put(propertyPlus._propertyName, Integer.toString(_percentageForRecentsI));
-		break;
-	    case RANDOM_SEED:
-		break;
-	    case TOP_CARD_INDEX:
-		properties.put(propertyPlus._propertyName, Integer.toString(_topCardIndex));
-		break;
-	    }
-	}
+    void updateChangeableProperties(final Properties properties) {
+	properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName, Integer.toString(_topCardIndex));
     }
 
-    long[] getChangeableQuizGeneratorValues() {
+    long[] getChangeableLongPropertyValues() {
 	return new long[] { _topCardIndex };
     }
 
@@ -308,59 +271,18 @@ public class QuizGenerator {
     }
 
     String getTypeIIPrompt() {
-	return String.format("\n\tTCI(Top Card Index<%d>)", _topCardIndex);
+	return String.format("\n\t%s(Top Card Index<%d>)", //
+		PropertyPlus.TOP_CARD_INDEX._shortName, _topCardIndex);
     }
 
-    private PropertyPlus getPropertyPlus(final String propertyPlusShortName) {
-	if (propertyPlusShortName == null) {
-	    return null;
-	}
-	for (final PropertyPlus propertyPlus : PropertyPlus._Values) {
-	    if (propertyPlus._shortName.equals(propertyPlusShortName)) {
-		return propertyPlus;
-	    }
-	}
-	return null;
-    }
-
-    void modifySingleProperty(final String inputLine) {
-	final String inputLineUc = inputLine.toUpperCase();
-	final String[] fields = inputLineUc.split(Statics._WhiteSpace);
-	final int nFields = fields == null ? 0 : fields.length;
-	final String field0 = (nFields < 1) ? null : fields[0].toUpperCase();
-	final String field1 = (nFields < 2) ? null : fields[1].toUpperCase();
-	final PropertyPlus propertyPlus = getPropertyPlus(field0);
-	if (propertyPlus == null) {
-	    return;
-	}
+    void modifyProperty(final PropertyPlus propertyPlus, final String propertyPlusValue) {
 	/** Only one property that we might modify right now; TOP_CARD_INDEX. */
-	switch (propertyPlus) {
-	case TOP_CARD_INDEX:
-	    final int oldTopCardIdx = _topCardIndex;
+	if (propertyPlus == PropertyPlus.TOP_CARD_INDEX) {
 	    try {
-		_topCardIndex = Integer.parseInt(field1);
+		_topCardIndex = Integer.parseInt(propertyPlusValue);
 	    } catch (final NumberFormatException e) {
 		/** We get here if field1 is null or not a number. */
 	    }
-	    _changedQuizGeneratorParameters = oldTopCardIdx != _topCardIndex;
-	    return;
-	case ALLOWABLE_MISS_PERCENTAGE:
-	case DIACRITICS_TREATMENT:
-	case BE_SILENT:
-	case BACK_UP_FCG_AND_CARDS_FILES:
-	case MODE:
-	case BLOCK_SIZE:
-	case DECAY_TYPE:
-	case NUMBER_OF_NEW_WORDS:
-	case NUMBER_OF_RECENT_WORDS:
-	case NUMBER_OF_TIMES_FOR_NEW_WORDS:
-	case PERCENTAGE_FOR_RECENT_WORDS:
-	case RANDOM_SEED:
-	case CLUMPING:
-	case CARDS_FILE:
-	case SOUND_FILES_DIR:
-	case LAG_LENGTH_IN_MILLISECONDS:
-	    break;
 	}
     }
 
