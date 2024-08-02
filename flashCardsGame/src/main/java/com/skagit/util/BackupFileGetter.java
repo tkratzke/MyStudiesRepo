@@ -8,6 +8,9 @@ public class BackupFileGetter {
     final static Pattern _Pattern = Pattern.compile("^(.*?)(\\d+)$");
 
     public static File getBackupFile(final File f, final String suffix, final int nDigits) {
+	if (f == null || !f.isFile()) {
+	    return null;
+	}
 	final File fParent = f.getParentFile();
 	final String fName = f.getName();
 	if (!fName.toLowerCase().endsWith(suffix.toLowerCase())) {

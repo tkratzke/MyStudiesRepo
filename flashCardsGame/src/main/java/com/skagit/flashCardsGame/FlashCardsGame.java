@@ -54,7 +54,6 @@ public class FlashCardsGame {
     final private Mode _mode;
     final private int _blockSize;
     final private boolean _beSilent;
-    final private boolean _backUpFcgAndCardsFiles;
     final private long _lagLengthInMilliseconds;
     final private DiacriticsTreatment _diacriticsTreatment;
     final private Clumping _clumping;
@@ -68,23 +67,28 @@ public class FlashCardsGame {
 	_needLineFeed = false;
 	_gameDir = Statics.getGameDir(gameDirString);
 	_fcgFile = Statics.getGameFileFromDirFile(_gameDir);
-	if (_fcgFile == null) {
-	    _cardsFile = _soundFilesDir = null;
-	    _allSoundFiles = null;
-	    _partToStem = null;
-	    _properties = null;
-	    _randomSeed = 0;
-	    _lagLengthInMilliseconds = -1L;
-	    _mode = null;
-	    _blockSize = -1;
-	    _diacriticsTreatment = null;
-	    _clumping = null;
-	    _quizGenerator = null;
-	    _beSilent = true;
-	    _backUpFcgAndCardsFiles = false;
-	    return;
+	/** Back up the fcg file. */
+	final File fcgBackUpFile = BackupFileGetter.getBackupFile(_fcgFile, Statics._GameFileEndingLc,
+		Statics._NDigitsForCardsFileBackups);
+	if (!Statics.copyNonDirectoryFile(_fcgFile, fcgBackUpFile)) {
+	    if (_fcgFile == null) {
+		_cardsFile = _soundFilesDir = null;
+		_allSoundFiles = null;
+		_partToStem = null;
+		_properties = null;
+		_randomSeed = 0;
+		_lagLengthInMilliseconds = -1L;
+		_mode = null;
+		_blockSize = -1;
+		_diacriticsTreatment = null;
+		_clumping = null;
+		_quizGenerator = null;
+		_beSilent = true;
+		return;
+	    }
 	}
 
+	/** Load the Game. */
 	_properties = new Properties();
 	try (InputStreamReader isr = new InputStreamReader(new FileInputStream(_fcgFile), "UTF-8")) {
 	    final Properties properties = new Properties();
@@ -100,9 +104,26 @@ public class FlashCardsGame {
 	}
 	final String cardsFileString = PropertyPlus.CARDS_FILE.getValidString(_properties);
 	_cardsFile = Statics.getCardsFile(_gameDir, cardsFileString);
+	/** Back up _cardsFile. */
+	final File backUpCardsFile = BackupFileGetter.getBackupFile(_cardsFile, Statics._CardsFileEnding,
+		Statics._NDigitsForCardsFileBackups);
+	if (!Statics.copyNonDirectoryFile(_cardsFile, backUpCardsFile)) {
+	    _soundFilesDir = null;
+	    _diacriticsTreatment = null;
+	    _mode = null;
+	    _blockSize = -1;
+	    _randomSeed = 0;
+	    _clumping = null;
+	    _beSilent = false;
+	    _lagLengthInMilliseconds = -1L;
+	    _allSoundFiles = null;
+	    _partToStem = null;
+	    _quizGenerator = null;
+	    return;
+	}
+
 	final String soundFilesDirString = PropertyPlus.SOUND_FILES_DIR.getValidString(_properties);
 	_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
-
 	_diacriticsTreatment = DiacriticsTreatment
 		.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
 	_mode = Mode.valueOf(PropertyPlus.MODE.getValidString(_properties));
@@ -111,15 +132,8 @@ public class FlashCardsGame {
 	final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
 	_clumping = Clumping.valueOf(clumpingString);
 	_beSilent = Boolean.valueOf(PropertyPlus.BE_SILENT.getValidString(_properties));
-	if (Mode._DumpCardsAndAbort.contains(_mode)) {
-	    _backUpFcgAndCardsFiles = true;
-	} else {
-	    _backUpFcgAndCardsFiles = Boolean
-		    .valueOf(PropertyPlus.BACK_UP_FCG_AND_CARDS_FILES.getValidString(_properties));
-	}
 	_lagLengthInMilliseconds = Integer
 		.parseInt(PropertyPlus.LAG_LENGTH_IN_MILLISECONDS.getValidString(_properties));
-	overwriteFcgFile(/* initialOverwrite= */true);
 
 	_allSoundFiles = new TreeMap<>();
 	_partToStem = new TreeMap<>();
@@ -442,12 +456,6 @@ public class FlashCardsGame {
 	}
 	final String cluePartFormat = String.format("%%-%ds", maxCluePartLen);
 
-	if (_backUpFcgAndCardsFiles) {
-	    final File backUpFile = BackupFileGetter.getBackupFile(_cardsFile, Statics._CardsFileEnding,
-		    Statics._NDigitsForCardsFileBackups);
-	    _cardsFile.renameTo(backUpFile);
-	}
-
 	try (PrintWriter pw = new PrintWriter(_cardsFile)) {
 	    boolean recentWasMultiLine = false;
 	    for (int kCard = 0, nPrinted = 0; kCard < nCards; ++kCard) {
@@ -519,7 +527,7 @@ public class FlashCardsGame {
     void updateChangeableProperties() {
     }
 
-    void overwriteFcgFile(final boolean initialOverwrite) {
+    void overwriteFcgFile() {
 	final Properties properties;
 	final long seed = Long.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 	if (seed < 0) {
@@ -532,11 +540,6 @@ public class FlashCardsGame {
 	    properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName, Long.toString(topIndexCardIdx1));
 	} else {
 	    properties = _properties;
-	}
-	if (initialOverwrite && _backUpFcgAndCardsFiles) {
-	    final File backUpFile = BackupFileGetter.getBackupFile(_fcgFile, Statics._GameFileEndingLc,
-		    Statics._NDigitsForCardsFileBackups);
-	    _fcgFile.renameTo(backUpFile);
 	}
 
 	try (PrintWriter pw = new PrintWriter(new FileOutputStream(_fcgFile))) {
@@ -619,7 +622,8 @@ public class FlashCardsGame {
 	    return null;
 	}
 	for (final PropertyPlus propertyPlus : PropertyPlus._Values) {
-	    if (propertyPlus._shortName.equals(propertyPlusShortName)) {
+	    final String shortName = propertyPlus._shortName;
+	    if (shortName != null && shortName.equals(propertyPlusShortName)) {
 		return propertyPlus;
 	    }
 	}
@@ -746,7 +750,7 @@ public class FlashCardsGame {
 	    }
 	    if (madeChangesFrom(oldChangeableValues)) {
 		updateProperties();
-		overwriteFcgFile(/* initialOverwrite= */false);
+		overwriteFcgFile();
 		oldChangeableValues = getAllCurrentChangeableValues();
 	    }
 

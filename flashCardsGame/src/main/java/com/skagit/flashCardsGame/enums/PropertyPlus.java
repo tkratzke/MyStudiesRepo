@@ -10,7 +10,6 @@ public enum PropertyPlus {
 	    /* comment= */ "Strings that indicate where to find the Cards File," //
 		    + "\nthe directory of sound files, " //
 		    + "\nwhether or not to play the sounds, " //
-		    + "\nwhether or not to back up the property and Cards files, " //
 		    + "\nand how long to pause for each sound to finish."), //
     SOUND_FILES_DIR(/* propetyName= */ "Sound.Files.Dir", //
 	    /* shortName= */ null, //
@@ -20,13 +19,9 @@ public enum PropertyPlus {
 	    /* shortName= */null, //
 	    /* defaultValue= */Boolean.FALSE.toString(), //
 	    /* comment= */""), //
-    BACK_UP_FCG_AND_CARDS_FILES(/* propertyName= */"Back.Up.fcg.And.Cards.Files", //
-	    /* shortName= */ null, //
-	    Boolean.TRUE.toString(), //
-	    /* comment= */""), //
     LAG_LENGTH_IN_MILLISECONDS(/* propertyName= */"Lag.Length.In.Milliseconds", //
 	    /* shortName= */ null, //
-	    /* defaultValue= */ "1000", //
+	    /* defaultValue= */ "-1", //
 	    /* comment= */""), //
 
     TOP_CARD_INDEX(/* propertyName= */"Top.Card.Index", //
@@ -190,8 +185,6 @@ public enum PropertyPlus {
 	    }
 	    return s;
 	case BE_SILENT:
-	    return String.valueOf(Boolean.valueOf(s));
-	case BACK_UP_FCG_AND_CARDS_FILES:
 	    return String.valueOf(Boolean.valueOf(s));
 	}
 	/** To keep the compiler happy: */

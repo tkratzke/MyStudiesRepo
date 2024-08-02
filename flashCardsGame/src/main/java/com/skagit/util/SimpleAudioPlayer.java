@@ -44,30 +44,31 @@ public class SimpleAudioPlayer {
     public static boolean checkAudioFile(final File f, final boolean playFile, final long lagLengthInMs) {
 	final CountDownLatch countDownLatch = new CountDownLatch(1);
 	try (//
-		final AudioInputStream stream = AudioSystem.getAudioInputStream(f.getAbsoluteFile()); //
-		Clip clip = AudioSystem.getClip() //
+		final AudioInputStream stream = AudioSystem.getAudioInputStream(f.getAbsoluteFile()) //
 	) {
-	    clip.addLineListener(event -> {
-		if (event.getType() == LineEvent.Type.STOP) {
-		    /** Wait a specified amount of time for any latency after the STOP event. */
-		    if (lagLengthInMs > 0L) {
-			try {
-			    Thread.sleep(lagLengthInMs);
-			} catch (final InterruptedException e) {
-			}
-		    }
-		    countDownLatch.countDown();
-		}
-	    });
-	    clip.open(stream);
 	    if (!playFile) {
 		return true;
 	    }
-	    clip.start();
-	    try {
-		/** Wait until the count down, which is triggered by the stop event. */
-		countDownLatch.await();
-	    } catch (final InterruptedException e) {
+	    try (Clip clip = AudioSystem.getClip()) {
+		clip.addLineListener(event -> {
+		    if (event.getType() == LineEvent.Type.STOP) {
+			/** Wait a specified amount of time for any latency after the STOP event. */
+			if (lagLengthInMs > 0L) {
+			    try {
+				Thread.sleep(lagLengthInMs);
+			    } catch (final InterruptedException e) {
+			    }
+			}
+			countDownLatch.countDown();
+		    }
+		});
+		clip.open(stream);
+		clip.start();
+		try {
+		    /** Wait until the count down, which is triggered by the stop event. */
+		    countDownLatch.await();
+		} catch (final InterruptedException e) {
+		}
 	    }
 	} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 	    return false;

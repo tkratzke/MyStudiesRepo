@@ -93,17 +93,18 @@
  82.	to cough                                    	ho
  83.	to go outside (without d )                  	ra
  84.	to return                                   	về
- 85.	jar                                         	hủ
+ 85.	a jar                                         	hủ
  86.	far away                                    	xa
  87.	a vat                                       	lu
  88.	an incense burner                           	lư
- 89.	an apricot/to dream                         	mơ
+ 89.	an apricot                         	mơ
+89.	to dream                         	mơ
 
  90.	a big bowl                                  	tô
- 91.	a bow                                       	nơ
+ 91.	a bow (eg with ribbon)                                       	nơ
  92.	an umbrella                                 	dù
  93.	to swing or a swing                         	đu
- 94.	go/walk                                     	đi
+ 94.	go or walk                                     	đi
  95.	soursop                                     	na
  96.	a tamarind                                  	me
  97.	a donkey                                    	la
@@ -139,7 +140,7 @@
 125.	to tap hit or drum                          	gõ
 126.	a tocsin (wooden bell or bamboo tocsin)     	mõ
 127.	a vat                                       	hũ
-128.	a wood                                      	gỗ
+128.	wood                                      	gỗ
 129.	a holiday                                   	lễ
 130.	cent                                        	xu
 131.	to compare                                  	so

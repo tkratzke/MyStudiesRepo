@@ -1,7 +1,11 @@
 package com.skagit.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -74,11 +78,21 @@ public class Statics {
     final public static String _RegExForPunct = "[,.;:?!]+";
     final public static String _Sep1 = Character.toString(_ClubSymbolChar);
     final public static String _Sep2 = Character.toString(_DiamondSymbolChar) + " ";
-    final public static String _HelpString = String.format(
-	    "%c=\"Show this Message,\" %c=Quit, %c=Edit Properties, %c=Restart Quiz, " //
-		    + "%c=Reload Cards, %c=\"Show-and-ask,\" %s=Next Line is Continuation",
-	    _HelpChar, _QuitChar, _EditPropertiesChar, _RestartQuizChar, _ReloadCardsChar, _ReturnChar,
-	    Character.toString(_TabSymbolChar) + _ReturnChar);
+    final public static String _HelpString = String.format("%c=Show this Message, \n" //
+	    + "%c=Quit, \n" //
+	    + "%c=Edit Properties, \n" //
+	    + "%c=Restart Quiz, \n" //
+	    + "%c=Reload Cards, \n" //
+	    + "%c=Show-and-ask, \n" //
+	    + "%s=Next Line is Continuation", //
+	    _HelpChar, //
+	    _QuitChar, //
+	    _EditPropertiesChar, //
+	    _RestartQuizChar, //
+	    _ReloadCardsChar, //
+	    _ReturnChar, //
+	    Character.toString(_TabSymbolChar) + _ReturnChar//
+    );
     final public static String _IndentString = String.format(String.format("%%-%ds", _NominalTabLen), "");
     final public static String _NoString = "No";
     final public static String _PrefaceForNewLine = _IndentString + _Sep1;
@@ -467,6 +481,33 @@ public class Statics {
 	    }
 	}
 	return null;
+    }
+
+    public static boolean copyNonDirectoryFile(final File sourceFile, final File destinationFile) {
+	if (sourceFile == null || !sourceFile.isFile()) {
+	    return false;
+	}
+	if (destinationFile == null) {
+	    return false;
+	}
+	if (destinationFile.exists()) {
+	    if (!destinationFile.isFile() || !destinationFile.delete()) {
+		return false;
+	    }
+	}
+	try (//
+		InputStream in = new FileInputStream(sourceFile); //
+		OutputStream out = new FileOutputStream(destinationFile) //
+	) {
+	    final byte[] buf = new byte[1024];
+	    int len;
+	    while ((len = in.read(buf)) > 0) {
+		out.write(buf, 0, len);
+	    }
+	} catch (final IOException e) {
+	    return false;
+	}
+	return true;
     }
 
     public static void mainx(final String[] args) {
