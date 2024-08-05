@@ -46,9 +46,9 @@ public class Statics {
     final public static char _FileDelimiter = '%';
     final public static String _SoundString, _PenString;
 
-    final public static String _CardsFileEnding = "-Cards.txt";
+    final public static String _CardsFileEnding = ".txt";
     final public static int _NDigitsForCardsFileBackups = 2;
-    final public static String _SoundFilesDirEnding = "-SoundFiles";
+    final public static String _SoundFilesDirEndingx = "-SoundFiles";
 
     static {
 	final byte[] soundBytes = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x94, (byte) 0x8A };
@@ -68,7 +68,7 @@ public class Statics {
     final public static int _MaxNFailsPerElement = 5;
     final public static int _NominalTabLen = 8;
 
-    final public static String _GameFileEndingLc = "-fcg.properties";
+    final public static String _GameFileEndingLc = ".properties";
     final public static String _CommentString = Character.toString(_CommentChar) + ' ';
     final public static String _CountAsRightString = "Count as Right? ";
     final public static String _EndCardsString = "$$";
@@ -260,7 +260,7 @@ public class Statics {
 	return null;
     }
 
-    private static String turnSlashesAround(final String path0) {
+    private static String convertToFileSeparator(final String path0) {
 	/** Turn all slashes to File.separator. */
 	final String path1 = path0.replaceAll(Pattern.quote("/"), Matcher.quoteReplacement(File.separator));
 	return path1.replaceAll(Pattern.quote("\\"), Matcher.quoteReplacement(File.separator));
@@ -282,7 +282,7 @@ public class Statics {
 	    return null;
 	}
 	/** Turn all slashes to File.separator. */
-	final String path = turnSlashesAround(path0);
+	final String path = convertToFileSeparator(path0);
 	final int len = path == null ? 0 : path.length();
 	if (path.charAt(len - 1) == File.separatorChar) {
 	    /** Case 4 above. */
@@ -310,49 +310,29 @@ public class Statics {
     }
 
     public static File getGameDir(final String gameDirString) {
-	/**
-	 * We try interpreting gameDirString as a directory by checking for it under,
-	 * GamesDirs, user.dir, and by itself.
-	 */
-	final File f0 = new File(DirsTracker.getGamesDirsDir(), gameDirString);
-	if (f0.isDirectory() && dirHasGameFile(f0)) {
-	    return f0;
-	}
-	final File f1 = new File(DirsTracker.getUserDir(), gameDirString);
-	if (f1.isDirectory() && dirHasGameFile(f1)) {
-	    return f1;
-	}
-	final File f2 = new File(gameDirString);
-	if (f2.isDirectory() && dirHasGameFile(f2)) {
-	    return f2;
-	}
-	/**
-	 * Could not interpret it as a directory. Try as a file. Files must end in
-	 * _GameFileEndingLc
-	 */
-	if (gameDirString.toLowerCase().endsWith(_GameFileEndingLc)) {
-	    final File f = new File(gameDirString);
-	    final String fName0 = f.getName();
-	    final String fName1 = fName0.substring(0, fName0.length() - _GameFileEndingLc.length());
-	    final File parentDir = new File(gameDirString).getParentFile();
-	    if (fName1.equalsIgnoreCase(parentDir.getName())) {
-		return parentDir;
+	for (int iPass = 0; iPass < 3; ++iPass) {
+	    final File grandParentDir;
+	    switch (iPass) {
+	    case 0:
+		grandParentDir = DirsTracker.getGamesDir();
+		break;
+	    case 1:
+		grandParentDir = DirsTracker.getUserDir();
+		break;
+	    default:
+		grandParentDir = new File(gameDirString);
+	    }
+	    final File gameDir = new File(grandParentDir, gameDirString);
+	    if (!gameDir.isDirectory()) {
+		continue;
+	    }
+	    final String gameName = gameDir.getName();
+	    final File gameFile = new File(gameDir, gameName + _GameFileEndingLc);
+	    if (gameFile.isFile()) {
+		return gameDir;
 	    }
 	}
 	return null;
-    }
-
-    private static boolean dirHasGameFile(final File dir) {
-	return getGameFileFromDirFile(dir) != null;
-    }
-
-    public static File getGameFileFromDirFile(final File dir) {
-	if (dir == null) {
-	    return null;
-	}
-	final String dName = dir.getName();
-	final File gameFile = new File(dir, dName + _GameFileEndingLc);
-	return gameFile.isFile() ? gameFile : null;
     }
 
     /**
@@ -400,7 +380,7 @@ public class Statics {
 	} else {
 	    cardsFileString1 = cardsFileString0;
 	}
-	final String cardsFileString2 = turnSlashesAround(cardsFileString1);
+	final String cardsFileString2 = convertToFileSeparator(cardsFileString1);
 
 	final File[] dirsToTry = new File[] { //
 		gameDir, //
@@ -446,13 +426,8 @@ public class Statics {
 
     public static File getSoundFilesDir(final File gameDir, final String soundFilesString0) {
 	final int len = soundFilesString0 == null ? 0 : soundFilesString0.length();
-	final String soundFilesString1;
-	if (len == 0) {
-	    soundFilesString1 = gameDir.getName() + _SoundFilesDirEnding;
-	} else {
-	    soundFilesString1 = soundFilesString0;
-	}
-	final String soundFilesString2 = turnSlashesAround(soundFilesString1);
+	final String soundFilesString1 = len == 0 ? gameDir.getName() : soundFilesString0;
+	final String soundFilesString = convertToFileSeparator(soundFilesString1);
 
 	/**
 	 * <pre>
@@ -467,12 +442,6 @@ public class Statics {
 		DirsTracker.getSoundFilesDirsDir() //
 	};
 	for (int iPass = 0; iPass < 2; ++iPass) {
-	    final String soundFilesString;
-	    if (iPass == 0) {
-		soundFilesString = soundFilesString2;
-	    } else {
-		soundFilesString = soundFilesString2 + _SoundFilesDirEnding;
-	    }
 	    for (final File dir : dirsToTry) {
 		final File f = new File(dir, soundFilesString);
 		if (f.isDirectory()) {

@@ -7,17 +7,17 @@ import java.io.PrintStream;
 
 public class DirsTracker {
 
-    final private static String _GamesDirsName = "GamesDirs";
-    final private static String _DataDirName = "Data";
-    final private static String _CardFilesDirName = "CardFiles";
-    final private static String _SoundFilesDirsName = "SoundFilesDirs";
-    final private static String _LogDirName = "LogFiles";
     final private static File _UserDir;
     final private static File _RunDir;
-    final private static File _GamesDirsDir;
+    final private static String _DataDirName = "Data";
+    final private static String _GamesDirName = "Games";
+    final private static String _CardFilesDirName = "CardFiles";
+    final private static String _SoundFileDirsDirName = "SoundFiles";
+    final private static String _LogDirName = "LogFiles";
+    final private static File _DataDir;
+    final private static File _GamesDir;
     final private static File _CardFilesDir;
     final private static File _SoundFilesDirsDir;
-    final private static File _DataDir;
     final private static File _LogDir;
 
     static {
@@ -52,11 +52,11 @@ public class DirsTracker {
 	}
 	if (_RunDir != null && _RunDir.isDirectory()) {
 	    _DataDir = new File(_RunDir, _DataDirName);
-	    _GamesDirsDir = new File(_RunDir, _GamesDirsName);
+	    _GamesDir = new File(_RunDir, _GamesDirName);
 	    _CardFilesDir = new File(_DataDir, _CardFilesDirName);
-	    _SoundFilesDirsDir = new File(_DataDir, _SoundFilesDirsName);
+	    _SoundFilesDirsDir = new File(_DataDir, _SoundFileDirsDirName);
 	} else {
-	    _DataDir = _GamesDirsDir = _CardFilesDir = _SoundFilesDirsDir = null;
+	    _DataDir = _GamesDir = _CardFilesDir = _SoundFilesDirsDir = null;
 	}
     }
 
@@ -135,8 +135,8 @@ public class DirsTracker {
 	return computeRunDir();
     }
 
-    public static File getGamesDirsDir() {
-	return _GamesDirsDir;
+    public static File getGamesDir() {
+	return _GamesDir;
     }
 
     public static File getCardFilesDir() {
@@ -148,14 +148,14 @@ public class DirsTracker {
     }
 
     public static String getDirCasesFinderDirsString() {
-	String s = "";
-	s += "User Dir: " + Statics.getCanonicalPath(getUserDir());
+	String s = "Version 2024-08-05.A";
+	s += "\nUser Dir: " + Statics.getCanonicalPath(getUserDir());
 	s += "\nRunDir: " + Statics.getCanonicalPath(getRunDir());
 	s += "\nLogDir: " + Statics.getCanonicalPath(getLogDir());
-	s += "\nGamesDir: " + Statics.getCanonicalPath(getGamesDirsDir());
 	s += "\nDataDir: " + Statics.getCanonicalPath(getDataDir());
 	s += "\nCardFilesDir: " + Statics.getCanonicalPath(getCardFilesDir());
-	s += "\nSoundFilesDirsDirDir: " + Statics.getCanonicalPath(getSoundFilesDirsDir());
+	s += "\nSoundFilesDirsDir: " + Statics.getCanonicalPath(getSoundFilesDirsDir());
+	s += "\nGamesDir: " + Statics.getCanonicalPath(getGamesDir());
 	return s;
     }
 

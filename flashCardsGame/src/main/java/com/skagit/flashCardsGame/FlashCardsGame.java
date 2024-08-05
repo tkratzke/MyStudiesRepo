@@ -42,7 +42,7 @@ import com.skagit.util.Statics.YesNoResponse;
 public class FlashCardsGame {
 
     final private File _gameDir;
-    final private File _fcgFile;
+    final private File _gameFile;
     final private File _cardsFile;
     final private File _soundFilesDir;
 
@@ -66,31 +66,33 @@ public class FlashCardsGame {
     FlashCardsGame(final String gameDirString) {
 	_needLineFeed = false;
 	_gameDir = Statics.getGameDir(gameDirString);
-	_fcgFile = Statics.getGameFileFromDirFile(_gameDir);
-	/** Back up the fcg file. */
-	final File fcgBackUpFile = BackupFileGetter.getBackupFile(_fcgFile, Statics._GameFileEndingLc,
+	final String dName = _gameDir.getName();
+	_gameFile = new File(_gameDir, dName + Statics._GameFileEndingLc);
+	/** Back up _gameFile. */
+	final File gameFileBackUp = BackupFileGetter.getBackupFile(_gameFile, Statics._GameFileEndingLc,
 		Statics._NDigitsForCardsFileBackups);
-	if (!Statics.copyNonDirectoryFile(_fcgFile, fcgBackUpFile)) {
-	    if (_fcgFile == null) {
-		_cardsFile = _soundFilesDir = null;
-		_allSoundFiles = null;
-		_partToStem = null;
-		_properties = null;
-		_randomSeed = 0;
-		_lagLengthInMilliseconds = -1L;
-		_mode = null;
-		_blockSize = -1;
-		_diacriticsTreatment = null;
-		_clumping = null;
-		_quizGenerator = null;
-		_beSilent = true;
-		return;
-	    }
+	if (!Statics.copyNonDirectoryFile(_gameFile, gameFileBackUp)) {
+	    System.err.println(
+		    String.format("Failed to copy %s to %s.", _gameFile.toString(), gameFileBackUp.toString()));
+	    _cardsFile = _soundFilesDir = null;
+	    _allSoundFiles = null;
+	    _partToStem = null;
+	    _properties = null;
+	    _randomSeed = 0;
+	    _lagLengthInMilliseconds = -1L;
+	    _mode = null;
+	    _blockSize = -1;
+	    _diacriticsTreatment = null;
+	    _clumping = null;
+	    _quizGenerator = null;
+	    _beSilent = true;
+	    return;
 	}
+	System.out.println(String.format("Copied %s to %s.", _gameFile.toString(), gameFileBackUp.toString()));
 
 	/** Load the Game. */
 	_properties = new Properties();
-	try (InputStreamReader isr = new InputStreamReader(new FileInputStream(_fcgFile), "UTF-8")) {
+	try (InputStreamReader isr = new InputStreamReader(new FileInputStream(_gameFile), "UTF-8")) {
 	    final Properties properties = new Properties();
 	    properties.load(isr);
 	    final int nPropertyPluses = PropertyPlus._Values.length;
@@ -108,6 +110,8 @@ public class FlashCardsGame {
 	final File backUpCardsFile = BackupFileGetter.getBackupFile(_cardsFile, Statics._CardsFileEnding,
 		Statics._NDigitsForCardsFileBackups);
 	if (!Statics.copyNonDirectoryFile(_cardsFile, backUpCardsFile)) {
+	    System.err.println(
+		    String.format("Failed to copy %s to %s.", _cardsFile.toString(), backUpCardsFile.toString()));
 	    _soundFilesDir = null;
 	    _diacriticsTreatment = null;
 	    _mode = null;
@@ -121,6 +125,7 @@ public class FlashCardsGame {
 	    _quizGenerator = null;
 	    return;
 	}
+	System.out.println(String.format("Copied %s to %s.", _cardsFile.toString(), backUpCardsFile.toString()));
 
 	final String soundFilesDirString = PropertyPlus.SOUND_FILES_DIR.getValidString(_properties);
 	_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
@@ -157,10 +162,6 @@ public class FlashCardsGame {
 	_quizGenerator = new QuizGenerator(_mode, _properties, _cards.length, _randomSeed);
 	shuffleCards(_cards);
 	_quizPlus = null;
-
-	System.out.println();
-	System.out.print(Statics._HelpString);
-	System.out.println();
     }
 
     private void addToSoundFiles(final File mainDir) {
@@ -527,7 +528,7 @@ public class FlashCardsGame {
     void updateChangeableProperties() {
     }
 
-    void overwriteFcgFile() {
+    void overwriteGameFile() {
 	final Properties properties;
 	final long seed = Long.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
 	if (seed < 0) {
@@ -542,7 +543,7 @@ public class FlashCardsGame {
 	    properties = _properties;
 	}
 
-	try (PrintWriter pw = new PrintWriter(new FileOutputStream(_fcgFile))) {
+	try (PrintWriter pw = new PrintWriter(new FileOutputStream(_gameFile))) {
 	    final int nPropertyPluses = PropertyPlus._Values.length;
 	    for (int k0 = 0; k0 < nPropertyPluses; ++k0) {
 		final PropertyPlus propertyPlus = PropertyPlus._Values[k0];
@@ -691,14 +692,12 @@ public class FlashCardsGame {
 	return allChangeableValues;
     }
 
-    final String getString() {
+    final public String getString() {
 	final String s0 = String.format(//
 		"GameFile     : %s\n" //
-			+ "GameDir      : %s\n" //
 			+ "CardsFile    : %s\n" //
 			+ "SoundFilesDir: %s", //
-		_fcgFile == null ? "NULL" : _fcgFile, //
-		_gameDir == null ? "NULL" : _gameDir, //
+		_gameFile == null ? "NULL" : _gameFile, //
 		_cardsFile == null ? "NULL" : _cardsFile, //
 		_soundFilesDir == null ? "NULL" : _soundFilesDir //
 	);
@@ -706,7 +705,7 @@ public class FlashCardsGame {
 	return s0 + "\n" + s1;
     }
 
-    final String getString0() {
+    final private String getString0() {
 	String s = String.format("%s RandomSeed[%d]", //
 		_cards != null ? String.format("(w/ %d cards)", _cards.length) : "", //
 		_randomSeed);
@@ -750,7 +749,7 @@ public class FlashCardsGame {
 	    }
 	    if (madeChangesFrom(oldChangeableValues)) {
 		updateProperties();
-		overwriteFcgFile();
+		overwriteGameFile();
 		oldChangeableValues = getAllCurrentChangeableValues();
 	    }
 
@@ -1043,14 +1042,13 @@ public class FlashCardsGame {
     public static void main(final String[] args) {
 	System.out.printf("SoundString=%s, PenString=%s, IndentString=\"%s\", SpecialChars=\"%s\"",
 		Statics._SoundString, Statics._PenString, Statics._IndentString, new String(Statics._SpecialChars));
-	System.out.println();
-	System.out.println(DirsTracker.getDirCasesFinderDirsString());
+	System.out.printf("\n%s\n", DirsTracker.getDirCasesFinderDirsString());
 	final FlashCardsGame flashCardsGame = new FlashCardsGame(args[0]);
-	System.out.println(flashCardsGame.getString());
+	// System.out.println(flashCardsGame.getString());
 	if (!Mode._DumpCardsAndAbort.contains(flashCardsGame._mode)) {
-	    System.out.println();
 	    try (Scanner sc = new Scanner(System.in)) {
 		flashCardsGame.mainLoop(sc);
+		System.out.println();
 		System.out.println("Exiting Program");
 	    } catch (final Exception e) {
 		e.printStackTrace();
