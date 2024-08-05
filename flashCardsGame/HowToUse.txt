@@ -14,14 +14,14 @@
 3.	Copy the RunDir folder to wherever you wish to run the program.
 	You can double-click the .bat file and you will be using the "FlashCardsGame"
 	Vietnamese.A.  This is a reference to the folder Vietnamese.A found in
-	RunDir\GameDirs.  This folder contains the file Vietnamese.A-fcg.properties.
+	RunDir\Games.  This folder contains the file Vietnamese.A.properties.
 
-4.	You can text-edit the file Vietnamese.A-fcg.properties to tweak the program.
+4.	You can text-edit the file Vietnamese.A.properties to tweak the program.
 	The most important lines are:
 	Card.Files=
 	Sound.Files=
 	These refer to where to find the Cards and sound files, and those are
-	relative to the directories RunDir/Data/CardFiles and RunDir/Data/SoundFilesDirs.
+	relative to the directories RunDir/Data/CardFiles and RunDir/Data/SoundFiles.
 
 5.	Other properties that you can edit are:
 	a.	Top.Card.Index: Change this if you want to start somewhere other than the beginning.
