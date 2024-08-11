@@ -29,6 +29,7 @@ import com.skagit.util.CommentParts;
 import com.skagit.util.DirsTracker;
 import com.skagit.util.InputString;
 import com.skagit.util.LineBreakDown;
+import com.skagit.util.MyProperties;
 import com.skagit.util.SimpleAudioPlayer;
 import com.skagit.util.Statics;
 import com.skagit.util.Statics.YesNoResponse;
@@ -41,7 +42,6 @@ import com.skagit.util.Statics.YesNoResponse;
  */
 public class FlashCardsGame {
 
-    final private File _gameDir;
     final private File _gameFile;
     final private File _cardsFile;
     final private File _soundFilesDir;
@@ -49,7 +49,7 @@ public class FlashCardsGame {
     final private TreeMap<String, File> _allSoundFiles;
     final private TreeMap<String, String> _partToStem;
 
-    final private Properties _properties;
+    final private MyProperties _properties;
     final private long _randomSeed;
     final private Mode _mode;
     final private int _blockSize;
@@ -63,13 +63,11 @@ public class FlashCardsGame {
     private QuizPlus _quizPlus;
     private boolean _needLineFeed;
 
-    FlashCardsGame(final String gameDirString) {
+    FlashCardsGame(final String gameFileString) {
+	_gameFile = Statics.getGameFile(gameFileString);
 	_needLineFeed = false;
-	_gameDir = Statics.getGameDir(gameDirString);
-	final String dName = _gameDir.getName();
-	_gameFile = new File(_gameDir, dName + Statics._GameFileEndingLc);
 	/** Back up _gameFile. */
-	final File gameFileBackUp = BackupFileGetter.getBackupFile(_gameFile, Statics._GameFileEndingLc,
+	final File gameFileBackUp = BackupFileGetter.getBackupFile(_gameFile, "." + Statics._GameFileExtensionLc,
 		Statics._NDigitsForCardsFileBackups);
 	if (!Statics.copyNonDirectoryFile(_gameFile, gameFileBackUp)) {
 	    System.err.println(
@@ -88,10 +86,13 @@ public class FlashCardsGame {
 	    _beSilent = true;
 	    return;
 	}
+	final String[] stemAndExtension = Statics.getStemAndExtension(_gameFile.getName());
+	final String stem = stemAndExtension[0];
 	System.out.println(String.format("Copied %s to %s.", _gameFile.toString(), gameFileBackUp.toString()));
+	System.out.println(String.format("Stem=%s", stem));
 
 	/** Load the Game. */
-	_properties = new Properties();
+	_properties = new MyProperties();
 	try (InputStreamReader isr = new InputStreamReader(new FileInputStream(_gameFile), "UTF-8")) {
 	    final Properties properties = new Properties();
 	    properties.load(isr);
@@ -99,15 +100,23 @@ public class FlashCardsGame {
 	    for (int k = 0; k < nPropertyPluses; ++k) {
 		final PropertyPlus propertyPlus = PropertyPlus._Values[k];
 		final String key = propertyPlus._propertyName;
-		final String validatedString = propertyPlus.getValidString(properties);
+		final String value0 = (String) properties.get(key);
+		final String value;
+		if (value0 == null
+			&& (propertyPlus == PropertyPlus.CARDS_FILE || propertyPlus == PropertyPlus.SOUND_FILES)) {
+		    value = stem;
+		} else {
+		    value = value0;
+		}
+		final String validatedString = _properties.getValidString(propertyPlus, value);
 		_properties.put(key, validatedString);
 	    }
 	} catch (final IOException e) {
 	}
-	final String cardsFileString = PropertyPlus.CARDS_FILE.getValidString(_properties);
-	_cardsFile = Statics.getCardsFile(_gameDir, cardsFileString);
+	final String cardsFileString = (String) _properties.get(PropertyPlus.CARDS_FILE._propertyName);
+	_cardsFile = Statics.getCardsFile(_gameFile.getParentFile(), cardsFileString);
 	/** Back up _cardsFile. */
-	final File backUpCardsFile = BackupFileGetter.getBackupFile(_cardsFile, Statics._CardsFileEnding,
+	final File backUpCardsFile = BackupFileGetter.getBackupFile(_cardsFile, "." + Statics._CardsFileExtensionLc,
 		Statics._NDigitsForCardsFileBackups);
 	if (!Statics.copyNonDirectoryFile(_cardsFile, backUpCardsFile)) {
 	    System.err.println(
@@ -127,18 +136,17 @@ public class FlashCardsGame {
 	}
 	System.out.println(String.format("Copied %s to %s.", _cardsFile.toString(), backUpCardsFile.toString()));
 
-	final String soundFilesDirString = PropertyPlus.SOUND_FILES_DIR.getValidString(_properties);
-	_soundFilesDir = Statics.getSoundFilesDir(_gameDir, soundFilesDirString);
+	final String soundFilesDirString = (String) _properties.get(PropertyPlus.SOUND_FILES._propertyName);
+	_soundFilesDir = Statics.getSoundFilesDir(_gameFile.getParentFile(), soundFilesDirString);
 	_diacriticsTreatment = DiacriticsTreatment
-		.valueOf(PropertyPlus.DIACRITICS_TREATMENT.getValidString(_properties));
-	_mode = Mode.valueOf(PropertyPlus.MODE.getValidString(_properties));
-	_blockSize = Integer.parseInt(PropertyPlus.BLOCK_SIZE.getValidString(_properties));
-	_randomSeed = Integer.parseInt(PropertyPlus.RANDOM_SEED.getValidString(_properties));
-	final String clumpingString = PropertyPlus.CLUMPING.getValidString(_properties);
-	_clumping = Clumping.valueOf(clumpingString);
-	_beSilent = Boolean.valueOf(PropertyPlus.BE_SILENT.getValidString(_properties));
-	_lagLengthInMilliseconds = Integer
-		.parseInt(PropertyPlus.LAG_LENGTH_IN_MILLISECONDS.getValidString(_properties));
+		.valueOf(_properties.getValidString(PropertyPlus.DIACRITICS_TREATMENT, null));
+	_mode = Mode.valueOf(_properties.getValidString(PropertyPlus.MODE, null));
+	_clumping = Clumping.valueOf(_properties.getValidString(PropertyPlus.CLUMPING, null));
+	_beSilent = Boolean.valueOf(_properties.getValidString(PropertyPlus.BE_SILENT, null));
+	_blockSize = Integer.parseInt(_properties.getValidString(PropertyPlus.BLOCK_SIZE, null));
+	_randomSeed = Long.parseLong(_properties.getValidString(PropertyPlus.RANDOM_SEED, null));
+	_lagLengthInMilliseconds = Long
+		.parseLong(_properties.getValidString(PropertyPlus.LAG_LENGTH_IN_MILLISECONDS, null));
 
 	_allSoundFiles = new TreeMap<>();
 	_partToStem = new TreeMap<>();
@@ -530,15 +538,18 @@ public class FlashCardsGame {
 
     void overwriteGameFile() {
 	final Properties properties;
-	final long seed = Long.parseLong(PropertyPlus.RANDOM_SEED.getValidString(_properties));
+	final long seed = Long
+		.parseLong(_properties.getValidString(PropertyPlus.RANDOM_SEED, Long.toString(_randomSeed)));
 	if (seed < 0) {
 	    properties = (Properties) _properties.clone();
-	    final int topCardIdx0 = Integer.parseInt(PropertyPlus.TOP_CARD_INDEX.getValidString(_properties));
-	    final int maxNNewWords = Integer.parseInt(PropertyPlus.NUMBER_OF_NEW_WORDS.getValidString(_properties));
+	    final int topCardIdx0 = Integer.parseInt(_properties.getValidString(PropertyPlus.TOP_CARD_INDEX,
+		    Integer.toString(_quizGenerator._topCardIndex)));
+	    final int maxNNewWords = Integer
+		    .parseInt(_properties.getValidString(PropertyPlus.NUMBER_OF_NEW_WORDS, null));
 	    final int maxNRecentWords = Integer
-		    .parseInt(PropertyPlus.NUMBER_OF_RECENT_WORDS.getValidString(_properties));
+		    .parseInt(_properties.getValidString(PropertyPlus.NUMBER_OF_RECENT_WORDS, null));
 	    final int topIndexCardIdx1 = Math.min(topCardIdx0, maxNNewWords + maxNRecentWords - 1);
-	    properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName, Long.toString(topIndexCardIdx1));
+	    properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName, Integer.toString(topIndexCardIdx1));
 	} else {
 	    properties = _properties;
 	}

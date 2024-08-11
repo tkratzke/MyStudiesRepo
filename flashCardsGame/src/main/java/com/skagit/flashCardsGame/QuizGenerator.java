@@ -8,6 +8,7 @@ import com.skagit.flashCardsGame.enums.ChangeType;
 import com.skagit.flashCardsGame.enums.DecayType;
 import com.skagit.flashCardsGame.enums.Mode;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
+import com.skagit.util.MyProperties;
 import com.skagit.util.Statics;
 
 public class QuizGenerator {
@@ -27,19 +28,19 @@ public class QuizGenerator {
 
     private boolean _changedQuizGeneratorParameters;
 
-    QuizGenerator(final Mode mode, final Properties properties, final int nCards, final long seed) {
+    QuizGenerator(final Mode mode, final MyProperties properties, final int nCards, final long seed) {
 	_mode = mode;
-	_topCardIndex = Integer.parseInt(PropertyPlus.TOP_CARD_INDEX.getValidString(properties));
-	_maxNNewWords = Integer.parseInt(PropertyPlus.NUMBER_OF_NEW_WORDS.getValidString(properties));
-	_nRepeatsOfNew = Integer.parseInt(PropertyPlus.NUMBER_OF_TIMES_FOR_NEW_WORDS.getValidString(properties));
-	_maxNRecentWords = Integer.parseInt(PropertyPlus.NUMBER_OF_RECENT_WORDS.getValidString(properties));
+	_topCardIndex = Integer.parseInt(properties.getValidString(PropertyPlus.TOP_CARD_INDEX, null));
+	_maxNNewWords = Integer.parseInt(properties.getValidString(PropertyPlus.NUMBER_OF_NEW_WORDS, null));
+	_nRepeatsOfNew = Integer.parseInt(properties.getValidString(PropertyPlus.NUMBER_OF_TIMES_FOR_NEW_WORDS, null));
+	_maxNRecentWords = Integer.parseInt(properties.getValidString(PropertyPlus.NUMBER_OF_RECENT_WORDS, null));
 	if (seed < 0) {
 	    _topCardIndex = Math.min(_topCardIndex, _maxNNewWords + _maxNRecentWords - 1);
 	}
-	_decayType = DecayType.valueOf(PropertyPlus.DECAY_TYPE.getValidString(properties));
-	String s = PropertyPlus.ALLOWABLE_MISS_PERCENTAGE.getValidString(properties);
+	_decayType = DecayType.valueOf(properties.getValidString(PropertyPlus.DECAY_TYPE, null));
+	String s = properties.getValidString(PropertyPlus.ALLOWABLE_MISS_PERCENTAGE, null);
 	_allowablePerCent = Integer.parseInt(s.substring(0, s.length() - 1));
-	s = PropertyPlus.PERCENTAGE_FOR_RECENT_WORDS.getValidString(properties);
+	s = properties.getValidString(PropertyPlus.PERCENTAGE_FOR_RECENT_WORDS, null);
 	_percentageForRecentsI = Integer.parseInt(s.substring(0, s.length() - 1));
 	_r = new Random();
 	if (seed >= 0) {

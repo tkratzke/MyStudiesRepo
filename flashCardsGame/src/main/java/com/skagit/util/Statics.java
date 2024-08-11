@@ -46,9 +46,9 @@ public class Statics {
     final public static char _FileDelimiter = '%';
     final public static String _SoundString, _PenString;
 
-    final public static String _CardsFileEnding = ".txt";
+    final public static String _GameFileExtensionLc = "properties";
+    final public static String _CardsFileExtensionLc = "txt";
     final public static int _NDigitsForCardsFileBackups = 2;
-    final public static String _SoundFilesDirEndingx = "-SoundFiles";
 
     static {
 	final byte[] soundBytes = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x94, (byte) 0x8A };
@@ -68,7 +68,6 @@ public class Statics {
     final public static int _MaxNFailsPerElement = 5;
     final public static int _NominalTabLen = 8;
 
-    final public static String _GameFileEndingLc = ".properties";
     final public static String _CommentString = Character.toString(_CommentChar) + ' ';
     final public static String _CountAsRightString = "Count as Right? ";
     final public static String _EndCardsString = "$$";
@@ -309,27 +308,18 @@ public class Statics {
 	return path;
     }
 
-    public static File getGameDir(final String gameDirString) {
+    public static File getGameFile(final String gameFileString0) {
+	final String gameFileString = forceExtension(gameFileString0, _GameFileExtensionLc);
 	for (int iPass = 0; iPass < 3; ++iPass) {
-	    final File grandParentDir;
-	    switch (iPass) {
-	    case 0:
-		grandParentDir = DirsTracker.getGamesDir();
-		break;
-	    case 1:
-		grandParentDir = DirsTracker.getUserDir();
-		break;
-	    default:
-		grandParentDir = new File(gameDirString);
+	    final File gameFile;
+	    if (iPass < 2) {
+		final File parentDir = iPass == 0 ? DirsTracker.getGameFilesDir() : DirsTracker.getUserDir();
+		gameFile = new File(parentDir, gameFileString);
+	    } else {
+		gameFile = new File(gameFileString);
 	    }
-	    final File gameDir = new File(grandParentDir, gameDirString);
-	    if (!gameDir.isDirectory()) {
-		continue;
-	    }
-	    final String gameName = gameDir.getName();
-	    final File gameFile = new File(gameDir, gameName + _GameFileEndingLc);
-	    if (gameFile.isFile()) {
-		return gameDir;
+	    if (gameFile != null || gameFile.isFile()) {
+		return gameFile;
 	    }
 	}
 	return null;
@@ -346,7 +336,10 @@ public class Statics {
      * </pre>
      */
     public static String forceExtension(final String path0, final String extension) {
-	final String withDot = "." + extension;
+	final String withDot = "." + extension.toLowerCase();
+	if (path0.toLowerCase().endsWith(withDot)) {
+	    return path0;
+	}
 	final int len0 = path0 == null ? 0 : path0.length();
 	if (len0 == 0) {
 	    return withDot;
@@ -355,98 +348,56 @@ public class Statics {
 	final String path1 = path0.replaceAll(Pattern.quote("/"), Matcher.quoteReplacement(File.separator));
 	final String path = path1.replaceAll(Pattern.quote("\\"), Matcher.quoteReplacement(File.separator));
 	final int len = path.length();
+	final int lastDot = path.lastIndexOf('.');
+	if (lastDot == len - 1) {
+	    /** Ends with a dot. Just add the extension. */
+	    return path + extension;
+	}
 	final int lastSep = path.lastIndexOf(File.separatorChar);
 	if (lastSep == len - 1) {
 	    return path + withDot;
 	}
-	final int lastDot = path.lastIndexOf('.');
-	if (lastDot < 0) {
-	    /** No dot. Tack on withDot. */
-	    return path + withDot;
-	}
-	if (lastSep < lastDot) {
-	    /** No Separator after lastDot. Tack on withDot after removing the extension. */
-	    return path.substring(0, lastDot) + withDot;
-	}
-	/** Separator after last dot. Tack on withDot. */
 	return path + withDot;
     }
 
     public static File getCardsFile(final File gameDir, final String cardsFileString0) {
-	final int len = cardsFileString0 == null ? 0 : cardsFileString0.length();
-	final String cardsFileString1;
-	if (len == 0) {
-	    cardsFileString1 = gameDir.getName() + _CardsFileEnding;
-	} else {
-	    cardsFileString1 = cardsFileString0;
-	}
-	final String cardsFileString2 = convertToFileSeparator(cardsFileString1);
-
-	final File[] dirsToTry = new File[] { //
-		gameDir, //
-		DirsTracker.getCardFilesDir() //
-	};
-	/**
-	 * <pre>
-	 * For the name of the Cards file, try:
-	 * 1. As-is, if it ends with _CardsFileEnding.
-	 * 2. Strip any extension, and add _CardsFileEnding.
-	 * 3. Add _CardsFileEnding to it.
-	 * For Each of these,  try the gameDir itself and the CardsFilesDir.
-	 * </pre>
-	 */
-	for (int iPass = 0; iPass < 3; ++iPass) {
-	    final String cardsFileString;
+	final String cardsFileString = forceExtension(cardsFileString0, _CardsFileExtensionLc);
+	for (int iPass = 0; iPass < 4; ++iPass) {
+	    final File parentDir;
 	    if (iPass == 0) {
-		if (cardsFileString2.toLowerCase().endsWith(_CardsFileEnding.toLowerCase())) {
-		    cardsFileString = cardsFileString2;
-		} else {
-		    continue;
-		}
+		parentDir = gameDir;
 	    } else if (iPass == 1) {
-		final int lastDot = cardsFileString2.lastIndexOf('.');
-		final int lastSlash = cardsFileString2.lastIndexOf(File.separatorChar);
-		if (lastDot < 0 || lastDot < lastSlash) {
-		    /** No extension to strip. */
-		    continue;
-		}
-		cardsFileString = cardsFileString2.substring(0, lastDot - 1) + _CardsFileEnding;
+		parentDir = DirsTracker.getCardFilesDir();
+	    } else if (iPass == 2) {
+		parentDir = DirsTracker.getUserDir();
 	    } else {
-		cardsFileString = cardsFileString2 + _CardsFileEnding;
+		parentDir = null;
 	    }
-	    for (final File dir : dirsToTry) {
-		final File f = new File(dir, cardsFileString);
-		if (f.isFile()) {
-		    return f;
-		}
+	    final File cardsFile = parentDir != null ? new File(parentDir, cardsFileString) : new File(cardsFileString);
+	    if (cardsFile != null && cardsFile.isFile()) {
+		return cardsFile;
 	    }
 	}
 	return null;
     }
 
     public static File getSoundFilesDir(final File gameDir, final String soundFilesString0) {
-	final int len = soundFilesString0 == null ? 0 : soundFilesString0.length();
-	final String soundFilesString1 = len == 0 ? gameDir.getName() : soundFilesString0;
-	final String soundFilesString = convertToFileSeparator(soundFilesString1);
-
-	/**
-	 * <pre>
-	 * For the name of the Sounds File directory, try:
-	 * 1. As-is.
-	 * 2. Add _SoundFilesDirEnding to it.
-	 * For Each of these,  try the gameDir itself and the SoundFilesDirsDir.
-	 * </pre>
-	 */
-	final File[] dirsToTry = new File[] { //
-		gameDir, //
-		DirsTracker.getSoundFilesDirsDir() //
-	};
-	for (int iPass = 0; iPass < 2; ++iPass) {
-	    for (final File dir : dirsToTry) {
-		final File f = new File(dir, soundFilesString);
-		if (f.isDirectory()) {
-		    return f;
-		}
+	final String soundFilesString = convertToFileSeparator(soundFilesString0);
+	for (int iPass = 0; iPass < 4; ++iPass) {
+	    final File parentDir;
+	    if (iPass == 0) {
+		parentDir = gameDir;
+	    } else if (iPass == 1) {
+		parentDir = DirsTracker.getSoundFilesDirsDir();
+	    } else if (iPass == 2) {
+		parentDir = DirsTracker.getUserDir();
+	    } else {
+		parentDir = null;
+	    }
+	    final File soundFilesDir = parentDir != null ? new File(parentDir, soundFilesString)
+		    : new File(soundFilesString);
+	    if (soundFilesDir != null && soundFilesDir.isDirectory()) {
+		return soundFilesDir;
 	    }
 	}
 	return null;

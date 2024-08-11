@@ -39,10 +39,4 @@ public class BackupFileGetter {
 	}
 	return getBackupFile(newF, suffix, nDigits);
     }
-
-    public static void mainx(final String[] args) {
-	final String fName = "AAA$000" + Statics._CardsFileEnding;
-	System.out.println(fName + " "
-		+ getBackupFile(new File(".", fName), Statics._CardsFileEnding, Statics._NDigitsForCardsFileBackups));
-    }
 }

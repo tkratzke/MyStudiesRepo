@@ -1,7 +1,6 @@
 package com.skagit.flashCardsGame.enums;
 
 import java.util.EnumSet;
-import java.util.Properties;
 
 public enum PropertyPlus {
     CARDS_FILE(/* propertyName= */"Cards.File", //
@@ -11,7 +10,7 @@ public enum PropertyPlus {
 		    + "\nthe directory of sound files, " //
 		    + "\nwhether or not to play the sounds, " //
 		    + "\nand how long to pause for each sound to finish."), //
-    SOUND_FILES_DIR(/* propetyName= */ "Sound.Files.Dir", //
+    SOUND_FILES(/* propetyName= */ "Sound.Files.Dir", //
 	    /* shortName= */ null, //
 	    /* defaultValue= */ "", //
 	    /* comment= */ ""), //
@@ -107,7 +106,7 @@ public enum PropertyPlus {
 
     final public String _propertyName;
     final public String _shortName;
-    final String _defaultValue;
+    final public String _defaultValue;
     final public String _comment;
 
     PropertyPlus(final String propertyName, final String shortName, final String defaultValue, final String comment) {
@@ -115,84 +114,6 @@ public enum PropertyPlus {
 	_shortName = shortName;
 	_defaultValue = defaultValue;
 	_comment = comment;
-    }
-
-    public String getValidString(final Object o) {
-	if (o == null || !(o instanceof String)) {
-	    return _defaultValue;
-	}
-	final String s = (String) o;
-	String stringToParseForAnInt = s;
-	switch (this) {
-	case CARDS_FILE:
-	case SOUND_FILES_DIR:
-	    return s;
-	case ALLOWABLE_MISS_PERCENTAGE:
-	case PERCENTAGE_FOR_RECENT_WORDS:
-	    final int len = s == null ? 0 : s.length();
-	    if (len < 2 || s.charAt(len - 1) != '%') {
-		return _defaultValue;
-	    }
-	    stringToParseForAnInt = s.substring(0, len - 1);
-	case NUMBER_OF_NEW_WORDS:
-	case NUMBER_OF_RECENT_WORDS:
-	case NUMBER_OF_TIMES_FOR_NEW_WORDS:
-	case TOP_CARD_INDEX:
-	case RANDOM_SEED:
-	case BLOCK_SIZE:
-	case LAG_LENGTH_IN_MILLISECONDS:
-	    try {
-		final int i = Integer.parseInt(stringToParseForAnInt);
-		switch (this) {
-		case ALLOWABLE_MISS_PERCENTAGE:
-		case PERCENTAGE_FOR_RECENT_WORDS:
-		    return 0 <= i && i <= 100 ? s : _defaultValue;
-		case NUMBER_OF_NEW_WORDS:
-		    return i >= 1 ? s : _defaultValue;
-		case NUMBER_OF_RECENT_WORDS:
-		case NUMBER_OF_TIMES_FOR_NEW_WORDS:
-		case TOP_CARD_INDEX:
-		    return i >= 0 ? s : _defaultValue;
-		case BLOCK_SIZE:
-		    return i >= 0 ? s : _defaultValue;
-		case RANDOM_SEED:
-		    return s;
-		case LAG_LENGTH_IN_MILLISECONDS:
-		    return i >= 0 ? s : _defaultValue;
-		default:
-		    /** Cannot get to the following: */
-		    return null;
-		}
-	    } catch (final NumberFormatException e) {
-		return _defaultValue;
-	    }
-	case DECAY_TYPE:
-	case DIACRITICS_TREATMENT:
-	case CLUMPING:
-	case MODE:
-	    try {
-		if (this == DECAY_TYPE) {
-		    DecayType.valueOf(s);
-		} else if (this == DIACRITICS_TREATMENT) {
-		    DiacriticsTreatment.valueOf(s);
-		} else if (this == CLUMPING) {
-		    Clumping.valueOf(s);
-		} else if (this == MODE) {
-		    Mode.valueOf(s);
-		}
-	    } catch (final IllegalArgumentException e) {
-		return _defaultValue;
-	    }
-	    return s;
-	case BE_SILENT:
-	    return String.valueOf(Boolean.valueOf(s));
-	}
-	/** To keep the compiler happy: */
-	return null;
-    }
-
-    public String getValidString(final Properties properties) {
-	return getValidString(properties.get(_propertyName));
     }
 
 }
