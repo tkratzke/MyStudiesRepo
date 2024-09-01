@@ -9,14 +9,12 @@ public class DirsTracker {
 
     final private static File _UserDir;
     final private static File _RunDir;
-    final private static String _DataDirName = "Data";
-    final private static String _GamesFilesDirName = "GameFiles";
-    final private static String _CardFilesDirName = "CardFiles";
-    final private static String _SoundFileDirsDirName = "SoundFiles";
+    final private static String _GamesFilesDirName = "gameFiles";
+    final private static String _CardsFilesDirName = "cardsFiles";
+    final private static String _SoundFileDirsDirName = "soundFiles";
     final private static String _LogDirName = "LogFiles";
-    final private static File _DataDir;
     final private static File _GameFilesDir;
-    final private static File _CardFilesDir;
+    final private static File _CardsFilesDir;
     final private static File _SoundFilesDirsDir;
     final private static File _LogDir;
 
@@ -51,12 +49,11 @@ public class DirsTracker {
 	    }
 	}
 	if (_RunDir != null && _RunDir.isDirectory()) {
-	    _DataDir = new File(_RunDir, _DataDirName);
 	    _GameFilesDir = new File(_RunDir, _GamesFilesDirName);
-	    _CardFilesDir = new File(_DataDir, _CardFilesDirName);
-	    _SoundFilesDirsDir = new File(_DataDir, _SoundFileDirsDirName);
+	    _CardsFilesDir = new File(_RunDir, _CardsFilesDirName);
+	    _SoundFilesDirsDir = new File(_RunDir, _SoundFileDirsDirName);
 	} else {
-	    _DataDir = _GameFilesDir = _CardFilesDir = _SoundFilesDirsDir = null;
+	    _GameFilesDir = _CardsFilesDir = _SoundFilesDirsDir = null;
 	}
     }
 
@@ -124,10 +121,6 @@ public class DirsTracker {
 	return _LogDir;
     }
 
-    public static File getDataDir() {
-	return _DataDir;
-    }
-
     public static File getRunDir() {
 	if (_RunDir != null) {
 	    return _RunDir;
@@ -139,8 +132,8 @@ public class DirsTracker {
 	return _GameFilesDir;
     }
 
-    public static File getCardFilesDir() {
-	return _CardFilesDir;
+    public static File getCardsFilesDir() {
+	return _CardsFilesDir;
     }
 
     public static File getSoundFilesDirsDir() {
@@ -152,8 +145,7 @@ public class DirsTracker {
 	s += "\nUser Dir: " + Statics.getCanonicalPath(getUserDir());
 	s += "\nRunDir: " + Statics.getCanonicalPath(getRunDir());
 	s += "\nLogDir: " + Statics.getCanonicalPath(getLogDir());
-	s += "\nDataDir: " + Statics.getCanonicalPath(getDataDir());
-	s += "\nCardFilesDir: " + Statics.getCanonicalPath(getCardFilesDir());
+	s += "\nCardsFilesDir: " + Statics.getCanonicalPath(getCardsFilesDir());
 	s += "\nSoundFilesDirsDir: " + Statics.getCanonicalPath(getSoundFilesDirsDir());
 	s += "\nGameFilesDir: " + Statics.getCanonicalPath(getGameFilesDir());
 	return s;

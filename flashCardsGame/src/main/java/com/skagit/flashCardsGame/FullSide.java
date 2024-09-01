@@ -1,6 +1,5 @@
 package com.skagit.flashCardsGame;
 
-import java.io.File;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,45 +10,39 @@ public class FullSide implements Comparable<FullSide> {
 
     final String _trimmedInputString;
     final String _stringPart;
-    final String _fileStringPart;
-    final File _soundFile;
+    final String _fullSoundFileString;
 
-    public FullSide(final TreeMap<String, File> allSoundFiles, final TreeMap<String, String> partToStem,
-	    final String inputString) {
+    public FullSide(final TreeMap<String, String> partToStem, final String inputString) {
 	final String trimmedInputString = inputString.trim();
 	/** Do we have a putative file? */
 	final int len = trimmedInputString.length();
 	final int idx0 = trimmedInputString.indexOf(Statics._FileDelimiter);
 	if (idx0 == -1) {
 	    _stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
-	    _fileStringPart = null;
-	    _soundFile = null;
+	    _fullSoundFileString = null;
 	    return;
 	}
 	final int idx1 = (0 <= idx0 && idx0 < len) ? trimmedInputString.indexOf(Statics._FileDelimiter, idx0 + 1) : -1;
 	if (idx1 == -1) {
 	    _stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
-	    _fileStringPart = null;
-	    _soundFile = null;
+	    _fullSoundFileString = null;
 	    return;
 	}
 	if (idx1 < idx0 + 3) {
 	    _stringPart = _trimmedInputString = Statics.CleanWhiteSpace(trimmedInputString);
-	    _fileStringPart = null;
-	    _soundFile = null;
+	    _fullSoundFileString = null;
 	    return;
 	}
-	String fileStringPart = trimmedInputString.substring(idx0, idx1 + 1);
+	String soundFileString = trimmedInputString.substring(idx0, idx1 + 1);
 	_stringPart = Statics.CleanWhiteSpace(
-		trimmedInputString.replaceFirst(Pattern.quote(fileStringPart), Matcher.quoteReplacement("")));
-	final String fileString = fileStringPart.substring(1, fileStringPart.length() - 1);
+		trimmedInputString.replaceFirst(Pattern.quote(soundFileString), Matcher.quoteReplacement("")));
+	final String fileString = soundFileString.substring(1, soundFileString.length() - 1);
 	final String stem = partToStem.get(fileString);
 	if (stem != null) {
-	    fileStringPart = Character.toString(Statics._FileDelimiter) + stem + Statics._FileDelimiter;
+	    soundFileString = Character.toString(Statics._FileDelimiter) + stem + Statics._FileDelimiter;
 	}
-	_trimmedInputString = fileStringPart + " " + _stringPart;
-	_soundFile = allSoundFiles.get(fileString);
-	_fileStringPart = _soundFile == null ? null : fileStringPart;
+	_trimmedInputString = soundFileString + " " + _stringPart;
+	_fullSoundFileString = soundFileString;
     }
 
     @Override

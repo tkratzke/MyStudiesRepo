@@ -1,7 +1,6 @@
 package com.skagit.flashCardsGame;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Comparator;
@@ -15,12 +14,11 @@ class Card {
     final FullSide _answerSide;
     String[] _commentLines;
 
-    Card(final boolean switchSides, final TreeMap<String, File> allSoundFiles, final TreeMap<String, String> partToStem,
-	    final int cardNumber, final String clueSideString, final String answerSideString,
-	    final String[] commentLines) {
+    Card(final boolean switchSides, final TreeMap<String, String> partToStem, final int cardNumber,
+	    final String clueSideString, final String answerSideString, final String[] commentLines) {
 	_cardNumber = cardNumber;
-	_clueSide = new FullSide(allSoundFiles, partToStem, switchSides ? answerSideString : clueSideString);
-	_answerSide = new FullSide(allSoundFiles, partToStem, switchSides ? clueSideString : answerSideString);
+	_clueSide = new FullSide(partToStem, switchSides ? answerSideString : clueSideString);
+	_answerSide = new FullSide(partToStem, switchSides ? clueSideString : answerSideString);
 	_commentLines = commentLines;
     }
 
@@ -52,15 +50,13 @@ class Card {
 	    }
 	    final FullSide answerSide0 = card0._answerSide;
 	    final FullSide answerSide1 = card1._answerSide;
-	    final File soundFile0 = answerSide0._soundFile;
-	    final File soundFile1 = answerSide1._soundFile;
-	    if ((soundFile0 != null) != (soundFile1 != null)) {
-		return soundFile0 != null ? -1 : 1;
+	    final String soundFileString0 = card0.getSoundFileString(/* forClue= */false);
+	    final String soundFileString1 = card1.getSoundFileString(/* forClue= */false);
+	    if ((soundFileString0 != null) != (soundFileString1 != null)) {
+		return soundFileString0 != null ? -1 : 1;
 	    }
-	    if (soundFile0 != null) {
-		final String fileStringPart0 = answerSide0._fileStringPart;
-		final String fileStringPart1 = answerSide1._fileStringPart;
-		compareValue = fileStringPart0.compareTo(fileStringPart1);
+	    if (soundFileString0 != null) {
+		compareValue = soundFileString0.compareTo(soundFileString1);
 		if (compareValue != 0) {
 		    return compareValue;
 		}
@@ -172,8 +168,13 @@ class Card {
 	return (forClue ? _clueSide : _answerSide)._stringPart;
     }
 
-    public File getSoundFile(final boolean forClue) {
-	return (forClue ? _clueSide : _answerSide)._soundFile;
+    public String getSoundFileString(final boolean forClue) {
+	final String fullSoundFileString = (forClue ? _clueSide : _answerSide)._fullSoundFileString;
+	final int len = fullSoundFileString == null ? 0 : fullSoundFileString.length();
+	if (fullSoundFileString != null && fullSoundFileString.length() > 2) {
+	    return fullSoundFileString.substring(1, len - 1);
+	}
+	return null;
     }
 
     public String getTrimmedInputString(final boolean forClue) {

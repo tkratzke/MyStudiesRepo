@@ -310,19 +310,9 @@ public class Statics {
 
     public static File getGameFile(final String gameFileString0) {
 	final String gameFileString = forceExtension(gameFileString0, _GameFileExtensionLc);
-	for (int iPass = 0; iPass < 3; ++iPass) {
-	    final File gameFile;
-	    if (iPass < 2) {
-		final File parentDir = iPass == 0 ? DirsTracker.getGameFilesDir() : DirsTracker.getUserDir();
-		gameFile = new File(parentDir, gameFileString);
-	    } else {
-		gameFile = new File(gameFileString);
-	    }
-	    if (gameFile != null || gameFile.isFile()) {
-		return gameFile;
-	    }
-	}
-	return null;
+	final File parentDir = DirsTracker.getGameFilesDir();
+	final File gameFile = new File(parentDir, gameFileString);
+	return gameFile;
     }
 
     /**
@@ -362,43 +352,21 @@ public class Statics {
 
     public static File getCardsFile(final File gameDir, final String cardsFileString0) {
 	final String cardsFileString = forceExtension(cardsFileString0, _CardsFileExtensionLc);
-	for (int iPass = 0; iPass < 4; ++iPass) {
-	    final File parentDir;
-	    if (iPass == 0) {
-		parentDir = gameDir;
-	    } else if (iPass == 1) {
-		parentDir = DirsTracker.getCardFilesDir();
-	    } else if (iPass == 2) {
-		parentDir = DirsTracker.getUserDir();
-	    } else {
-		parentDir = null;
-	    }
-	    final File cardsFile = parentDir != null ? new File(parentDir, cardsFileString) : new File(cardsFileString);
-	    if (cardsFile != null && cardsFile.isFile()) {
-		return cardsFile;
-	    }
+	final File parentDir = DirsTracker.getCardsFilesDir();
+	final File cardsFile = parentDir != null ? new File(parentDir, cardsFileString) : new File(cardsFileString);
+	if (cardsFile != null && cardsFile.isFile()) {
+	    return cardsFile;
 	}
 	return null;
     }
 
     public static File getSoundFilesDir(final File gameDir, final String soundFilesString0) {
 	final String soundFilesString = convertToFileSeparator(soundFilesString0);
-	for (int iPass = 0; iPass < 4; ++iPass) {
-	    final File parentDir;
-	    if (iPass == 0) {
-		parentDir = gameDir;
-	    } else if (iPass == 1) {
-		parentDir = DirsTracker.getSoundFilesDirsDir();
-	    } else if (iPass == 2) {
-		parentDir = DirsTracker.getUserDir();
-	    } else {
-		parentDir = null;
-	    }
-	    final File soundFilesDir = parentDir != null ? new File(parentDir, soundFilesString)
-		    : new File(soundFilesString);
-	    if (soundFilesDir != null && soundFilesDir.isDirectory()) {
-		return soundFilesDir;
-	    }
+	final File parentDir = DirsTracker.getSoundFilesDirsDir();
+	final File soundFilesDir = parentDir != null ? new File(parentDir, soundFilesString)
+		: new File(soundFilesString);
+	if (soundFilesDir != null && soundFilesDir.isDirectory()) {
+	    return soundFilesDir;
 	}
 	return null;
     }

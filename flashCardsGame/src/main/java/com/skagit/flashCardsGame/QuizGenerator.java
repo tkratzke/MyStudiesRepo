@@ -1,7 +1,6 @@
 package com.skagit.flashCardsGame;
 
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.Random;
 
 import com.skagit.flashCardsGame.enums.ChangeType;
@@ -28,19 +27,23 @@ public class QuizGenerator {
 
     private boolean _changedQuizGeneratorParameters;
 
-    QuizGenerator(final Mode mode, final MyProperties properties, final int nCards, final long seed) {
+    QuizGenerator(final Mode mode, final MyProperties myProperties, final int nCards, final long seed) {
 	_mode = mode;
-	_topCardIndex = Integer.parseInt(properties.getValidString(PropertyPlus.TOP_CARD_INDEX, null));
-	_maxNNewWords = Integer.parseInt(properties.getValidString(PropertyPlus.NUMBER_OF_NEW_WORDS, null));
-	_nRepeatsOfNew = Integer.parseInt(properties.getValidString(PropertyPlus.NUMBER_OF_TIMES_FOR_NEW_WORDS, null));
-	_maxNRecentWords = Integer.parseInt(properties.getValidString(PropertyPlus.NUMBER_OF_RECENT_WORDS, null));
+	_topCardIndex = Integer
+		.parseInt(myProperties.getValidString(PropertyPlus.TOP_CARD_INDEX, /* overrideString= */null));
+	_maxNNewWords = Integer
+		.parseInt(myProperties.getValidString(PropertyPlus.NUMBER_OF_NEW_WORDS, /* overrideString= */null));
+	_nRepeatsOfNew = Integer.parseInt(
+		myProperties.getValidString(PropertyPlus.NUMBER_OF_TIMES_FOR_NEW_WORDS, /* overrideString= */null));
+	_maxNRecentWords = Integer
+		.parseInt(myProperties.getValidString(PropertyPlus.NUMBER_OF_RECENT_WORDS, /* overrideString= */null));
 	if (seed < 0) {
 	    _topCardIndex = Math.min(_topCardIndex, _maxNNewWords + _maxNRecentWords - 1);
 	}
-	_decayType = DecayType.valueOf(properties.getValidString(PropertyPlus.DECAY_TYPE, null));
-	String s = properties.getValidString(PropertyPlus.ALLOWABLE_MISS_PERCENTAGE, null);
+	_decayType = DecayType.valueOf(myProperties.getValidString(PropertyPlus.DECAY_TYPE, /* overrideString= */null));
+	String s = myProperties.getValidString(PropertyPlus.ALLOWABLE_MISS_PERCENTAGE, /* overrideString= */null);
 	_allowablePerCent = Integer.parseInt(s.substring(0, s.length() - 1));
-	s = properties.getValidString(PropertyPlus.PERCENTAGE_FOR_RECENT_WORDS, null);
+	s = myProperties.getValidString(PropertyPlus.PERCENTAGE_FOR_RECENT_WORDS, /* overrideString= */null);
 	_percentageForRecentsI = Integer.parseInt(s.substring(0, s.length() - 1));
 	_r = new Random();
 	if (seed >= 0) {
@@ -52,8 +55,8 @@ public class QuizGenerator {
 	correctQuizGeneratorProperties(nCards);
     }
 
-    void updateChangeableProperties(final Properties properties) {
-	properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName, Integer.toString(_topCardIndex));
+    void updateChangeableProperties(final MyProperties myProperties) {
+	myProperties.put(PropertyPlus.TOP_CARD_INDEX._propertyName, Integer.toString(_topCardIndex));
     }
 
     long[] getChangeableLongPropertyValues() {

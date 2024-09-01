@@ -15,57 +15,63 @@ public class MyProperties extends Properties {
      * Validates the attempt at a value, and returns the defaultValue for the
      * PropertyPlus otherwise.
      */
-    public String getValidString(final PropertyPlus propertyPlus, final String value) {
+    public String getValidString(final PropertyPlus propertyPlus, final String overrideString) {
 	if (propertyPlus == null) {
 	    return null;
 	}
-	final String defaultValue = propertyPlus._defaultValue;
-	if (value == null) {
-	    return defaultValue;
+	final String propertiesString = (String) get(propertyPlus._propertyName);
+	final String defaultString = propertyPlus._defaultValue;
+	final String stringToTry;
+	if (overrideString != null) {
+	    stringToTry = overrideString;
+	} else if (propertiesString != null) {
+	    stringToTry = propertiesString;
+	} else {
+	    stringToTry = defaultString;
 	}
-	String stringToParseForAnInt = value;
+	if (stringToTry == null) {
+	    return null;
+	}
+	String stringToParseForAnInt = stringToTry;
 	switch (propertyPlus) {
 	case CARDS_FILE:
 	case SOUND_FILES:
-	    return value;
+	    return stringToTry;
 	case ALLOWABLE_MISS_PERCENTAGE:
 	case PERCENTAGE_FOR_RECENT_WORDS:
-	    final int len = value == null ? 0 : value.length();
-	    if (len < 2 || value.charAt(len - 1) != '%') {
-		return defaultValue;
+	    final int len = stringToTry == null ? 0 : stringToTry.length();
+	    if (len < 2 || stringToTry.charAt(len - 1) != '%') {
+		return defaultString;
 	    }
-	    stringToParseForAnInt = value.substring(0, len - 1);
+	    stringToParseForAnInt = stringToTry.substring(0, len - 1);
 	case NUMBER_OF_NEW_WORDS:
 	case NUMBER_OF_RECENT_WORDS:
 	case NUMBER_OF_TIMES_FOR_NEW_WORDS:
 	case TOP_CARD_INDEX:
 	case RANDOM_SEED:
 	case BLOCK_SIZE:
-	case LAG_LENGTH_IN_MILLISECONDS:
 	    try {
 		final int i = Integer.parseInt(stringToParseForAnInt);
 		switch (propertyPlus) {
 		case ALLOWABLE_MISS_PERCENTAGE:
 		case PERCENTAGE_FOR_RECENT_WORDS:
-		    return 0 <= i && i <= 100 ? value : defaultValue;
+		    return 0 <= i && i <= 100 ? stringToTry : defaultString;
 		case NUMBER_OF_NEW_WORDS:
-		    return i >= 1 ? value : defaultValue;
+		    return i >= 1 ? stringToTry : defaultString;
 		case NUMBER_OF_RECENT_WORDS:
 		case NUMBER_OF_TIMES_FOR_NEW_WORDS:
 		case TOP_CARD_INDEX:
-		    return i >= 0 ? value : defaultValue;
+		    return i >= 0 ? stringToTry : defaultString;
 		case BLOCK_SIZE:
-		    return i >= 0 ? value : defaultValue;
+		    return i >= 0 ? stringToTry : defaultString;
 		case RANDOM_SEED:
-		    return value;
-		case LAG_LENGTH_IN_MILLISECONDS:
-		    return i >= 0 ? value : defaultValue;
+		    return stringToTry;
 		default:
 		    /** Cannot get to the following: */
 		    return null;
 		}
 	    } catch (final NumberFormatException e) {
-		return defaultValue;
+		return defaultString;
 	    }
 	case DECAY_TYPE:
 	case DIACRITICS_TREATMENT:
@@ -73,20 +79,20 @@ public class MyProperties extends Properties {
 	case MODE:
 	    try {
 		if (propertyPlus == PropertyPlus.DECAY_TYPE) {
-		    DecayType.valueOf(value);
+		    DecayType.valueOf(stringToTry);
 		} else if (propertyPlus == PropertyPlus.DIACRITICS_TREATMENT) {
-		    DiacriticsTreatment.valueOf(value);
+		    DiacriticsTreatment.valueOf(stringToTry);
 		} else if (propertyPlus == PropertyPlus.CLUMPING) {
-		    Clumping.valueOf(value);
+		    Clumping.valueOf(stringToTry);
 		} else if (propertyPlus == PropertyPlus.MODE) {
-		    Mode.valueOf(value);
+		    Mode.valueOf(stringToTry);
 		}
 	    } catch (final IllegalArgumentException e) {
-		return defaultValue;
+		return defaultString;
 	    }
-	    return value;
+	    return stringToTry;
 	case BE_SILENT:
-	    return String.valueOf(Boolean.valueOf(value));
+	    return String.valueOf(Boolean.valueOf(stringToTry));
 	}
 	/** To keep the compiler happy: */
 	return null;

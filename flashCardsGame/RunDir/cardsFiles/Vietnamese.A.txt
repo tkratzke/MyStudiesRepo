@@ -1,52 +1,53 @@
-  0.	winter                                      	%01-winter% mùa đông
-  1.	spring                                      	%02-spring% mùa xuân
-  2.	summer                                      	%03-summer% mùa hè
-  3.	autumn                                      	%04-autumn% mùa thu
-  4.	north                                       	%05-north% bắc
-  5.	south                                       	%06-south% nam
-  6.	Hanoi                                       	%07-Hanoi% Hà Nội
-  7.	Ho Chi Minh City                            	%08-HoChiMinhCity% thành phố Hồ Chí Minh
-  8.	cloudy                                      	%09-cloudy% âm u
-  9.	sunny                                       	%10-sunny% nắng
+  0.	%0000-winter% mùa đông                      	winter
 
- 10.	cold                                        	%11-cold% lạnh
- 11.	cool                                        	%11-cold% mát
- 12.	warm                                        	%13-warm% ấm
- 13.	hot                                         	%14-hot% nóng
- 14.	Which season do you like?                   	%15-WhichSeason% Bạn thích mùa nào?
-
- 15.	South Vietnam does not have winter.         	%16-SouthVNHasNoWinter% Miền nam Việt Nam	
+  1.	South Vietnam does not have winter.         	%0015-SouthVNHasNoWinter% Miền nam Việt Nam	
     	                                            	không có mùa đông.
 
- 16.	It will be sunny tomorrow.                  	%17-ItWillBeSunnyTomrrow% Ngày mai trời nắng.
- 17.	the moon                                    	%18-moon% mặt trăng
- 18.	the sun                                     	%19-sun% mặt trời
- 19.	the earth                                   	%20-earth% trái đất
+  2.	spring                                      	%0001-spring% mùa xuân
+  3.	summer                                      	%0002-summer% mùa hè
+  4.	autumn                                      	%0003-autumn% mùa thu
+  5.	north                                       	%0004-north% bắc
+  6.	south                                       	%0005-south% nam
+  7.	Hanoi                                       	%0006-Hanoi% Hà Nội
+  8.	Ho Chi Minh City                            	%0007-HoChiMinhCity% thành phố Hồ Chí Minh
+  9.	cloudy                                      	%0008-cloudy% âm u
+ 10.	sunny                                       	%0009-sunny% nắng
+ 11.	cold                                        	%0010-cold% lạnh
+ 12.	cool                                        	%0010-cold% mát
+ 13.	warm                                        	%0012-warm% ấm
+ 14.	hot                                         	%0013-hot% nóng
+ 15.	Which season do you like?                   	%0014-WhichSeason% Bạn thích mùa nào?
 
- 20.	a star                                      	%21-star% sao
- 21.	There were stars last night.                	%22-ThereWereStars% Tối qua có sao.
- 22.	after                                       	%23-after% sau đó
- 23.	The moon is white.                          	%24-TheMoonIsWhite% Mặt trăng màu trắng.
- 24.	rain                                        	%25-rain% mưa
- 25.	snow                                        	%26-snow% tuyết
+ 16.	It will be sunny tomorrow.                  	%0016-ItWillBeSunnyTomrrow% Ngày mai trời	
+    	                                            	nắng.
 
- 26.	The earth is blue.                          	%27-TheEarthIsBlue% Trái đất màu xanh da	
+ 17.	the moon                                    	%0017-moon% mặt trăng
+ 18.	the sun                                     	%0018-sun% mặt trời
+ 19.	the earth                                   	%0019-earth% trái đất
+
+ 20.	a star                                      	%0020-star% sao
+ 21.	There were stars last night.                	%0021-ThereWereStars% Tối qua có sao.
+ 22.	after                                       	%0022-after% sau đó
+ 23.	The moon is white.                          	%0023-TheMoonIsWhite% Mặt trăng màu trắng.
+ 24.	rain                                        	%0024-rain% mưa
+ 25.	snow                                        	%0025-snow% tuyết
+
+ 26.	The earth is blue.                          	%0026-TheEarthIsBlue% Trái đất màu xanh da	
     	                                            	trời.
 
- 27.	The sun is red.                             	%28-TheSunIsRed% Mặt trời màu đỏ.
- 28.	word at end of sentence showing respect     	%29-WordAtEndOfSentence% ạ
- 29.	am, at, in, on                              	%30-amAtInOn% ở
-
- 30.	yes (informal)                              	%31-yes(infl)% ừ
- 31.	be warm                                     	%32-beWarm% ấm
- 32.	to eat                                      	%33-toEat% ăn
- 33.	three                                       	%34-three% ba
- 34.	a woman                                     	%35-aWoman% bà
- 35.	a little child                              	%36-littleChild% bé
- 36.	a calf                                      	%37-aCalf% bê
- 37.	to carry                                    	%38-toCarry% bê
- 38.	a squash                                    	%39-aSquash% bí
- 39.	dad                                         	%40-dad% bố
+ 27.	The sun is red.                             	%0027-TheSunIsRed% Mặt trời màu đỏ.
+ 28.	word at end of sentence showing respect     	%0028-WordAtEndOfSentence% ạ
+ 29.	am, at, in, on                              	%0029-amAtInOn% ở
+ 30.	yes (informal)                              	%0030-yes(infl)% ừ
+ 31.	be warm                                     	%0031-beWarm% ấm
+ 32.	to eat                                      	%0032-toEat% ăn
+ 33.	three                                       	%0033-three% ba
+ 34.	a woman                                     	%0034-aWoman% bà
+ 35.	a little child                              	%0035-littleChild% bé
+ 36.	a calf                                      	%0036-aCalf% bê
+ 37.	to carry                                    	%0037-toCarry% bê
+ 38.	a squash                                    	%0038-aSquash% bí
+ 39.	dad                                         	%0039-dad% bố
 
  40.	a shore                                     	bờ
  41.	butter                                      	bơ
@@ -58,7 +59,6 @@
  47.	a neck                                      	cổ
  48.	to have                                     	có
  49.	an egret                                    	cò
-
  50.	a flag                                      	cờ
  51.	grass                                       	cỏ
  52.	to greet politely                           	dạ
@@ -80,7 +80,6 @@
  67.	a number                                    	số
  68.	a notebook                                  	vở
  69.	they                                        	họ
-
  70.	red                                         	đỏ
  71.	three                                       	ba
  72.	and                                         	và
@@ -102,7 +101,6 @@
  87.	an incense burner                           	lư
  88.	an apricot                                  	mơ
  89.	to dream                                    	mơ
-
  90.	a big bowl                                  	tô
  91.	a bow (eg with ribbon)                      	nơ
  92.	an umbrella                                 	dù
@@ -124,7 +122,6 @@
 107.	a calf                                      	bê
 108.	to carry                                    	bê
 109.	to fall                                     	té
-
 110.	to invite (to do something)                 	rủ
 111.	a cicada                                    	ve
 112.	to mend                                     	vá
@@ -146,7 +143,6 @@
 127.	a holiday                                   	lễ
 128.	cent                                        	xu
 129.	to compare                                  	so
-
 130.	to put baby to sleep (lull)                 	ru
 131.	a basket                                    	rổ
 132.	to (some time, so "until")                  	đến
@@ -168,7 +164,6 @@
 147.	a knife                                     	dao
 148.	an apple                                    	táo
 149.	a grape                                     	nho
-
 150.	a name                                      	tên
 151.	pho                                         	phở
 152.	milk                                        	sữa
@@ -190,7 +185,6 @@
 167.	a pig                                       	lợn
 168.	a duck                                      	vịt
 169.	a pen                                       	bút
-
 170.	a peach                                     	đào
 171.	a table                                     	bàn
 172.	a chair                                     	ghế
@@ -212,7 +206,6 @@
 187.	five                                        	năm
 188.	six                                         	sáu
 189.	seven                                       	bảy
-
 190.	eight                                       	tám
 191.	behind                                      	sau
 192.	a handbag                                   	túi
@@ -234,7 +227,6 @@
 207.	bad (x )                                    	xấu
 208.	a market                                    	chợ
 209.	a big sister                                	chị
-
 210.	to stop by                                  	ghé
 211.	a skin infection producing pus              	ghẻ
 212.	icky                                        	ghê
@@ -256,7 +248,6 @@
 227.	years old                                   	tuổi
 228.	money                                       	tiền
 229.	a gun                                       	súng
-
 230.	a mango                                     	xoài
 231.	wrong                                       	trái
 232.	to drink                                    	uống
@@ -278,7 +269,6 @@
 247.	do (for games)                              	chơi
 248.	probably                                    	chác
 249.	math                                        	toán
-
 250.	to want                                     	muốn
 251.	yellow                                      	vàng
 252.	nine                                        	chín
@@ -300,7 +290,6 @@
 267.	hello (informal) or "good bye"              	chào
 268.	delicious                                   	ngon
 269.	a blanket                                   	chăn
-
 270.	a country                                   	nườc
 271.	a job                                       	nghề
 272.	to live                                     	sống
@@ -322,7 +311,6 @@
 287.	grave (accent)                              	huyền
 288.	a person                                    	người
 289.	a school                                    	trường
-
 290.	I/You (same age)                            	tôi/bạn
 291.	I/You (same gen older)                      	anh/chị
 292.	a sandwich                                  	sandwich
@@ -344,7 +332,6 @@
 307.	a big bow                                   	nơ to
 308.	a big bowl of tamarind                      	tô me
 309.	to wander                                   	lê la
-
 310.	to make crickets fight                      	đá dế
 311.	a sparrow                                   	se sẻ
 312.	grass field                                 	bờ cỏ
@@ -366,7 +353,6 @@
 327.	a train                                     	xe lửa
 328.	maybe                                       	có thể
 329.	to go to work                               	đi làm
-
 330.	finish work                                 	tan ca
 331.	orange                                      	da cam
 332.	doing (part of a question)                  	làm gì
@@ -388,7 +374,6 @@
 347.	a younger brother                           	em trai
 348.	a lawyer                                    	luật sư
 349.	a chef                                      	đầu bếp
-
 350.	a fruit                                     	hoa quả
 351.	an egg roll                                 	chả giò
 352.	beef steak                                  	bít tết
@@ -410,7 +395,6 @@
 367.	today                                       	hôm nay
 368.	yesterday                                   	hôm qua
 369.	Monday                                      	thứ hai
-
 370.	hello to younger person                     	chào em
 371.	to name                                     	đặt tên
 372.	to have lunch                               	ăn trưa
@@ -432,7 +416,6 @@
 387.	a zebra                                     	ngựa vằn
 388.	next to or beside                           	bên cạnh
 389.	to watch                                    	đang xem
-
 390.	good bye                                    	tạm biệt
 391.	I'm fine                                    	tôi khỏe
 392.	sixteen                                     	mười sáu
@@ -454,7 +437,6 @@
 407.	a teacher                                   	giáo viên
 408.	brush teeth                                 	đáng răng
 409.	how many (for a large number)               	bao nhiêu
-
 410.	a bank                                      	ngân hàng
 411.	a hospital                                  	bệnh viện
 412.	a park                                      	công viên
@@ -476,7 +458,6 @@
 427.	a living room                               	phòng khách
 428.	January                                     	tháng giêng
 429.	I/You (2 gen up)                            	ông/bà cháu
-
 430.	I/You (Uncle/Aunt)                          	chú/cô cháu
 431.	clay fishpot dish                           	cá kho tộ
 432.	hello to grandmotherly                      	chào bà ạ
@@ -498,7 +479,6 @@
 447.	I am sleepy.                                	Tôi buồn ngủ
 448.	never                                       	không bao giờ
 449.	good night                                  	chào buổi tồi
-
 450.	16th of                                     	ngày mười sáu
 451.	how many books                              	mấy quyển sách
 452.	Vietnamese person                           	người Việt Nam
@@ -520,7 +500,6 @@
 467.	I like apples.                              	Tôi thích quả táo.
 468.	Please do not talk with each other.         	Xin đừng nói chuyệt.
 469.	You will go shopping. (general) (anh)       	Anh sẽ đi mua đồ
-
 470.	I take D swimming.                          	Tôi đưa D đi bơi.
 471.	What do you do? or What is your job? (anh)  	anh làm nghế gì ạ?
 472.	What time is it now?                        	Bây giờ là mấy giờ?
@@ -542,7 +521,6 @@
 487.	Whose picture is this?                      	Bức tranh này là của ai?
 488.	I sleep at 11:00. (tôi)                     	Tôi ngủ lúc mười một giờ.
 489.	I am working today                          	Tôi đang làm việc hôm nay
-
 490.	My wife is Vietnamese.                      	Vợ tôi là người Việt Nam.
 491.	year 2024                                   	năm hai ngàn hai mươi bốn
 492.	The older sister likes this photo.          	Chị gái thích bức ảnh này.
@@ -570,7 +548,6 @@
 
 508.	Tomorrow I will study Vietnamese.           	Ngày mai tôi sẽ học tiếng Việt.
 509.	Dad was 55 years old last year.             	Năm trước bố năm mươi lăm tuổi.
-
 510.	Yesterday I also studied Vietnamese.        	Hôm qua tôi cũng học tiếng Việt.
 
 511.	The older brother doesn't like that photo   	Anh trai không thích bức ảnh kia.	

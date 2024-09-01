@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -24,13 +23,13 @@ import com.skagit.flashCardsGame.enums.Clumping;
 import com.skagit.flashCardsGame.enums.DiacriticsTreatment;
 import com.skagit.flashCardsGame.enums.Mode;
 import com.skagit.flashCardsGame.enums.PropertyPlus;
+import com.skagit.util.AudioFilePlayer;
 import com.skagit.util.BackupFileGetter;
 import com.skagit.util.CommentParts;
 import com.skagit.util.DirsTracker;
 import com.skagit.util.InputString;
 import com.skagit.util.LineBreakDown;
 import com.skagit.util.MyProperties;
-import com.skagit.util.SimpleAudioPlayer;
 import com.skagit.util.Statics;
 import com.skagit.util.Statics.YesNoResponse;
 
@@ -46,15 +45,14 @@ public class FlashCardsGame {
     final private File _cardsFile;
     final private File _soundFilesDir;
 
-    final private TreeMap<String, File> _allSoundFiles;
+    final private TreeMap<String, File> _soundFilesMap;
     final private TreeMap<String, String> _partToStem;
 
-    final private MyProperties _properties;
+    final private MyProperties _myProperties;
     final private long _randomSeed;
     final private Mode _mode;
     final private int _blockSize;
     final private boolean _beSilent;
-    final private long _lagLengthInMilliseconds;
     final private DiacriticsTreatment _diacriticsTreatment;
     final private Clumping _clumping;
     final private QuizGenerator _quizGenerator;
@@ -73,11 +71,10 @@ public class FlashCardsGame {
 	    System.err.println(
 		    String.format("Failed to copy %s to %s.", _gameFile.toString(), gameFileBackUp.toString()));
 	    _cardsFile = _soundFilesDir = null;
-	    _allSoundFiles = null;
+	    _soundFilesMap = null;
 	    _partToStem = null;
-	    _properties = null;
+	    _myProperties = null;
 	    _randomSeed = 0;
-	    _lagLengthInMilliseconds = -1L;
 	    _mode = null;
 	    _blockSize = -1;
 	    _diacriticsTreatment = null;
@@ -92,28 +89,29 @@ public class FlashCardsGame {
 	System.out.println(String.format("Stem=%s", stem));
 
 	/** Load the Game. */
-	_properties = new MyProperties();
+	_myProperties = new MyProperties();
 	try (InputStreamReader isr = new InputStreamReader(new FileInputStream(_gameFile), "UTF-8")) {
-	    final Properties properties = new Properties();
-	    properties.load(isr);
+	    final MyProperties myProperties = new MyProperties();
+	    myProperties.load(isr);
 	    final int nPropertyPluses = PropertyPlus._Values.length;
 	    for (int k = 0; k < nPropertyPluses; ++k) {
 		final PropertyPlus propertyPlus = PropertyPlus._Values[k];
 		final String key = propertyPlus._propertyName;
-		final String value0 = (String) properties.get(key);
-		final String value;
-		if (value0 == null
+		final String propertiesString = (String) myProperties.get(key);
+		final String overrideString;
+		if (propertiesString == null
 			&& (propertyPlus == PropertyPlus.CARDS_FILE || propertyPlus == PropertyPlus.SOUND_FILES)) {
-		    value = stem;
+		    overrideString = stem;
 		} else {
-		    value = value0;
+		    overrideString = null;
 		}
-		final String validatedString = _properties.getValidString(propertyPlus, value);
-		_properties.put(key, validatedString);
+		final String validatedString = myProperties.getValidString(propertyPlus, overrideString);
+		_myProperties.put(key, validatedString);
 	    }
 	} catch (final IOException e) {
+	    e.printStackTrace();
 	}
-	final String cardsFileString = (String) _properties.get(PropertyPlus.CARDS_FILE._propertyName);
+	final String cardsFileString = (String) _myProperties.get(PropertyPlus.CARDS_FILE._propertyName);
 	_cardsFile = Statics.getCardsFile(_gameFile.getParentFile(), cardsFileString);
 	/** Back up _cardsFile. */
 	final File backUpCardsFile = BackupFileGetter.getBackupFile(_cardsFile, "." + Statics._CardsFileExtensionLc,
@@ -128,27 +126,23 @@ public class FlashCardsGame {
 	    _randomSeed = 0;
 	    _clumping = null;
 	    _beSilent = false;
-	    _lagLengthInMilliseconds = -1L;
-	    _allSoundFiles = null;
+	    _soundFilesMap = null;
 	    _partToStem = null;
 	    _quizGenerator = null;
 	    return;
 	}
 	System.out.println(String.format("Copied %s to %s.", _cardsFile.toString(), backUpCardsFile.toString()));
 
-	final String soundFilesDirString = (String) _properties.get(PropertyPlus.SOUND_FILES._propertyName);
+	final String soundFilesDirString = (String) _myProperties.get(PropertyPlus.SOUND_FILES._propertyName);
 	_soundFilesDir = Statics.getSoundFilesDir(_gameFile.getParentFile(), soundFilesDirString);
 	_diacriticsTreatment = DiacriticsTreatment
-		.valueOf(_properties.getValidString(PropertyPlus.DIACRITICS_TREATMENT, null));
-	_mode = Mode.valueOf(_properties.getValidString(PropertyPlus.MODE, null));
-	_clumping = Clumping.valueOf(_properties.getValidString(PropertyPlus.CLUMPING, null));
-	_beSilent = Boolean.valueOf(_properties.getValidString(PropertyPlus.BE_SILENT, null));
-	_blockSize = Integer.parseInt(_properties.getValidString(PropertyPlus.BLOCK_SIZE, null));
-	_randomSeed = Long.parseLong(_properties.getValidString(PropertyPlus.RANDOM_SEED, null));
-	_lagLengthInMilliseconds = Long
-		.parseLong(_properties.getValidString(PropertyPlus.LAG_LENGTH_IN_MILLISECONDS, null));
-
-	_allSoundFiles = new TreeMap<>();
+		.valueOf(_myProperties.getValidString(PropertyPlus.DIACRITICS_TREATMENT, /* overrideString= */null));
+	_mode = Mode.valueOf(_myProperties.getValidString(PropertyPlus.MODE, /* overrideString= */null));
+	_clumping = Clumping.valueOf(_myProperties.getValidString(PropertyPlus.CLUMPING, /* overrideString= */null));
+	_beSilent = Boolean.valueOf(_myProperties.getValidString(PropertyPlus.BE_SILENT, /* overrideString= */null));
+	_blockSize = Integer.parseInt(_myProperties.getValidString(PropertyPlus.BLOCK_SIZE, /* overrideString= */null));
+	_randomSeed = Long.parseLong(_myProperties.getValidString(PropertyPlus.RANDOM_SEED, /* overrideString= */null));
+	_soundFilesMap = new TreeMap<>();
 	_partToStem = new TreeMap<>();
 	loadCards(/* announceCompleteDups= */true);
 	if (_clumping != Clumping.NO_CLUMPING) {
@@ -167,7 +161,7 @@ public class FlashCardsGame {
 	    return;
 	}
 
-	_quizGenerator = new QuizGenerator(_mode, _properties, _cards.length, _randomSeed);
+	_quizGenerator = new QuizGenerator(_mode, _myProperties, _cards.length, _randomSeed);
 	shuffleCards(_cards);
 	_quizPlus = null;
     }
@@ -203,7 +197,7 @@ public class FlashCardsGame {
 
 	    @Override
 	    public boolean accept(final File f) {
-		return SimpleAudioPlayer.checkAudioFile(f, /* playFile= */false, /* lagLengthInMs= */-1);
+		return AudioFilePlayer.isValidFile(f);
 	    }
 	});
 	for (final File f : mainDirSoundFiles) {
@@ -238,9 +232,9 @@ public class FlashCardsGame {
 	    for (int k = 0; !keyList.isEmpty();) {
 		k %= keyList.size();
 		final String thisKey = keyList.get(k);
-		final File oldFile = _allSoundFiles.get(thisKey);
+		final File oldFile = _soundFilesMap.get(thisKey);
 		if (oldFile == null) {
-		    _allSoundFiles.put(thisKey, f);
+		    _soundFilesMap.put(thisKey, f);
 		    keyList.remove(k);
 		} else {
 		    keyList.set(k, parentNamePlus + thisKey);
@@ -253,7 +247,7 @@ public class FlashCardsGame {
     }
 
     private void loadCards(final boolean announceCompleteDups) {
-	_allSoundFiles.clear();
+	_soundFilesMap.clear();
 	addToSoundFiles(_soundFilesDir);
 	final TreeMap<Card, Card> cardMap = loadCardMap(announceCompleteDups);
 	final int nCards = cardMap.size();
@@ -369,8 +363,8 @@ public class FlashCardsGame {
 	if (clueSide != null && answerSide != null && clueSide.length() > 0 && answerSide.length() > 0) {
 	    final int nNewCommentLines = commentList.size();
 	    final String[] newCommentLines = commentList.toArray(new String[nNewCommentLines]);
-	    final Card newCard = new Card(switchSides, _allSoundFiles, _partToStem, cardMap.size(), clueSide,
-		    answerSide, newCommentLines);
+	    final Card newCard = new Card(switchSides, _partToStem, cardMap.size(), clueSide, answerSide,
+		    newCommentLines);
 	    final Card oldCard = cardMap.get(newCard);
 	    if (oldCard != null) {
 		if (announceCompleteDups) {
@@ -530,28 +524,28 @@ public class FlashCardsGame {
 
     void updateProperties() {
 	updateChangeableProperties();
-	_quizGenerator.updateChangeableProperties(_properties);
+	_quizGenerator.updateChangeableProperties(_myProperties);
     }
 
     void updateChangeableProperties() {
     }
 
     void overwriteGameFile() {
-	final Properties properties;
-	final long seed = Long
-		.parseLong(_properties.getValidString(PropertyPlus.RANDOM_SEED, Long.toString(_randomSeed)));
+	final MyProperties myProperties;
+	final long seed = Long.parseLong(_myProperties.getValidString(PropertyPlus.RANDOM_SEED,
+		/* overrideString= */Long.toString(_randomSeed)));
 	if (seed < 0) {
-	    properties = (Properties) _properties.clone();
-	    final int topCardIdx0 = Integer.parseInt(_properties.getValidString(PropertyPlus.TOP_CARD_INDEX,
-		    Integer.toString(_quizGenerator._topCardIndex)));
-	    final int maxNNewWords = Integer
-		    .parseInt(_properties.getValidString(PropertyPlus.NUMBER_OF_NEW_WORDS, null));
-	    final int maxNRecentWords = Integer
-		    .parseInt(_properties.getValidString(PropertyPlus.NUMBER_OF_RECENT_WORDS, null));
+	    myProperties = (MyProperties) _myProperties.clone();
+	    final int topCardIdx0 = Integer.parseInt(_myProperties.getValidString(PropertyPlus.TOP_CARD_INDEX,
+		    /* overrideString= */Integer.toString(_quizGenerator._topCardIndex)));
+	    final int maxNNewWords = Integer.parseInt(
+		    _myProperties.getValidString(PropertyPlus.NUMBER_OF_NEW_WORDS, /* overrideString= */null));
+	    final int maxNRecentWords = Integer.parseInt(
+		    _myProperties.getValidString(PropertyPlus.NUMBER_OF_RECENT_WORDS, /* overrideString= */null));
 	    final int topIndexCardIdx1 = Math.min(topCardIdx0, maxNNewWords + maxNRecentWords - 1);
-	    properties.put(PropertyPlus.TOP_CARD_INDEX._propertyName, Integer.toString(topIndexCardIdx1));
+	    myProperties.put(PropertyPlus.TOP_CARD_INDEX._propertyName, Integer.toString(topIndexCardIdx1));
 	} else {
-	    properties = _properties;
+	    myProperties = _myProperties;
 	}
 
 	try (PrintWriter pw = new PrintWriter(new FileOutputStream(_gameFile))) {
@@ -571,7 +565,7 @@ public class FlashCardsGame {
 		    }
 		}
 		final String realPropertyName = propertyPlus._propertyName;
-		pw.printf("%s=%s", realPropertyName, properties.get(realPropertyName));
+		pw.printf("%s=%s", realPropertyName, myProperties.get(realPropertyName));
 		pw.println();
 	    }
 	} catch (final IOException e) {
@@ -674,7 +668,7 @@ public class FlashCardsGame {
     }
 
     private void modifyProperty(final PropertyPlus propertyPlus, final String propertyPlusValue) {
-	/** No core properties can be modified. */
+	/** No core myProperties can be modified. */
     }
 
     private long[] getChangeableLongPropertyValues() {
@@ -731,7 +725,7 @@ public class FlashCardsGame {
 	return getString();
     }
 
-    void mainLoop(final Scanner sc) {
+    void mainLoop(final Scanner sysInScanner) {
 	int nCards = _cards.length;
 	long[] oldChangeableValues = getAllCurrentChangeableValues();
 	_quizPlus = null;
@@ -766,23 +760,36 @@ public class FlashCardsGame {
 
 	    final int cardIdx = _quizPlus.getCurrentQuiz_CardIndex();
 	    final Card card = _cards[cardIdx];
+
 	    final String clueStringPart = card.getStringPart(/* clueSide= */true);
-	    final int clueStringPartLen = clueStringPart.length();
+	    final int clueStringPartLen = clueStringPart != null ? clueStringPart.length() : 0;
 	    final boolean clueHasStringPart = clueStringPartLen > 0;
+
 	    final String answerStringPart = card.getStringPart(/* clueSide= */false);
-	    final int answerStringPartLen = answerStringPart.length();
+	    final int answerStringPartLen = answerStringPart != null ? answerStringPart.length() : 0;
 	    final boolean answerHasStringPart = answerStringPartLen > 0;
-	    final File answerSoundFile = card.getSoundFile(/* clueSide= */false);
-	    final boolean answerHasSoundFile = answerSoundFile != null;
+
 	    boolean wasWrongAtLeastOnce = false;
 	    for (boolean gotItRight = false; !gotItRight;) {
 		final String typeIPrompt = getTypeIPrompt(cardIdx, wasWrongAtLeastOnce);
 		final int typeIPromptLen = typeIPrompt.length();
 		final String terminalString;
-		if (!_beSilent && answerHasSoundFile && answerHasStringPart) {
+		final boolean haveAnswerSound;
+		if (!_beSilent) {
+		    final String answerSoundFileString = card.getSoundFileString(/* clueSide= */false);
+		    if (answerSoundFileString == null) {
+			haveAnswerSound = false;
+		    } else {
+			final File answerSoundFile = _soundFilesMap.get(answerSoundFileString);
+			haveAnswerSound = AudioFilePlayer.isValidFile(answerSoundFile);
+		    }
+		} else {
+		    haveAnswerSound = false;
+		}
+		if (haveAnswerSound && answerHasStringPart) {
 		    terminalString = String.format("%s%s%c   ", Statics._Sep2, Statics._SoundString,
 			    Statics._keyboardSymbol);
-		} else if (!_beSilent && answerHasSoundFile) {
+		} else if (haveAnswerSound) {
 		    terminalString = String.format("%s%s  ", Statics._Sep2, Statics._SoundString);
 		} else if (answerHasStringPart) {
 		    terminalString = String.format("%s%c  ", Statics._Sep2, Statics._keyboardSymbol);
@@ -808,9 +815,12 @@ public class FlashCardsGame {
 		boolean longQuestion = false;
 
 		/** Expose the clue. */
-		final File clueSideSoundFile = card._clueSide._soundFile;
-		if (!_beSilent && clueSideSoundFile != null) {
-		    SimpleAudioPlayer.checkAudioFile(clueSideSoundFile, /* playFile= */true, _lagLengthInMilliseconds);
+		if (!_beSilent) {
+		    final String clueSoundFileString = card.getSoundFileString(/* clueSide= */true);
+		    if (clueSoundFileString != null) {
+			final File clueSoundFile = _soundFilesMap.get(clueSoundFileString);
+			AudioFilePlayer.playFileIfValid(clueSoundFile);
+		    }
 		}
 		if (len1 <= Statics._MaxLineLen) {
 		    System.out.printf("%s%s%s%s", typeIPrompt, Statics._Sep1, clueStringPart, terminalString);
@@ -841,7 +851,7 @@ public class FlashCardsGame {
 		    System.out.print(terminalString);
 		}
 		/** Get the response. */
-		final InputString inputString = new InputString(sc);
+		final InputString inputString = new InputString(sysInScanner);
 		longQuestion = longQuestion || inputString._nLinesOfResponse > 1;
 		final String responseStringPart = inputString._inputString;
 		final int responseStringPartLen = responseStringPart.length();
@@ -849,21 +859,21 @@ public class FlashCardsGame {
 		    /**
 		     * <pre>
 		     * The response is a command.
-		     * quit, restart, edit the properties, or fall through,
+		     * quit, restart, edit myProperties, or fall through,
 		     * letting this be a bona fide response (such as ở).
 		     * </pre>
 		     */
 		    final char char0Uc = Character.toUpperCase(responseStringPart.charAt(0));
 		    if (char0Uc == Statics._QuitChar) {
 			System.out.print(Statics.getFullYesNoPrompt("Really quit?", true));
-			final YesNoResponse yesNoResponse = new YesNoResponse(sc, /* defaultYesNo= */true);
+			final YesNoResponse yesNoResponse = new YesNoResponse(sysInScanner, /* defaultYesNo= */true);
 			if (!yesNoResponse._yesValue) {
 			    continue OUTSIDE_LOOP;
 			}
 			keepGoing = false;
 			return;
 		    } else if (char0Uc == Statics._EditPropertiesChar) {
-			modifyProperties(sc);
+			modifyProperties(sysInScanner);
 			continue OUTSIDE_LOOP;
 		    } else if (char0Uc == Statics._RestartQuizChar) {
 			_quizPlus.resetForFullMode();
@@ -899,10 +909,9 @@ public class FlashCardsGame {
 		    continue;
 		}
 		/** Must process a response to the clue. */
-		final File answerSideSoundFile = card._answerSide._soundFile;
-		if (!_beSilent && answerSideSoundFile != null) {
-		    SimpleAudioPlayer.checkAudioFile(answerSideSoundFile, /* playFile= */true,
-			    _lagLengthInMilliseconds);
+		if (haveAnswerSound) {
+		    final File answerSideSoundFile = _soundFilesMap.get(card.getSoundFileString(/* forClue= */false));
+		    AudioFilePlayer.playFileIfValid(answerSideSoundFile);
 		}
 		if (responseStringPartLen == 0) {
 		    int nUsedOnCurrentLine = 0;
@@ -940,7 +949,7 @@ public class FlashCardsGame {
 			    System.out.println();
 			    System.out.printf("%s%s%", Statics._IndentString, prompt);
 			}
-			final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
+			final YesNoResponse yesNoResponse = new YesNoResponse(sysInScanner, defaultYesValue);
 			gotItRight = yesNoResponse._yesValue;
 			_needLineFeed = !yesNoResponse._lastLineWasBlank;
 			wasWrongAtLeastOnce = wasWrongAtLeastOnce || !gotItRight;
@@ -948,7 +957,7 @@ public class FlashCardsGame {
 		    continue;
 		}
 		/** User typed in a non-trivial response with at least two characters. */
-		final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sc, _diacriticsTreatment,
+		final ResponseEvaluator responseEvaluator = new ResponseEvaluator(sysInScanner, _diacriticsTreatment,
 			answerStringPart, responseStringPart);
 		final String[] diffStrings = responseEvaluator._diffStrings;
 		gotItRight = responseEvaluator._gotItRight;
@@ -1018,7 +1027,7 @@ public class FlashCardsGame {
 			gotItRight = true;
 			_needLineFeed = true;
 		    } else {
-			final YesNoResponse yesNoResponse = new YesNoResponse(sc, gotItRight);
+			final YesNoResponse yesNoResponse = new YesNoResponse(sysInScanner, gotItRight);
 			gotItRight = yesNoResponse._yesValue;
 			_needLineFeed = !yesNoResponse._lastLineWasBlank;
 		    }
@@ -1027,12 +1036,12 @@ public class FlashCardsGame {
 		    _needLineFeed = longQuestion;
 		    if (_mode == Mode.STEP) {
 			gotItRight = true;
-		    } else if (answerHasSoundFile) {
+		    } else if (haveAnswerSound) {
 			final boolean defaultYesValue = true;
 			final String fullPrompt = Statics.getFullYesNoPrompt("Strings Match.  Sound OK?",
 				defaultYesValue);
 			System.out.print(fullPrompt);
-			final YesNoResponse yesNoResponse = new YesNoResponse(sc, defaultYesValue);
+			final YesNoResponse yesNoResponse = new YesNoResponse(sysInScanner, defaultYesValue);
 			gotItRight = yesNoResponse._yesValue;
 			_needLineFeed = true;
 		    }
@@ -1057,8 +1066,8 @@ public class FlashCardsGame {
 	final FlashCardsGame flashCardsGame = new FlashCardsGame(args[0]);
 	// System.out.println(flashCardsGame.getString());
 	if (!Mode._DumpCardsAndAbort.contains(flashCardsGame._mode)) {
-	    try (Scanner sc = new Scanner(System.in)) {
-		flashCardsGame.mainLoop(sc);
+	    try (Scanner sysInScanner = new Scanner(System.in)) {
+		flashCardsGame.mainLoop(sysInScanner);
 		System.out.println();
 		System.out.println("Exiting Program");
 	    } catch (final Exception e) {

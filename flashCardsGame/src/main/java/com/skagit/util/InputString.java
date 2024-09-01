@@ -7,12 +7,12 @@ public class InputString {
     final public int _nLinesOfResponse;
     final public String _inputString;
 
-    public InputString(final Scanner sc) {
+    public InputString(final Scanner sysInScanner) {
 	String s = "";
 	boolean lastLineWasBlank = false;
 	int nLinesOfResponse = 1;
 	for (;;) {
-	    final String thisLine = sc.nextLine();
+	    final String thisLine = sysInScanner.nextLine();
 	    final int len = thisLine.length();
 	    final boolean moreLines = len > 0 && thisLine.charAt(len - 1) == '\t';
 	    if (!thisLine.isBlank()) {

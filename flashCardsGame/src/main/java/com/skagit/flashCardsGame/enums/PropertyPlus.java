@@ -18,10 +18,6 @@ public enum PropertyPlus {
 	    /* shortName= */null, //
 	    /* defaultValue= */Boolean.FALSE.toString(), //
 	    /* comment= */""), //
-    LAG_LENGTH_IN_MILLISECONDS(/* propertyName= */"Lag.Length.In.Milliseconds", //
-	    /* shortName= */ null, //
-	    /* defaultValue= */ "-1", //
-	    /* comment= */""), //
 
     TOP_CARD_INDEX(/* propertyName= */"Top.Card.Index", //
 	    /* shortName= */"TCI", //

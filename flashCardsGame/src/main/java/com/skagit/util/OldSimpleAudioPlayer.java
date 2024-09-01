@@ -45,7 +45,6 @@ public class OldSimpleAudioPlayer {
 	_clip = AudioSystem.getClip();
 	_clip.open(_audioInputStream);
 	_clip.loop(Clip.LOOP_CONTINUOUSLY);
-	_clip.loop(1);
     }
 
     private void goToChoice(final int c) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
@@ -167,8 +166,8 @@ public class OldSimpleAudioPlayer {
 	}
     }
 
-    public static void main(final String[] args) {
-	final String filePath = "RunDir/Data/SoundFilesDirs/VN.00-SoundFiles/Tran-00/000-winter.aiff";
+    public static void mainx(final String[] args) {
+	final String filePath = "RunDir/Data/SoundFiles/Tran01-40/01-winter.aiff";
 	try (Scanner sc = new Scanner(System.in)) {
 	    try {
 		final OldSimpleAudioPlayer audioPlayer = new OldSimpleAudioPlayer(filePath);
