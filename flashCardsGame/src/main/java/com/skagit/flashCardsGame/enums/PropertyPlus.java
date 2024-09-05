@@ -10,7 +10,7 @@ public enum PropertyPlus {
 		    + "\nthe directory of sound files, " //
 		    + "\nwhether or not to play the sounds, " //
 		    + "\nand how long to pause for each sound to finish."), //
-    SOUND_FILES(/* propetyName= */ "Sound.Files.Dir", //
+    SOUND_FILES_DIR(/* propetyName= */ "Sound.Files.Dir", //
 	    /* shortName= */ null, //
 	    /* defaultValue= */ "", //
 	    /* comment= */ ""), //

@@ -18,10 +18,11 @@
 
 4.	You can text-edit the file Vietnamese.A.properties to tweak the program.
 	The most important lines are:
-	Card.Files=
-	Sound.Files=
+	Cards.File=
+	Sound.Files.Dir=
 	These refer to where to find the Cards and sound files, and those are
-	relative to the directories RunDir/Data/CardFiles and RunDir/Data/SoundFiles.
+	relative to either the GameFile's directory or the directories
+	RunDir/cardsFiles and RunDir/soundFiles.
 
 5.	Other properties that you can edit are:
 	a.	Top.Card.Index: Change this if you want to start somewhere other than the beginning.

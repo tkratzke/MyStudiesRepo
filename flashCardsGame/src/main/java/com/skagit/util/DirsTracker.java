@@ -7,22 +7,33 @@ import java.io.PrintStream;
 
 public class DirsTracker {
 
-    final private static File _UserDir;
-    final private static File _RunDir;
-    final private static String _GamesFilesDirName = "gameFiles";
+    final private static String _GameDirsName = "gameDirs";
     final private static String _CardsFilesDirName = "cardsFiles";
     final private static String _SoundFileDirsDirName = "soundFiles";
     final private static String _LogDirName = "LogFiles";
-    final private static File _GameFilesDir;
-    final private static File _CardsFilesDir;
-    final private static File _SoundFilesDirsDir;
-    final private static File _LogDir;
+
+    final public static File _UserDir;
+    final public static File _LogDir;
+    final public static File _DataDir;
+    final public static File _GameDirsDir;
+    final public static File _CardsFilesDir;
+    final public static File _SoundFilesDirsDir;
 
     static {
 	final String userDirPath = Statics.getSystemProperty("user.dir", /* useSpaceProxy= */true);
 	_UserDir = new File(userDirPath);
-	_RunDir = computeRunDir();
-	_LogDir = new File(_RunDir, _LogDirName);
+	/**
+	 * <pre>
+	 * Unless overridden as a VM argument, _DataDir is set to _UserDir.
+	 * </pre>
+	 */
+	final String dataDirPath = Statics.getSystemProperty("Data.Dir", /* useSpaceProxy= */true);
+	if (dataDirPath == null) {
+	    _DataDir = _UserDir;
+	} else {
+	    _DataDir = new File(dataDirPath);
+	}
+	_LogDir = new File(_DataDir, _LogDirName);
 	if (!_LogDir.isDirectory()) {
 	    _LogDir.mkdirs();
 	}
@@ -48,12 +59,12 @@ public class DirsTracker {
 		}
 	    }
 	}
-	if (_RunDir != null && _RunDir.isDirectory()) {
-	    _GameFilesDir = new File(_RunDir, _GamesFilesDirName);
-	    _CardsFilesDir = new File(_RunDir, _CardsFilesDirName);
-	    _SoundFilesDirsDir = new File(_RunDir, _SoundFileDirsDirName);
+	if (_DataDir != null && _DataDir.isDirectory()) {
+	    _GameDirsDir = new File(_DataDir, _GameDirsName);
+	    _CardsFilesDir = new File(_DataDir, _CardsFilesDirName);
+	    _SoundFilesDirsDir = new File(_DataDir, _SoundFileDirsDirName);
 	} else {
-	    _GameFilesDir = _CardsFilesDir = _SoundFilesDirsDir = null;
+	    _GameDirsDir = _CardsFilesDir = _SoundFilesDirsDir = null;
 	}
     }
 
@@ -92,62 +103,14 @@ public class DirsTracker {
 	}
     }
 
-    private static File computeRunDir() {
-	/**
-	 * <pre>
-	 * We compute _RunDir here, and it might be called within the static initializer.
-	 * Unless overridden as a VM argument, _RunDir is set to _UserDir.
-	 * </pre>
-	 */
-	final String userDirPath = Statics.getSystemProperty("user.dir", /* useSpaceProxy= */true);
-	final File userDir = new File(userDirPath);
-	/** Unless overridden as a VM argument, _RunDir is set to _UserDir. */
-	final String runDirPath = Statics.getSystemProperty("run.dir", /* useSpaceProxy= */true);
-	if (runDirPath == null) {
-	    return userDir;
-	}
-	final File runDir = new File(runDirPath);
-	if (runDir.exists() && runDir.isDirectory()) {
-	    return runDir;
-	}
-	return null;
-    }
-
-    public static File getUserDir() {
-	return _UserDir;
-    }
-
-    public static File getLogDir() {
-	return _LogDir;
-    }
-
-    public static File getRunDir() {
-	if (_RunDir != null) {
-	    return _RunDir;
-	}
-	return computeRunDir();
-    }
-
-    public static File getGameFilesDir() {
-	return _GameFilesDir;
-    }
-
-    public static File getCardsFilesDir() {
-	return _CardsFilesDir;
-    }
-
-    public static File getSoundFilesDirsDir() {
-	return _SoundFilesDirsDir;
-    }
-
     public static String getDirCasesFinderDirsString() {
-	String s = "Version 2024-08-05.B";
-	s += "\nUser Dir: " + Statics.getCanonicalPath(getUserDir());
-	s += "\nRunDir: " + Statics.getCanonicalPath(getRunDir());
-	s += "\nLogDir: " + Statics.getCanonicalPath(getLogDir());
-	s += "\nCardsFilesDir: " + Statics.getCanonicalPath(getCardsFilesDir());
-	s += "\nSoundFilesDirsDir: " + Statics.getCanonicalPath(getSoundFilesDirsDir());
-	s += "\nGameFilesDir: " + Statics.getCanonicalPath(getGameFilesDir());
+	String s = "Version 2024-09-04.A";
+	s += "\nUser Dir: " + Statics.getCanonicalPath(_UserDir);
+	s += "\nDataDir: " + Statics.getCanonicalPath(_DataDir);
+	s += "\nLogDir: " + Statics.getCanonicalPath(_LogDir);
+	s += "\nCardsFilesDir: " + Statics.getCanonicalPath(_CardsFilesDir);
+	s += "\nSoundFilesDirsDir: " + Statics.getCanonicalPath(_SoundFilesDirsDir);
+	s += "\nGameDirsDir: " + Statics.getCanonicalPath(_GameDirsDir);
 	return s;
     }
 

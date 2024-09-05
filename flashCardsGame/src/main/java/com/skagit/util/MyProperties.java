@@ -35,7 +35,7 @@ public class MyProperties extends Properties {
 	String stringToParseForAnInt = stringToTry;
 	switch (propertyPlus) {
 	case CARDS_FILE:
-	case SOUND_FILES:
+	case SOUND_FILES_DIR:
 	    return stringToTry;
 	case ALLOWABLE_MISS_PERCENTAGE:
 	case PERCENTAGE_FOR_RECENT_WORDS:

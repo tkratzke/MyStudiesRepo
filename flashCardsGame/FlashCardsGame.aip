@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="21.4" version="21.9" Modules="simple" RootPath="." Language="en" Id="{96BC0AFC-3BCC-44EC-9461-86222881CF6B}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="21.4" version="22.0" Modules="simple" RootPath="." Language="en" Id="{96BC0AFC-3BCC-44EC-9461-86222881CF6B}">
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_PREDEF_LCONDS_PROPS" Value="AI_DETECTED_ADMIN_USER"/>
@@ -27,15 +27,8 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
-    <ROW Directory="Data_Dir" Directory_Parent="RunDir_Dir" DefaultDir="Data"/>
-    <ROW Directory="GameDirs_Dir" Directory_Parent="RunDir_Dir" DefaultDir="Games"/>
-    <ROW Directory="NewFolder_Dir" Directory_Parent="Data_Dir" DefaultDir="SOUNDF~2|SoundFiles"/>
     <ROW Directory="RunDir_Dir" Directory_Parent="APPDIR" DefaultDir="RunDir"/>
-    <ROW Directory="Sound_Dir" Directory_Parent="Data_Dir" DefaultDir="CARDFI~1|CardFiles"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
-    <ROW Directory="Tran00_Dir" Directory_Parent="Vietnamese.A_Dir" DefaultDir="Tran-00"/>
-    <ROW Directory="Vietnamese.A_1_Dir" Directory_Parent="GameDirs_Dir" DefaultDir="VIETNA~1.A|Vietnamese.A"/>
-    <ROW Directory="Vietnamese.A_Dir" Directory_Parent="NewFolder_Dir" DefaultDir="VIETNA~1.A|Vietnamese.A"/>
     <ROW Directory="com_Dir" Directory_Parent="java_Dir" DefaultDir="com"/>
     <ROW Directory="enums_Dir" Directory_Parent="flashCardsGame_Dir" DefaultDir="enums"/>
     <ROW Directory="flashCardsGame_Dir" Directory_Parent="skagit_Dir" DefaultDir="FLASHC~1|flashCardsGame"/>
@@ -53,10 +46,7 @@
     <ROW Component="ChangeType.java" ComponentId="{3AC631F7-E3AA-443D-9DEB-4DC50AEA033B}" Directory_="enums_Dir" Attributes="0" KeyPath="ChangeType.java" Type="0"/>
     <ROW Component="FlashCardsGame.bat" ComponentId="{E42DF2DC-86E6-4F84-AABB-B46B11C91F3A}" Directory_="RunDir_Dir" Attributes="0" KeyPath="FlashCardsGame.bat" Type="0"/>
     <ROW Component="FlashCardsGame.jar" ComponentId="{92E4CEB1-E229-458E-9690-B5D365CC50FE}" Directory_="APPDIR" Attributes="0" KeyPath="FlashCardsGame.jar" Type="0"/>
-    <ROW Component="OriginalReferenceEntries.txt" ComponentId="{FCB21A91-033E-4EC2-ABAB-02B87A519349}" Directory_="Sound_Dir" Attributes="0" KeyPath="OriginalReferenceEntries.txt" Type="0"/>
     <ROW Component="ProductInformation" ComponentId="{2EB4AD36-AE9E-4A20-8705-8D9258F821E6}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
-    <ROW Component="Vietnamese.A.properties" ComponentId="{5C13513C-257E-4AEF-9DEA-F209DFE2F7EB}" Directory_="Vietnamese.A_1_Dir" Attributes="0" KeyPath="Vietnamese.A.properties" Type="0"/>
-    <ROW Component="Winter.aiff" ComponentId="{8060AF5F-B442-4850-92A8-81BBAC8FF229}" Directory_="Tran00_Dir" Attributes="0" KeyPath="Winter.aiff" Type="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
@@ -87,39 +77,6 @@
     <ROW File="OldSimpleAudioPlayer.java" Component_="BackupFileGetter.java" FileName="OLDSIM~1.JAV|OldSimpleAudioPlayer.java" Attributes="0" SourcePath="src\main\java\com\skagit\util\OldSimpleAudioPlayer.java" SelfReg="false"/>
     <ROW File="SimpleAudioPlayer.java" Component_="BackupFileGetter.java" FileName="SIMPLE~1.JAV|SimpleAudioPlayer.java" Attributes="0" SourcePath="src\main\java\com\skagit\util\SimpleAudioPlayer.java" SelfReg="false"/>
     <ROW File="Statics.java" Component_="BackupFileGetter.java" FileName="STATIC~1.JAV|Statics.java" Attributes="0" SourcePath="src\main\java\com\skagit\util\Statics.java" SelfReg="false"/>
-    <ROW File="Vietnamese.A.properties" Component_="Vietnamese.A.properties" FileName="VIETNA~1.PRO|Vietnamese.A.properties" Attributes="0" SourcePath="RunDir\Games\Vietnamese.A\Vietnamese.A.properties" SelfReg="false"/>
-    <ROW File="Winter.aiff" Component_="Winter.aiff" FileName="0001-W~1.AIF|0001-Winter.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0001-Winter.aiff" SelfReg="false"/>
-    <ROW File="Spring.aiff" Component_="Winter.aiff" FileName="0002-S~1.AIF|0002-Spring.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0002-Spring.aiff" SelfReg="false"/>
-    <ROW File="Summer.aiff" Component_="Winter.aiff" FileName="0003-S~1.AIF|0003-Summer.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0003-Summer.aiff" SelfReg="false"/>
-    <ROW File="Autumn.aiff" Component_="Winter.aiff" FileName="0004-A~1.AIF|0004-Autumn.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0004-Autumn.aiff" SelfReg="false"/>
-    <ROW File="North.aiff" Component_="Winter.aiff" FileName="0005-N~1.AIF|0005-North.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0005-North.aiff" SelfReg="false"/>
-    <ROW File="South.aiff" Component_="Winter.aiff" FileName="0006-S~1.AIF|0006-South.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0006-South.aiff" SelfReg="false"/>
-    <ROW File="Hanoi.aiff" Component_="Winter.aiff" FileName="0007-H~1.AIF|0007-Hanoi.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0007-Hanoi.aiff" SelfReg="false"/>
-    <ROW File="HoChiMinh.aiff" Component_="Winter.aiff" FileName="0008-H~1.AIF|0008-HoChiMinh.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0008-HoChiMinh.aiff" SelfReg="false"/>
-    <ROW File="Cloudy.aiff" Component_="Winter.aiff" FileName="0009-C~1.AIF|0009-Cloudy.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0009-Cloudy.aiff" SelfReg="false"/>
-    <ROW File="Sunny.aiff" Component_="Winter.aiff" FileName="0010-S~1.AIF|0010-Sunny.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0010-Sunny.aiff" SelfReg="false"/>
-    <ROW File="Cold.aiff" Component_="Winter.aiff" FileName="0011-C~1.AIF|0011-Cold.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0011-Cold.aiff" SelfReg="false"/>
-    <ROW File="Cool.aiff" Component_="Winter.aiff" FileName="0012-C~1.AIF|0012-Cool.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0012-Cool.aiff" SelfReg="false"/>
-    <ROW File="Warm.aiff" Component_="Winter.aiff" FileName="0013-W~1.AIF|0013-Warm.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0013-Warm.aiff" SelfReg="false"/>
-    <ROW File="Hot.aiff" Component_="Winter.aiff" FileName="0014-H~1.AIF|0014-Hot.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0014-Hot.aiff" SelfReg="false"/>
-    <ROW File="WhichSeason.aiff" Component_="Winter.aiff" FileName="0015-W~1.AIF|0015-WhichSeason.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0015-WhichSeason.aiff" SelfReg="false"/>
-    <ROW File="SouthVietNam.aiff" Component_="Winter.aiff" FileName="0016-S~1.AIF|0016-SouthVietNam.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0016-SouthVietNam.aiff" SelfReg="false"/>
-    <ROW File="ItWillBeSunny.aiff" Component_="Winter.aiff" FileName="0017-I~1.AIF|0017-ItWillBeSunny.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0017-ItWillBeSunny.aiff" SelfReg="false"/>
-    <ROW File="Moon.aiff" Component_="Winter.aiff" FileName="0018-M~1.AIF|0018-Moon.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0018-Moon.aiff" SelfReg="false"/>
-    <ROW File="Sun.aiff" Component_="Winter.aiff" FileName="0019-S~1.AIF|0019-Sun.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0019-Sun.aiff" SelfReg="false"/>
-    <ROW File="Earth.aiff" Component_="Winter.aiff" FileName="0020-E~1.AIF|0020-Earth.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0020-Earth.aiff" SelfReg="false"/>
-    <ROW File="Star.aiff" Component_="Winter.aiff" FileName="0021-S~1.AIF|0021-Star.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0021-Star.aiff" SelfReg="false"/>
-    <ROW File="ThereWereStars.aiff" Component_="Winter.aiff" FileName="0022-T~1.AIF|0022-ThereWereStars.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0022-ThereWereStars.aiff" SelfReg="false"/>
-    <ROW File="After.aiff" Component_="Winter.aiff" FileName="0023-A~1.AIF|0023-After.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0023-After.aiff" SelfReg="false"/>
-    <ROW File="Before.aiff" Component_="Winter.aiff" FileName="0024-B~1.AIF|0024-Before.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0024-Before.aiff" SelfReg="false"/>
-    <ROW File="Beforexxxxx.aiff" Component_="Winter.aiff" FileName="0024-B~2.AIF|0024-Beforexxxxx.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0024-Beforexxxxx.aiff" SelfReg="false"/>
-    <ROW File="TheMoonIsWhite.aiff" Component_="Winter.aiff" FileName="0025-T~1.AIF|0025-TheMoonIsWhite.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0025-TheMoonIsWhite.aiff" SelfReg="false"/>
-    <ROW File="Rain.aiff" Component_="Winter.aiff" FileName="0026-R~1.AIF|0026-Rain.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0026-Rain.aiff" SelfReg="false"/>
-    <ROW File="Snow.aiff" Component_="Winter.aiff" FileName="0027-S~1.AIF|0027-Snow.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0027-Snow.aiff" SelfReg="false"/>
-    <ROW File="TheEarthIsBlue.aiff" Component_="Winter.aiff" FileName="0028-T~1.AIF|0028-TheEarthIsBlue.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0028-TheEarthIsBlue.aiff" SelfReg="false"/>
-    <ROW File="TheSunIsRed.aiff" Component_="Winter.aiff" FileName="0029-T~1.AIF|0029-TheSunIsRed.aiff" Attributes="0" SourcePath="RunDir\Data\SoundFiles\Vietnamese.A\Tran-00\0029-TheSunIsRed.aiff" SelfReg="false"/>
-    <ROW File="OriginalReferenceEntries.txt" Component_="OriginalReferenceEntries.txt" FileName="ORIGIN~1.TXT|Original-ReferenceEntries.txt" Attributes="0" SourcePath="RunDir\Data\CardFiles\Original-ReferenceEntries.txt" SelfReg="false"/>
-    <ROW File="Vietnamese.A.txt" Component_="OriginalReferenceEntries.txt" FileName="VIETNA~1.TXT|Vietnamese.A.txt" Attributes="0" SourcePath="RunDir\Data\CardFiles\Vietnamese.A.txt" SelfReg="false"/>
     <ROW File="HowToUse.txt" Component_="FlashCardsGame.jar" FileName="HowToUse.txt" Attributes="0" SourcePath="HowToUse.txt" SelfReg="false"/>
     <ROW File="FlashCardsGame.bat" Component_="FlashCardsGame.bat" FileName="FLASHC~1.BAT|FlashCardsGame.bat" Attributes="0" SourcePath="RunDir\FlashCardsGame.bat" SelfReg="false"/>
   </COMPONENT>
@@ -218,9 +175,6 @@
     <ROW Feature_="MainFeature" Component_="Card.java"/>
     <ROW Feature_="MainFeature" Component_="BackupFileGetter.java"/>
     <ROW Feature_="MainFeature" Component_="ChangeType.java"/>
-    <ROW Feature_="MainFeature" Component_="Vietnamese.A.properties"/>
-    <ROW Feature_="MainFeature" Component_="Winter.aiff"/>
-    <ROW Feature_="MainFeature" Component_="OriginalReferenceEntries.txt"/>
     <ROW Feature_="MainFeature" Component_="FlashCardsGame.bat"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">

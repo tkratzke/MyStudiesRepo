@@ -61,8 +61,8 @@ public class FlashCardsGame {
     private QuizPlus _quizPlus;
     private boolean _needLineFeed;
 
-    FlashCardsGame(final String gameFileString) {
-	_gameFile = Statics.getGameFile(gameFileString);
+    FlashCardsGame(final String gameDirString) {
+	_gameFile = Statics.getGameFile(gameDirString);
 	_needLineFeed = false;
 	/** Back up _gameFile. */
 	final File gameFileBackUp = BackupFileGetter.getBackupFile(_gameFile, "." + Statics._GameFileExtensionLc,
@@ -100,7 +100,7 @@ public class FlashCardsGame {
 		final String propertiesString = (String) myProperties.get(key);
 		final String overrideString;
 		if (propertiesString == null
-			&& (propertyPlus == PropertyPlus.CARDS_FILE || propertyPlus == PropertyPlus.SOUND_FILES)) {
+			&& (propertyPlus == PropertyPlus.CARDS_FILE || propertyPlus == PropertyPlus.SOUND_FILES_DIR)) {
 		    overrideString = stem;
 		} else {
 		    overrideString = null;
@@ -133,7 +133,7 @@ public class FlashCardsGame {
 	}
 	System.out.println(String.format("Copied %s to %s.", _cardsFile.toString(), backUpCardsFile.toString()));
 
-	final String soundFilesDirString = (String) _myProperties.get(PropertyPlus.SOUND_FILES._propertyName);
+	final String soundFilesDirString = (String) _myProperties.get(PropertyPlus.SOUND_FILES_DIR._propertyName);
 	_soundFilesDir = Statics.getSoundFilesDir(_gameFile.getParentFile(), soundFilesDirString);
 	_diacriticsTreatment = DiacriticsTreatment
 		.valueOf(_myProperties.getValidString(PropertyPlus.DIACRITICS_TREATMENT, /* overrideString= */null));
@@ -1063,8 +1063,9 @@ public class FlashCardsGame {
 	System.out.printf("SoundString=%s, PenString=%s, IndentString=\"%s\", SpecialChars=\"%s\"",
 		Statics._SoundString, Statics._PenString, Statics._IndentString, new String(Statics._SpecialChars));
 	System.out.printf("\n%s\n", DirsTracker.getDirCasesFinderDirsString());
-	final FlashCardsGame flashCardsGame = new FlashCardsGame(args[0]);
-	// System.out.println(flashCardsGame.getString());
+	int iArg = 0;
+	final String gameDirString = args[iArg++];
+	final FlashCardsGame flashCardsGame = new FlashCardsGame(gameDirString);
 	if (!Mode._DumpCardsAndAbort.contains(flashCardsGame._mode)) {
 	    try (Scanner sysInScanner = new Scanner(System.in)) {
 		flashCardsGame.mainLoop(sysInScanner);

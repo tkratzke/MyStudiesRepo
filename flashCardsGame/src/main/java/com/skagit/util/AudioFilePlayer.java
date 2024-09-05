@@ -116,7 +116,7 @@ public class AudioFilePlayer {
     }
 
     public static void main(final String[] args) {
-	final String filePath = "RunDir/soundFiles/Tran01-40/16-SouthVNHasNoWinter.aiff";
+	final String filePath = "DataDir/soundFiles/Tran01-40/16-SouthVNHasNoWinter.aiff";
 	final AudioFilePlayer afp = new AudioFilePlayer(new File(filePath));
 	afp.playOnce();
     }

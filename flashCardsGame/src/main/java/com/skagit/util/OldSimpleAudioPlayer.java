@@ -167,7 +167,7 @@ public class OldSimpleAudioPlayer {
     }
 
     public static void mainx(final String[] args) {
-	final String filePath = "RunDir/Data/SoundFiles/Tran01-40/01-winter.aiff";
+	final String filePath = "DataDir/Data/SoundFiles/Tran01-40/01-winter.aiff";
 	try (Scanner sc = new Scanner(System.in)) {
 	    try {
 		final OldSimpleAudioPlayer audioPlayer = new OldSimpleAudioPlayer(filePath);

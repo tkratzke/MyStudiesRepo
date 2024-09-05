@@ -12,7 +12,7 @@ public class BackupFileGetter {
     }
 
     public static File getBackupFile(final File f, final String suffix, final int nDigits, final boolean mustBeFile) {
-	if (f == null) {
+	if (f == null || !f.exists()) {
 	    return null;
 	}
 	if (mustBeFile && !f.isFile()) {

@@ -222,6 +222,58 @@ public class Statics {
 	}
     }
 
+    public static File getGameFile(final String gameDirString) {
+	for (int iPass = 0; iPass < 2; ++iPass) {
+	    final File contextDir;
+	    if (iPass == 0) {
+		contextDir = DirsTracker._UserDir;
+	    } else {
+		contextDir = DirsTracker._GameDirsDir;
+	    }
+	    final File gameDir = new File(contextDir, gameDirString);
+	    final String gameFileName = gameDir.getName() + '.' + _GameFileExtensionLc;
+	    final File gameFile = new File(gameDir, gameFileName);
+	    if (gameFile.isFile()) {
+		return gameFile;
+	    }
+	}
+	return null;
+    }
+
+    public static File getCardsFile(final File gameDir, final String cardsFileString0) {
+	final String cardsFileString = forceExtension(cardsFileString0, _CardsFileExtensionLc);
+	for (int iPass = 0; iPass < 2; ++iPass) {
+	    final File parentDir;
+	    if (iPass == 0) {
+		parentDir = gameDir;
+	    } else {
+		parentDir = DirsTracker._CardsFilesDir;
+	    }
+	    final File cardsFile = new File(parentDir, cardsFileString);
+	    if (cardsFile.isFile()) {
+		return cardsFile;
+	    }
+	}
+	return null;
+    }
+
+    public static File getSoundFilesDir(final File gameDir, final String soundFilesString0) {
+	final String soundFilesString = convertToFileSeparator(soundFilesString0);
+	for (int iPass = 0; iPass < 2; ++iPass) {
+	    final File parentDir;
+	    if (iPass == 0) {
+		parentDir = gameDir;
+	    } else {
+		parentDir = DirsTracker._SoundFilesDirsDir;
+	    }
+	    final File soundFilesDir = new File(parentDir, soundFilesString);
+	    if (soundFilesDir.isDirectory()) {
+		return soundFilesDir;
+	    }
+	}
+	return null;
+    }
+
     /**
      * Returns 0 if both null, 2 if neither is null, 1 if o0 is not null, and -1 if
      * o1 is not null.
@@ -308,13 +360,6 @@ public class Statics {
 	return path;
     }
 
-    public static File getGameFile(final String gameFileString0) {
-	final String gameFileString = forceExtension(gameFileString0, _GameFileExtensionLc);
-	final File parentDir = DirsTracker.getGameFilesDir();
-	final File gameFile = new File(parentDir, gameFileString);
-	return gameFile;
-    }
-
     /**
      * <pre>
      * 1. a/b/c.txt -> a/b/c.txt
@@ -348,27 +393,6 @@ public class Statics {
 	    return path + withDot;
 	}
 	return path + withDot;
-    }
-
-    public static File getCardsFile(final File gameDir, final String cardsFileString0) {
-	final String cardsFileString = forceExtension(cardsFileString0, _CardsFileExtensionLc);
-	final File parentDir = DirsTracker.getCardsFilesDir();
-	final File cardsFile = parentDir != null ? new File(parentDir, cardsFileString) : new File(cardsFileString);
-	if (cardsFile != null && cardsFile.isFile()) {
-	    return cardsFile;
-	}
-	return null;
-    }
-
-    public static File getSoundFilesDir(final File gameDir, final String soundFilesString0) {
-	final String soundFilesString = convertToFileSeparator(soundFilesString0);
-	final File parentDir = DirsTracker.getSoundFilesDirsDir();
-	final File soundFilesDir = parentDir != null ? new File(parentDir, soundFilesString)
-		: new File(soundFilesString);
-	if (soundFilesDir != null && soundFilesDir.isDirectory()) {
-	    return soundFilesDir;
-	}
-	return null;
     }
 
     public static boolean copyNonDirectoryFile(final File sourceFile, final File destinationFile) {
