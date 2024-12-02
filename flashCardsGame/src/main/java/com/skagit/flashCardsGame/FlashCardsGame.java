@@ -61,8 +61,8 @@ public class FlashCardsGame {
     private QuizPlus _quizPlus;
     private boolean _needLineFeed;
 
-    FlashCardsGame(final String gameDirString) {
-	_gameFile = Statics.getGameFile(gameDirString);
+    FlashCardsGame(final String gameFileString) {
+	_gameFile = Statics.getGameFile(gameFileString);
 	_needLineFeed = false;
 	/** Back up _gameFile. */
 	final File gameFileBackUp = BackupFileGetter.getBackupFile(_gameFile, "." + Statics._GameFileExtensionLc,
@@ -1064,8 +1064,8 @@ public class FlashCardsGame {
 		Statics._SoundString, Statics._PenString, Statics._IndentString, new String(Statics._SpecialChars));
 	System.out.printf("\n%s\n", DirsTracker.getDirCasesFinderDirsString());
 	int iArg = 0;
-	final String gameDirString = args[iArg++];
-	final FlashCardsGame flashCardsGame = new FlashCardsGame(gameDirString);
+	final String gameFileString = args[iArg++];
+	final FlashCardsGame flashCardsGame = new FlashCardsGame(gameFileString);
 	if (!Mode._DumpCardsAndAbort.contains(flashCardsGame._mode)) {
 	    try (Scanner sysInScanner = new Scanner(System.in)) {
 		flashCardsGame.mainLoop(sysInScanner);

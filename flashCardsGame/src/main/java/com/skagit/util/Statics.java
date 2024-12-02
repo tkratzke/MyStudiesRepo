@@ -222,15 +222,18 @@ public class Statics {
 	}
     }
 
-    public static File getGameFile(final String gameDirString) {
-	for (int iPass = 0; iPass < 2; ++iPass) {
+    public static File getGameFile(final String gameFileString0) {
+	final String gameFileString = forceExtension(gameFileString0, _GameFileExtensionLc);
+	for (int iPass = 0; iPass < 3; ++iPass) {
 	    final File contextDir;
 	    if (iPass == 0) {
-		contextDir = DirsTracker._UserDir;
-	    } else {
+		contextDir = DirsTracker._DataDir;
+	    } else if (iPass == 1) {
 		contextDir = DirsTracker._GameDirsDir;
+	    } else {
+		contextDir = DirsTracker._UserDir;
 	    }
-	    final File gameDir = new File(contextDir, gameDirString);
+	    final File gameDir = new File(contextDir, gameFileString);
 	    final String gameFileName = gameDir.getName() + '.' + _GameFileExtensionLc;
 	    final File gameFile = new File(gameDir, gameFileName);
 	    if (gameFile.isFile()) {
@@ -243,13 +246,8 @@ public class Statics {
     public static File getCardsFile(final File gameDir, final String cardsFileString0) {
 	final String cardsFileString = forceExtension(cardsFileString0, _CardsFileExtensionLc);
 	for (int iPass = 0; iPass < 2; ++iPass) {
-	    final File parentDir;
-	    if (iPass == 0) {
-		parentDir = gameDir;
-	    } else {
-		parentDir = DirsTracker._CardsFilesDir;
-	    }
-	    final File cardsFile = new File(parentDir, cardsFileString);
+	    final File contextDir = iPass == 0 ? gameDir : DirsTracker._CardsFilesDir;
+	    final File cardsFile = new File(contextDir, cardsFileString);
 	    if (cardsFile.isFile()) {
 		return cardsFile;
 	    }
@@ -260,13 +258,8 @@ public class Statics {
     public static File getSoundFilesDir(final File gameDir, final String soundFilesString0) {
 	final String soundFilesString = convertToFileSeparator(soundFilesString0);
 	for (int iPass = 0; iPass < 2; ++iPass) {
-	    final File parentDir;
-	    if (iPass == 0) {
-		parentDir = gameDir;
-	    } else {
-		parentDir = DirsTracker._SoundFilesDirsDir;
-	    }
-	    final File soundFilesDir = new File(parentDir, soundFilesString);
+	    final File contextDir = iPass == 0 ? gameDir : DirsTracker._SoundFilesDirsDir;
+	    final File soundFilesDir = new File(contextDir, soundFilesString);
 	    if (soundFilesDir.isDirectory()) {
 		return soundFilesDir;
 	    }
