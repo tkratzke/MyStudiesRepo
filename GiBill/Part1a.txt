@@ -1,0 +1,12 @@
+Text A
+Text B
+(Footnote 1: 
+Footnote line 2
+
+Footnote line 3 End Footnote)
+(Footnote 1b: xxx End Footnote)
+Text C
+
+
+Text D
+(Footnote 2: Fooot End Footnote) 
