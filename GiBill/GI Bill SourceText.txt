@@ -1,54 +1,71 @@
+<Chapter>Introduction
+
 My father was Albert William Kratzke, who went by the name "Bill."  Born in 1923, he found himself in an historical period
-engulfed by both the Great Depression and World War Two. As my dad might have remarked in
-his wry manner, “It was the worst of times, it was the worst of times.” The war is what concerns
-us here. From 1943 to 1946, my dad served in the US Army and from '44 to '46, he was with
-the 14th Armored Division.  In 1998 Dad penned his memoirs of his life in the army, which he gave
-the punning title "GI Bill." It’s my privilege now to read that text to you.
+engulfed by both the Great Depression and World War Two. As Dad might have remarked in
+his wry manner, “It was the worst of times, it was the worst of times.”
 
-Dad provided many footnotes that I have tried to smoothly work into the narrative.
-There is a lot of information in these footnotes and I found them too interesting to omit.  Many, if not most
-of these notes refer to visits later in his life and I enjoyed imagining him revisiting places and people.
-I will make it clear when I've switched to and from a footnote.
+From 1943 to 1946, Dad served in the US Army and from '44 to '46, he was with
+the 14th Armored Division.  In 1998 Dad wrote his memoirs of his life in the army, which he gave
+the punning title "GI Bill." It is my privilege now to read that text to you.
 
-Likewise, I will indicate when Dad shifts from first-person narration to third-person exposition.
-and when he switches back.  He provided these expositions to introduce the "big picture" and then
-he switches back to the view that he, as a member of a tank crew, had.
+Dad provided many footnotes, many of which I have tried to smoothly work into this reading.
+There is a lot of information in these footnotes and I found them too interesting to omit.  Many, if not most,
+of these notes refer to visits later in his life and I enjoyed imagining his revisiting places and people.
+I will make it clear when I've switched to a footnote, and I hope that context will let the listener know
+when the main text resumes.
 
-In the original text, there are several appendices and maps that, for
-obvious reasons, cannot be read into an audio file. When one medium gets transferred to another, some
+Likewise, I will indicate when I switch from Dad's first-person narration to an historian's exposition.
+Dad provided these expositions to introduce the "big picture."  For these digressions, I will explicitly state
+when Dad switches back to his first-person narration.
+
+In Dad's book, there are several appendices and maps that cannot be read into an audio file. When one medium gets transferred to another, some
 material inevitably is lost.  In this case, we are going from print to audio, and
 diagrams, maps, and pictures are left behind.
 
-So, away we go with one man’s experience in the cataclysm that was WW-2. I hope you enjoy it
-or, at the least, gain some insight into why the journalist Tom Brokaw described Americans of
+Although this is my dad's story, I will insert a personal note here.  Dad was 30 years (and 6 weeks) older than I, making it easy to compare
+our respective decades; for example, my 1960s were his 1930s.  More to the point of this reading, my 1970s were his 1940s, and his 1944
+was my 1974.  So it is easy for me to see that on our 21st birthdays, I was at a rowing practice, getting thrown into the Snake River by some buddies, and Dad was waiting
+for a ship to take him into a maelstrom.  For the next eight months of our lives, I was interested in girls and college rowing; Dad was interested
+in staying alive.  These are humbling thoughts.  Perhaps you the listener, if you are past your 22nd birthday,
+might gain some perspective on this story, if you take a moment
+to recall what your own life was like between your 21st and 22nd birthdays.
+
+Dad was just a regular dad to me; he did not talk of the war when I was growing up, except once to quietly affirm that he had some injuries from the war.
+In fact, what I found most awesome about him was his 1940s-style baseball glove, and that he had
+actually gotten paid to play baseball.  Later in his life, he opened up more.  He didn't talk about individual experiences, but one time, he quietly told me about
+the time that he was pretty sure that he wasn't coming home, and feeling crushed about how it would devastate his mother.
+It's hard for me to read this without tearing up a little.
+
+So, here is my reading of one man’s experience in the cataclysm that was WW-2. I hope you find it interesting
+and, at the least, gain some insight into why the journalist Tom Brokaw described Americans of
 Dad’s time “The Greatest Generation.”
 
-GI Bill:
+<Chapter>GI Bill:
 
 The Autobiographical Sketch of a Civilian in Uniform During
 World War II
 
 by Albert William Kratzke
 
-To Ruth
+To my wife, Ruth
 
 Who cajoled and coaxed, but also supported and encouraged me.
 I could not -- or would not -- have undertaken this project
 without her help, especially in editing the manuscript.
 Thank you, my dear!!
 
-FOREWORD
+<Chapter>FOREWORD
 
 To my children Bill, Mary, Tom, Steve, and Peter,
 Your mother has already written a comprehensive history of our
 family starting with her nineteenth birthday on August 14, 1945,
 the day World War II ended.
 
-Historians deem that war the defining event of the
+Historians deem that war to be the defining event of the
 twentieth century. Our family's story, therefore, would be less
 than complete without some accounting of it, so I relate to you
 my remembrance of the years between the United States' entry into
-the War in 1941 and my return to civilian life in 1946.  I have
+the War in 1941, and my return to civilian life in 1946.  I have
 interspersed my personal account with the impersonal big picture
 of the War in Europe, so you may see how my part as an individual
 soldier played itself out against the much larger backdrop of
@@ -63,7 +80,7 @@ many pilgrims who paid homage both in Europe and in the South Pacific .
 My childhood and early teens were like those of many other children
 of the Twenties and Thirties. I was secure in the bosom of my
 parents, my brothers, my extended family, and my church. I felt the
-Depression only as a time for careful stewardship of resources and
+Depression only as a time for careful stewardship of resources and a
 conservative approach to spending, not a time of want or privation.
 
 I spent two grade-school years, fourth grade and eighth grade,
@@ -83,7 +100,7 @@ international diplomacy and invasions in Europe than I was in the
 daily baseball standing of my favored Cardinals.  I spent one more
 academic year living with my aunts -- when I was a freshman at
 Washington University in St. Louis in the fall of 1940. By then
-I was more aware of world happenings, but even so as a college
+I was more aware of world happenings, but even so, as a college
 freshman I did not spend much time poring over news articles
 relating events on other continents.
 
@@ -106,8 +123,8 @@ Congress. Roosevelt, in fact, was the first leader to recall his
 country's ambassador to Berlin.
 
 One incident worthy of note occurred towards the middle of my first
-semester at Washington University. My German teacher was deported,
-sent back to Germany.  There was much speculation about his
+semester at Washington University. My German teacher was deported back to Germany.
+There was much speculation about his
 activities in this country. Was he a spy or perhaps a double agent
 being sent to Germany by our government? We never found out, but I
 suspect he was just a German citizen who had taken a job in the
@@ -124,7 +141,7 @@ different. I experienced that change, and you may want to know
 something of the times and events that contributed to that change.
 I hope that what follows helps you to understand.
 
-Chapter I: PEARL HARBOR AND ME
+<Chapter>Chapter I: PEARL HARBOR AND ME
 
 Shew me thy ways, O Lord, teach me thy paths
 Lead me in thy truth, and teach me.  (Psalm 25:4-5a, KJV)
@@ -254,7 +271,7 @@ the University student nurses' dining room. He and Gwen moved to
 Missoula, Montana, after the War, and they lived very nicely.
 (Footnote 1: Our family was graciously entertained at breakfast in
 the Stacey home on our way to Boulder, Colorado, in the summer of
-1960. Neil died of a heart attack some time after our visit.
+1960. Neil died of a heart attack sometime after our visit.
 He was only in his forties.
 
 Floyd, too, went to dental school as a way to avoid the draft.
@@ -279,7 +296,7 @@ relationship.
 
 Joe Vranish went into the Navy and served in the Pacific Theater.
 He used his GI Bill benefits for an education in business
-administration. He married Rita, a nurse from his home town, and
+administration. He married Rita, a nurse from his hometown, and
 took a position with a midwestern utility company.
 (Footnote 2: We visited the Vranishes in their home in Minot,
 North Dakota, in 1964. The nine children, our five and their four,
@@ -331,7 +348,7 @@ Wainwright was the hero of the hour.  In spite of his rank, the
 Japanese forced him to accompany the captured Americans on the
 infamous Bataan Death March.
 (Footnote 4: The Rev. and Mrs. Carroll Hinderlie were missionaries in the Philippines on December 7,
-l941. Consequently they were part of the Bataan Death March. They spoke of their
+l941. Consequently, they were part of the Bataan Death March. They spoke of their
 experience at Holden Village when we visited there in 1968. It has been reported by other
 observers that they were a great source of inspiration and encouragement in a most trying
 situation.
@@ -347,7 +364,7 @@ newsreels of planes taking off and wonder still how the pilots
 managed. After a bomber left the edge of the carrier deck, it would
 drop almost to the tops of the waves before beginning its climb.
 The raid had no great strategic value and the bombers actually did
-little damage, but it was a great morale boost for the homefront.
+little damage, but it was a great morale boost for the home front.
 The raid lifted spirits after the devastating defeat at Bataan in
 the Philippines.
 (Footnote 5: Television was not yet common, so the public's chance
@@ -442,7 +459,7 @@ also starring Bing Crosby, was called White Christmas.
 
 The summer ended, and we went back to school. Joe was still in the
 NROTC and awaited assignment while taking classes. I was not
-subject to the draft until later because I was still under age.
+subject to the draft until later because I was still underage.
 
 In early October, I traveled to Brainard, Minnesota, to be the best
 man in the Warren Maertens-Ruth Hilpert wedding. Ruth had been a
@@ -460,7 +477,7 @@ of the congregation were to have hymn practice with the new, i.e.
 1941, hymnal. I stayed with the Hilperts that night and went back
 to Minneapolis the next day.
 
-In October, 1992, Ruth and I
+In October 1992, Ruth and I
 attended the Maertens' golden wedding anniversary celebration in
 Worthington, Minnesota. Because I had been best man, I was asked to
 be the master of ceremonies, and Ruth played the piano for the
@@ -561,10 +578,10 @@ seemed to go oftener.
 
 I particularly liked to play three-cushion billiards and bridge.
 Harold Hill, the Music Man, would probably consider any skills I
-have in either game as evidence of a misspent youth. You got
+have in either game as evidence of a misspent youth. Ya got
 trouble trouble right here in River City!
 
-In January, 1943, I first heard the name Casablanca.
+In January 1943, I first heard the name Casablanca.
 Franklin Roosevelt, Charles de Gaulle, and Winston Churchill met
 there for a conference. Even before the city's namesake movie was
 made, the news media endowed Casablanca with an aura of mystery
@@ -575,7 +592,7 @@ meats, fats, and cheese began. I ate at the University hospital,
 so I did not need any ration stamps. I gave them all to my mother.
 I was no longer given stamps after I went into the Army.
 
-Sometime during the winter quarter a call went out for armory
+Sometime during the winter quarter, a call went out for armory
 guards. Joe Janecky, Joe Vranish, and I volunteered. We were given
 free housing in a barracks-type room in the armory. We stood guard
 at night about three times a week, one two-hour shift each time. As
@@ -626,7 +643,7 @@ serviceman and a gold star for a serviceman who gave his life for
 his country.
 
 I, too, wanted to be a part of the great national War effort. On a
-Monday in early May, 1943, I went into the Army as a private. I
+Monday in early May 1943, I went into the Army as a private. I
 spent a few days with my family before going in. I could have
 reported to the induction center in Glenwood, but my parents and I
 wanted as much time together as possible.  I asked for and was
@@ -647,17 +664,13 @@ with me as far as they were permitted to go.
 
 I walked on alone into a world that both frightened and excited me.
 
-
-
-
-
-Chapter II: Army Training
+<Chapter> Chapter II: Army Training
 
 Be not far from me, for trouble is near (Psalm 71:3, KJV)
 
 Once inside Fort Snelling, I was anxious, excited, and scared.  I
 tried not to look back to the entrance gate where Mother and Dad
-were still standing. Finally I did turn around for one last wave.
+were still standing. Finally, I did turn around for one last wave.
 One does not think of bravery or the British 'stiff upper lip' at
 such a time, but I believe that my parents had more of those
 qualities than I. Perhaps they were of stronger faith.
@@ -711,7 +724,7 @@ same for all branches of the Service, and I reasoned that I could
 work the problem of transfer later. I did not want to be a combat
 stretcher-bearer.
 
-Is it not ironic than many of the soldiers with the
+Is it not ironic that many of the soldiers with the
 limited service classification (myself included) eventually found
 themselves in some of the worst fighting of the War?!
 
@@ -732,7 +745,7 @@ went on to Camp Barkley. At the camp railhead we were met by
 commissioned officers and non-commissioned officers, all of them a
 part of the permanent staff of the camp.  A sergeant was then put
 in charge of each arriving group of recruits. As soon as my group
-was assembled, the sergeant marched us off to the our barracks,
+was assembled, the sergeant marched us off to our barracks,
 our home for the next three months. We were still dressed for a
 Minnesota spring, so we found the march in the Texas heat very
 uncomfortable.
@@ -754,7 +767,7 @@ assigned the hardest and dirtiest work, the high school group the
 next worst, etc. Those with a minimum education were told to stand
 and watch the others so as to learn from them.
 
-The recruit went to breakfast about 7:00 A.M..  Drill or a field
+The recruit went to breakfast about 7:00 A.M.  Drill or a field
 exercise followed at 8:00 A.M. An hour-long lunch break began at
 high noon. Afternoons were generally devoted to classes -- a
 merciful arrangement because summer afternoons in Texas are very
@@ -795,9 +808,9 @@ with full field pack for a long period of time in the Texas heat.
 Such a punishment today would be considered cruel and unusual. I
 never experienced anything like that.
 
-We had several Gls who seemed to invite negative attention. In
+We had several GIs who seemed to invite negative attention. In
 particular there were some professionals from New York --
-accountants, attorneys, stock brokers, and such -- who did not take
+accountants, attorneys, stockbrokers, and such -- who did not take
 to training in west central Texas very well.  A walk in Central
 Park was their version of 'roughing it.' They had a Regular Army
 drill sergeant, a country boy from the South, training them, and
@@ -845,7 +858,7 @@ of the Grace Hotel, the best eating place in Abilene.  I had filet
 mignon. It tasted especially good to me because I was so tired of
 the food on the base.
 
-Some of the officers lived with their families in Abilene; thus it
+Some of the officers lived with their families in Abilene; thus, it
 was not uncommon to see an officer and his wife in town shopping.
 Enlisted men on pass sometimes strung themselves out in a line so
 that an officer coming toward them would be saluted by each of them
@@ -860,14 +873,14 @@ That summer I also learned a little about cock-fighting, an illegal
 sport (if you wish to call it a sport) practiced semi-openly in the
 back country of central Texas. A member of my platoon was from
 Sweetwater, Texas, and he took a few of us to a fighting pit near
-his home town. A contest that is just a fight between two birds has
+his hometown. A contest that is just a fight between two birds has
 little interest for anyone, not even for the owners, but the
 excitement mounts dramatically when there is gambling on the
 outcome.  We visitors did not bet but watched bug-eyed as the
 action outside the ring was almost as furious as that which went on
 inside.
 
-In April, 1991, Ruth and I attended a one-week
+In April 1991, Ruth and I attended a one-week
 Elderhostel on Appalachian culture near Abington, Virginia. The
 dormitories were all occupied when we arrived, so we stayed at a
 motel in town. The road from our motel to the camp passed a tract
@@ -888,7 +901,7 @@ basic training we were ready for an eight-hour hike.
 A goldbrick is a malingerer or goof-off. On hike day, the
 goldbricks appeared in great numbers as volunteers for supply room
 duty, for KP, etc. Sick call always brought out a number of them as
-well. Of course the drill sergeants knew what was going on, but
+well. Of course, the drill sergeants knew what was going on, but
 they were powerless to stop the goldbrickers' practices completely.
 However, the sergeants were determined that everyone go on the
 final eight-hour march.
@@ -936,9 +949,9 @@ At the end of three months of basic training we were reassigned.
 I was offered the opportunity to go back to school in ASTP. I was
 also invited to apply for admission to Officer Candidate School.
 I probably would have fared better had I chosen OCS instead of
-ASTP, but the life expectancy for second lieutenants in front line
+ASTP, but the life expectancy for second lieutenants in front-line
 units -- whether medics, infantry, or any other branch -- was much
-less than that of privates'. For whatever the reason, I chose ASTP
+less than that of privates. For whatever the reason, I chose ASTP
 and was sent to Oklahoma A&M (later called Oklahoma State
 University) for further testing
 and eventual school assignment. The bus trip to Stillwater,
@@ -951,7 +964,7 @@ Service. Now I was pleased to have the chance to go back to school,
 courtesy of Uncle Sam.
 
 My group's quarters at OAM were disappointing. Because we were on a
-college campus, I expected to be housed in a dormitory. Instead we
+college campus, I expected to be housed in a dormitory. Instead, we
 were put into barracks not much different from the ones we had just
 left. We were close to the campus and town, however, and even the
 Lutheran church was convenient.
@@ -962,7 +975,7 @@ whatever campus activities there were. I took several classes that
 were offered without credit. In one of them, a class in physical
 education, I learned a little about fencing.
 
-Again the Yankees and Cardinals played in the World Series. There
+Again, the Yankees and Cardinals played in the World Series. There
 was a firehall on the edge of campus, and anytime the firemen were
 idle, they had their radio tuned to the game. There were no fire
 calls during the Series, so I hung around the firehall and listened
@@ -1029,7 +1042,7 @@ mine-removal, and enemy vehicle and aircraft identification.
 
 Technically, we students were in the Corps of
 Engineers. I was thus classified for only a short time, but during
-that period I had my only formal picture taken. Thus my insignia
+that period I had my only formal picture taken. Thus, my insignia
 on the frontispiece picture is that of the Corps of Engineers.
 
 Columbus, Ohio, was not a great service town. It had the usual
@@ -1092,20 +1105,20 @@ Olympia, Tom engaged Bill to do some work for him. After
 inquiries, Tom learned that his consultant was our son. He and I
 made contact and have kept in touch ever since.
 
-In February or early March, 1944, the ASTP was closed because
-there was need for troops to replace front line casualties.  At
+In February or early March 1944, the ASTP was closed because
+there was a need for troops to replace front-line casualties.  At
 the time we did not know that the invasion of the European
 continent would begin on June 6 and that many line divisions were
 not fully manned. An untapped source of manpower was the ASTP, so
 in the spring of 1944, I found myself on a troop train bound for
 Camp Campbell, Kentucky.
 
-In November, 1995, Ruth and I visited Fort Campbell.
+In November 1995, Ruth and I visited Fort Campbell.
 The barracks are still there. They are now being used as an
 academy for non-commissioned officers. The 101st Airborne Division
 is also stationed at the Fort, so it is a very active place
 
-All of the ASTP Gls from Ohio State University were assigned to
+All of the ASTP GIs from Ohio State University were assigned to
 the 14th Armored Division stationed there.
 
 An armored division consisted of three tank battalions, three
@@ -1119,7 +1132,7 @@ the exposure to danger among the various units of the division.
 We were very anxious about our assignments, and because the Army
 did little to accommodate the preference of any individual, each
 of us was sure that he would wind up as 'cannon fodder' in some
-front line organization. For most of us that turned out to be
+front-line organization. For most of us that turned out to be
 true.
 
 I was assigned to Headquarters Company of the 25th Tank Battalion.
@@ -1229,7 +1242,7 @@ with the enemy.  The Chetnicks may not have been so heroic as the
 picture portrayed them, but we moviegoers of 1943 were none the
 wiser.
 
-In March, 1994, Ruth and I attended an
+In March 1994, Ruth and I attended an
 end-of-the-term party for students of a short course about cities
 of the Mediterranean.  The host and hostess were Serb-Americans.
 They had come to this country in the 1950s.  I observed that as a
@@ -1281,7 +1294,7 @@ Rainbow, and the return to the investors was huge.
 
 Camp Campbell was between Hopkinsville, Kentucky, and Clarksville,
 Tennessee.  Shortly after arriving at Camp Campbell, I went to
-Hopkinsville (Hoptown to the Gls) on a Sunday pass.  I attended a
+Hopkinsville (Hoptown to the GIs) on a Sunday pass.  I attended a
 Missouri Synod church in the morning, but I remember little else
 of the day.
 
@@ -1306,7 +1319,7 @@ shouters felt better for having blown off a little steam.
 Visits to Nashville were entertaining -- if only because we were
 off the post.  We stayed at the Maxwell House the first time we
 went there. A popular radio program of the time was the Edgar
-Bergen-Charlie McCarthy Show.  It wassponsored by Maxwell House
+Bergen-Charlie McCarthy Show.  It was sponsored by Maxwell House
 coffee, a company that advertised that its coffee was served at
 the gracious old Maxwell House in Nashville.  A colorful old
 ante-bellum hostelry it may have been, but it surely was not
@@ -1411,7 +1424,8 @@ scoured out grease traps in the kitchen, and painted buildings --
 just like spring housecleaning!
 
 Finally the division left Tennessee.  We boarded troop trains on a
-railroad siding of the Louisville and Nashville Railroad.  I had used the L&N every time I traveled by train. I
+railroad siding of the Louisville and Nashville Railroad.
+(Footnote 15: I had used the L&N every time I traveled by train. I
 would take the L&N north to Evansville, Indiana, and transfer to
 the Pennsylvania to go to St. Louis -- or I could take the L&N
 through to Chicago if I wanted to go to Minnesota.
@@ -1457,7 +1471,7 @@ compacts of today.
 
 A New York theater company put on Porgy and Bess in the camp
 theater.  Attending the production turned out to be a rare
-opportunity for us Gls because William Warfield played Porgy.  The
+opportunity for us GIs because William Warfield played Porgy.  The
 consensus among critics at the time was that his characterization
 defined the role.  I did not fully appreciate how good
 the presentation was, but I certainly enjoyed seeing the play!
@@ -1484,11 +1498,7 @@ going overseas.
 The few days in Camp Shanks ended my Stateside service. My next
 stop would be someplace in Europe.
 
-
-
-
-
-Chapter III: Destination: European Theater of Operations
+<Chapter> Chapter III: Destination: European Theater of Operations
 
 Preserve my life from fear of the enemy.  (Psalm 64:1, KJV)
 
@@ -1514,7 +1524,7 @@ of four.  I managed to get a bottom bunk.  Usually it was very hot
 in the top bunk, and climbing up to it was always difficult.  In
 addition to his hammock, each soldier was allotted floor space for
 his duffel bag. A packed duffel bag is about three or four feet
-long and fifteen to eighteen inches in diameter.  Thus each
+long and fifteen to eighteen inches in diameter.  Thus, each
 bag used a lot of space, and we were very crowded.  We had no
 fresh water for personal hygiene: we took saltwater showers and
 shaves, and the water was almost always cold.
@@ -1550,7 +1560,7 @@ standards; but it was considered racy then.  Other than reading,
 the most popular pastime was playing games -- poker, bridge, and
 craps.  I won a little money playing poker.  There were a few
 harmonica players in our section of the hold.  They usually played
-sad and plaintive songs, and sometimes other Gls would sing along.
+sad and plaintive songs, and sometimes other GIs would sing along.
 Movies were shown every night in the mess hall.
 
 The division band was on our ship, so in good weather we had band
@@ -1565,7 +1575,7 @@ glasses was put to use, but no one ever saw a girl.  I am almost
 certain that no ship in the convoy had any WACs aboard and that
 all the ships carried only combat troops.
 
-During daylight hours most Gls spent as much time as possible on
+During daylight hours most GIs spent as much time as possible on
 deck. Our convoy sailed a southern route, so the weather was mild.
 We did not know where we were, of course, nor did we know where we
 were going.  I often stood at the rail at night and watched the
@@ -1599,7 +1609,7 @@ The African side of the strait was arid and featureless, the city
 of Tangier gleaming white.  The rock was more than a tourist
 attraction to us, of course: it meant we were going either to
 France or to Italy.  The Mediterranean was much rougher than the
-Atlantic had been.  Almost all the Gls got seasick.  Fortunately,
+Atlantic had been.  Almost all the GIs got seasick.  Fortunately,
 I managed to weather the storm without that terrible scourge.  The
 seas were so rough that when the stern rose out of the water, I
 could see the propellers turning.  There was no water to resist
@@ -1631,7 +1641,7 @@ floor, and a sink dangled out over empty space.
 
 The Santa Rosa docked beside a ship that had been sunk, and our engineers
 quickly built a passageway through its wreckage. We did not go down
-a gangplank to reach the receiving dock; instead we went along a path through
+a gangplank to reach the receiving dock; instead, we went along a path through
 the tangled equipment on the deck of the sunken ship. Because the deck was
 not level, walking while carrying a duffel bag and whatever other gear each of
 us had was precarious. Also, staggering across that tilted deck induced
@@ -1684,7 +1694,7 @@ the open. The row of box-like things was placed in a line beside a path used by
 the local citizenry. A friend of mine told me that during his first use of the
 open-air latrine, a middle-aged lady appeared on the path and tried to engage
 him in conversation. He said he was so embarrassed that all he could do was
-look at his shoes and mumble·. Thus informed, I managed to find ways to avoid
+look at his shoes and mumble. Thus informed, I managed to find ways to avoid
 similar incidents. Forewarned is forearmed!
 
 The equipment for the division arrived in bits and pieces. When our tank was
@@ -1705,7 +1715,7 @@ cobblestone street was very pretty. It was autumn and cool, but even so old
 men sat around outside and talked politics or commented on the arrival of more
 American troops.
 
-Unfortunately there was also a grimness about the place.
+Unfortunately, there was also a grimness about the place.
 Someone who collaborated with the Nazis had been hanged in the town square
 shortly before our arrival. Though we did not witness the incident, we were
 Septemes, a nearby village, where we loaded the tanks onto flatcars.
@@ -1752,10 +1762,9 @@ Our short stay on the railroad siding near Septemes marked the end of our easy
 duty in France. From then on, until the end of the War, we were always
 conscious of enemy presence and the nearness of battle.
 
-Bill breaks from his autobiographical memoirs to insert the following
-historical narrative about Alsace
+<Chapter> Chapter IV: Alsace
 
-Chapter IV: Alsace
+Dad changes to an historian's perspective in this chapter.
 
 The corner of eastern France known as Alsace was very important for both the
 Allied and the Axis forces. in 1944 and 1945. The Germans' attempt to break
@@ -1774,7 +1783,7 @@ great importance. Moreover, Alsace has always been a controversial piece of
 ground, lying as it does on the borders of two neighboring powers, France and
 Germany.
 
-The 14th Armored Division landed at Marseilles in October, 1944, and
+The 14th Armored Division landed at Marseilles in October 1944, and
 proceeded up the Rhone Valley towards the western foothills of the Vosges
 Mountains. Elements of the Seventh Army had already made the march during
 the summer of 1944, so resistance was relatively light when the 14th AD
@@ -1816,7 +1825,7 @@ In medieval times the Vosges became a barrier between empires. In 843, the
 Treaty of Verdun divided the Frankish Empire among the three sons of
 Charlemagne -- Louis the German, Charles the Bold, and Lothair. Louis the
 German took the lands to the east, Charles the Bold the lands to the west.
-Lothair's portion lay in between and included the Vosges and all of modernday
+Lothair's portion lay in between and included the Vosges and all of modern day
 Alsace and Lorraine. As with many 'middle' lands throughout history,
 Lotharingia (from which Lorraine is derived) became a battleground for the
 armies of subsequent neighboring rulers.
@@ -1903,8 +1912,7 @@ because the coniferous evergreens offered concealment to enemy gun
 emplacements and snipers.
 
 Even communication favored the Germans, who used amplitude modulation (AM)
-radios. American soldiers used frequency modulation (FM) radios, which were lineof-
-sight devices with limited range.
+radios. American soldiers used frequency modulation (FM) radios, which were line-of-sight devices with limited range.
 
 In closing, a word about the Alsatian people in 1945.
 
@@ -1913,9 +1921,9 @@ knew where an Alsatian's allegiance lay. Most Alsatians seemed cooperative,
 but their demeanor varied. Sometimes they would be animated and pleasant,
 and at other times they seemed taciturn and impassive -- but always they were enigmatic.
 
-Dad continues to provide a historical perspective in Chapter V:
+<Chapter> Chapter V: The High Vosges Mountain Campaign, November 1944
 
-Chapter: V The High Vosges Mountain Campaign, November, 1944
+Dad continues to provide an historian's perspective in this chapter.
 
 In the summer of 1944, the Allied troops landed on the Normandy beaches and
 fought their way toward Belgium, Luxembourg, and eastern France. Other
@@ -1931,7 +1939,7 @@ river, the Siegfried Line. The Siegfried Line consisted of pillboxes, concrete
 bunkers with machine guns and cannons. Rows of dragon's teeth, cement
 structures built on bases about four feet square and four feet high, were
 further deterrents to invading Germany. The Siegfried Line faced the Maginot
-Line along the French frontier and continued northward along the BelgianGerman
+Line along the French frontier and continued northward along the Belgian-German
 and Dutch-German borders. The Maginot Line, built as a French
 defense but held by the Germans in 1944, was a chain of underground
 fortifications and ground-level gun ports.
@@ -1968,7 +1976,7 @@ vehicles were like sitting ducks for enemy snipers and anti-tank weapons.
 
 At St. Quiren, the head of the column encountered a roadblock. A roadblock
 in the mountains was especially troublesome because there were no alternate
-roads for detour. With no--choice but to blast through the block, the column,
+roads for detour. With no choice but to blast through the block, the column,
 after still another encounter with the enemy, continued on its way.
 
 Thanksgiving fell on November 23 in 1944. The troops fighting through the
@@ -2020,7 +2028,7 @@ anti-tank gun fired at the lead tanks at almost point-blank range.
 
 After the gun was silenced, no resistance was encountered by the remaining
 tanks in their one- or two-block movement down to the canal. Engineers from
-the 125th Engineer Battaliofl erected a foot bridge while under fire so the tank
+the 125th Engineer Battalion erected a foot bridge while under fire so the tank
 crew members could escape.
 
 Soon all of Gertwiller erupted into flame. Infantrymen from B-62 ran from
@@ -2117,10 +2125,9 @@ Having broken out onto the broad Alsatian plain, the 14th AD and attached
 units turned to the northeast. The general movement was west of Strasbourg,
 toward the corner of Alsace where the Lauter and Rhine Rivers meet.
 
-In Chapter VI, Dad resumes his autobiographical account as he relates
-his part in the battle just described.
+<Chapter>Chapter VI: BAPTISM OF FIRE
 
-Chapter VI: BAPTISM OF FIRE
+Dad resumes his autobiographical account in this chapter.
 
 After loading the tanks and half-tracks onto flatcars, the crews -- except for the
 men assigned to ride on the flatcars with the vehicles -- boarded the unheated
@@ -2134,7 +2141,7 @@ We first saw evidence of combat on the trip up the Rhone Valley. We had seen
 bombed warehouses, docks, even homes and businesses -- but no actual
 battlefields. Grim reminders of what had happened were burned-out tanks and
 dead horses. No modern army had mounted cavalry, but the Germans still used
-horses as draft animals to pull artillery pieces and supply wagons. The burnedout
+horses as draft animals to pull artillery pieces and supply wagons. The burned out
 tanks had a sobering effect on everyone.
 
 The 14th Armored Division, part of the Seventh Army commanded by General
@@ -2151,7 +2158,7 @@ After three days' travel in the 40 et 8 cars, we arrived in Charmes, a small tow
 near Epinal and Dijon (of mustard fame). It was rainy and cold. We spent a miserable first night
 in the field. We made our tarp into a half-tent. As the rain came down outside,
 the water came up under our tarp, and our sleeping bags got wet. We all
-caught colds, and several of the guys had the Gls, an army euphemism for
+caught colds, and several of the guys had the GIs, an army euphemism for
 diarrhea. Because the fields were so
 wet, we had to build corduroy roads with logs cut from the local forests.
 
@@ -2267,12 +2274,12 @@ of his ample girth managed to crouch behind Carl's seat. Having finished the
 job of blowing up the roadblock, we proceeded with the lead vehicles into
 Gertwiller. Had it not been for our blowing up the Gertwiller roadblock,
 I would likely not have been involved in the action that followed.
-(Footnote 8: In June, 1997, I received a letter from Frederic Bossert in response to an article I wrote for
+(Footnote 8: In June 1997, I received a letter from Frederic Bossert in response to an article I wrote for
 the Liberator, the 14th Armored Division's newspaper. Mr. Bossert lives in Canada now, but
 during the War he lived in Barr, a neighboring town to Gertwiller. He was fourteen years old
 in 1944. He recalled that a tank commanded by Sergeant Howard Knapp of the 48th Tank
 Battalion, 14th Armored Division burned in front of his parents' house. Mr. Bossert wanted to
-know more about the action in the area around his home town. I have been in
+know more about the action in the area around his hometown. I have been in
 correspondence with him since our initial contact.
 
 Our tank had been moved from a position of relative safety into place with the
@@ -2352,7 +2359,7 @@ deathly quiet, and I did not fire a shot.
 When Eddie stopped the tank, 'everyone got out, each taking his personal effects
 with him. I untied the tarp covering the sleeping bags on the tank's back deck
 and kicked the bags onto the ground; each of the crew then grabbed his bag.
-While under enemy fire, the engineers had thrown up a treadway foot-bridge
+While under enemy fire, the engineers had thrown up a treadway footbridge
 across the stream, and we hurried to use it. I went back to the tank to render
 the radio inoperative. (We were certain that the Germans would take our tank,
 and we did not want them to be able to listen to our radio messages.) The trip
@@ -2361,7 +2368,7 @@ was necessary, and I did my job quickly.
 George Johnson, our bow gunner, also
 returned to the tank -- but for a more prosaic reason. He wanted to fetch his
 football! When I asked him later just why he had gone back at such great risk
-to himself, he replied that the War had to end sometime and he wanted his
+to himself, he replied that the War had to end sometime, and he wanted his
 football for that day. Both George and I got back across the bridge and sought
 a place under cover. We found the tavern that the battalion commander was
 using for his Command Post. There were quite a few of us in the taproom.
@@ -2395,7 +2402,7 @@ Sometime around midnight I lay down on a tavern table and went to sleep.
 Early the next morning, the Germans opened a counter-attack. Enemy artillery
 and rifle fire increased, and our tavern no longer felt secure. The orders came
 to withdraw. Just how we were to do that was not told us at that point. We
-came to learn that the order implied Every man for himselfl The Germans
+came to learn that the order implied Every man for himself! The Germans
 seemed to be everywhere, and there was a lot of activity in the street outside of
 the tavern. Our battalion tanks were covering the infantry as the soldiers
 attempted to get out of town on foot. I should have jumped onto a passing tank
@@ -2434,7 +2441,7 @@ unfortunately: there were Germans in the all the houses surrounding the
 courtyard.
 
 George and I then parted company. I do not know where George went, but he
-disappeared and I was on my own. I managed to get back to the main street
+disappeared, and I was on my own. I managed to get back to the main street
 through an alley. Once on the street, I dodged from one doorway to the next.
 At the entrance to one of the houses, a German hit me with his rifle butt. He
 was probably out of ammunition so used his rifle as a club. I went down, and
@@ -2444,7 +2451,7 @@ way.
 My head hurt! I began to run. I had to keep watching for snipers in
 second-story windows on both sides of the street. Some of them were dimly
 visible in the recesses of the upstairs rooms. After more running and dodging,
-I caught up with a truck moving so slowly that I could run along side it. It
+I caught up with a truck moving so slowly that I could run alongside it. It
 protected me from the left, so I had only to watch for snipers on my right.
 I noted that no one else used the truck as a shield, and I remember thinking
 how strange it was that I should be alone. Was I the only one smart enough to
@@ -2487,7 +2494,7 @@ was a house on the side of one of the canyon walls. Sound carried very well,
 and we could hear firing all night. It seemed to be very close, so we did not get
 much sleep. Several months later the night sounds would not have bothered
 us, but we were all new to combat and our nerves were still on edge from the
-events in Gertwiller. We had no tank, so we posted no guard and all went to
+events in Gertwiller. We had no tank, so we posted no guard, and all went to
 bed.
 
 That was a mistake that could have been disastrous because there were so
@@ -2500,14 +2507,14 @@ for the order of standing watch.
 We picked up our new tank at the supply depot and were told where to go to
 rejoin the battalion. Each of us had lost some personal gear, which we were
 able to replace from our company supply. Fortunately, most of our belongings
-were kept in personal duffel bags which were stored with Battalion Trains; thus
+were kept in personal duffel bags which were stored with Battalion Trains; thus,
 our things remained untouched.
 
 The trip back to our company was uneventful. We were alone for the entire
 time. There were few Americans on the roads, and we did not trust the local
 populace. We always ate very well: as mealtime approached, we would look for
 an American Army field kitchen. No matter what the unit, the cooks always fed
-itinerant Gls.
+itinerant GIs.
 
 It took only a few days to get back, and we did have to spend at least one night
 completely isolated. We didn't know whether or not there might be Germans
@@ -2530,7 +2537,7 @@ miles northwest of Strasbourg. There we had a few days' respite. Our tank was
 brand new, so it needed little day-to-day maintenance. The other tank crews in
 the platoon had to do some work on their vehicles, and we pitched in to help
 wherever we could. Our Service Company welded racks onto the sides of the
-tanks to hold sand bags. The bags added a measure of protection against
+tanks to hold sandbags. The bags added a measure of protection against
 the dreaded German 88, but their added weight reduced the top speed.
 Sometime later, Gen. Patton dressed down a tank commander for using sand
 bags. In forceful and colorful language, he ordered the sand bags off because
@@ -2585,7 +2592,7 @@ a chance.
 Riedhiem was typical of the villages in Alsace, but the house in which we were
 billeted had a special distinction. The farmer owned a bull for breeding. The
 first morning we were there, several neighboring farmers brought their cows
-to be serviced. The word got out, and soon the breeding stall had Gls lining
+to be serviced. The word got out, and soon the breeding stall had GIs lining
 the fence to watch the procedure. I am not sure what vicarious sex kick they
 (we -- for I was there, too!) got out of watching, but it was a diversion.
 During the few days of respite from the fighting, we were all given Post
@@ -2605,16 +2612,16 @@ having a bad day when I was in the chair because he did not make the drill go
 very fast. My cavity was small, so the dentist decided not to use Novocain.
 A slow drill hurts.
 
-On December 9, the battalion was put on forty-five minute alert. We knew
+On December 9, the battalion was put on forty-five-minute alert. We knew
 that we were going on the attack soon, and we became ever more grim and
 sober. Our stay at Riedheim was about to end, and we were going into
 engagements that later became known as the Battle of the Lower Vosges
 Mountains.
 
-Chapter VII: Into Germany -- and Back
+<Chapter>Chapter VII: Into Germany -- and Back
 
 In December, 1944, the 14th Armored Division entered Germany for the first
-time. Gls in the line knew nothing about grand strategy or even local tactics, so
+time. GIs in the line knew nothing about grand strategy or even local tactics, so
 we were unaware of our goal from one attack to the next. We left the relative
 comfort of Riedheim and once again had to live in the open or in the tanks.
 The immediate objective for our battalion was Wissembourg, a beautiful city on
@@ -2772,7 +2779,7 @@ Widow Maker. It was also called The Baltimore Whore because it had no visible me
 support. I met a B-26 bomber crew member in the Samena spa. He confirmed the plane's
 reputation. He was in the 9th Tactical Air Force, so he could not have been on the Kapsweyer-Steinfeld
 mission.
-(Continue Footnote:
+<Continue Footnote>
 According to a newscast on September 29, 1995, the last B-26 crashed.
 
 After that debacle we entered Kapsweyer. We encountered some fighting to get
@@ -2848,14 +2855,14 @@ Headquarters Company including the AG Platoon were assigned to the village
 of Schleithal. Other companies were in two neighboring towns. All the towns
 were near the German border.
 
-Upon arrival at our assigned area, we were told by some departing Gls that the
+Upon arrival at our assigned area, we were told by some departing GIs that the
 Germans had infiltrated the lines and had killed some American troops with
 bayonets while they slept. We did not take the rumor too seriously but felt
 apprehensive for a while, nonetheless. The guards were especially alert that
 first night.
 
 The battalion then enjoyed a few days' rest. During that time I cleaned some of
-my woolen clothes with gasoline. Our crew had an extra Jerri-can, which was a five-callon container, of gas
+my woolen clothes with gasoline. Our crew had an extra Jerri-can, which was a five-gallon container, of gas
 delivered when Service Company dropped off our fuel for the tank. My clothes
 did not smell much after hanging on a line for several hours.
 I am almost embarrassed to report the incident of cleaning my clothes with gasoline
@@ -2879,7 +2886,7 @@ the Rhine, opposite the First French Army. If the Germans were successful in
 the Bulge and if they broke through the French, the Seventh Army would be
 trapped. The battalion wandered around northeastern Alsace for several days,
 always reinforcing weak spots in the line. Nothing made much sense to the
-front line troops. We knew just enough of the strategic situation to be uneasy.
+front-line troops. We knew just enough of the strategic situation to be uneasy.
 We had only occasional direct contact with the enemy, but we engaged in many
 indirect fire missions in which we used tanks as artillery. Security was
 especially tight.
@@ -2896,7 +2903,7 @@ was a little bitterness among some of the enlisted men, for the citations seemed
 to go mostly to officers. Members of our tank crew half-expected to receive
 commendation for our action at Gertwiller. The rancor did not last: one cannot
 afford to let personal feelings get in the way of common sense when one is in
-the front line.
+the front-line.
 
 The battalion command thought that the tanks were too close to one another
 and the concentration of armor made an attractive target. German intelligence
@@ -2940,7 +2947,7 @@ The Battle of the Bulge was essentially over. The skies cleared on Christmas
 Day, and Allied bombers flew many missions in the Bulge sector. Still German
 troops were being brought south, and we were in a constant state of readiness.
 Our battalion finally moved west on December 30. We were to reinforce Task
-Force Hudelson,. The task force, formed on December 21 and named for the
+Force Hudelson. The task force, formed on December 21 and named for the
 colonel who led it, was made up of elements of our division. Its mission was to
 establish defensive positions in the lower Vosges mountain passes. The
 departure of most of Patton's Third Army to the Bulge had left the passes
@@ -2951,7 +2958,7 @@ midnight oil.
 
 Early New Year's Eve, our crew was standing around a small fire drinking
 coffee when 'Bed-Check Charlie' made one of his visits. 'Bed-Check Charlie'
-was a German pilot who flew a small reconnaissance plane over the front lines
+was a German pilot who flew a small reconnaissance plane over the front-lines
 in an attempt to draw fire. Sometimes a GI would take a pot shot at Charlie just
 for the heck of it. The chances of hitting him were slim; shooting was just
 a way of relieving tension. I doubt the pilot ever saw much of any real interest.
@@ -2973,7 +2980,7 @@ passes.
 
 Operation Nordwind, the last great German offensive, began January 1, 1945.
 Just after midnight, the Germans launched an assault on the American forces
-manning the long east-west part of the front line. That line ran from the Rhine
+manning the long east-west part of the front-line. That line ran from the Rhine
 River to a point 84 miles west. Task Force Hudelson held about 10 miles of the
 front. The Germans' initial attack was swift and costly to the Americans,
 especially to Hudelson. We were not officially part of the task force, but we
@@ -2981,7 +2988,7 @@ might as well have been. Our function was to plug holes in the line, block the
 mountain passes, and help as much as we could as often as we could.
 
 Our days in the villages of the lower Vosges Mountains were strange.
-Sometimes we engaged in furious action. Other times everything was very
+Sometimes we engaged in furious action. Other times, everything was very
 quiet.
 In one of the villages we had time to clean and repair our equipment. We
 parked our tank in the courtyard owned by one of the farmers of the village
@@ -3022,7 +3029,7 @@ seriously after that.
 
 Most of the news of strategic moves on our front came from Stars and Stripes,
 the soldiers' newspaper. We learned a little from our officers, but usually they
-did not know much more than the enlisted men. Somehow we learned that the
+did not know much more than the enlisted men. Somehow, we learned that the
 German offensive in the Ardennes, the Battle of the Bulge, had been contained.
 
 Now the Germans, in Operation Nordwind, would attempt breaking through
@@ -3039,8 +3046,9 @@ something terrible was about to happen!
 (Footnote 14: We had electricity in our Woerth billet, the first since we arrived in Alsace. The town had
 maintained its power source throughout the fighting.
 
+<Chapter>Chapter VIII: The Low Vosges Mountain Campaign, December 1944 to January 1945
 
-Chapter VIII: The Low Vosges Mountain Campaign, December, 1944 to January, 1945
+Dad changes to an historian's perspective in this chapter.
 
 This account is taken from two sources. One is an article by David Colley in the
 January, 1995, issue of the Veterans of Foreign Wars magazine. The side-bar to that
@@ -3103,7 +3111,7 @@ foxholes . because the ground was frozen. Tank and half-track drivers had
 difficulty keeping their vehicles on the roads because they were sheets of ice.
 
 Task Force Harris, one of the several hastily assembled commands, met the
-initial attack by the Germa.n XIII Corps. The Germans had not counted on
+initial attack by the German XIII Corps. The Germans had not counted on
 the determination of the American troops, and their attack faltered.
 
 The German LXXXIX Corps from Bitche fared better. The Germans surprised
@@ -3113,7 +3121,6 @@ elements of the 14th AD, including the 25th Tank Battalion, became involved
 later.
 (Footnote 1: The task force was made up of elements of the 117th Cavalry Squadron, the 94th Cavalry
 Squadron, and the 62nd Armored Infantry Battalion. The last two units were from the 14th AD.
-
 
 The 100th Infantry Division and two recently assembled task forces assisted
 Task Force Hudelson in turning back the German attack. The fighting was
@@ -3147,7 +3154,7 @@ Operation Sonnenwinde made few gains for the Germans, but it highlighted
 the importance of Strasbourg to the Allies, especially to the French.
 
 Even before the New Year's attacks, Gen. Eisenhower had ordered General
-Jacob Devers to straighten the Seventh Army's front line and to withdraw to
+Jacob Devers to straighten the Seventh Army's front-line and to withdraw to
 more defensible positions in the foothills of the Lower Vosges Mountains. The
 entire Western Front, from the North Sea to Switzerland, was adopting
 a defensive posture. Many units were removed from Alsace and sent to the
@@ -3167,7 +3174,7 @@ They kept the pressure on Allied Forces in at least three main areas. The
 Bitche Salient in the West became extremely troublesome after the initial New
 Year's attack. By January 4, elements of four German divisions were known to
 be in the area. On January 6, the Germans began to probe into the Seventh
-Army's vulnerable, lightly-held Rhine River flank, which extended 26 miles
+Army's vulnerable, lightly held Rhine River flank, which extended 26 miles
 north and south of Strasbourg.
 
 The VI Corps had great cause for concern. The enemy was intent on keeping
@@ -3209,7 +3216,7 @@ If, indeed, such were the German strategy, the battle at Hatten-Rittershoffen
 would be the key to the whole plan. So far as the Americans were concerned,
 Hatten-Rittershoffen would be a fight for personal survival and a battle to save
 Strasbourg.
-(Footnote 4: Most Gls did not know that the Seventh Army was in danger of being cut off and annihilated.
+(Footnote 4: Most GIs did not know that the Seventh Army was in danger of being cut off and annihilated.
 
 For three weeks the fighting in Hatten-Rittershoffen was extremely fierce. Both
 of the German divisions suffered heavy losses in armor and infantry. On
@@ -3255,11 +3262,11 @@ the greatest defensive battles of all times with very little.
 
 But Devers himself must also be given credit. His brilliant tactics held off fullscale
 German attacks with almost no reinforcements or reserve troops.
-Devers is all but forgotten ·today, for history has cast him into the shadow of
+Devers is all but forgotten today, for history has cast him into the shadow of
 the more popular Patton, Bradley and the controversial Montgomery.
 (Footnote 6: General Omar Bradley, Commander of all American troops in Europe, second in command
 only to Gen. Eisenhower, and later Commander of the Twelfth Army.
-(Continue Footnote: General Bernard Montgomery, Commander of all English and
+(Footnote 7: General Bernard Montgomery was Commander of all English and
 Canadian troops in Europe.
 
 Yet it was the Sixth Army Group under Devers, the 'orphan' of the Allied
@@ -3275,10 +3282,11 @@ Devers been allowed to attack across the Rhine in December, 1944. The
 ramifications are endless. Quite possibly, Operation Nordwind might have
 remained on Hitler's drawing board.
 
-
-Chapter IX: Hatten-Rittershoffen
+<Chapter>Chapter IX: Hatten-Rittershoffen
 
 Why go I mourning because of the oppression of the enemy? (Psalm 42:9, KJV)
+
+Dad resumes his autobiographical account in this chapter.
 
 This chapter is about the battle of Hatten-Rittershoffen. Much has been written
 about that engagement, and some of the articles go into great detail. Veterans
@@ -3347,7 +3355,7 @@ crank system.
 turret very fast. The speed of the turret and the length of the gun barrel allowed him to hit
 the intruder behind his knees and send him flying.
 
-Somehow we managed to find some protection. The Germans, too, were
+Somehow, we managed to find some protection. The Germans, too, were
 scrambling for cover, and some of their tanks were knocked out. In the
 confusion of trying to maneuver on icy ground and keep alive at the same time,
 I lost all sense of time and direction. I shouted a lot of orders into the mike,
@@ -3434,7 +3442,7 @@ located a short distance behind the ridge position we maintained. On the first
 night in the barn, I was warm -and comfortable in some hay. My guard shift
 was hours away, and I looked forward to some much-needed sleep. I was soon
 awakened by an artillery barrage. Looking straight up towards the top of the
-barn, I could see bright flashes through the cracks in the ridge-line of the roof.
+barn, I could see bright flashes through the cracks in the ridgeline of the roof.
 
 I knew that if I could see the shells going over the barn, sooner or later they
 would hit the barn. I quickly put my boots on and was about to get out of the
@@ -3481,7 +3489,7 @@ machine-gun fire also missed badly. I am glad they were inexperienced!
 (Footnote 6: The pilots may not have had enough training in flying jets because airplane fuel, especially
 jet fuel, was very scarce in Germany, and using fuel for training may have seemed a luxury
 they could not afford.
-(Continue Footnote: After the War, I saw a great many new, unused jet fighter planes parked on airfields at
+<Continue Footnote> After the War, I saw a great many new, unused jet fighter planes parked on airfields at
 Innsbruck and Munich.
 
 Conventional, i.e. non-jet aircraft also bombed and strafed us many times while
@@ -3579,7 +3587,7 @@ crews, everyone was expected to do whatever needed doing. I must have
 impressed someone during the battle because I was offered a battlefield
 commission. I declined for several reasons, the main one being that junior
 officers had a high rate of mortality. I had seen Lieut. Tomey killed at
-Gertwiller, Lieut. Kirby severeliy wounded at Kapsweyer, and Lieut. Klinefelter's
+Gertwiller, Lieut. Kirby severely wounded at Kapsweyer, and Lieut. Klinefelter's
 lead tank hit and badly burned.
 
 We went with very little sleep, and the weather was terrible. Under such
@@ -3607,7 +3615,7 @@ units as well as the 79th and 42nd Infantry Divisions suffered heavy casualties.
 Moreover, we were unable to dislodge the enemy from either Hatten or
 Rittershoffen.
 
-Finally the order came from VI Corps to withdraw to previously prepared
+Finally, the order came from VI Corps to withdraw to previously prepared
 defensive positions. Withdrawal was scheduled for January 20-21, but there
 was an unexpected complication. The division engineers had laid mine fields
 behind the lines and had neglected to inform the withdrawing units of their
@@ -3629,7 +3637,7 @@ But they didn't!
 soldier and crew claim to have been the last in town. Our platoon thought we were. Most
 likely we were not. I think that C or D Company of our battalion may have had that
 distinction.
-(Continue Footnote: I read about two infantrymen guarding a crossroads who were forgotten by their company.
+<Continue Footnote> I read about two infantrymen guarding a crossroads who were forgotten by their company.
 Their last encounter with the enemy turned out to be a cow slowly moving in the snowy night.
 They made it out of town and lived to write about their last night in Rittershoffen.
 
@@ -3654,7 +3662,7 @@ had to spend nights in foxholes.
 Waiting, always waiting, for something to happen -- incoming
 artillery, enemy attack, whatever.  The Germans used some paratroops
 as regular infantry in the battle.  This we learned
-when we captured a few of them.  Thus we had yet another worry:
+when we captured a few of them.  Thus, we had yet another worry:
 
 We could be attacked from the rear by paratroops
 dropped behind us.
@@ -3693,7 +3701,7 @@ Praying, always praying
 
 God, don't you hear me??
 
-Chapter X: Defense
+<Chapter>Chapter X: Defense
 
 Evening and morning, and at noon, will I pray and
 cry aloud. (Psalm 54:17, KJV)
@@ -3731,7 +3739,7 @@ were threatening to surround the troops in Hagenau.
 (Footnote 2: Douglas MacArthur's division in World War I.
 
 Somehow, long since forgotten by me, our platoon got into Hagenau, and there
-we found ourselves in another mess. I had been helping out as crew member
+we found ourselves in another mess. I had been helping out as a crew member
 in several tanks. I did everything but drive. Most of the time I acted either as
 tank commander or gunner. The replacements we expected after the
 engagement at Hatten-Rittershoffen were slow in arriving. Frank Reissner, our
@@ -3754,7 +3762,7 @@ I tried to read a little, but I soon felt tired decided to turn in. I checked wi
 my old crew to see if they might need help on guard duty. They did, and I drew
 an early morning shift.
 
-I went back to our room to tell Frank and then went out agam to use the
+I went back to our room to tell Frank and then went out again to use the
 outhouse. At the end of the very dark passageway a group of Germans grabbed
 me. I was without my gun, and I thought to myself, "How foolish to move
 about unarmed!" In retrospect I realize I was lucky not to have had my
@@ -3776,7 +3784,7 @@ only his name, rank, and serial number.
 The interrogation did not last long because American artillery batteries began
 to shell the place. Again I was caught on the wrong side. Any artillery barrage
 is bad, but how much worse it is to cower and shiver with fright while being
-shelled by friendly fireI Eventually the barrage stopped, and the officer in
+shelled by friendly fire! Eventually, the barrage stopped, and the officer in
 charge decided to send us farther to the rear. As we were getting into the
 truck, the driver took off, and we all tumbled out and headed for cover. One of
 the fellows lagged behind and had an encounter with one of the guards. He
@@ -3798,7 +3806,7 @@ I managed to stay awake anyway. In my frame of mind I almost hoped I would
 encounter some Germans. I wanted to frighten them as much as they had
 frightened me.
 
-The next morning we had tales to swap. My experience was not even close to
+The next morning, we had tales to swap. My experience was not even close to
 tops on the 'harrowing' scale. I think Eddie Berg's deserves the honor. Eddie
 was sleeping with some other tankers in a brick schoolhouse. His was the last
 in a row of sleeping bags, so his head was right in the corner of the room.
@@ -3844,7 +3852,7 @@ commander! Even then, Don did not move very fast. So far as I know, Don
 survived the War without mishap.
 
 A lighter side to Don's early days with the 25th involved his singing. We asked
-him what songs were popular.,in the States when he left. We had not heard any
+him what songs were popular,in the States when he left. We had not heard any
 new music for a long time. The first song Don sang for us was Don't Fence Me
 In. He was awful, and we never did learn what the music of the day was. Don
 was a good-natured kid, though. We all liked him and tried to keep him out of
@@ -3895,7 +3903,7 @@ thrusts of the Germans. We were on the defensive and reacted more than
 acted. Because we moved a lot, the supporting tactical air units became
 confused. Each of our tanks had an identification panel that was laid across its
 back deck The panels were bright pink and were supposed to be easy to spot
-from the air. A squadron of Lightnings, Lockheed P-38 fighter planes, strafed
+from the air. A squadron of Lightnings, Lockheed P-38 fighter planes strafed
 us one bright day when we had the identification panels in place. We fired
 back, and soon the planes left. They did no damage, and neither did we -- but
 the incident made us angry. We later learned that the pilots were all new and
@@ -3906,7 +3914,7 @@ shooting at friendly troops!
 Sometime in March, we came into contact with the French troops in Alsace.
 They had been busy south of Strasbourg, in the Colmar Pocket. As the Germans
 pulled back, the whole of Alsace began to open up. One action I remember as
-particularly disturbing. The French fank commanders rode on the outside of
+particularly disturbing. The French tank commanders rode on the outside of
 their tanks and acted like movie cowboys. Their practices may have been
 flamboyant, but they were also dangerous. The French tanks and tank
 destroyers were with us when we went into action someplace in northern
@@ -4056,13 +4064,13 @@ About then the artillery fire increased, and I headed for cover. I hurried
 through the open cellar door of the nearest building. My action was foolhardy,
 but I was fortunate: there were no Germans in the cellar. I made the same
 impulsive move into the Kapsweyer pillbox in December; I was lucky then, too,
-for it was empty. This time I found American Gls.
+for it was empty. This time I found American GIs.
 
 Our mortar platoon had been firing mortar shells of smoke to hide our
 movements. They especially wanted to 'blind' the enemy troops in the nearest
 gun emplacements. Most of the houses at the edge of town were camouflaged
 pillboxes. They were innocent-looking farm buildings, but when artillery
-shells hit their sides, their .,_ tiles crumbled off and revealed six-foot-thick
+shells hit their sides, their tiles crumbled off and revealed six-foot-thick
 reinforced concrete walls. The windows came away and exposed gun ports
 arranged in tiers. The smoke mortar shells were concentrated on the streets
 that had 'houses' from which we had received fire. Confusion reigned. The
@@ -4119,7 +4127,7 @@ After breaking through the Seigfried Line, our 25th Tank Battalion reverted to
 Combat Command R, the combat command usually kept in reserve. I thought it
 strange that we moved north to go into reserve because north seemed the
 direction of the most action. The Germans were frantically trying to cross the
-Rhine, so the front lines became ill-defined. German units were in chaos, but
+Rhine, so the front-lines became ill-defined. German units were in chaos, but
 we were not able to take advantage of their vulnerability. Our battalion
 stopped in Pirmasens, where we cleaned vehicles, did the necessary repairs,
 wrote letters, and awaited orders.
@@ -4142,9 +4150,11 @@ my correspondents.
 The Rhine crossing was to be the next big event, but not one of us knew when
 it would be. Even if I had known, I could not have written about it.
 
-Chapter XI: Gotterdammerung
+<Chapter>Chapter XI: Gotterdammerung
 
 Thou hast been a shelter for me and a strong tower from the enemy. (Psalm 61:3, KJV)
+
+Dad changes to an historian's perspective in this chapter.
 
 Gotterdammerung means twilight of the gods. It is the title of the fourth and closing
 opera in the Ring cycle by Richard Wagner. The term has come to denote the
@@ -4158,7 +4168,7 @@ to Antwerp in the Battle of the Bulge or to the Verdun-Paris plain in Operation
 Nordwind, the tide turned in favor of the Allies. It was obvious to everyone that
 in a matter of time Hitler's Thousand Year Reich would come to a premature
 end -- by about 990 years! The 'handwriting was already on the wall' after the
-successful landings on the beaches of Normandy in June, 1944. However,
+successful landings on the beaches of Normandy in June 1944. However,
 the Germans were stubborn, and much fighting still would be required before
 Hitler and his henchman would capitulate. It is harder to stop an altercation,
 be it a minor spat or a war, than it is to start one.
@@ -4198,7 +4208,7 @@ own hand in the bunker, and Allied authorities soon rounded up the rest of
 Hitler's inner circle.
 
 During the fighting, the Allies came upon many prison camps, all horrifying,
-and release and care of prisoners became the concern of front line troops.
+and release and care of prisoners became the concern of front-line troops.
 They found Holocaust camps and camps for political prisoners -- Dachau and
 Buchenwald among them -- and Prisoner Of War camps such as Moosburg.
 Because the 14th Armored Division played a very important role in the
@@ -4235,7 +4245,7 @@ Rumanians, Bulgarians, Russians, Serbs, Italians, South Africans, New
 Zealanders, Australians -- men from every nation fighting the Nazis.
 Among the prisoners were twenty-seven Russian generals and sons of
 four American generals. There were war correspondents, radio
-commentators, and three Russian women doctors. Also among the
+commentators, and three Russian women doctors. Also, among the
 prisoners were eight of the 47th's own, soldiers from the very unit that
 opened the gates. One tanker freed his own son. Around the city
 were thousands of slave laborers, both men and women.
@@ -4298,9 +4308,11 @@ The United States Third and Seventh Armies continued their march south.
 The War in Europe ended on May 8, 1945. The Allied Armies stopped fighting
 and took up occupation duty.
 
-Chapter XII: The Final Dash
+<Chapter>Chapter XII: The Final Dash
 
 O thou enemy, destructions are come to a perpetual end. (Psalm 91:6, KJV)
+
+Dad resumes his autobiographical account in this chapter.
 
 Easter, 1945, fell on April 1, the day I crossed the Rhine River. It was also April
 Fool's Day, but hardly anyone noted that fact. We had more serious things to
@@ -4315,7 +4327,7 @@ I wish that I could have gone to some Holy Week services.
 I haven't even seen a chaplain for weeks, and Easter is almost
 here. Would this be the last time that I would be away from home
 on this important day in the church year? Would the crossing be
-difficult? Our crews have some replacements. Would they hold
+difficult? Our crews had some replacements. Would they hold
 up under fire? Why don't the Germans give up? Surely they
 know that they cannot win. If I get through this, will I have to go
 to the Pacific Theater? Letters from home are always cheerful.
@@ -4439,7 +4451,7 @@ along a narrow road that had a small stream running parallel to it. None of the
 tanks had room to maneuver, so all were vulnerable to attack. Suddenly the
 soft shoulder gave way, and the tank in front of mine slowly slid into
 the stream. It came to rest on its side in about four feet of water. All the
-members of the crew got out safely -- but half of the road bed in front of us was gone, and there was no room to go
+members of the crew got out safely -- but half of the roadbed in front of us was gone, and there was no room to go
 around the big hole. Just then a boy informed us that he had seen German SS
 troop activity in the nearby forest. Another tank commander and I scanned the
 woods with field glasses but could see nothing. Each of the tanks behind the
@@ -4463,7 +4475,7 @@ cultural heritage of the German people. Except for Coburg, which I knew from
 Reformation studies and history classes. I knew nothing of any of these places.
 (Footnote 6: The Coburg Castle was Martin Luther's place of refuge during the Diet of Augsburg. Queen
 Victoria's consort was Albert of Saxe-Coburg.
-(Continuing Footnote: In 1985, Ruth and I stayed in a pension in Bamberg and visited the Coburg castle one afternoon.
+<Continue Footnote> In 1985, Ruth and I stayed in a pension in Bamberg and visited the Coburg castle one afternoon.
 We also toured saw the Wagner Museum in Bayreuth. We wanted to see the Wagner opera
 house, known as the Festspielho.us, but we could not get tickets.
 
@@ -4472,7 +4484,7 @@ The Germans frequently 'fell over each other' in trying to get out of our way.
 Similarly, we were chasing the fleeing Germans as fast as possible, and
 sometimes we ran over each other. In one village I saw two tanks, one German
 and one American, at the same intersection. Each had been hidden from
-the other by the house on the corner. Apparently each tank proceeded into the
+the other by the house on the corner. Apparently, each tank proceeded into the
 intersection and was surprised by the presence of the other. The gunner from
 each tank fired his big gun almost simultaneously. The result was strange.
 Both tanks were abandoned and out of action. The American tank was not
@@ -4496,9 +4508,9 @@ depot. They captured 433 German soldiers and ten women -- without firing
 a shot. Some of the men picked up German Luger pistols as souvenirs.
 
 After several skirmishes around Bayreuth, we headed southwest toward
-Nilrnberg on the Autobahn. The city was famous for the Nazi Party rallies held
+Nurnberg on the Autobahn. The city was famous for the Nazi Party rallies held
 in the huge stadium. Some units of our battalion were scheduled to join
-the 45th Infantry Division in Nilrnberg to participate in a victory parade. In
+the 45th Infantry Division in Nurnberg to participate in a victory parade. In
 the midst of preparations, word came down from Division Headquarters that
 we were to move again. We bypassed the city on the east and saw nothing of
 historic significance.
@@ -4611,7 +4623,7 @@ Occasionally someone has to leave the relative safety of a tank and make
 a reconnaissance on foot because the crew cannot see very well from inside
 a tank. This was one of those times. We had to know what was over a ridge,
 especially in the area immediately in front of our line of tanks. The ridge fell
-away steeply, so we could see nothing beyond our enclosed positions. Usually
+away steeply, so we could see nothing beyond our enclosed positions. Usually,
 the tank commander does the reconnoitering.
 
 One of the tanks on the ridge was under the command of Lieut. H. I tried
@@ -4651,7 +4663,7 @@ someone else for less than he offered, and I made the deal in his presence.
 Looking back, that was a dumb move; The sword would be a great War souvenir now.
 
 There were Germans in the forest to our left, so there was a real possibility that
-they could get around our flank and reach our supply depot near Nilrnberg.
+they could get around our flank and reach our supply depot near Nurnberg.
 Once again our Service Company was pressed into service as auto and tank
 mechanics became infantrymen. They did the job: they routed the Germans in
 the woods.
@@ -4678,7 +4690,7 @@ was finished! We still had a ways to go.
 Several days later we arrived at Ingolstadt on the Danube. Our sector of the
 city had suffered some damage, but it wasn't bad. Another GI and I went
 poking around in some apartment buildings located in what appeared to be
-a middle class neighborhood. There we learned how German city folk lived.
+a middle-class neighborhood. There we learned how German city folk lived.
 We walked through the unlocked doors of an apartment that was nicely
 furnished. It gave evidence of recent use. We noticed that there was no
 portrait of Hitler on the wall. At the time, many German homes displayed
@@ -4729,23 +4741,22 @@ offering friendship. One of our crew suggested we give them pencil and paper,
 whereupon one of the bearded men eagerly drew a sketchy picture of a prison
 camp with guard towers and fences. He also wrote something. I recognized
 the lettering as being Greek. We then communicated in sign language and
-penciled pictures. One of the our guys admired the Luger. The Greek smiled
+penciled pictures. One of our guys admired the Luger. The Greek smiled
 and with signs offered to get another if we wanted it. He went off in the
 direction from which he had come, and a little while later we heard one shot.
 He soon returned with another Luger. I shudder to think how he got it.
 
-By that
-time we realized that our visitors were Greek prisoners recently escaped from a
+By that time, we realized that our visitors were Greek prisoners recently escaped from a
 German prison camp. We knew that they must be hungry. The only food we
 had were D rations, which are very high-calorie chocolate bars. The Greeks ate
 them ravenously. We tried to warn them to take it easy because after a long
 time on limited food, they very likely would become ill from the rich bars. And
-they got sick! Fortunately we had re-established radio contact with the troops
+they got sick! Fortunately, we had re-established radio contact with the troops
 in the rear and were able to send for an escort to take the Greeks to them.
 
-When we crossed the lsar River, we were assigned to support the 45th Division
+When we crossed the Isar River, we were assigned to support the 45th Division
 on our right. That division was in the Seventh Army, but I think we were still
-officially in the Third. Solt\~time during our march south we had recrossed the
+officially in the Third. Sometime during our march south we had recrossed the
 Isar and now approached Munich from the northwest.
 
 It fell to elements of the 45th Division and its supporting troops to liberate the
@@ -4776,14 +4787,13 @@ camp. The mayor and other local dignitaries were forced to go through the
 camp. A later incident, one that I did not witness, involved the removal of
 bodies from the camp and carrying them in rude coffins to a suitable burial
 place.
-(Footnote 13: A famous picture in a May, 1945, issue of Life magazine shows the parade of well-dressed
+(Footnote 13: A famous picture in a May 1945, issue of Life magazine shows the parade of well-dressed
 Dachau citizens carrying the open coffins. Each coffin is borne by four townspeople.
-
 
 We left Dachau shortly after arrival. We were called back to our battalion and
 were no longer attached to the 45th Division.
 
-Had we never been part of'the 45th Division, we still would have been exposed
+Had we never been part of the 45th Division, we still would have been exposed
 to concentration camps. The 14th Armored liberated several satellite camps of
 Dachau and the huge Prisoner Of War camp at Moosburg. Because of our
 involvement in liberating efforts, the 14th Armored came to be known as the
@@ -4792,7 +4802,7 @@ official flag hangs among the flags of all U.S. Army units involved in the
 liberation of death camps in the foyer of the Holocaust Museum in Washington,
 D.C.
 
-Hospital concentration camps14 were located at Ecksburg and Ampfing near
+Hospital concentration camps were located at Ecksburg and Ampfing near
 Toging, the town that our battalion occupied after the end of the War. When
 the fighting stopped, men from a company of the 84th Medical Battalion were
 sent to take over the two German hospitals. In them they found 300 former
@@ -4835,12 +4845,12 @@ more of either the plane or its pilot.
 
 Rumors concerning the cessation of hostilities began to circulate in early May.
 Nonetheless, we remained in combat readiness, albeit somewhat sloppily. At
-last we got word that the War was over. Officially it ended on May 8, 1945.
+last, we got word that the War was over. Officially it ended on May 8, 1945.
 For one or two days after that we acted as if the War were still on. We were
 not sure that the enemy knew the War was over, and we did not want to be
 caught unprepared by some overzealous or unaware Germans.
 
-Finally we were able to relax and proceed to our occupation assignment.
+Finally, we were able to relax and proceed to our occupation assignment.
 
 After offering prayers of thanks and breathing sighs of relief, we speculated
 about the future. Who would go home first? Would any of us have to serve in
@@ -4850,7 +4860,7 @@ Answers to these and many other questions would come soon enough. For the
 time being each of us lived in a state of euphoria, for each had his private
 thoughts about what he had done and what he had left to do.
 
-Chapter XIII: Occupation Duty, Toging and Furstenfeldbruck
+<Chapter>Chapter XIII: Occupation Duty, Toging and Furstenfeldbruck
 
 He maketh wars to cease unto the end of the earth. (Psalm 46:9, KJV)
 
@@ -4905,25 +4915,25 @@ mated with Aryan men, usually servicemen, in a selective genetic way. The
 village was one of Hitler's baby farms. Hitler frequently spoke of the Germans
 as the master race, and his selective breeding program was established to
 enhance the purity of Aryan stock. At War's end the women stayed in the
-houses because they did not know where else to go. Most Gls viewed the whole
+houses because they did not know where else to go. Most GIs viewed the whole
 setup with revulsion.
 
-We lived in Toging's mam school, probably a gymnasmm. (The word
+We lived in Toging's mam school, probably a gymnasium. (The word
 Gymnasium in the German educational system is a high school for students
 aspiring to enter a university, not a place for holding athletic events.) Our
 quarters were comfortable, but the sleeping arrangements were not very good.
 We slept directly on plywood, for the beds were without springs and
 mattresses. Admittedly, plywood was better than the ground or the floor of
 a tank, but we had hoped for something better. During the fighting we
-frequently slept on soft beds in homes, and now that the War was over we had
-to sleep on hard surfaces. 'Hardly seemed right!'
+frequently slept on soft beds in homes, and now that the war was over, we had
+to sleep on hard surfaces. Hardly seemed right!
 
 Special Services supplied us with things like sporting equipment and books.
 We had only one radio for several rooms. I decided to remedy the situation by
 running wires from the radio to satellite speakers. I found wires and speakers
 somewhere in the building. I did the first speaker easily and was working on
 the next connection with both the radio and second satellite speaker turned on.
-Working on a radio plugged into the wall outlet was a big mistakeI I got
+Working on a radio plugged into the wall outlet was a big mistake! I got
 zapped. I forgot that Europe uses a 220-volt power system. I was not hurt, but
 I did no more 'hot' wiring after that!
 
@@ -4966,7 +4976,7 @@ White, our erstwhile stable-master and horse authority, drank too much
 Calvados and tried to saddle a particularly stubborn horse. After
 much struggling, he got the -saddle part-way on, tried to mount the animal, slid
 off, and held onto the horse's tail. The horse broke out of the stable and took
-off down the street with T.D. hanging on for dear life. Unfortunately nobody
+off down the street with T.D. hanging on for dear life. Unfortunately, nobody
 had a camera handy.
 (Footnote 2 & 4: T.D. had no Christian name, only initials.
 
@@ -4996,13 +5006,13 @@ times along the way.
 
 
 The first stop was by a small collection of beautiful half-timbered chalet-like
-houses. I engaged a middk-aged man in small talk, thus risking the penalties
+houses. I engaged a middle-aged man in small talk, thus risking the penalties
 of the fraternization ban. His was the first protestation of innocence I heard.
 He insisted that he had never agreed with the Nazis, that his neighbor might
-even have been a party member, but he certainly was notI The man asked me
+even have been a party member, but he certainly was not! The man asked me
 a strange question: he wanted to know why the American Army had not kept
 right on marching east when the War ended. He said that we would have to
-fight the Russians someday,. and if we did it immediately, we could use the
+fight the Russians someday, and if we did it immediately, we could use the
 remnant of the German Army. Besides, we already had a large force on the
 European continent.
 
@@ -5114,7 +5124,7 @@ only tavern in town to get a beer. The beer was a little watery, but it tasted
 good. Some older men were playing cards. I asked one old fellow if he played
 sixty-six. He did, indeed! We played a few games, but I don't remember who
 won. I returned to the town several times, played some more cards, and drank
-some more beer. Eventually we three Gls went back to our unit. The power
+some more beer. Eventually we three GIs went back to our unit. The power
 plant never seemed to be in any danger.
 (Footnote 7: I thought I would never again have to eat field rations!
 
@@ -5136,8 +5146,8 @@ airplane. Many years later, I read about that very plane in a magazine devoted
 to World War II military aircraft.
 
 I made another trip to Munich about the same time for a reason other than
-sight-seeing. One morning several us were called in to Company Headquarters.
-One of the fellows thought we were to be reprimanded. Instead we were told
+sight-seeing. One morning, several us were called in to Company Headquarters.
+One of the fellows thought we were to be reprimanded. Instead, we were told
 to go to Munich in dress uniform for a medals presentation ceremony. There
 was to be lots of brass and a real 'spit and polish' parade on the Munich
 parade grounds. We got into dress uniforms quickly and reported to the truck
@@ -5211,7 +5221,7 @@ Munich town square with its famous Glockenspiel clock tower. We passed
 many other tourist sights in Munich, but most of us did not realize their
 significance.
 
-About that time we picked up some new fellows. They had been in the village
+About that time, we picked up some new fellows. They had been in the village
 for a time, and we sort of inherited them. One fellow, a guy named Frank,
 stands out in my mind. He was good at dodging work. He had been overseas
 quite awhile but had managed to avoid front-line duty. His time in Europe was
@@ -5227,10 +5237,9 @@ outside. Someone said of him, "He'd give you the shirt off his back -- and steal
 it back that night." I had been in the Army long enough to avoid characters
 like him.
 (Footnote 12: Eddie Slovik was the only American soldier to be executed for desertion since the Civil War.
-He was executed in January, 1945, in the Vosges mountain town of St. Marie aux Mines. His
+He was executed in January 1945, in the Vosges mountain town of St. Marie aux Mines. His
 story is told in The Execution of Private Slovik, a book by William Bradford Huie. Martin
 Sheen starred in a movie made from the book.
-
 
 The combat veterans of the 25th who were still in the battalion had a special
 bond, almost like family. Frank's boasting of avoiding combat did not go over
@@ -5241,7 +5250,7 @@ One day I decided to treat myself to something new to me, a shave by a barber.
 I certainly did not want to go to Frank, so I went into the village. The town had
 only one barber, a quiet fellow about forty years old. I was alone. The shop
 was empty when I entered, so I was taken immediately. I had no time to think
-about what I was doing. After I sat down I realized that the barber might well
+about what I was doing. After I sat down, I realized that the barber might well
 have been a German soldier, perhaps even a member of the SS. We talked a bit,
 but I learned little about him. When he took the razor to my neck, I wondered
 if I should jump up and get out of there. He might have been a fanatic. Putting
@@ -5255,7 +5264,7 @@ We did not stay in Furstenfeldbruck very long. The whole unit was ordered to
 move down into the Alps. We didn't know just where we were headed, but we
 prepared to go at a moment's notice.
 
-Chapter XIV: Occupation Duty, Bad Reichenhall
+<Chapter>Chapter XIV: Occupation Duty, Bad Reichenhall
 
 The battalion -- with all of its tanks, half-tracks, etc. -- was ordered to move.
 For me the transfer would be my last involving equipment. All later changes
@@ -5279,7 +5288,7 @@ brake levers called radials. Pulling on one of the radials applies a brake to it
 track. The braking action turns the tank in the direction of the pulled radial,
 much the way dragging one's foot turns a sled.
 
-With that bit of background you can well understand my misadventure while
+With that bit of background, you can well understand my misadventure while
 driving. At first everything went just fine. I did not make a jerky start, and
 I did not grind the gears. I cruised along in the top gear at about twenty-five
 miles an hour. Then the column of vehicles came to a blown-out bridge over
@@ -5301,7 +5310,7 @@ appreciation for tank drivers!
 
 When we had gone about a third of the way, we could see the Alps in the
 distance. On one of the snapshots taken that afternoon, I look as if I were
-leaning against a mountain. Unfortunately the picture is lost, its place in the
+leaning against a mountain. Unfortunately, the picture is lost, its place in the
 family album only an empty space.
 
 Individual vehicles had no maps, so our crew could not identify terrain
@@ -5332,8 +5341,8 @@ I was a sergeant and had easy duty. The 191st had some new Pershing tanks,
 which mounted 90mm guns. We wanted to see the cannons fired, so out
 of mere curiosity I took a group of men to a clearing. We fired a few rounds of
 live ammunition, but none of us wanted to ride a tank into battle again -- ever!
-(Footnote 3: In November, 1995, Ruth and I attended an Elderhostel at Paris Landing State Park,
-Tennessee. One of the topics, World War 14 was taught by Dr. Malcom Muir, a distant
+(Footnote 3: In November 1995, Ruth and I attended an Elderhostel at Paris Landing State Park,
+Tennessee. One of the topics, World War II was taught by Dr. Malcom Muir, a distant
 relative of the naturalist John Muir. Dr. Muir quoted Col. Dolvin in one of his lectures. I told
 the group that I had known Col. Dolvin and admired him very much.
 
@@ -5356,8 +5365,8 @@ Members of the battalion frequently told of Jan's exploits, for he acted as the
 eyes and ears of the outfit. He worked closely with the Intelligence and
 Reconnaissance Platoon, but he could move about more freely in enemy
 territory than Americans. On one occasion he failed to return from a scouting
-m1ss1on. Col. Dolvin committed the entire battalion to rescuing Jan. From
-a purely tactical point of view, the action was ridiculous. Fortunately there
+mission. Col. Dolvin committed the entire battalion to rescuing Jan. From
+a purely tactical point of view, the action was ridiculous. Fortunately, there
 were no casualties. Had there been any and had the object of the mission been
 learned by his superiors, the Colonel would have been in deep trouble!
 
@@ -5368,7 +5377,7 @@ had no visible source of income. Perhaps Col. Dolvin paid him out of his own
 pocket for the many times Jan helped the battalion.
 
 There remained a small contingent of Germans in Bad Reichenhal when we
-arrived. The major in cha:cge of the German troops had a handsome German
+arrived. The major in charge of the German troops had a handsome German
 shepherd dog. Corporal John Curran had been Jeep driver for Col. Watson,
 battalion commander of the 25th. Because of his job, John got to meet people
 and go places that the rest of us enlisted men did not. He was similarly
@@ -5381,7 +5390,7 @@ the animal: the reputation of the breed alone would have prevented my taking
 charge of him. The dog became the battalion mascot.
 
 Lieut. Martin had become company commander of A Company during the
-fighting. His point count put him into the 191 st Battalion, and he and I were
+fighting. His point count put him into the 191st Battalion, and he and I were
 assigned to the same company. I was glad to see him again. We understood
 eac~ other, and I liked him a lot. As noted earlier, Lieut. Martin was gung ho
 in battle, and he was no less so in occupational duty. One of the first things he
@@ -5396,7 +5405,7 @@ I loved the mountains! One especially adventuresome thing I did very early in
 my Bad Reichenhall stay was to ride the cable car up to the Predigstuhle
 [Bishop's Chair]. The lower terminal of the cable car was at the edge of town.
 When I arrived at the base of the mountain, I asked the cable car operator if
-there had ever been an accident. I expected him to say No. Instead he said the
+there had ever been an accident. I expected him to say No. Instead, he said the
 last incident had been in 'whatever year.' He was probably just teasing, but we
 approached the venture a little more soberly, and one of the fellows would not
 get into the car at all.
@@ -5425,7 +5434,7 @@ After the fraternization ban was lifted, the local
 people came more often. On one especially nice summer afternoon, I was at
 the Red Cross club while waiting for the concert to begin. A young and comely
 German girl walked across the park and sat down on a bench near the band
-shell. Several of the Gis, myself included, admired her from a distance and
+shell. Several of the GIs, myself included, admired her from a distance and
 speculated on chances of getting acquainted and taking her to the concert.
 I decided to approach her -- but got no farther than a few feet into the park
 when a first lieutenant came by. They went off together -- and not to the
@@ -5514,7 +5523,7 @@ wanted to ride in it. When the General saw the discriminatory sign, he took it
 down, and afterwards anyone could go up to the Eagle's Nest on the elevator.)
 (Footnote 8: I did not visit the Eagle's Nest until 1989.
 
-From the Berghof we went out to Konigssee [King's Lake], the Alpine lake
+From the Berghof we went out to Konigssee [King's Lake], the alpine lake
 twelve miles south of town. We took the excursion boat out to St. Bartholoma
 Church, the subject of many paintings. The boats, which are still in operation
 today, are very quiet because they are electrically run.
@@ -5568,7 +5577,7 @@ hooch. He took off, as thirsty enlisted men awaited his return in great
 anticipation. But he didn't return when expected. After waiting for what
 seemed a long time, we sent out a search party, including an MP, to Bolzano to
 find out what happened. We were worried that our booze buyer may have
-been hi-jacked. But he did not meet such a fate. Instead he had sold the truck,
+been hi-jacked. But he did not meet such a fate. Instead, he had sold the truck,
 kept the money and barter materials, and settled down with a Bolzano family
 who took him in. The search party retrieved the truck and most of the money,
 bought the liquor, and brought the errant messenger back under arrest. The
@@ -5576,7 +5585,7 @@ whole operation was only marginally legal in the first place, so there was a lot
 of eye-winking as the guy got off with a demotion and pledge to compensate all
 money spent.
 
-Some of the fellows had liquor sent them by friends or relatives -- more
+Some of the fellows had liquor sent by friends or relatives -- more
 difficult than it sounds! In an effort to prevent smuggling, the Army Post
 Office in New York examined all outgoing packages. The Army suspected that
 some soldiers would be involved in black market booze, and smuggling through
@@ -5605,10 +5614,10 @@ anyone send me goods of a questionable nature.
 By the end of summer, our relations with the German people had become more
 open, and we no longer had to view each other with suspicion. There had been
 a lot of looting -- outright stealing, in fact -- after the War ended. To the
-victor belong the spoils was the motto of many Gls. I had no feelings of guilt
+victor belong the spoils was the motto of many GIs. I had no feelings of guilt
 when taking a pistol or even something personal like a camera or a watch from
 a German whom I had captured during the fighting, but I could not just take
-things from civilians. Sometime during the hostilities I picked up a German
+things from civilians. Sometime during the hostilities, I picked up a German
 camera. I was unaware of its value until a camera buff told me that it was
 among the first single-lens reflex cameras in the world. Fool that I was, I sold
 it to a camera store manager in downtown Bad Reichenhall to raise money for
@@ -5620,16 +5629,16 @@ barracks beds were empty every night. The girls were rewarded for their
 tawdry accommodation with things difficult to get in a defeated country -- silk
 stockings, cigarettes, coffee, and sugar among them. Mostly I witnessed what
 went on around me with detachment, but one case struck me as particularly
-coarse and insensitive. One of the Gls took up semi-permanent residence with
+coarse and insensitive. One of the GIs took up semi-permanent residence with
 a girl -- in her parents' house. I found that hard to fathom. I wondered to
 myself, "Was the family so desperate as to sell a daughter? What kind of
 parents would do that?!"
 
 Passes were issued on a rotation system. One's position on the pass list may
-have been determined by length of service, time since the last pass, or .,_
+have been determined by length of service, time since the last pass, or
 alphabetically -- who knows? Whatever the system, my name was someplace
 in the middle of the first list. It rose to the top much sooner than I expected
-because many Gls preferred staying with their Frauleins to accepting a pass.
+because many GIs preferred staying with their Frauleins to accepting a pass.
 Whenever a GI turned down a pass, his name was dropped to the bottom of the
 list and everyone else's name was moved up. My name appeared at the top
 quickly, and I was even given a longer pass than I expected. I chose to go to
@@ -5639,7 +5648,7 @@ When I returned, I was no longer assigned to the 191st Tank Battalion and my
 stay in Bad Reichenhall was over. The several months there had been very
 interesting.
 
-Chapter XV: A Tale of Two Cities (and a Few More)
+<Chapter>Chapter XV: A Tale of Two Cities (and a Few More)
 
 The Mountains shall bring peace to the people (Psalm 71:3, KJV)
 
@@ -5700,9 +5709,9 @@ the Louvre and Notre Dame Cathedral.
 
 The Louvre was awesome. I had never visited a world-famous museum before.
 Many of the art works were hidden during the War and were still in storage,
-but the 'biggies' were on display -- Mona. Lisa.7 Winged Victory of Sa.mothra.ce7
-and Venus de Milo among them. 3 Winged Victory, also known as Nike7 stands
-in a spectacular setting on a stair landing near one of the Louvre entrances. 4 It
+but the 'biggies' were on display -- Mona Lisa, Winged Victory of Samothrace,
+and Venus de Milo among them. Winged Victory, also known as Nike stands
+in a spectacular setting on a stair landing near one of the Louvre entrances. It
 is a huge piece of statuary not easily moved, so it probably was not put away
 during the War.
 Notre Dame de Paris Cathedral is famous for many reasons. It is not the oldest
@@ -5743,7 +5752,7 @@ spectacular.
 
 It was expected of every visiting GI that he see one of the two famous Parisian
 shows, the Folies Bergere or the Casino de Paris. We did not get to either one.
-Many of the Gls staying at. the Red Cross club spoke of their visits to these
+Many of the GIs staying at the Red Cross club spoke of their visits to these
 burlesque shows and said they were very good.
 
 After about a week in Paris, we caught a train for the coast. The English
@@ -5847,13 +5856,13 @@ been a sitting room in another day, for it had a fireplace. Although it was near
 midnight when we arrived, we were told that the cook would prepare a meal of
 steak, eggs, potatoes, and fresh tomatoes if we wanted it. We opted for
 a sandwich and went to bed. Our breakfast the next morning was the huge
-meal that we had been offered the night before .
+meal that we had been offered the night before.
 
 In a complete contrast to London, Dublin was untouched by the War and
 bustled with activity. The restaurants had ample fresh meat and produce. We
 stayed inside Dublin for our sightseeing because there seemed to be no
 convenient way to visit the surrounding countryside. Two of the well-known
-tourist attractions in Dublin are the Book of Kells at Trinity college and Dublin
+tourist attractions in Dublin are the Book of Kells at Trinity College and Dublin
 Castle. We missed both of them, more out of ignorance than for lack of time or
 inconvenience of location.
 
@@ -5880,20 +5889,20 @@ approached Dan and asked him to carry a bottle of Irish whiskey onto the ferry
 and then return it when we were at sea. Dan declined.
 
 Once back in London we went back to the Red Cross club and prepared to
-return to France. Again we were delayed a few days by the bad weather in the
+return to France. Again, we were delayed a few days by the bad weather in the
 English Channel. We had no convenient way to notify our outfit of our
 situation, so we just waited until the weather cleared and then boarded the
-ferry. On one of the decks I saw an interesting poker game played by only two
+ferry. On one of the decks, I saw an interesting poker game played by only two
 players. They were playing five-card stud, which usually requires at least four
 or five players to be a good game. The two soldiers were playing with nothing
-but £ (one pound) notes. I I The game was very fast. When we reached the
+but £ (one pound) notes. The game was very fast. When we reached the
 harbor in France, they were about even.
 (Footnote 11: A £ was worth about $4.00 in 1945, which is about $30.00 in 1997.
 
 We had a few more days in Paris before we had to return to Germany. I had
 been gone more than a month on a two-week pass.
 
-Chapter XVI: Winter in the Bavarian Alps
+<Chapter>Chapter XVI: Winter in the Bavarian Alps
 
 At the end of my 'grand tour' of Paris, London, and Dublin, I had to come back
 to reality. I had a wonderful trip! I returned in late November, but I cannot
@@ -5933,11 +5942,11 @@ the Women's Army Corps worked for me. They waited on customers, stocked
 shelves, etc. They, too, were just biding time, awaiting shipment home.
 
 The PX job didn't last long. The mail clerk was transferred, so I applied for and
-was given his job. I had to :v.iake a daily trip to Salzburg with the outgoing mail
+was given his job. I had to take a daily trip to Salzburg with the outgoing mail
 and pick up the incoming mail. Except when I had to drive in bad weather, my
 job was very nice. I was not assigned any particular vehicle, so every day
 I went to the motor pool and picked up whatever was available. More often
-than not I got a Jeep, but occasionally I was given a command car, a somewhat
+than not, I got a Jeep, but occasionally I was given a command car, a somewhat
 larger vehicle. Sometimes I carried passengers -- people who had made prior
 arrangements to catch rides -- like organized hitchhiking.
 
@@ -5956,7 +5965,7 @@ enthralled by the beauty of the countryside.
 
 My daily trips to Salzburg were interesting and fun. I always dropped the
 outgoing mail at the Army Post Office on the way into town. Then I would go
-to the Red Cross canteen on the Mozartplatz, one of the main squares of the
+to the Red Cross canteen on the Mozart Platz, one of the main squares of the
 city, for coffee and doughnuts. I learned much about the city by watching and
 listening. Just being in Salzburg was a pleasure.
 
@@ -6016,7 +6025,7 @@ a soldier's boots are placed under his bed with the heels out -- and these boys
 still followed the German dictate. I always managed to correct their mistakes
 before inspection.
 
-A lot of fellows had German girl friends, so Gene's sleeping in town was not
+A lot of fellows had German girlfriends, so Gene's sleeping in town was not
 unusual. The Army should have done something to discourage the practice, but
 who would blow the whistle when many officers were doing the same thing?
 One day a full colonel ordered an enlisted man to deliver a load of firewood to
@@ -6038,7 +6047,7 @@ Horch, later renamed the Audi. "Horch" comes from the German word "to hear" and
 Americans because it used charcoal for
 fuel. A contraption that looked like a water heater was mounted vertically on
 the left side of the rear bumper. German fuel went for airplanes, tanks, and
-other front line vehicles, so some clever engineers improvised and built the
+other front-line vehicles, so some clever engineers improvised and built the
 charcoal burner for use in civilian automobiles. The burner probably ruined
 the engine.
 
@@ -6050,7 +6059,7 @@ of the Konigssee where soldiers could stay free of charge. The rooms, furnished
 in 'resort rustic' with a down comforter on every bed, were very nice, and
 I always managed to get a room with a view of the lake. The hotel ran a ski
 hut, where American soldiers paid no rent for use of skis, poles -- whatever.
-Thus I spent a lot of time on the slopes with good -- though not my own -- skis.
+Thus, I spent a lot of time on the slopes with good -- though not my own -- skis.
 The only lift was a rope tow, but we thought it was great. A major from the
 German ski troops gave me some pointers, as did Horst and Wolfgang. Both
 boys were good skiers; very likely they started skiing as soon as they could
@@ -6087,7 +6096,7 @@ took him to the hotel, but he was hard to keep down. A medic finally gave him
 a shot of something and carried him off to the dispensary in town, where he got
 stitched up. He appeared at dinner in the Schiffmeister on New Year's Day
 with a bandaged head. The first sergeant was in the dining room, and
-I expected more fireworks. Instead the sailor approached the sergeant's
+I expected more fireworks. Instead, the sailor approached the sergeant's
 table -- all smiles -- and asked if he could join the sergeant's party for dinner.
 They acted like old friends, and I doubt anything more ever came of the
 incident.
@@ -6107,7 +6116,7 @@ spread including my number would be the next to go back to the States.
 My day came in February. I liked Bavaria, but it couldn't compare with the
 little prairie town in Minnesota that was my home.
 
-Chapter XVII: Home
+<Chapter>Chapter XVII: Home
 
 The first step in my journey home took me to the collection depot in Rosenheim,
 a town between Salzburg and Munich. There each of us was assigned to
@@ -6115,7 +6124,7 @@ a camp on the French coast. The coastal camps were named for cigarettes
 brands -- Lucky Strike, Chesterfield, etc. I was sent to Camp Phillip Morris
 near LeHavre, a depot for soldiers being sent to New York. Veterans bound for
 Boston or various southern ports in the United States were taken to other
-camps. The troops exuded a cheerful air of expectancy, although a few Gls
+camps. The troops exuded a cheerful air of expectancy, although a few GIs
 were not happy to be going home. Some were leaving girl friends or wives
 behind. (The wives would be sent to the United States at some later date.)
 Others were leaving lucrative black market businesses. Camp Phillip Morris
@@ -6131,7 +6140,7 @@ first place. Prior to boarding ship, we had to exchange all of our foreign
 currency for American money. We could convert funds only in an amount
 equal to the sum of all our pay while in Europe plus ten percent. Some fellows
 had much too much money from their black market dealings or large gambling
-winnings. Several Gls approached me and asked if I would exchange some of
+winnings. Several GIs approached me and asked if I would exchange some of
 their money for them. I had enough of my own to use up all of my allowance,
 but even if I had not, I would not have done as they asked. Not only was such
 an exchange illegal: it was also asking for trouble with the military authorities.
@@ -6276,19 +6285,19 @@ the economy against a postwar slump, raised the national educational level, and 
 housing available. Sponsored by President Roosevelt and supported by veterans' groups, the
 act had several major provisions:
 
-(Continue Footnote: 1. A veteran was entitled to as much as four years of education and/or vocational training
+<Continue Footnote> 1. A veteran was entitled to as much as four years of education and/or vocational training
 with tuition up to $500.00 per year, charges for books and fees, and living allowances of
 $50.00 per month for a single veteran and $75.00 for a man with dependents, all at
 government expense.
-(Continue Footnote: 2. A veteran was entitled to as many as fifty-two weeks of unemployment insurance at
+<Continue Footnote> 2. A veteran was entitled to as many as fifty-two weeks of unemployment insurance at
 $20.00 per week. Taking advantage of this stipulation was called Membership in the 52-20
 Club.
-(Continue Footnote: 3. A veteran was entitled to buy a home, farm, or business with a loan guaranteed by the
+<Continue Footnote> 3. A veteran was entitled to buy a home, farm, or business with a loan guaranteed by the
 Veterans' Administration.
 Amendments in 1945 raised tuition payments above $500.00, living allowances to $65.00 and
 $90.00 for single and married men respectively, and home-loan guarantees from $2,000.00 to
 $4,000.00.
-(Continue Footnote: Though the GI Bill contributed to the building boom in the suburbs after World War II, its
+<Continue Footnote> Though the GI Bill contributed to the building boom in the suburbs after World War II, its
 major impact was on education. Educators were unprepared for the flood tide of more than
 2.5 million veterans who became students in 1946 and 194 7. Villages of prefabricated houses
 and trailers became as common as dormitories on college campuses everywhere.
@@ -6394,7 +6403,7 @@ found that our landlord was, indeed, charging more than the ceiling. We
 informed him, and he professed ignorance of the law. He said that he had just
 purchased the house and that the previous owner had not informed him of the
 rules. Legally we could have claimed treble damages, i.e. we could have asked
-for three times the amount he overcharged. Instead we just asked that he
+for three times the amount he overcharged. Instead, we just asked that he
 adjust our rent and apply the overpaid amounts to our next month's rent. He
 agreed, of course, and we enjoyed the rest of our stay in his house.
 
@@ -6434,9 +6443,9 @@ the Lutheran Church Missouri Synod.
 There was little chemical reaction between us in our first
 encounter, but during winter quarter I took her out for the first time -- and not
 long after that we became engaged.
-We were married on April 4, I 948.
+We were married on April 4, 1948.
 
-Chapter XVIII: A Soldier's Return
+<Chapter>Chapter XVIII: A Soldier's Return
 
 Sing unto the Lord with thanksgiving; sing praise upon the harp unto our God. (Psalm 147:7 KJV)
 
@@ -6517,7 +6526,7 @@ mechanical figures perform their hourly match. I recognized the square that
 I had ridden through in a tank, but the Glockenspiel was not in operation
 then.
 (Footnote 1: In 1945, a GI donated paint to have the figures refurbished. In return for his favor, he got
-to ride one of the life-size wooden horses in the jousting tournament. Thus the GI became a
+to ride one of the life-size wooden horses in the jousting tournament. Thus, the GI became a
 knight(!) for a day.
 
 Just a few kilometers northwest of Munich is Dachau, part our tour's itinerary.
@@ -6611,7 +6620,7 @@ required reading for the course. MacDonald acknowledged that Ruth had
 a good teacher who knew whereof he spoke. He then wrote a short note to
 Friedel, which Ruth hand delivered. Later in that eventful day Ruth rode down
 the hill between the War museum and the restaurant in a Jeep driven by some
-ex-Gls in MacDonald's group. We were never told where they found the Jeep.
+ex-GIs in MacDonald's group. We were never told where they found the Jeep.
 We visited the American Army cemetery just outside the city of Luxembourg,
 where Gen. Patton is buried. The staff there was most courteous and helpful.
 
@@ -6719,7 +6728,7 @@ bought Kugelhopf forms in three sizes.
 
 Our first stop in France was Rheims, site of Gen. Eisenhower's headquarters.
 I was interested in the city for military reasons; yet we made no effort to find
-any of the places associated with the War. Instead we visited the famous
+any of the places associated with the War. Instead, we visited the famous
 Rheims cathedral. The damages it suffered during the War had been repaired.
 In fact, it was so fully restored that it is again numbered among the great
 cathedrals of France.
@@ -7217,7 +7226,7 @@ of patience to transtate this long letter.
 
 With heartfelt greetings to your whole family,
 
-Berthe Hottzmann
+Berthe Holtzmann
 
 While on occupation duty in Toging, Bavaria, we witnessed the plight of the
 Displaced Persons at a DP camp at the edge of town, but I never knew a DP
