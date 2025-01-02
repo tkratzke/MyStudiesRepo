@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 
 public class MarkupProcessor {
 
-    static private enum BufferType {
+    private static enum BufferType {
 	UNKNOWN(false), BODY(false), NEW_FOOTNOTE(true), CONTINUE_FOOTNOTE(true);
 
 	final boolean _isPartOfFootnote;
@@ -18,16 +18,16 @@ public class MarkupProcessor {
 	}
     };
 
-    static final private String _NewChapterMarkup = "<Chapter>";
-    static final private String _NewFootnoteMarkup = "(Footnote";
-    static final private String _ContinueFootnoteMarkup = "<Continue Footnote>";
-    static final private String _NewChapterMarkupLc = _NewChapterMarkup.toLowerCase();
-    static final private String _NewFootnoteMarkupLc = _NewFootnoteMarkup.toLowerCase();
-    static final private String _ContinueFootnoteMarkupLc = _ContinueFootnoteMarkup.toLowerCase();
+    final private static String _EndChapterMarkup = "<END CHAPTER>";
+    final private static String _NewFootnoteMarkup = "(Footnote";
+    final private static String _ContinueFootnoteMarkup = "<Continue Footnote>";
+    final private static String _NewFootnoteMarkupLc = _NewFootnoteMarkup.toLowerCase();
+    final private static String _ContinueFootnoteMarkupLc = _ContinueFootnoteMarkup.toLowerCase();
+    final private static String _EndChapterOutput = "\n<END CHAPTER>\n\n\n\n";
 
     // static final File _InFile = new File("../GiBill/TestFile.txt");
-    static final private File _InFile = new File("../GiBill/GI Bill SourceText.txt");
-    static final private File _OutFile;
+    final private static File _InFile = new File("../GiBill/GI Bill SourceText.txt");
+    final private static File _OutFile;
     static {
 	_OutFile = new File(_InFile.getParentFile(), "$$" + _InFile.getName());
     }
@@ -95,8 +95,6 @@ public class MarkupProcessor {
 	}
     }
 
-    final private static String _EndChapterOutput = "<END CHAPTER>\n\n\n\n";
-
     private static boolean dumpBuffer(final PrintWriter pw, boolean havePrinted, final String buffer0,
 	    final BufferType bufferType, final BufferType lastPrintedBufferType0) {
 	final String buffer = buffer0.trim().replaceAll("  ", " ");
@@ -104,7 +102,7 @@ public class MarkupProcessor {
 	    return /* dumpedSomething= */false;
 	}
 	if (bufferType == BufferType.BODY) {
-	    final String[] bodyParts = buffer.split(_NewChapterMarkup);
+	    final String[] bodyParts = buffer.split(_EndChapterMarkup);
 	    final int nBodyParts = bodyParts.length;
 	    BufferType lastPrintedBufferType = lastPrintedBufferType0;
 	    for (int k = 0; k < nBodyParts; ++k) {

@@ -1,4 +1,4 @@
-<Chapter>Introduction
+Introduction
 
 My father was Albert William Kratzke, who went by the name "Bill."  Born in 1923, he found himself in an historical period
 engulfed by both the Great Depression and World War Two. As Dad might have remarked in
@@ -22,25 +22,24 @@ In Dad's book, there are several appendices and maps that cannot be read into an
 material inevitably is lost.  In this case, we are going from print to audio, and
 diagrams, maps, and pictures are left behind.
 
-Although this is my dad's story, I will insert a personal note here.  Dad was 30 years (and 6 weeks) older than I, making it easy to compare
-our respective decades; for example, my 1960s were his 1930s.  More to the point of this reading, my 1970s were his 1940s, and his 1944
-was my 1974.  So it is easy for me to see that on our 21st birthdays, I was at a rowing practice, getting thrown into the Snake River by some buddies, and Dad was waiting
-for a ship to take him into a maelstrom.  For the next eight months of our lives, I was interested in girls and college rowing; Dad was interested
-in staying alive.  These are humbling thoughts.  Perhaps you the listener, if you are past your 22nd birthday,
+Although this is my dad's story, I will insert a personal note here.  I often compared my life and Dad's life when we were the same ages.
+On my 21st birthday, I was at a rowing practice, getting thrown into the Snake River by some buddies, and on HIS 21st birthday, he was waiting
+for a ship to take him into a maelstrom.  For the next eight months of our lives, I was interested in girls and college rowing and Dad was focused
+on staying alive.  These are humbling thoughts.  Perhaps you the listener, if you are past your 22nd birthday,
 might gain some perspective on this story, if you take a moment
 to recall what your own life was like between your 21st and 22nd birthdays.
 
 Dad was just a regular dad to me; he did not talk of the war when I was growing up, except once to quietly affirm that he had some injuries from the war.
 In fact, what I found most awesome about him was his 1940s-style baseball glove, and that he had
-actually gotten paid to play baseball.  Later in his life, he opened up more.  He didn't talk about individual experiences, but one time, he quietly told me about
+actually gotten paid to play baseball.  Much later in his life, he opened up more.  He didn't talk about individual experiences, but one time, he quietly told me about
 the time that he was pretty sure that he wasn't coming home, and feeling crushed about how it would devastate his mother.
 It's hard for me to read this without tearing up a little.
 
 So, here is my reading of one man’s experience in the cataclysm that was WW-2. I hope you find it interesting
 and, at the least, gain some insight into why the journalist Tom Brokaw described Americans of
 Dad’s time “The Greatest Generation.”
-
-<Chapter>GI Bill:
+<END CHAPTER>
+GI Bill:
 
 The Autobiographical Sketch of a Civilian in Uniform During
 World War II
@@ -53,8 +52,8 @@ Who cajoled and coaxed, but also supported and encouraged me.
 I could not -- or would not -- have undertaken this project
 without her help, especially in editing the manuscript.
 Thank you, my dear!!
-
-<Chapter>FOREWORD
+<END CHAPTER>
+FOREWORD
 
 To my children Bill, Mary, Tom, Steve, and Peter,
 Your mother has already written a comprehensive history of our
@@ -140,8 +139,8 @@ different -- perhaps inexplicably different -- but surely
 different. I experienced that change, and you may want to know
 something of the times and events that contributed to that change.
 I hope that what follows helps you to understand.
-
-<Chapter>Chapter I: PEARL HARBOR AND ME
+<END CHAPTER>
+Chapter I: PEARL HARBOR AND ME
 
 Shew me thy ways, O Lord, teach me thy paths
 Lead me in thy truth, and teach me.  (Psalm 25:4-5a, KJV)
@@ -663,8 +662,8 @@ gate, and he and Mother walked down the post entrance boulevard
 with me as far as they were permitted to go.
 
 I walked on alone into a world that both frightened and excited me.
-
-<Chapter> Chapter II: Army Training
+<END CHAPTER>
+Chapter II: Army Training
 
 Be not far from me, for trouble is near (Psalm 71:3, KJV)
 
@@ -1497,8 +1496,8 @@ going overseas.
 
 The few days in Camp Shanks ended my Stateside service. My next
 stop would be someplace in Europe.
-
-<Chapter> Chapter III: Destination: European Theater of Operations
+<END CHAPTER>
+Chapter III: Destination: European Theater of Operations
 
 Preserve my life from fear of the enemy.  (Psalm 64:1, KJV)
 
@@ -1761,8 +1760,8 @@ each other.
 Our short stay on the railroad siding near Septemes marked the end of our easy
 duty in France. From then on, until the end of the War, we were always
 conscious of enemy presence and the nearness of battle.
-
-<Chapter> Chapter IV: Alsace
+<END CHAPTER>
+Chapter IV: Alsace
 
 Dad changes to an historian's perspective in this chapter.
 
@@ -1920,8 +1919,8 @@ The Alsatian people lived under different flags over the centuries, so one never
 knew where an Alsatian's allegiance lay. Most Alsatians seemed cooperative,
 but their demeanor varied. Sometimes they would be animated and pleasant,
 and at other times they seemed taciturn and impassive -- but always they were enigmatic.
-
-<Chapter> Chapter V: The High Vosges Mountain Campaign, November 1944
+<END CHAPTER>
+Chapter V: The High Vosges Mountain Campaign, November 1944
 
 Dad continues to provide an historian's perspective in this chapter.
 
@@ -2124,8 +2123,8 @@ a bridge over the canal, and finally the town was declared clear of the enemy.
 Having broken out onto the broad Alsatian plain, the 14th AD and attached
 units turned to the northeast. The general movement was west of Strasbourg,
 toward the corner of Alsace where the Lauter and Rhine Rivers meet.
-
-<Chapter>Chapter VI: BAPTISM OF FIRE
+<END CHAPTER>
+Chapter VI: BAPTISM OF FIRE
 
 Dad resumes his autobiographical account in this chapter.
 
@@ -2617,8 +2616,8 @@ that we were going on the attack soon, and we became ever more grim and
 sober. Our stay at Riedheim was about to end, and we were going into
 engagements that later became known as the Battle of the Lower Vosges
 Mountains.
-
-<Chapter>Chapter VII: Into Germany -- and Back
+<END CHAPTER>
+Chapter VII: Into Germany -- and Back
 
 In December, 1944, the 14th Armored Division entered Germany for the first
 time. GIs in the line knew nothing about grand strategy or even local tactics, so
@@ -3045,8 +3044,8 @@ the Battle of Hatten-Rittershoffen. We did not know what, but we knew that
 something terrible was about to happen!
 (Footnote 14: We had electricity in our Woerth billet, the first since we arrived in Alsace. The town had
 maintained its power source throughout the fighting.
-
-<Chapter>Chapter VIII: The Low Vosges Mountain Campaign, December 1944 to January 1945
+<END CHAPTER>
+Chapter VIII: The Low Vosges Mountain Campaign, December 1944 to January 1945
 
 Dad changes to an historian's perspective in this chapter.
 
@@ -3281,8 +3280,8 @@ Historians can only speculate about the outcome of the War in Europe had
 Devers been allowed to attack across the Rhine in December, 1944. The
 ramifications are endless. Quite possibly, Operation Nordwind might have
 remained on Hitler's drawing board.
-
-<Chapter>Chapter IX: Hatten-Rittershoffen
+<END CHAPTER>
+Chapter IX: Hatten-Rittershoffen
 
 Why go I mourning because of the oppression of the enemy? (Psalm 42:9, KJV)
 
@@ -3700,8 +3699,8 @@ to me.
 Praying, always praying
 
 God, don't you hear me??
-
-<Chapter>Chapter X: Defense
+<END CHAPTER>
+Chapter X: Defense
 
 Evening and morning, and at noon, will I pray and
 cry aloud. (Psalm 54:17, KJV)
@@ -4149,8 +4148,8 @@ my correspondents.
 
 The Rhine crossing was to be the next big event, but not one of us knew when
 it would be. Even if I had known, I could not have written about it.
-
-<Chapter>Chapter XI: Gotterdammerung
+<END CHAPTER>
+Chapter XI: Gotterdammerung
 
 Thou hast been a shelter for me and a strong tower from the enemy. (Psalm 61:3, KJV)
 
@@ -4307,8 +4306,8 @@ the end of the War.
 The United States Third and Seventh Armies continued their march south.
 The War in Europe ended on May 8, 1945. The Allied Armies stopped fighting
 and took up occupation duty.
-
-<Chapter>Chapter XII: The Final Dash
+<END CHAPTER>
+Chapter XII: The Final Dash
 
 O thou enemy, destructions are come to a perpetual end. (Psalm 91:6, KJV)
 
@@ -4859,8 +4858,8 @@ the Pacific?
 Answers to these and many other questions would come soon enough. For the
 time being each of us lived in a state of euphoria, for each had his private
 thoughts about what he had done and what he had left to do.
-
-<Chapter>Chapter XIII: Occupation Duty, Toging and Furstenfeldbruck
+<END CHAPTER>
+Chapter XIII: Occupation Duty, Toging and Furstenfeldbruck
 
 He maketh wars to cease unto the end of the earth. (Psalm 46:9, KJV)
 
@@ -5263,8 +5262,8 @@ business.
 We did not stay in Furstenfeldbruck very long. The whole unit was ordered to
 move down into the Alps. We didn't know just where we were headed, but we
 prepared to go at a moment's notice.
-
-<Chapter>Chapter XIV: Occupation Duty, Bad Reichenhall
+<END CHAPTER>
+Chapter XIV: Occupation Duty, Bad Reichenhall
 
 The battalion -- with all of its tanks, half-tracks, etc. -- was ordered to move.
 For me the transfer would be my last involving equipment. All later changes
@@ -5647,8 +5646,8 @@ Paris and London.
 When I returned, I was no longer assigned to the 191st Tank Battalion and my
 stay in Bad Reichenhall was over. The several months there had been very
 interesting.
-
-<Chapter>Chapter XV: A Tale of Two Cities (and a Few More)
+<END CHAPTER>
+Chapter XV: A Tale of Two Cities (and a Few More)
 
 The Mountains shall bring peace to the people (Psalm 71:3, KJV)
 
@@ -5901,8 +5900,8 @@ harbor in France, they were about even.
 
 We had a few more days in Paris before we had to return to Germany. I had
 been gone more than a month on a two-week pass.
-
-<Chapter>Chapter XVI: Winter in the Bavarian Alps
+<END CHAPTER>
+Chapter XVI: Winter in the Bavarian Alps
 
 At the end of my 'grand tour' of Paris, London, and Dublin, I had to come back
 to reality. I had a wonderful trip! I returned in late November, but I cannot
@@ -6115,8 +6114,8 @@ was biding my time and awaiting the announcement that soldiers in the point
 spread including my number would be the next to go back to the States.
 My day came in February. I liked Bavaria, but it couldn't compare with the
 little prairie town in Minnesota that was my home.
-
-<Chapter>Chapter XVII: Home
+<END CHAPTER>
+Chapter XVII: Home
 
 The first step in my journey home took me to the collection depot in Rosenheim,
 a town between Salzburg and Munich. There each of us was assigned to
@@ -6444,8 +6443,8 @@ There was little chemical reaction between us in our first
 encounter, but during winter quarter I took her out for the first time -- and not
 long after that we became engaged.
 We were married on April 4, 1948.
-
-<Chapter>Chapter XVIII: A Soldier's Return
+<END CHAPTER>
+Chapter XVIII: A Soldier's Return
 
 Sing unto the Lord with thanksgiving; sing praise upon the harp unto our God. (Psalm 147:7 KJV)
 
